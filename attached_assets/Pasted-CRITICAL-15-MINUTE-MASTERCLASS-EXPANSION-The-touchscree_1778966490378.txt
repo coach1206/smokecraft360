@@ -1,0 +1,28 @@
+CRITICAL 15-MINUTE MASTERCLASS EXPANSION: The touchscreen application must be restructured to accommodate a deep, high-engagement 15-minute kiosk experience broken into distinct, timed sections. We are adding 10 brand-new educational screens with specific, dark luxury imagery to expand the narrative on seed quality, soil terroir, leaf harvesting, rolling construction, shapes, and cuts. Furthermore, you must implement a nightly competitive scoring engine that compares the user's total points against the running live lounge average at session end.
+
+Refactor MasterBlender.tsx, RitualStep.tsx, and your database schema migrations immediately to execute this exact hardware and cultural specification:
+
+1. IMPLEMENT THE 15-MINUTE PACED WORKFLOW INTERVALS:
+   - Break the 14+ step wizard into 3 distinct interactive movements with clear educational barriers that stop users from rapid click-throughs:
+     * Movement I (Minutes 0–5): The Origin, Germination, and Soil Terroir Checkpoints.
+     * Movement II (Minutes 5–10): The Harvest Primings, Curing Barns, Fermentation Bulks, and Rolling Bench.
+     * Movement III (Minutes 10–15): Vitola Gauge Science, The Precision Cut, and Lounge Bar Fluid Harmony.
+
+2. INJECT THE 10 MISSING PRODUCTION ASSETS AND INSIGHTS:
+   - Build out the 10 expanded informational views using these explicit background and card assets to eliminate the flat appearance:
+     * Germination & Seed Biology (Screen 1 & 2): Use macro shots of heritage seedlings breaking dark soil and rich volcanic soil landscapes catching low amber ambient rays. Teach the guest how Potassium dictates combustion.
+     * Curing & Fermentation (Screen 3 & 4): Use low-lit, moody visuals of traditional curing barn interiors and natural fermentation leaf bulks with subtle steam currents.
+     * Rolling Bench, Caps & Construction (Screen 5 & 6): Use close-ups of an artisan's hands slicing wrapper leaves with a chaveta on dark walnut benches and triple-cap head finishing. Teach the anatomy of Wrapper, Binder, and Filler.
+     * Vitola Gauges & Precision Cuts (Screen 7 & 8): Use sleek glassmorphic layouts of ring-gauge rings and brushed titanium guillotine cuts. Teach draw physics and cut profiles (Straight, V-Cut, Punch).
+     * The Golden Box & Nightly Leaderboard (Screen 9 & 10): Use premium dark walnut wood textures with gold inlay plates and an obsidian glass ranking scoreboard panel.
+
+3. UN-HIDE REAL-TIME SCORING AND NIGHTLY AVERAGE TICKER:
+   - Point State Engine: Ensure every choice instantly updates the live score ticker on-screen (+5 XP for perfect mentor-seed harmony, -2 PTS for poor alignment). Wire these score adjustments directly to our Web Audio API sound oscillators (playClick() and playSlide()).
+   - Database Aggregation: When Stage 14 is finalized, freeze the score engine entirely. Run an immediate server query against the supply_verification_ledger table to calculate the real-time average score of all entries logged on the current date.
+   - Final Leaderboard Panel: Display the user's final score directly alongside the 'Nightly Lounge Average' and their community placement tier (e.g., Master Blender vs. Novice Aficionado) to secure high-stakes competition.
+
+4. KEEP HARDWARE TOUCHSCREEN SENSORY TEXTURES INTACT:
+   - Retain the absolute black (#000000) base layout, the HTML5 SmokeCanvas running smoothly at z-index 9996, the high-contrast gold border 'BACK' button layout, and the 100ms card compression mechanical tap dips.
+   - The session timeout modal overlay must remain on layer depth z-index 999999 with pointer-events auto to guarantee no interaction traps freeze the kiosk glass.
+
+Execute this holistic, 15-minute interval and scoring refactor now. No stubs, no corporate templates. Verify tsc --noEmit exits clean with 0.

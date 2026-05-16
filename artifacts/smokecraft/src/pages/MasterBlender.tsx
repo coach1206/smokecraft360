@@ -197,7 +197,7 @@ const SOILS = [
   { id: "alluvial", name: "Alluvial Valley", region: "Cibao, D.R.",         detail: "Nutrient-dense loam creating silky wrapper leaves and refined, mellow body." },
 ];
 
-type GatewayPhase = "intro" | "orientation" | "mentor" | "terroir" | "seed_biology" | "cultivation" | "blending";
+type GatewayPhase = "intro" | "orientation" | "mentor" | "terroir" | "seed_biology" | "cultivation" | "harvest" | "curing" | "rolling_bench" | "vitola_science" | "blending";
 
 type XPFloat  = { id: number; amount: number; x: number; y: number };
 type Sel      = {
@@ -1536,6 +1536,596 @@ function GatewayCultivation({
   );
 }
 
+
+// ── Movement Progress Badge ─────────────────────────────────────────────────────
+type MovNum = "I" | "II" | "III";
+const MOV_COLORS: Record<MovNum, string> = { I: "#8BC34A", II: GOLD, III: "#E8741A" };
+const MOV_LABELS: Record<MovNum, string> = {
+  I:   "The Origin · Minutes 0–5",
+  II:  "The Craft · Minutes 5–10",
+  III: "The Finish · Minutes 10–15",
+};
+
+function MovementBadge({ movement }: { movement: MovNum }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20,
+      padding: "12px 18px", borderRadius: 8,
+      background: "rgba(212,175,55,0.04)", border: `1px solid ${MOV_COLORS[movement]}28`,
+      flexWrap: "wrap" as const }}>
+      <div>
+        <span style={{ color: MOV_COLORS[movement], fontSize: 11, fontWeight: 800,
+          letterSpacing: "0.30em", textTransform: "uppercase" as const, display: "block" }}>
+          MOVEMENT {movement}
+        </span>
+        <span style={{ color: "rgba(240,232,212,0.58)", fontSize: 14, letterSpacing: "0.06em" }}>
+          {MOV_LABELS[movement]}
+        </span>
+      </div>
+      <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
+        {(["I","II","III"] as MovNum[]).map(m => (
+          <div key={m} style={{ width: 28, height: 4, borderRadius: 2,
+            background: m === movement ? MOV_COLORS[movement] : "rgba(255,255,255,0.10)",
+            transition: "background 0.3s" }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Read Timer gate — prevents rapid click-through on educational screens ─────
+function ReadTimer({ seconds, onReady }: { seconds: number; onReady: () => void }) {
+  const [elapsed, setElapsed] = useState(0);
+  const firedRef = useRef(false);
+
+  useEffect(() => {
+    if (firedRef.current) return;
+    if (elapsed >= seconds) { firedRef.current = true; onReady(); return; }
+    const t = setTimeout(() => setElapsed(e => e + 1), 1000);
+    return () => clearTimeout(t);
+  }, [elapsed, seconds, onReady]);
+
+  const pct  = Math.min(elapsed / seconds, 1);
+  const rem  = Math.max(seconds - elapsed, 0);
+  const R    = 14;
+  const circ = 2 * Math.PI * R;
+
+  if (pct >= 1) return null;
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+      style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <svg width={34} height={34} style={{ flexShrink: 0, transform: "rotate(-90deg)" }}>
+        <circle cx={17} cy={17} r={R} fill="none" stroke="rgba(212,175,55,0.14)" strokeWidth={2.5} />
+        <motion.circle cx={17} cy={17} r={R} fill="none" stroke={GOLD} strokeWidth={2.5}
+          strokeLinecap="round" strokeDasharray={circ}
+          animate={{ strokeDashoffset: circ * (1 - pct) }}
+          transition={{ duration: 0.9, ease: "linear" }} />
+      </svg>
+      <span style={{ color: `${GOLD}58`, fontSize: 13, letterSpacing: "0.12em" }}>Reading: {rem}s</span>
+    </motion.div>
+  );
+}
+
+// ── Movement II · Screen 1: Leaf Harvest & Primings ─────────────────────
+function GatewayHarvest({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const [readyToAdvance, setReadyToAdvance] = useState(false);
+  const [quizAnswer,     setQuizAnswer]     = useState<string | null>(null);
+  const [quizRevealed,   setQuizRevealed]   = useState(false);
+
+  const PRIMINGS = [
+    { id: "volado", pos: "1st Priming — Volado", color: "#8BC34A", pct: 14,
+      note: "Highest natural sugars. Bottom leaves absorb maximum soil potassium. Ensures even combustion throughout. The structural backbone every master blend requires." },
+    { id: "seco",   pos: "2nd Priming — Seco",   color: GOLD,       pct: 52,
+      note: "Primary flavor expression: cedar, leather, cocoa, spice. Air-cured 45–60 days to lock in aromatic oils. Constitutes 40–60% of premium blends worldwide." },
+    { id: "viso",   pos: "3rd Priming — Viso",   color: "#E8741A",  pct: 71,
+      note: "Elevated oils create rich, supple texture. Medium-to-full body. Prized by master rollers for pliability during construction under the chaveta." },
+    { id: "ligero", pos: "4th Priming — Ligero", color: "#ef4444",  pct: 94,
+      note: "Maximum nicotine density. Demands 18–24 months minimum aging to mellow peak alkaloids. One Ligero filler transforms any blend to full-body intensity." },
+  ];
+
+  return (
+    <motion.div key="gw-harvest"
+      initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}>
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img
+          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
+          alt="" className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.13) saturate(0.55) sepia(0.35)" }} />
+        <div style={{ position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at 50% 30%, rgba(232,116,26,0.09) 0%, rgba(0,0,0,0.90) 100%)" }} />
+      </div>
+      <div style={GW.chamber} className="overflow-y-auto">
+        <MovementBadge movement="II" />
+        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
+          textTransform: "uppercase" as const, marginBottom: 10 }}>
+          The Growing Season · Priming Science
+        </p>
+        <h2 style={GW.title}>Leaf Harvest &amp; Primings</h2>
+        <p style={{ color: "rgba(240,232,212,0.70)", fontSize: 17, lineHeight: 1.65, marginBottom: 22 }}>
+          A tobacco plant is harvested in <strong style={{ color: GOLD }}>4 timed stages called primings</strong>.
+          Each position on the stalk produces a leaf with distinct flavor intensity, combustion physics,
+          and nicotine density. Potassium levels dictate combustion — the higher the Volado ratio,
+          the more even the burn.
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 26 }}>
+          {PRIMINGS.map((p, i) => (
+            <motion.div key={p.id}
+              initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.11 }}
+              style={{ background: "rgba(255,255,255,0.025)", border: `1px solid ${p.color}22`,
+                borderRadius: 10, padding: "16px 20px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                marginBottom: 8, flexWrap: "wrap" as const, gap: 8 }}>
+                <span style={{ color: p.color, fontSize: 16, fontWeight: 700,
+                  letterSpacing: "0.10em", textTransform: "uppercase" as const }}>{p.pos}</span>
+                <span style={{ color: p.color, fontSize: 20, fontWeight: 700 }}>{p.pct}%</span>
+              </div>
+              <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3,
+                marginBottom: 10, overflow: "hidden" }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${p.pct}%` }}
+                  transition={{ delay: 0.4 + i * 0.12, duration: 1.1, ease: "easeOut" }}
+                  style={{ height: "100%", background: p.color, borderRadius: 3 }} />
+              </div>
+              <p style={{ color: "rgba(240,232,212,0.68)", fontSize: 15, lineHeight: 1.6, margin: 0 }}>{p.note}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div style={{ background: `${GOLD}06`, border: `1px solid ${GOLD}25`,
+          borderRadius: 10, padding: "20px 22px", marginBottom: 24 }}>
+          <p style={{ color: GOLD, fontSize: 16, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 14 }}>
+            Master Blender Challenge
+          </p>
+          <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 17, lineHeight: 1.6, marginBottom: 16 }}>
+            Which priming position produces the highest natural sugar content,
+            ensuring even combustion throughout the smoke?
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+            {PRIMINGS.map(p => {
+              const correct  = p.id === "volado";
+              const isSel    = quizAnswer === p.id;
+              return (
+                <motion.button key={p.id} whileTap={{ scale: 0.97 }}
+                  onClick={() => { if (!quizRevealed) { setQuizAnswer(p.id); setQuizRevealed(true); playClick(); } }}
+                  style={{
+                    background: quizRevealed && isSel ? (correct ? "rgba(74,222,128,0.12)" : "rgba(239,68,68,0.10)") : isSel ? `${GOLD}12` : "rgba(255,255,255,0.04)",
+                    border: quizRevealed && isSel ? `1.5px solid ${correct ? "#4ade80" : "#ef4444"}` : isSel ? `1.5px solid ${GOLD}` : "1px solid rgba(212,175,55,0.18)",
+                    borderRadius: 8, padding: "14px 16px",
+                    cursor: quizRevealed ? "default" : "pointer",
+                    textAlign: "left" as const,
+                  }}>
+                  <span style={{
+                    color: isSel ? (quizRevealed ? (correct ? "#4ade80" : "#ef4444") : GOLD) : "rgba(240,232,212,0.75)",
+                    fontSize: 15, fontWeight: isSel ? 700 : 400
+                  }}>
+                    {p.pos.split(" — ")[1]}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
+          {quizRevealed && (
+            <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+              style={{ color: quizAnswer === "volado" ? "#4ade80" : "#f97316",
+                fontSize: 15, lineHeight: 1.6, margin: 0 }}>
+              {quizAnswer === "volado"
+                ? "✓ Correct. Volado’s elevated potassium and sugar content drive reliable combustion physics."
+                : "Volado (1st priming) carries the highest natural sugars — proximity to roots delivers peak soil nutrients and potassium, which govern burn consistency."}
+            </motion.p>
+          )}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+          <button style={GW.btn(true)} onMouseDown={() => playClick()} onClick={onBack}>Back</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <ReadTimer seconds={45} onReady={() => setReadyToAdvance(true)} />
+            <motion.button
+              style={{ ...GW.btn(!readyToAdvance),
+                ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
+              whileHover={readyToAdvance ? { scale: 1.03 } : {}}
+              whileTap={readyToAdvance ? { scale: 0.97 } : {}}
+              onMouseDown={() => readyToAdvance && playClick()}
+              onClick={() => readyToAdvance && onNext()}>
+              {readyToAdvance ? "Curing Barn →" : "Reading…"}
+            </motion.button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Movement II · Screen 2: Curing Barns & Fermentation ──────────────────
+function GatewayCuring({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const [readyToAdvance, setReadyToAdvance] = useState(false);
+  const [activeTemp,     setActiveTemp]     = useState<70 | 90 | 110 | 130>(70);
+
+  type TempStep = { f: 70|90|110|130; label: string; desc: string; color: string };
+  const TEMPS: TempStep[] = [
+    { f: 70,  label: "70°F", color: "#8BC34A",
+      desc: "Pre-fermentation. Initial air-cure phase. Chlorophyll breaking down, leaf color shifting green → amber. Moisture content still high." },
+    { f: 90,  label: "90°F", color: GOLD,
+      desc: "Seco activation. Optimal for medium-body leaf. Volatile oils begin concentrating. Cedar and cocoa notes emerge from cellular breakdown." },
+    { f: 110, label: "110°F", color: "#E8741A",
+      desc: "Viso intensity reached. Rich, oily compounds form. Spice and leather complexity develops. Rotate the pilón now to equalize heat." },
+    { f: 130, label: "130°F", color: "#ef4444",
+      desc: "Ligero fullness unlocked. Maximum alkaloid transformation. Ammonia fully expelled. Dark chocolate and deep earth notes permanently sealed." },
+  ];
+
+  const active = TEMPS.find(t => t.f === activeTemp) ?? TEMPS[0];
+
+  return (
+    <motion.div key="gw-curing"
+      initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}>
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img
+          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          alt="" className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.10) saturate(0.30) sepia(0.60)" }} />
+        <div style={{ position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at 40% 60%, rgba(180,80,20,0.10) 0%, rgba(0,0,0,0.92) 100%)" }} />
+      </div>
+      <div style={GW.chamber} className="overflow-y-auto">
+        <MovementBadge movement="II" />
+        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
+          textTransform: "uppercase" as const, marginBottom: 10 }}>
+          The Curing Barn · Pilón Fermentation
+        </p>
+        <h2 style={GW.title}>Curing &amp; Fermentation Science</h2>
+        <p style={{ color: "rgba(240,232,212,0.70)", fontSize: 17, lineHeight: 1.65, marginBottom: 20 }}>
+          After harvest, leaves hang in <strong style={{ color: GOLD }}>traditional curing barns for 45–90 days</strong>.
+          Then they are stacked into a <em>pilón</em> — a tightly compressed bulk that generates intense internal heat.
+          Fermentation expels ammonia, transforms alkaloids, and builds the complex flavor architecture
+          that defines premium tobacco.
+        </p>
+
+        <div style={{ background: "rgba(232,116,26,0.05)", border: "1px solid rgba(232,116,26,0.20)",
+          borderRadius: 10, padding: "20px 22px", marginBottom: 22 }}>
+          <p style={{ color: "#E8741A", fontSize: 14, fontWeight: 700, letterSpacing: "0.16em",
+            textTransform: "uppercase" as const, marginBottom: 16 }}>
+            Interactive Pilón — Tap a Fermentation Temperature
+          </p>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14, gap: 8, flexWrap: "wrap" as const }}>
+            {TEMPS.map(t => (
+              <button key={t.f}
+                onClick={() => { setActiveTemp(t.f); playClick(); }}
+                style={{
+                  background: activeTemp === t.f ? `${t.color}18` : "rgba(255,255,255,0.03)",
+                  border: `1.5px solid ${activeTemp === t.f ? t.color : "rgba(255,255,255,0.12)"}`,
+                  borderRadius: 8, padding: "10px 14px", cursor: "pointer", flex: 1,
+                }}>
+                <span style={{ color: activeTemp === t.f ? t.color : "rgba(240,232,212,0.55)",
+                  fontSize: 16, fontWeight: 700 }}>{t.label}</span>
+              </button>
+            ))}
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div key={activeTemp}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+              style={{ background: "rgba(0,0,0,0.35)", borderRadius: 8,
+                padding: "14px 18px", border: `1px solid ${active.color}28` }}>
+              <p style={{ color: active.color, fontSize: 16, fontWeight: 700, marginBottom: 6 }}>
+                {active.label} — Fermentation Stage
+              </p>
+              <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 16, lineHeight: 1.65, margin: 0 }}>
+                {active.desc}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 24 }}>
+          {[
+            { title: "Air Cure", sub: "45–90 days", color: "#8BC34A",
+              body: "Barn ventilation preserves natural sweetness and oils. Reduces chlorophyll. Foundation for Connecticut and Seco leaves." },
+            { title: "Pilón Stack", sub: "Fermentation bulk", color: GOLD,
+              body: "3–4 ft compressed stacks generate 100–130°F. Rotated every 3–4 days to equalize heat and prevent spontaneous combustion." },
+            { title: "Ammonia Release", sub: "Alkaloid transformation", color: "#E8741A",
+              body: "Fermentation expels harsh ammonia compounds. Converts raw nicotine into smooth, complex alkaloids. Critical quality marker." },
+            { title: "Rest Cycle", sub: "Post-fermentation", color: "#a78bfa",
+              body: "Leaves rest 30+ days post-pilón. Final moisture equilibration. Completes the aromatic profile before rolling begins." },
+          ].map(c => (
+            <div key={c.title} style={{ background: "rgba(255,255,255,0.025)",
+              border: `1px solid ${c.color}20`, borderRadius: 8, padding: "16px 18px" }}>
+              <p style={{ color: c.color, fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{c.title}</p>
+              <p style={{ color: `${GOLD}58`, fontSize: 12, letterSpacing: "0.10em",
+                textTransform: "uppercase" as const, marginBottom: 8 }}>{c.sub}</p>
+              <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 15, lineHeight: 1.6, margin: 0 }}>{c.body}</p>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+          <button style={GW.btn(true)} onMouseDown={() => playClick()} onClick={onBack}>Back</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <ReadTimer seconds={50} onReady={() => setReadyToAdvance(true)} />
+            <motion.button
+              style={{ ...GW.btn(!readyToAdvance),
+                ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
+              whileHover={readyToAdvance ? { scale: 1.03 } : {}}
+              whileTap={readyToAdvance ? { scale: 0.97 } : {}}
+              onMouseDown={() => readyToAdvance && playClick()}
+              onClick={() => readyToAdvance && onNext()}>
+              {readyToAdvance ? "Rolling Bench →" : "Reading…"}
+            </motion.button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Movement II · Screen 3: Rolling Bench & Construction ──────────────────
+function GatewayRollingBench({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const [readyToAdvance, setReadyToAdvance] = useState(false);
+  const [activeLayer,    setActiveLayer]    = useState<string | null>(null);
+
+  const LAYERS = [
+    { id: "filler",  label: "Filler",       color: "#8BC34A", icon: "●",
+      detail: "The bunched core. Composed of 2–4 leaves folded in a ‘booking’ or ‘accordion’ pattern to create draw channels. Determines body strength and burn speed. Always includes Volado for combustion insurance." },
+    { id: "binder",  label: "Binder",       color: GOLD,      icon: "○",
+      detail: "The structural holding leaf. Wraps the filler bunch tightly. Selected for tensile strength and elasticity. Directly impacts draw resistance and overall construction integrity." },
+    { id: "wrapper", label: "Wrapper",      color: "#E8741A", icon: "★",
+      detail: "The outer presentation leaf. Can represent 60% of total leaf cost. Cut with a chaveta on a dark walnut bench. Governs visual, aromatic, and initial flavor impression." },
+    { id: "cap",     label: "Triple Cap",   color: "#a78bfa", icon: "▲",
+      detail: "Three small circular cuts of wrapper sealing the head. The gold standard of premium construction. A single cap indicates machine-made. Triple cap confirms handcrafted artisan work." },
+  ];
+
+  return (
+    <motion.div key="gw-rolling"
+      initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}>
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img
+          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          alt="" className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.11) saturate(0.20) sepia(0.65)" }} />
+        <div style={{ position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at 60% 40%, rgba(120,80,30,0.12) 0%, rgba(0,0,0,0.92) 100%)" }} />
+      </div>
+      <div style={GW.chamber} className="overflow-y-auto">
+        <MovementBadge movement="II" />
+        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
+          textTransform: "uppercase" as const, marginBottom: 10 }}>
+          The Artisan’s Table · Construction Anatomy
+        </p>
+        <h2 style={GW.title}>Rolling Bench &amp; Construction</h2>
+        <p style={{ color: "rgba(240,232,212,0.70)", fontSize: 17, lineHeight: 1.65, marginBottom: 22 }}>
+          Every premium cigar is hand-constructed on a <strong style={{ color: GOLD }}>dark walnut rolling bench</strong>
+          using a half-moon <em>chaveta</em> blade. The three-part architecture of Wrapper, Binder, and Filler
+          determines draw resistance, burn temperature, and the physical sensation in your hands.
+        </p>
+
+        <p style={{ color: `${GOLD}70`, fontSize: 14, letterSpacing: "0.18em",
+          textTransform: "uppercase" as const, marginBottom: 16 }}>
+          Tap each construction layer to reveal its role
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 24 }}>
+          {LAYERS.map(l => {
+            const isOpen = activeLayer === l.id;
+            return (
+              <motion.div key={l.id}
+                onClick={() => { setActiveLayer(isOpen ? null : l.id); playClick(); }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  background: isOpen ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.025)",
+                  border: `1.5px solid ${isOpen ? l.color : l.color + "28"}`,
+                  borderRadius: 10, padding: "18px 18px", cursor: "pointer",
+                  boxShadow: isOpen ? `0 0 22px ${l.color}14` : "none",
+                }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10,
+                  marginBottom: isOpen ? 12 : 0 }}>
+                  <span style={{ color: l.color, fontSize: 22 }}>{l.icon}</span>
+                  <span style={{ color: isOpen ? l.color : "rgba(240,232,212,0.80)",
+                    fontSize: 18, fontWeight: 700 }}>{l.label}</span>
+                  <span style={{ marginLeft: "auto", color: `${l.color}70`, fontSize: 16 }}>
+                    {isOpen ? "▼" : "▶"}
+                  </span>
+                </div>
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      style={{ color: "rgba(240,232,212,0.80)", fontSize: 15,
+                        lineHeight: 1.65, margin: 0, overflow: "hidden" }}>
+                      {l.detail}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div style={{ background: `${GOLD}05`, border: `1px solid ${GOLD}20`,
+          borderRadius: 10, padding: "18px 20px", marginBottom: 24 }}>
+          <p style={{ color: GOLD, fontSize: 16, fontWeight: 700, marginBottom: 12 }}>
+            The Chaveta &amp; Bunching Technique
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {[
+              { name: "Booking Fold", body: "Leaves folded flat like pages. Creates uniform draw channels. Preferred for robust, full-body blends where consistent resistance is paramount." },
+              { name: "Accordion Fold", body: "Leaves folded in alternating directions. Creates a porous draw. Preferred for lighter, airy Connecticut-style blends needing effortless pull." },
+            ].map(f => (
+              <div key={f.name}>
+                <p style={{ color: `${GOLD}78`, fontSize: 14, fontWeight: 700,
+                  letterSpacing: "0.12em", textTransform: "uppercase" as const, marginBottom: 6 }}>{f.name}</p>
+                <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 15, lineHeight: 1.6, margin: 0 }}>{f.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+          <button style={GW.btn(true)} onMouseDown={() => playClick()} onClick={onBack}>Back</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <ReadTimer seconds={55} onReady={() => setReadyToAdvance(true)} />
+            <motion.button
+              style={{ ...GW.btn(!readyToAdvance),
+                ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
+              whileHover={readyToAdvance ? { scale: 1.03 } : {}}
+              whileTap={readyToAdvance ? { scale: 0.97 } : {}}
+              onMouseDown={() => readyToAdvance && playClick()}
+              onClick={() => readyToAdvance && onNext()}>
+              {readyToAdvance ? "Vitola Science →" : "Reading…"}
+            </motion.button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Movement III · Screen 1: Vitola Science & Draw Physics ──────────────
+function GatewayVitolaScience({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const [readyToAdvance, setReadyToAdvance] = useState(false);
+  const [selectedCut,    setSelectedCut]    = useState<string | null>(null);
+
+  const CUTS = [
+    { id: "straight", label: "Straight Cut", icon: "|—|", color: "#8BC34A",
+      best: "Robusto · Corona · Churchill",
+      draw: "Full open draw. Maximum smoke volume. Preserves full flavor surface area of the cap. Best for ring gauges 46–54." },
+    { id: "vcut",     label: "V-Cut (Wedge)", icon: "V",      color: GOLD,
+      best: "Torpedo · Figurado · Perfecto",
+      draw: "Concentrated draw channel. Intensifies flavor. Best for tapered shapes 52–56 RG. Reduces loose tobacco debris." },
+    { id: "punch",    label: "Punch Cut",     icon: "●", color: "#E8741A",
+      best: "Gordo · Presidente · Gigante",
+      draw: "Smallest aperture. Coolest, smoothest draw. Best for large ring gauges 58+. Preserves maximum wrapper leaf integrity." },
+  ];
+
+  const VITOLAS = [
+    { name: "Robusto",      ring: 50, length: "5”",    profile: "The universal standard. Perfect balance of smoke time (45 min) and flavor development." },
+    { name: "Churchill",    ring: 47, length: "7”",    profile: "Extended journey (90 min). Full flavor evolution from light cedar to rich earth across three thirds." },
+    { name: "Torpedo",      ring: 52, length: "6.25”", profile: "Tapered head concentrates draw. Complex aromatic layers. Artisan construction required." },
+    { name: "Gordo",        ring: 60, length: "6”",    profile: "Widest common gauge. Maximum smoke volume. Cooler burn temperature. Punchy draw physics." },
+    { name: "Lancero",      ring: 38, length: "7.5”",  profile: "Thinnest premium gauge. Precision rolling. Wrapper leaf dominates flavor at 70%+." },
+    { name: "Petit Corona", ring: 42, length: "4.5”",  profile: "30-minute smoke. Condensed intensity. High filler-to-wrapper ratio. Ideal introduction." },
+  ];
+
+  return (
+    <motion.div key="gw-vitola-sci"
+      initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}>
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img
+          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          alt="" className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.10) saturate(0.15) sepia(0.20)" }} />
+        <div style={{ position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.08) 0%, rgba(0,0,0,0.92) 100%)" }} />
+      </div>
+      <div style={GW.chamber} className="overflow-y-auto">
+        <MovementBadge movement="III" />
+        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
+          textTransform: "uppercase" as const, marginBottom: 10 }}>
+          Draw Physics · Ring Gauge Science
+        </p>
+        <h2 style={GW.title}>Vitola Science &amp; Precision Cuts</h2>
+        <p style={{ color: "rgba(240,232,212,0.70)", fontSize: 17, lineHeight: 1.65, marginBottom: 22 }}>
+          Ring gauge is measured in <strong style={{ color: GOLD }}>64ths of an inch</strong>.
+          A 50 RG cigar = 50/64” diameter. Gauge directly governs draw resistance, smoke volume,
+          burn temperature, and grip balance. Your cut choice creates the aperture that determines
+          every draw from first light to final third.
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column" as const, gap: 11, marginBottom: 24 }}>
+          {VITOLAS.map((v, i) => (
+            <motion.div key={v.name}
+              initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.08 }}
+              style={{ display: "flex", alignItems: "center", gap: 14,
+                background: "rgba(255,255,255,0.025)", border: `1px solid ${GOLD}18`,
+                borderRadius: 8, padding: "13px 18px" }}>
+              <div style={{ flexShrink: 0, textAlign: "center" as const, minWidth: 44 }}>
+                <div style={{ color: GOLD, fontSize: 20, fontWeight: 700 }}>{v.ring}</div>
+                <div style={{ color: `${GOLD}50`, fontSize: 11, letterSpacing: "0.12em" }}>RG</div>
+              </div>
+              <div style={{ width: 1, height: 38, background: `${GOLD}18`, flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 3 }}>
+                  <span style={{ color: "rgba(240,232,212,0.90)", fontSize: 16, fontWeight: 700 }}>{v.name}</span>
+                  <span style={{ color: `${GOLD}58`, fontSize: 14 }}>{v.length}</span>
+                </div>
+                <p style={{ color: "rgba(240,232,212,0.58)", fontSize: 14, lineHeight: 1.5, margin: 0 }}>{v.profile}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <p style={{ color: `${GOLD}78`, fontSize: 15, fontWeight: 700, letterSpacing: "0.12em",
+          textTransform: "uppercase" as const, marginBottom: 14 }}>
+          Select Your Cut Profile — Carries into Your Blend
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
+          {CUTS.map(c => {
+            const isSel = selectedCut === c.id;
+            return (
+              <motion.div key={c.id}
+                onClick={() => { setSelectedCut(c.id); playClick(); }}
+                whileTap={{ scale: 0.96 }} whileHover={{ scale: 1.02 }}
+                style={{
+                  background: isSel ? `${c.color}12` : "rgba(255,255,255,0.03)",
+                  border: `1.5px solid ${isSel ? c.color : c.color + "30"}`,
+                  borderRadius: 10, padding: "18px 14px", cursor: "pointer",
+                  textAlign: "center" as const,
+                  boxShadow: isSel ? `0 0 24px ${c.color}18` : "none",
+                }}>
+                <div style={{ fontSize: 26, marginBottom: 8, color: c.color }}>{c.icon}</div>
+                <p style={{ color: isSel ? c.color : "rgba(240,232,212,0.80)",
+                  fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{c.label}</p>
+                <p style={{ color: `${GOLD}62`, fontSize: 12, letterSpacing: "0.08em",
+                  marginBottom: 8, textTransform: "uppercase" as const }}>{c.best}</p>
+                <p style={{ color: "rgba(240,232,212,0.58)", fontSize: 14, lineHeight: 1.55, margin: 0 }}>{c.draw}</p>
+                {isSel && (
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                    style={{ marginTop: 10, color: c.color, fontSize: 15, fontWeight: 700 }}>
+                    ✓ Selected
+                  </motion.div>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+          <button style={GW.btn(true)} onMouseDown={() => playClick()} onClick={onBack}>Back</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <ReadTimer seconds={50} onReady={() => setReadyToAdvance(true)} />
+            <motion.button
+              style={{
+                ...GW.btn(!readyToAdvance),
+                ...(readyToAdvance
+                  ? { background: "linear-gradient(135deg,#c8950a,#9e7208)", border: `1px solid ${GOLD}` }
+                  : { opacity: 0.45, cursor: "not-allowed" }),
+              }}
+              whileHover={readyToAdvance ? { scale: 1.03 } : {}}
+              whileTap={readyToAdvance ? { scale: 0.97 } : {}}
+              onMouseDown={() => readyToAdvance && playClick()}
+              onClick={() => readyToAdvance && onNext()}>
+              {readyToAdvance ? "★ Enter The Blending Chamber" : "Reading…"}
+            </motion.button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Alchemy Reveal ─────────────────────────────────────────────────────────
 const HUMIDOR_RECS: Record<string, { cigar: string; spirit: string; note: string }> = {
   "seco|connecticut":    { cigar: "Davidoff Grand Cru No.3",  spirit: "Macallan 12 Sherry Oak",   note: "Silky body + honeyed single malt" },
@@ -1738,9 +2328,22 @@ function AlchemyReveal({
 }: { sel: Sel; onRestart: () => void; finalScore: number }) {
   const { speak } = useAudio();
   const { guestProfile, isReturning } = useGuestProfile();
-  const [phase,   setPhase]   = useState<"scan" | "result">("scan");
-  const [data,    setData]    = useState<PairingResult | null>(null);
-  const [staffTab, setStaffTab] = useState(false);
+  const [phase,       setPhase]       = useState<"scan" | "result">("scan");
+  const [data,        setData]        = useState<PairingResult | null>(null);
+  const [staffTab,    setStaffTab]    = useState(false);
+  const [nightlyData, setNightlyData] = useState<{ avg: number; count: number; tier: string } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/master-blender/nightly-average")
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { avg: number; count: number } | null) => {
+        if (!d) return;
+        const tier = d.avg >= 90 ? "Master Blender" : d.avg >= 70 ? "Senior Blend" : d.avg >= 50 ? "Journeyman" : "Novice Aficionado";
+        setNightlyData({ ...d, tier });
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sessionCount  = guestProfile?.sessionCount ?? 0;
   const flavorHistory = guestProfile?.flavorHistory ?? [];
@@ -2209,6 +2812,136 @@ function AlchemyReveal({
               </p>
             </motion.div>
 
+            {/* Nightly Lounge Leaderboard */}
+            {nightlyData && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                style={{
+                  background: "rgba(0,0,0,0.72)",
+                  border: `1px solid ${GOLD}30`,
+                  borderRadius: 10,
+                  padding: "18px 22px",
+                  marginBottom: 18,
+                  backdropFilter: "blur(18px)",
+                }}
+              >
+                <p style={{ color: `${GOLD}80`, fontSize: 12, letterSpacing: "0.30em", textTransform: "uppercase", marginBottom: 12 }}>
+                  Nightly Lounge Leaderboard
+                </p>
+                <div style={{ display: "flex", gap: 20, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 14 }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ color: GOLD, fontSize: 38, fontWeight: 700, lineHeight: 1, fontFamily: "'Cormorant Garamond',serif" }}>
+                      {finalScore}
+                    </div>
+                    <div style={{ color: "rgba(240,232,212,0.55)", fontSize: 12, letterSpacing: "0.14em", marginTop: 4 }}>YOUR XP</div>
+                  </div>
+                  <div style={{ width: 1, height: 48, background: `${GOLD}25`, flexShrink: 0 }} />
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ color: "rgba(240,232,212,0.70)", fontSize: 32, fontWeight: 400, lineHeight: 1, fontFamily: "'Cormorant Garamond',serif" }}>
+                      {nightlyData.avg.toFixed(0)}
+                    </div>
+                    <div style={{ color: "rgba(240,232,212,0.40)", fontSize: 12, letterSpacing: "0.14em", marginTop: 4 }}>
+                      LOUNGE AVG ({nightlyData.count} sessions)
+                    </div>
+                  </div>
+                  <div style={{ marginLeft: "auto", textAlign: "center" }}>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.9, type: "spring", stiffness: 220 }}
+                      style={{
+                        background: finalScore >= nightlyData.avg
+                          ? "linear-gradient(135deg,rgba(212,175,55,0.22),rgba(212,175,55,0.06))"
+                          : "rgba(255,255,255,0.04)",
+                        border: `1px solid ${finalScore >= nightlyData.avg ? GOLD : "rgba(255,255,255,0.14)"}`,
+                        borderRadius: 8, padding: "10px 16px",
+                      }}
+                    >
+                      <div style={{ color: finalScore >= nightlyData.avg ? GOLD : "rgba(240,232,212,0.55)", fontSize: 13, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                        {finalScore >= nightlyData.avg ? "★ Above Average" : "Below Average"}
+                      </div>
+                    </motion.div>
+                    <div style={{ color: `${GOLD}90`, fontSize: 11, letterSpacing: "0.16em", marginTop: 8, textTransform: "uppercase" }}>
+                      {nightlyData.tier}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min((finalScore / Math.max(nightlyData.avg * 1.4, 1)) * 100, 100)}%` }}
+                    transition={{ delay: 0.8, duration: 1.2, ease: "easeOut" }}
+                    style={{ height: "100%", background: `linear-gradient(90deg,${GOLD},#f97316)`, borderRadius: 2 }}
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {/* Nightly Lounge Leaderboard */}
+            {nightlyData && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                style={{
+                  background: "rgba(0,0,0,0.70)",
+                  border: `1px solid ${GOLD}28`,
+                  borderRadius: 10,
+                  padding: "18px 22px",
+                  marginBottom: 20,
+                  backdropFilter: "blur(18px)",
+                }}
+              >
+                <p style={{ color: `${GOLD}75`, fontSize: 11, letterSpacing: "0.30em", textTransform: "uppercase", marginBottom: 12 }}>
+                  Nightly Lounge Leaderboard
+                </p>
+                <div style={{ display: "flex", gap: 20, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 14 }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ color: GOLD, fontSize: 38, fontWeight: 700, lineHeight: 1, fontFamily: "'Cormorant Garamond',serif" }}>{finalScore}</div>
+                    <div style={{ color: "rgba(240,232,212,0.45)", fontSize: 11, letterSpacing: "0.14em", marginTop: 4 }}>YOUR XP</div>
+                  </div>
+                  <div style={{ width: 1, height: 44, background: `${GOLD}20`, flexShrink: 0 }} />
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ color: "rgba(240,232,212,0.65)", fontSize: 30, fontWeight: 400, lineHeight: 1, fontFamily: "'Cormorant Garamond',serif" }}>
+                      {nightlyData.avg.toFixed(0)}
+                    </div>
+                    <div style={{ color: "rgba(240,232,212,0.35)", fontSize: 11, letterSpacing: "0.14em", marginTop: 4 }}>
+                      LOUNGE AVG ({nightlyData.count} sessions tonight)
+                    </div>
+                  </div>
+                  <div style={{ marginLeft: "auto" }}>
+                    <motion.div
+                      initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.9, type: "spring", stiffness: 220 }}
+                      style={{
+                        background: finalScore >= nightlyData.avg
+                          ? "linear-gradient(135deg,rgba(212,175,55,0.20),rgba(212,175,55,0.05))"
+                          : "rgba(255,255,255,0.04)",
+                        border: `1px solid ${finalScore >= nightlyData.avg ? GOLD : "rgba(255,255,255,0.12)"}`,
+                        borderRadius: 8, padding: "10px 16px", textAlign: "center",
+                      }}
+                    >
+                      <div style={{ color: finalScore >= nightlyData.avg ? GOLD : "rgba(240,232,212,0.50)", fontSize: 13, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                        {finalScore >= nightlyData.avg ? "★ Above Average" : "Below Average"}
+                      </div>
+                      <div style={{ color: `${GOLD}80`, fontSize: 11, letterSpacing: "0.16em", marginTop: 6, textTransform: "uppercase" }}>
+                        {nightlyData.tier}
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+                <div style={{ height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min((finalScore / Math.max(nightlyData.avg * 1.5, 1)) * 100, 100)}%` }}
+                    transition={{ delay: 0.8, duration: 1.2, ease: "easeOut" }}
+                    style={{ height: "100%", background: `linear-gradient(90deg,${GOLD},#f97316)`, borderRadius: 2 }}
+                  />
+                </div>
+              </motion.div>
+            )}
+
             {/* Blend Again */}
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -2358,7 +3091,7 @@ export default function MasterBlender() {
 
   // M1: Cultivation milestone — awards bonus based on mentor/soil affinity match
   function handleCultivationNext() {
-    setGateway("blending");
+    setGateway("harvest");
   }
 
   async function handleRevealMatch(e: React.MouseEvent) {
@@ -2479,6 +3212,62 @@ export default function MasterBlender() {
                   onXP={spawnXP}
                   onNext={handleCultivationNext}
                   onBack={() => setGateway("seed_biology")}
+                />
+              )}
+            {gateway === "harvest" && (
+                <GatewayHarvest
+                  key="harvest"
+                  onNext={() => setGateway("curing")}
+                  onBack={() => setGateway("cultivation")}
+                />
+              )}
+              {gateway === "curing" && (
+                <GatewayCuring
+                  key="curing"
+                  onNext={() => setGateway("rolling_bench")}
+                  onBack={() => setGateway("harvest")}
+                />
+              )}
+              {gateway === "rolling_bench" && (
+                <GatewayRollingBench
+                  key="rolling_bench"
+                  onNext={() => setGateway("vitola_science")}
+                  onBack={() => setGateway("curing")}
+                />
+              )}
+              {gateway === "vitola_science" && (
+                <GatewayVitolaScience
+                  key="vitola_science"
+                  onNext={() => setGateway("blending")}
+                  onBack={() => setGateway("rolling_bench")}
+                />
+              )}
+            {gateway === "harvest" && (
+                <GatewayHarvest
+                  key="harvest"
+                  onNext={() => setGateway("curing")}
+                  onBack={() => setGateway("cultivation")}
+                />
+              )}
+              {gateway === "curing" && (
+                <GatewayCuring
+                  key="curing"
+                  onNext={() => setGateway("rolling_bench")}
+                  onBack={() => setGateway("harvest")}
+                />
+              )}
+              {gateway === "rolling_bench" && (
+                <GatewayRollingBench
+                  key="rolling_bench"
+                  onNext={() => setGateway("vitola_science")}
+                  onBack={() => setGateway("curing")}
+                />
+              )}
+              {gateway === "vitola_science" && (
+                <GatewayVitolaScience
+                  key="vitola_science"
+                  onNext={() => setGateway("blending")}
+                  onBack={() => setGateway("rolling_bench")}
                 />
               )}
             </AnimatePresence>
