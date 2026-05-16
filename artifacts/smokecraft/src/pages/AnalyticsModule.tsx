@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAxiomStore } from "@/store/axiomStore";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight, Plus, Minus, Zap } from "lucide-react";
+import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight, Plus, Minus, Zap, Activity } from "lucide-react";
 import LiveKpi from "@/components/LiveKpi";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
@@ -44,6 +44,167 @@ function SvgGauge({ pct, color, label, sub }: { pct: number; color: string; labe
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(26,26,27,0.82)", letterSpacing: "0.04em" }}>{label}</div>
         <div style={{ fontSize: 10, color: "rgba(107,94,78,0.65)", marginTop: 2 }}>{sub}</div>
+      </div>
+    </motion.div>
+  );
+}
+
+type CraftActivityEntry = {
+  craftType: string;
+  swipe_start: number;
+  swipe_add: number;
+  swipe_skip: number;
+  build_complete: number;
+  add_to_order: number;
+};
+
+const CRAFT_META: Record<string, { label: string; color: string; emoji: string }> = {
+  smoke: { label: "SmokeCraft",  color: "#D48B00", emoji: "🚬" },
+  pour:  { label: "PourCraft",   color: "#c87820", emoji: "🥃" },
+  brew:  { label: "BrewCraft",   color: "#e6a817", emoji: "🍺" },
+  vape:  { label: "VapeCraft",   color: "#a855f7", emoji: "💨" },
+};
+
+const EVENT_LABELS: Record<keyof Omit<CraftActivityEntry, "craftType">, string> = {
+  swipe_start:    "Swipe Starts",
+  swipe_add:      "Adds",
+  swipe_skip:     "Skips",
+  build_complete: "Builds",
+  add_to_order:   "Orders",
+};
+
+const POLL_INTERVAL_MS = 60_000;
+
+function MostActiveCraftBadge() {
+  const [data, setData] = useState<CraftActivityEntry[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load(isBackground = false) {
+      try {
+        const res = await fetch("/api/kernel/telemetry/craft-activity?window=24h");
+        if (!res.ok) throw new Error("non-ok");
+        const json = await res.json() as { crafts: CraftActivityEntry[] };
+        if (!cancelled) setData(json.crafts);
+      } catch {
+        if (!cancelled && !isBackground) setData([]);
+      } finally {
+        if (!cancelled && !isBackground) setLoading(false);
+      }
+    }
+
+    void load(false);
+    const id = setInterval(() => { void load(true); }, POLL_INTERVAL_MS);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+
+  const top = useMemo(() => {
+    if (!data || data.length === 0) return null;
+    let best: CraftActivityEntry | null = null;
+    let bestTotal = 0;
+    for (const c of data) {
+      const total = c.swipe_start + c.swipe_add + c.swipe_skip + c.build_complete + c.add_to_order;
+      if (total > bestTotal) { bestTotal = total; best = c; }
+    }
+    if (!best || bestTotal === 0) return null;
+
+    // Determine the single primary event type (highest individual count)
+    type EventKey = keyof Omit<CraftActivityEntry, "craftType">;
+    const keys: EventKey[] = ["swipe_start", "swipe_add", "swipe_skip", "build_complete", "add_to_order"];
+    let primaryKey: EventKey = "swipe_start";
+    let primaryCount = 0;
+    for (const k of keys) {
+      if (best[k] > primaryCount) { primaryCount = best[k]; primaryKey = k; }
+    }
+
+    return { ...best, total: bestTotal, primaryKey, primaryCount };
+  }, [data]);
+
+  const meta = top ? (CRAFT_META[top.craftType] ?? { label: top.craftType, color: "#D48B00", emoji: "✦" }) : null;
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        style={{
+          marginBottom: 16, padding: "14px 18px", borderRadius: 14,
+          background: "rgba(26,26,27,0.04)", border: "1px solid rgba(212,139,0,0.08)",
+          display: "flex", alignItems: "center", gap: 10,
+        }}
+      >
+        <Activity size={15} color="rgba(107,94,78,0.4)" />
+        <span style={{ fontSize: 13, color: "rgba(107,94,78,0.5)" }}>Loading craft activity…</span>
+      </motion.div>
+    );
+  }
+
+  if (!top || !meta) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+        style={{
+          marginBottom: 16, padding: "14px 18px", borderRadius: 14,
+          background: "rgba(26,26,27,0.04)", border: "1px solid rgba(212,139,0,0.08)",
+          display: "flex", alignItems: "center", gap: 10,
+        }}
+      >
+        <Activity size={15} color="rgba(107,94,78,0.4)" />
+        <span style={{ fontSize: 13, color: "rgba(107,94,78,0.55)" }}>No craft activity in the last 24h</span>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}
+      style={{
+        marginBottom: 16, padding: "14px 20px", borderRadius: 14,
+        background: `linear-gradient(90deg, ${meta.color}12, ${meta.color}06)`,
+        border: `1px solid ${meta.color}30`,
+        display: "flex", alignItems: "center", gap: 14,
+        boxShadow: `0 2px 12px ${meta.color}10`,
+      }}
+    >
+      <motion.div
+        animate={{ scale: [1, 1.08, 1] }} transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+          background: `${meta.color}18`, border: `1px solid ${meta.color}40`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 20,
+        }}
+      >
+        {meta.emoji}
+      </motion.div>
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(107,94,78,0.6)" }}>
+          Most Active Craft (24h)
+        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 2, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 17, fontWeight: 700, color: meta.color }}>{meta.label}</span>
+          <span style={{
+            fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20,
+            background: `${meta.color}18`, color: meta.color, border: `1px solid ${meta.color}30`,
+          }}>
+            {top.primaryCount.toLocaleString()} {EVENT_LABELS[top.primaryKey]}
+          </span>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
+        {[
+          { label: "Starts",  value: top.swipe_start },
+          { label: "Adds",    value: top.swipe_add },
+          { label: "Orders",  value: top.add_to_order },
+        ].map(({ label, value }) => (
+          <div key={label} style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: meta.color, fontVariantNumeric: "tabular-nums" }}>{value}</div>
+            <div style={{ fontSize: 10, color: "rgba(107,94,78,0.55)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
+          </div>
+        ))}
       </div>
     </motion.div>
   );
@@ -261,6 +422,9 @@ export default function AnalyticsModule() {
                 </motion.div>
               ))}
             </div>
+
+            {/* ── Most Active Craft (24h) ── */}
+            <MostActiveCraftBadge />
 
             {/* ── Revenue Story strip ── */}
             {revenueStory.length > 0 && (
