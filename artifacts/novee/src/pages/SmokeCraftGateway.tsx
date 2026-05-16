@@ -181,9 +181,15 @@ function useVoiceAssistance(_onCommand: (cmd: VoiceCommand) => void): void {
   }, []);
 }
 
-// ── HTML5 Canvas Particle System ──────────────────────────────────────────────
+// ── HTML5 Canvas Particle System + Vortex Dissolve ────────────────────────────
 // Replaces CSS smoke-blob + ember-rise divs with a real-time Canvas renderer.
 // Two particle types: slow-drifting ambient smoke wisps + rising amber embers.
+// Exposes window.accelerateSmokeVortex(x, y) for cinematic POS handoff dissolve.
+declare global {
+  interface Window {
+    accelerateSmokeVortex?: (x: number, y: number) => void;
+  }
+}
 interface CanvasParticle {
   x: number; y: number; vx: number; vy: number;
   size: number; life: number; maxLife: number;
@@ -198,6 +204,11 @@ function SmokeCanvas() {
     if (!ctx) return;
     let raf = 0;
     const particles: CanvasParticle[] = [];
+    // ── Vortex state ────────────────────────────────────────────────────────
+    let vortex: { x: number; y: number; frames: number } | null = null;
+    window.accelerateSmokeVortex = (x: number, y: number) => {
+      vortex = { x, y, frames: 0 };
+    };
     const resize = () => {
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -227,12 +238,33 @@ function SmokeCanvas() {
         maxLife: 85 + Math.floor(Math.random() * 65),
         type: "ember",
       });
-    }
+    };
     let frame = 0;
     const tick = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
       if (frame % 55 === 0) spawn();
+      // ── Vortex force ──────────────────────────────────────────────────────
+      if (vortex) {
+        vortex.frames++;
+        // Intensity: ramps up over 30 frames, then decays over 50 frames
+        const intensity = vortex.frames < 30
+          ? vortex.frames / 30
+          : Math.max(0, 1 - (vortex.frames - 30) / 50);
+        for (const p of particles) {
+          const dx = vortex.x - p.x;
+          const dy = vortex.y - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const pull = (intensity * 1.8) / Math.max(dist * 0.008, 1);
+          p.vx += (dx / dist) * pull;
+          p.vy += (dy / dist) * pull;
+          // Compress lifetime so particles dissolve as they spiral in
+          const remaining = Math.floor(35 * (1 - intensity * 0.6));
+          p.maxLife = Math.min(p.maxLife, p.life + remaining);
+        }
+        if (vortex.frames > 80) vortex = null;
+      }
+      // ── Draw particles ────────────────────────────────────────────────────
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.life++; p.x += p.vx; p.y += p.vy;
@@ -259,10 +291,14 @@ function SmokeCanvas() {
         if (p.life >= p.maxLife) particles.splice(i, 1);
       }
       raf = requestAnimationFrame(tick);
-    }
+    };
     for (let i = 0; i < 3; i++) spawn();
     tick();
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+      window.accelerateSmokeVortex = undefined;
+    };
   }, []);
   return (
     <canvas

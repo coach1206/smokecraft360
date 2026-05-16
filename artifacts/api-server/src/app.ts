@@ -101,6 +101,7 @@ import vendorAdminRouter        from "./routes/vendorAdmin";
 import vendorPlacementsRouter   from "./routes/vendorPlacements";
 import vendorPortalRouter       from "./routes/vendorPortal";
 import noveePulseRouter         from "./routes/noveePulse";
+import noveeTransactionsRouter  from "./routes/noveeTransactions";
 import { paymentsRouter }       from "./routes/payments";
 import subscriptionsRouter      from "./routes/subscriptions";
 import osEventsRouter           from "./routes/osEvents";
@@ -447,6 +448,7 @@ app.use("/api/admin/vendor",                vendorAdminRouter);
 app.use("/api/vendor/placements",           vendorPlacementsRouter);
 app.use("/api/vendor",                      vendorPortalRouter);
 app.use("/api/novee/pulse",                 noveePulseRouter);
+app.use("/api/novee/transaction",           noveeTransactionsRouter);
 app.use("/api/payments",    requirePaymentsEnabled, paymentsRouter);     // Elements-based PaymentIntent flow
 // Subscriptions: license/status, create-checkout, portal, admin override
 // (router internally exposes /status, /create-checkout, /portal, /admin/:venueId/override)
