@@ -189,7 +189,10 @@ export default function SwipeIntelligence() {
   const [orchData,       setOrchData]       = useState<OrchestratorAnalytics | null>(null);
   const [orchLoading,    setOrchLoading]    = useState(false);
   const [craftActivity,  setCraftActivity]  = useState<CraftActivity[] | null>(null);
+  const [craftLoadError, setCraftLoadError] = useState(false);
   const [craftLoading,   setCraftLoading]   = useState(false);
+  const [craftWindow,    setCraftWindow]    = useState<"24h" | "7d" | "30d">("30d");
+  const craftAbortRef = useRef<AbortController | null>(null);
   const [loading,        setLoading]        = useState(true);
   const [error,          setError]          = useState<string | null>(null);
   const [tab,            setTab]            = useState<"overview" | "tags" | "revenue" | "craft" | "orchestration">("overview");
@@ -224,20 +227,41 @@ export default function SwipeIntelligence() {
     : 0;
 
   // Lazy-load craft activity when Craft Compare tab is activated.
-  // craftActivity===null means "not yet fetched"; ===[] means "fetch failed".
-  const loadCraftActivity = () => {
+  // Cancels any in-flight request before starting a new one to prevent
+  // out-of-order state updates when the user switches windows rapidly.
+  const loadCraftActivity = (win: "24h" | "7d" | "30d" = craftWindow) => {
+    craftAbortRef.current?.abort();
+    const ctrl = new AbortController();
+    craftAbortRef.current = ctrl;
     setCraftLoading(true);
     setCraftActivity(null);
-    apiGet("/api/kernel/telemetry/craft-activity")
-      .then(d => setCraftActivity((d as { crafts: CraftActivity[] }).crafts))
-      .catch(() => setCraftActivity([]))
-      .finally(() => setCraftLoading(false));
+    setCraftLoadError(false);
+    const token = localStorage.getItem("auth_token");
+    const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, "");
+    fetch(`${BASE_PATH}/api/kernel/telemetry/craft-activity?window=${win}`, {
+      signal: ctrl.signal,
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+      .then(d => {
+        setCraftActivity((d as { crafts: CraftActivity[] }).crafts);
+        setCraftLoadError(false);
+      })
+      .catch(e => {
+        if ((e as Error).name === "AbortError") return;
+        setCraftActivity([]);
+        setCraftLoadError(true);
+      })
+      .finally(() => {
+        if (!ctrl.signal.aborted) setCraftLoading(false);
+      });
   };
 
   useEffect(() => {
-    if (tab !== "craft" || craftActivity !== null || craftLoading) return;
-    loadCraftActivity();
-  }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (tab !== "craft") return;
+    loadCraftActivity(craftWindow);
+    return () => { craftAbortRef.current?.abort(); };
+  }, [tab, craftWindow]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Lazy-load orchestration analytics when tab is activated
   useEffect(() => {
@@ -709,7 +733,40 @@ export default function SwipeIntelligence() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                {/* Session volume overview (from existing analytics data) */}
+                {/* Time window selector */}
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+                  <div style={{
+                    display: "inline-flex",
+                    background: "rgba(26,26,27,0.06)",
+                    border: `1px solid ${C.border}`,
+                    borderRadius: 10,
+                    padding: 3,
+                    gap: 2,
+                  }}>
+                    {(["24h", "7d", "30d"] as const).map(win => (
+                      <button
+                        key={win}
+                        onClick={() => setCraftWindow(win)}
+                        style={{
+                          padding: "6px 16px",
+                          borderRadius: 7,
+                          fontSize: 13,
+                          fontWeight: craftWindow === win ? 700 : 500,
+                          background: craftWindow === win ? C.gold : "transparent",
+                          color: craftWindow === win ? "#fff" : C.muted,
+                          border: "none",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          letterSpacing: "0.03em",
+                        }}
+                      >
+                        {win}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Session volume overview — driven by craftActivity for window accuracy */}
                 <div style={{
                   background: C.card, border: `1px solid ${C.border}`,
                   borderRadius: 16, padding: "24px", marginBottom: 16,
@@ -719,27 +776,33 @@ export default function SwipeIntelligence() {
                     <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
                       Sessions by Craft Type
                     </span>
+                    <span style={{ marginLeft: "auto", fontSize: 11, color: C.dim }}>
+                      Last {craftWindow}
+                    </span>
                   </div>
 
-                  {data?.sessionsByType.length ? (
-                    data.sessionsByType.map(row => (
+                  {craftLoading ? (
+                    <p style={{ color: C.muted, fontSize: 13 }}>Loading…</p>
+                  ) : craftActivity && craftActivity.length > 0 ? (() => {
+                    const maxSessions = Math.max(...craftActivity.map(c => Number(c.swipe_start)), 1);
+                    return craftActivity.map(c => (
                       <HBar
-                        key={row.experienceType}
-                        label={CRAFT_LABELS[row.experienceType] ?? row.experienceType}
-                        value={Number(row.count)}
-                        max={maxTypeCount}
-                        color={CRAFT_COLORS[row.experienceType] ?? C.accent}
+                        key={c.craftType}
+                        label={CRAFT_LABELS[c.craftType] ?? c.craftType}
+                        value={Number(c.swipe_start)}
+                        max={maxSessions}
+                        color={CRAFT_COLORS[c.craftType] ?? C.accent}
                       />
-                    ))
-                  ) : (
-                    <p style={{ color: C.muted, fontSize: 13 }}>No session data yet</p>
+                    ));
+                  })() : (
+                    <p style={{ color: C.muted, fontSize: 13 }}>No session data for this window</p>
                   )}
                 </div>
 
                 {/* Per-craft swipe event breakdown */}
                 {craftLoading ? (
                   <AxLoadingState rows={1} columns={4} rowHeight={180} message="Loading craft activity…" />
-                ) : craftActivity !== null && craftActivity.length === 0 && !craftLoading ? (
+                ) : craftLoadError ? (
                   <div style={{
                     background: C.card, border: `1px solid ${C.border}`,
                     borderRadius: 14, padding: "32px 24px",
@@ -751,7 +814,7 @@ export default function SwipeIntelligence() {
                       Could not load craft activity data.
                     </p>
                     <button
-                      onClick={loadCraftActivity}
+                      onClick={() => loadCraftActivity()}
                       style={{
                         padding: "8px 18px", borderRadius: 8,
                         background: `${C.gold}18`, border: `1px solid ${C.gold}40`,
@@ -760,6 +823,18 @@ export default function SwipeIntelligence() {
                     >
                       Retry
                     </button>
+                  </div>
+                ) : craftActivity !== null && craftActivity.length === 0 ? (
+                  <div style={{
+                    background: C.card, border: `1px solid ${C.border}`,
+                    borderRadius: 14, padding: "32px 24px",
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", gap: 12, textAlign: "center",
+                  }}>
+                    <BarChart2 size={28} color={C.dim} />
+                    <p style={{ color: C.muted, fontSize: 13, margin: 0 }}>
+                      No craft activity in the last {craftWindow}.
+                    </p>
                   </div>
                 ) : (
                   <>
