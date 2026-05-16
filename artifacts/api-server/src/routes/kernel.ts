@@ -16,6 +16,7 @@ import { db }                        from "@workspace/db";
 import {
   kernelModulesTable,
   kernelModeConfigTable,
+  kernelModeAuditLogTable,
   telemetryEventsTable,
   kernelModuleAuditLogTable,
   kernelModuleSlugHistoryTable,
@@ -526,31 +527,116 @@ router.patch("/mode/:venueId", requireAuth, async (req: AuthRequest, res: Respon
     return res.status(400).json({ error: parsed.error.format() });
   }
 
+  const authUser = (req as AuthRequest).user;
+
   try {
-    const [cfg] = await db
-      .insert(kernelModeConfigTable)
-      .values({
-        venueId,
-        mode: parsed.data.mode,
-        updatedBy: (req as AuthRequest).user?.id,
-      })
-      .onConflictDoUpdate({
-        target: kernelModeConfigTable.venueId,
-        set: {
+    const cfg = await db.transaction(async (tx) => {
+      // Read current mode so we can record old→new in the audit log
+      const [existing] = await tx
+        .select({ mode: kernelModeConfigTable.mode })
+        .from(kernelModeConfigTable)
+        .where(eq(kernelModeConfigTable.venueId, venueId))
+        .limit(1);
+
+      const [updated] = await tx
+        .insert(kernelModeConfigTable)
+        .values({
+          venueId,
           mode: parsed.data.mode,
-          updatedAt: new Date(),
-          updatedBy: (req as AuthRequest).user?.id,
-        },
-      })
-      .returning();
+          updatedBy: authUser?.id,
+        })
+        .onConflictDoUpdate({
+          target: kernelModeConfigTable.venueId,
+          set: {
+            mode: parsed.data.mode,
+            updatedAt: new Date(),
+            updatedBy: authUser?.id,
+          },
+        })
+        .returning();
+
+      // Only write an audit entry when the mode actually changes
+      const oldMode = existing?.mode ?? null;
+      if (oldMode !== parsed.data.mode) {
+        await tx.insert(kernelModeAuditLogTable).values({
+          venueId,
+          oldMode:       oldMode ?? undefined,
+          newMode:       parsed.data.mode,
+          changedBy:     authUser?.id,
+          changedByName: authUser?.name ?? authUser?.email ?? undefined,
+        });
+      }
+
+      return updated;
+    });
+
     return res.json({
       venueId,
       mode:          cfg.mode,
       updatedAt:     cfg.updatedAt,
-      updatedByName: (req as AuthRequest).user?.name ?? undefined,
+      updatedByName: authUser?.name ?? undefined,
     });
   } catch {
     return res.status(500).json({ error: "Failed to update mode config" });
+  }
+});
+
+// ── GET /api/kernel/mode/:venueId/history ────────────────────────────────────
+// Returns mode change audit log for a venue (admin/super_admin/venue_owner only).
+// Optional query params:
+//   ?limit=<1–50>  — page size (default 20, max 50)
+//   ?offset=<0…>   — row offset for pagination (default 0)
+
+router.get("/mode/:venueId/history", requireAuth, async (req: AuthRequest, res: Response) => {
+  const { role, venueId: userVenueId } = (req as AuthRequest).user ?? {};
+  if (role !== "super_admin" && role !== "admin" && role !== "venue_owner") {
+    return res.status(403).json({ error: "admin, super_admin, or venue_owner only" });
+  }
+
+  const { venueId } = req.params as { venueId: string };
+  if (!UUID_RE.test(venueId)) return res.status(400).json({ error: "venueId must be a valid UUID" });
+
+  if (role === "venue_owner" && userVenueId !== venueId) {
+    return res.status(403).json({ error: "venue_owner may only view their own venue history" });
+  }
+
+  const q = req.query as Record<string, string | undefined>;
+
+  let limitN = 20;
+  if (q.limit !== undefined) {
+    const parsed = parseInt(q.limit, 10);
+    if (isNaN(parsed) || parsed < 1 || parsed > 50) {
+      return res.status(400).json({ error: "limit must be an integer between 1 and 50" });
+    }
+    limitN = parsed;
+  }
+
+  let offsetN = 0;
+  if (q.offset !== undefined) {
+    const parsed = parseInt(q.offset, 10);
+    if (isNaN(parsed) || parsed < 0) {
+      return res.status(400).json({ error: "offset must be a non-negative integer" });
+    }
+    offsetN = parsed;
+  }
+
+  try {
+    const [{ total }] = await db
+      .select({ total: count() })
+      .from(kernelModeAuditLogTable)
+      .where(eq(kernelModeAuditLogTable.venueId, venueId));
+
+    const entries = await db
+      .select()
+      .from(kernelModeAuditLogTable)
+      .where(eq(kernelModeAuditLogTable.venueId, venueId))
+      .orderBy(desc(kernelModeAuditLogTable.changedAt))
+      .limit(limitN)
+      .offset(offsetN);
+
+    return res.json({ history: entries, total });
+  } catch {
+    return res.status(500).json({ error: "Failed to load mode change history" });
   }
 });
 

@@ -162,3 +162,4 @@ export * from "./environmentalStates";
 export * from "./engagementScores";
 export * from "./distributedCluster";
 export * from "./kernelModuleSlugHistory";
+export * from "./kernelModeAuditLog";

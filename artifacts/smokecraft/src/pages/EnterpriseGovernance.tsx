@@ -9,6 +9,7 @@ import {
 import { getAuthHeaders } from "@/services/auth";
 import { useKernelMode, type KernelMode } from "@/contexts/KernelModeContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useVenue } from "@/contexts/VenueContext";
 
 const BASE = "/api";
 
@@ -58,6 +59,16 @@ interface AuditEntry {
   beforeState: Record<string, unknown> | null;
   afterState: Record<string, unknown> | null;
   venueId: string | null; ipAddress: string | null; createdAt: string;
+}
+
+interface ModeHistoryEntry {
+  id: string;
+  venueId: string;
+  oldMode: "sovereign" | "essential" | null;
+  newMode: "sovereign" | "essential";
+  changedBy: string | null;
+  changedByName: string | null;
+  changedAt: string;
 }
 
 const RISK_COLOR = { low: C.green, medium: C.amber, high: C.red };
@@ -119,6 +130,8 @@ export default function EnterpriseGovernance() {
 
   const kernel = useKernelMode();
   const { user: authUser, token: authToken } = useAuth();
+  const venue = useVenue();
+  const venueId = venue.id !== "default" ? venue.id : null;
   const isKernelAdmin = authUser?.role === "super_admin" || authUser?.role === "venue_owner";
   const [modeError, setModeError] = useState("");
   const [modeSuccess, setModeSuccess] = useState(false);
@@ -126,6 +139,11 @@ export default function EnterpriseGovernance() {
   const [modeConfirmOpen, setModeConfirmOpen] = useState(false);
   const [modeRefreshing, setModeRefreshing] = useState(false);
   const [modeRefreshSuccess, setModeRefreshSuccess] = useState(false);
+
+  const [modeHistory, setModeHistory] = useState<ModeHistoryEntry[]>([]);
+  const [modeHistoryLoading, setModeHistoryLoading] = useState(false);
+  const [modeHistoryTotal, setModeHistoryTotal] = useState(0);
+  const [modeHistoryError, setModeHistoryError] = useState<string | null>(null);
 
   async function handleModeRefresh() {
     setModeRefreshing(true);
@@ -143,6 +161,27 @@ export default function EnterpriseGovernance() {
     }
   }
 
+  const loadModeHistory = useCallback(async () => {
+    if (!venueId) return;
+    setModeHistoryLoading(true);
+    setModeHistoryError(null);
+    try {
+      const r = await fetch(`${BASE}/kernel/mode/${venueId}/history?limit=20`, { headers });
+      if (r.ok) {
+        const d = await r.json() as { history: ModeHistoryEntry[]; total: number };
+        setModeHistory(d.history);
+        setModeHistoryTotal(d.total);
+      } else {
+        const err = await r.json().catch(() => ({})) as { error?: string };
+        setModeHistoryError(err.error ?? `Failed to load history (HTTP ${r.status})`);
+      }
+    } catch {
+      setModeHistoryError("Network error — could not load change history");
+    } finally {
+      setModeHistoryLoading(false);
+    }
+  }, [venueId]);
+
   async function applyMode(newMode: KernelMode) {
     if (!authToken) {
       setModeError("Not authenticated — please log in first");
@@ -154,6 +193,7 @@ export default function EnterpriseGovernance() {
       await kernel.setMode(newMode, authToken);
       setModeSuccess(true);
       setTimeout(() => setModeSuccess(false), 2500);
+      void loadModeHistory();
     } catch (err) {
       setModeError(err instanceof Error ? err.message : "Failed to update mode");
       setTimeout(() => setModeError(""), 5000);
@@ -216,6 +256,7 @@ export default function EnterpriseGovernance() {
     if (tab === "role-matrix" && users.length === 0) loadRoleMatrix();
     if (tab === "automation-queue" && queue.length === 0) loadQueue();
     if (tab === "audit-stream" && audit.length === 0) loadAudit();
+    if (tab === "sovereign-mode") void loadModeHistory();
   }, [tab]);
 
   async function toggleSwitch(sw: KillSwitch) {
@@ -560,6 +601,155 @@ export default function EnterpriseGovernance() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* ── Change History ── */}
+              <div style={{ marginTop: 28 }}>
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  marginBottom: 14,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Activity size={13} color={C.gold} />
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: C.muted }}>
+                      Change History
+                    </span>
+                    {modeHistoryTotal > 0 && (
+                      <span style={{
+                        fontSize: 9, fontWeight: 700, padding: "1px 7px", borderRadius: 999,
+                        background: `${C.gold}14`, border: `1px solid ${C.gold}30`, color: C.gold,
+                      }}>{modeHistoryTotal}</span>
+                    )}
+                  </div>
+                  <motion.button
+                    whileTap={{ scale: 0.93 }}
+                    onClick={() => void loadModeHistory()}
+                    disabled={modeHistoryLoading}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 5,
+                      padding: "5px 12px", borderRadius: 8, cursor: modeHistoryLoading ? "default" : "pointer",
+                      background: C.panel, border: `1px solid ${C.border}`,
+                      color: C.muted, fontSize: 11, fontWeight: 500,
+                      opacity: modeHistoryLoading ? 0.55 : 1,
+                    }}
+                  >
+                    <motion.div
+                      animate={modeHistoryLoading ? { rotate: 360 } : { rotate: 0 }}
+                      transition={modeHistoryLoading ? { repeat: Infinity, duration: 0.8, ease: "linear" } : { duration: 0 }}
+                      style={{ display: "flex" }}
+                    >
+                      <RefreshCw size={11} />
+                    </motion.div>
+                    Refresh
+                  </motion.button>
+                </div>
+
+                {modeHistoryError && (
+                  <div style={{
+                    marginBottom: 12, padding: "10px 14px", borderRadius: 10,
+                    background: `${C.red}10`, border: `1px solid ${C.red}25`,
+                    fontSize: 12, color: C.red, display: "flex", alignItems: "center", gap: 8,
+                  }}>
+                    <XCircle size={13} />
+                    {modeHistoryError}
+                  </div>
+                )}
+
+                {modeHistoryLoading && modeHistory.length === 0 ? (
+                  <div style={{
+                    padding: "28px 0", textAlign: "center",
+                    color: C.muted, fontSize: 12,
+                  }}>
+                    <RefreshCw size={16} style={{ marginBottom: 6, opacity: 0.35 }} /><br />
+                    Loading history…
+                  </div>
+                ) : !venueId ? (
+                  <div style={{
+                    padding: "24px 0", textAlign: "center",
+                    color: C.muted, fontSize: 12,
+                  }}>
+                    No venue selected.
+                  </div>
+                ) : modeHistory.length === 0 ? (
+                  <div style={{
+                    padding: "24px 18px", borderRadius: 12, textAlign: "center",
+                    background: "rgba(26,26,27,0.04)", border: `1px solid ${C.border}`,
+                    color: C.muted, fontSize: 12,
+                  }}>
+                    No mode changes recorded yet. Changes will appear here after the first tier switch.
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {modeHistory.map((entry) => {
+                      const isSovNew = entry.newMode === "sovereign";
+                      const accentNew = isSovNew ? C.gold : C.muted;
+                      const NewIcon = isSovNew ? Crown : Zap;
+                      return (
+                        <motion.div
+                          key={entry.id}
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          style={{
+                            display: "flex", alignItems: "center", justifyContent: "space-between",
+                            padding: "12px 16px", borderRadius: 12,
+                            background: "rgba(26,26,27,0.04)", border: `1px solid ${C.border}`,
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
+                            {/* Old → New arrow */}
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                              {entry.oldMode ? (
+                                <>
+                                  <span style={{
+                                    fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
+                                    background: entry.oldMode === "sovereign" ? `${C.gold}14` : "rgba(26,26,27,0.10)",
+                                    border: `1px solid ${entry.oldMode === "sovereign" ? `${C.gold}30` : "rgba(26,26,27,0.18)"}`,
+                                    color: entry.oldMode === "sovereign" ? C.gold : C.muted,
+                                    textTransform: "capitalize",
+                                  }}>{entry.oldMode}</span>
+                                  <ChevronRight size={12} color={C.dim} />
+                                </>
+                              ) : (
+                                <>
+                                  <span style={{
+                                    fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
+                                    background: "rgba(26,26,27,0.07)", border: `1px solid ${C.border}`,
+                                    color: C.dim,
+                                  }}>—</span>
+                                  <ChevronRight size={12} color={C.dim} />
+                                </>
+                              )}
+                              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                <NewIcon size={11} color={accentNew} />
+                                <span style={{
+                                  fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
+                                  background: isSovNew ? `${C.gold}14` : "rgba(26,26,27,0.10)",
+                                  border: `1px solid ${isSovNew ? `${C.gold}30` : "rgba(26,26,27,0.18)"}`,
+                                  color: accentNew, textTransform: "capitalize",
+                                }}>{entry.newMode}</span>
+                              </div>
+                            </div>
+
+                            {/* Who */}
+                            <div style={{ minWidth: 0, flex: 1 }}>
+                              <div style={{ fontSize: 12, color: C.text, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {entry.changedByName ?? "Unknown user"}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* When */}
+                          <div style={{ flexShrink: 0, textAlign: "right", marginLeft: 12 }}>
+                            <div style={{ fontSize: 11, color: C.muted }}>{timeAgo(entry.changedAt)}</div>
+                            <div style={{ fontSize: 10, color: C.dim, marginTop: 1 }}>
+                              {new Date(entry.changedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </motion.div>
           )}

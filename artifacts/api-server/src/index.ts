@@ -117,6 +117,21 @@ try {
     )
   `);
   await db.execute(drizzleSql`
+    CREATE TABLE IF NOT EXISTS kernel_mode_audit_log (
+      id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id         UUID NOT NULL,
+      old_mode         kernel_mode,
+      new_mode         kernel_mode NOT NULL,
+      changed_by       UUID,
+      changed_by_name  TEXT,
+      changed_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await db.execute(drizzleSql`
+    CREATE INDEX IF NOT EXISTS kernel_mode_audit_log_venue_idx
+      ON kernel_mode_audit_log (venue_id, changed_at DESC)
+  `);
+  await db.execute(drizzleSql`
     CREATE TABLE IF NOT EXISTS telemetry_events (
       id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       module_id   UUID,
