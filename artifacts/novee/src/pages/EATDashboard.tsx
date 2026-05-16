@@ -620,6 +620,8 @@ export default function EATDashboard() {
   const [savedPresets, setSavedPresets] = useState<SavedPreset[]>(() => loadSavedPresets());
   const [showSavePreset, setShowSavePreset] = useState(false);
   const [presetNameInput, setPresetNameInput] = useState("");
+  const [renamingPresetDays, setRenamingPresetDays] = useState<number | null>(null);
+  const [renameInput, setRenameInput] = useState("");
 
   const [compareEnabled, setCompareEnabledState] = useState<boolean>(
     () => parseCompareFromSearch(window.location.search),
@@ -996,6 +998,18 @@ export default function EATDashboard() {
     persistSavedPresets(updated);
   };
 
+  const handleRenamePreset = (presetDays: number) => {
+    const name = renameInput.trim();
+    if (!name) return;
+    const updated = savedPresets.map((p) =>
+      p.days === presetDays ? { ...p, name } : p,
+    );
+    setSavedPresets(updated);
+    persistSavedPresets(updated);
+    setRenamingPresetDays(null);
+    setRenameInput("");
+  };
+
   const handleCompareCustomSubmit = () => {
     const n = parseInt(compareCustomInput, 10);
     if (Number.isFinite(n) && n > 0) {
@@ -1075,33 +1089,98 @@ export default function EATDashboard() {
             {/* Saved named presets */}
             {savedPresets.map((preset) => (
               <div key={preset.days} style={{ display: "flex", alignItems: "center", gap: 0 }}>
-                <button
-                  onClick={() => { setDays(preset.days); setShowCustom(false); setShowSavePreset(false); }}
-                  style={{
-                    background: days === preset.days ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
-                    border: `1px solid ${days === preset.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
-                    borderRadius: "5px 0 0 5px", padding: "4px 8px",
-                    fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
-                    color: days === preset.days ? "#C4610A" : "rgba(245,237,216,0.45)",
-                    cursor: "pointer", transition: "all 0.15s", borderRight: "none",
-                  }}
-                  title={`${preset.days} days`}
-                >
-                  {preset.name}
-                </button>
-                <button
-                  onClick={() => handleDeletePreset(preset.days)}
-                  style={{
-                    background: days === preset.days ? "rgba(196,97,10,0.12)" : "rgba(255,255,255,0.03)",
-                    border: `1px solid ${days === preset.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
-                    borderRadius: "0 5px 5px 0", padding: "4px 6px",
-                    fontSize: 9, color: "rgba(245,237,216,0.3)",
-                    cursor: "pointer", transition: "all 0.15s", lineHeight: 1,
-                  }}
-                  title="Delete preset"
-                >
-                  ×
-                </button>
+                {renamingPresetDays === preset.days ? (
+                  /* ── inline rename input ── */
+                  <>
+                    <input
+                      type="text"
+                      value={renameInput}
+                      onChange={(e) => setRenameInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleRenamePreset(preset.days);
+                        if (e.key === "Escape") { setRenamingPresetDays(null); setRenameInput(""); }
+                      }}
+                      autoFocus
+                      maxLength={24}
+                      style={{
+                        width: 100, padding: "4px 8px",
+                        background: "rgba(255,255,255,0.06)",
+                        border: "1px solid rgba(196,97,10,0.35)",
+                        borderRadius: "5px 0 0 5px", color: "#F5EDD8",
+                        fontSize: 11, outline: "none", borderRight: "none",
+                      }}
+                    />
+                    <button
+                      onClick={() => handleRenamePreset(preset.days)}
+                      style={{
+                        background: "rgba(196,97,10,0.25)", border: "1px solid rgba(196,97,10,0.5)",
+                        borderRadius: 0, padding: "4px 7px",
+                        fontSize: 10, color: "#C4610A", cursor: "pointer",
+                        borderLeft: "none", borderRight: "none",
+                      }}
+                      title="Save rename"
+                    >
+                      ✓
+                    </button>
+                    <button
+                      onClick={() => { setRenamingPresetDays(null); setRenameInput(""); }}
+                      style={{
+                        background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: "0 5px 5px 0", padding: "4px 6px",
+                        fontSize: 10, color: "rgba(245,237,216,0.3)",
+                        cursor: "pointer", lineHeight: 1,
+                      }}
+                      title="Cancel rename"
+                    >
+                      ×
+                    </button>
+                  </>
+                ) : (
+                  /* ── normal view ── */
+                  <>
+                    <button
+                      onClick={() => { setDays(preset.days); setShowCustom(false); setShowSavePreset(false); }}
+                      style={{
+                        background: days === preset.days ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
+                        border: `1px solid ${days === preset.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+                        borderRadius: "5px 0 0 5px", padding: "4px 8px",
+                        fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+                        color: days === preset.days ? "#C4610A" : "rgba(245,237,216,0.45)",
+                        cursor: "pointer", transition: "all 0.15s", borderRight: "none",
+                      }}
+                      title={`${preset.days} days`}
+                    >
+                      {preset.name}
+                    </button>
+                    <button
+                      onClick={() => { setRenamingPresetDays(preset.days); setRenameInput(preset.name); }}
+                      style={{
+                        background: days === preset.days ? "rgba(196,97,10,0.12)" : "rgba(255,255,255,0.03)",
+                        border: `1px solid ${days === preset.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+                        borderRadius: 0, padding: "4px 5px",
+                        fontSize: 9, color: "rgba(245,237,216,0.3)",
+                        cursor: "pointer", transition: "all 0.15s", lineHeight: 1,
+                        borderLeft: "none", borderRight: "none",
+                      }}
+                      title="Rename preset"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      onClick={() => handleDeletePreset(preset.days)}
+                      style={{
+                        background: days === preset.days ? "rgba(196,97,10,0.12)" : "rgba(255,255,255,0.03)",
+                        border: `1px solid ${days === preset.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+                        borderRadius: "0 5px 5px 0", padding: "4px 6px",
+                        fontSize: 9, color: "rgba(245,237,216,0.3)",
+                        cursor: "pointer", transition: "all 0.15s", lineHeight: 1,
+                      }}
+                      title="Delete preset"
+                    >
+                      ×
+                    </button>
+                  </>
+                )}
               </div>
             ))}
             <button
