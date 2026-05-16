@@ -1,0 +1,52 @@
+CRITICAL MASTER EXECUTABLE PASS: The system is suffering from an abstract, corporate branding mismatch, an out-of-sync wizard flow, and a catastrophic session timeout modal layout lock. The onboarding text reads like a military/investor dashboard, and the timeout modal dead-ends the application because both the 'I'm Still Here' and 'Start New Experience' buttons are completely unclickable, trapping the user behind an invisible overlay.
+
+Refactor MasterBlender.tsx, RitualStep.tsx, and your modal timeout sub-components immediately to permanently enforce this unified, high-fidelity luxury specification:
+
+1. STRIP OUT ALL CORPORATE JARGON IMMEDIATELY:
+   - Permanently DELETE the following terms from ALL user-facing screens: 'Sovereign Ritual', 'Phase 1', 'Phase 2', 'Legacy Assets', 'Precision Ritual', 'Commission Bespoke Physical Assets', 'Sovereign Roadmap', and all technical/software-oriented phrasing.
+   - Remove all administrative 'Phase' badges, milestone step numbers, and roadmap thumbnails that make the screen look like corporate enterprise software.
+
+2. INJECT THE EXACT 5-SECOND NARRATIVE GATEWAY (STAGE 1):
+   - Replace the entire content area of the Stage 1 Cinematic Landing page with this exact copy architecture:
+     * TITLE (Large Cinematic Luxury Serif Font): 
+       The Art of the Cigar
+     * BODY TEXT (Clean Luxury Sans-Serif Font, Minimum 22px High-Contrast Scale):
+       SmokeCraft was designed to help you experience cigars differently.
+       Not just by smoking them — but by understanding them.
+       Learn how tobacco leaves are cultivated, how blends are crafted, how wrappers change flavor, and how pairings elevate the experience.
+       Then build your own personalized cigar profile guided by master mentors, flavor science, and luxury pairing recommendations.
+       Your journey into cigar culture begins here.
+     * PRIMARY ACTION BUTTON: 
+       ENTER SMOKECRAFT
+     * SECONDARY NAVIGATION BUTTON: 
+       BACK
+
+3. INSERT TOBACCO/SEED EDUCATION CHANNELS & FIX STEP SEQUENCE:
+   - Restructure the wizard flow right after Stage 3 (Mentor Selection is locked with national flags: Don Manuel 🇩🇴, Alejandro 🇳🇮, Don Salvador 🇨🇺, Doña Rosa 🇪🇨) to inject an isolated, two-screen educational checkpoint BEFORE allowing any active choices:
+     * Stage 3a (Tobacco Terroir & Craft): An elite narrative page detailing regional soil geography, leaf characteristics, and global curing traditions. Use the macro tobacco leaf backdrop asset.
+     * Stage 3b (Seed Biology & Priming): An educational layout mapping seed varietals, leaf positioning (Volado, Seco, Ligero), and flavor profile scaling.
+   - The workflow MUST step sequentially through all phases (Intro -> Profile -> Mentors -> Stage 3a -> Stage 3b -> Seed Selection -> Leaf Blending Matrix -> Pairing Chamber -> Order Customization). The user must be halted and engaged by these tactile challenges.
+
+4. REPAIR TIMEOUT MODAL INTERACTION & UNLOCK THE TRAP:
+   - Fault Isolation: Fix the dead clicks on the timeout modal immediately. Apply: 'pointer-events: auto; position: relative; z-index: 999999;' directly to the button container layer.
+   - Audit parent wrappers and full-screen backdrops to ensure no invisible absolute layout container sits above the interactive elements. Remove any blocking 'pointer-events: none;' or 'touch-action: none;' settings that intercept glass touch events.
+   - Core Logic Reset:
+     * When 'I'm Still Here' is pressed: Clear and reset all intervals, hide the modal (`setShowTimeoutModal(false)`), set `setSessionInactive(false)`, and completely reset the idle timer.
+     * When 'Start New Experience' is pressed: Clear all active session timers, hide the modal, wipe transient memory, and safely navigate back to `/smokecraft`.
+   - Add an Automatic Failsafe: If a modal interaction lock occurs on a kiosk, auto-dismiss the modal after 5 seconds of zero input and automatically restore session interaction.
+   - Debugging Assist: Temporarily add `outline: 2px solid red;` to hidden overlay divs to visually ensure zero layout blocks overlap the active target areas.
+
+5. HIGH-READABILITY TABLET OPTIMIZATION (DIM LIGHTING LOUNGES):
+   - Scale up all typography for easy readability on a tablet (iPad landscape) from a seated distance in a dim lounge environment. Body text must be sharp and set to a minimum scale of 20px–24px.
+   - All action buttons must be oversized, inviting touchscreen targets featuring a warm, rich gold/amber outer glow ambient drop.
+   - Ensure the 'BACK' navigation action uses a highly visible, premium layout wrapper: a bold gold-tinted border container (#d4af37) at full 90% opacity (`rgba(212,175,55,0.90)`) so it is completely visible against our absolute black background.
+
+6. TOUCHSCREEN SENSORY TACTILITY, AUDIO, AND TEXTURES:
+   - Web Audio API Core: Ensure our native browser audio oscillator class is fully functional across all screens:
+     * playClick(): Synthesize a crisp, mechanical button click using a bandpass-filtered noise burst centered at 3400Hz, decaying over 58ms. Fire this synchronously on every 'onTouchStart' event.
+     * playSlide(): Synthesize a low-frequency velvet slider tone using a continuous sine wave sweeping from 210Hz down to 130Hz over 220ms during range/smoke-time slider adjustments.
+   - Buttons and Cards must utilize our 100ms hardware tactility response profile: compressing downward (`scale-96`, `translate-y-[2px]`) and flashing a heavy inset box shadow (`inset 0px 4px 12px rgba(0,0,0,0.9)`) on tap to create a physical mechanical dip.
+   - Graphic Dimensions: Maintain the absolute black (#000000) base canvas field with a luxury ambient radial gold gradient overlay centered on the screen (#FFB000 at 4% opacity).
+   - Pull the HTML5 SmokeCanvas up to z-index 9996, drifting organic smoke mist and rising amber embers behind the glass text cards across all active stages. Layer our specific dark-filtered production images seamlessly into the backdrops (luxury lounge textures for onboarding, macro leaf terrain for cultivation, deep walnut wood for the reveal panels).
+
+Execute this comprehensive text, branding, routing, and overlay timeout repair pass now to transition the system into pure, responsive luxury hospitality theater. Verify all directory pathways typecheck clean via tsc --noEmit with exit 0.

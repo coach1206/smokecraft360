@@ -710,79 +710,121 @@ function GatewayIntro({ onNext }: { onNext: () => void }) {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6 pb-14 pt-16 w-full max-w-2xl mx-auto">
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
+      <div className="relative z-10 flex flex-col items-center justify-center px-6 pb-12 pt-10 w-full max-w-2xl mx-auto min-h-screen">
+        {/* Glassmorphic narrative panel */}
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 1.0 }}
+          transition={{ delay: 0.45, duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
           style={{
-            fontFamily: "'Cormorant Garamond',serif",
-            fontSize: "clamp(13px, 2vw, 15px)",
-            letterSpacing: "0.35em",
-            color: `${GOLD}90`,
-            textTransform: "uppercase",
-            marginBottom: "18px",
+            background: "linear-gradient(135deg, rgba(15,15,15,0.85) 0%, rgba(5,5,5,0.70) 100%)",
+            backdropFilter: "blur(30px)",
+            WebkitBackdropFilter: "blur(30px)",
+            border: "1px solid rgba(212,175,55,0.15)",
+            borderRadius: 14,
+            padding: "44px 40px 40px",
+            width: "100%",
+            textAlign: "left" as const,
+            marginBottom: 28,
           }}
         >
-          NOVEE OS · SMOKECRAFT 360
-        </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65, duration: 1.1 }}
+            style={{
+              fontFamily: "'Cormorant Garamond',serif",
+              background: "linear-gradient(180deg, #ffffff 0%, #dfba73 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              fontSize: "clamp(2.4rem, 5vw, 3.6rem)",
+              fontWeight: 300,
+              letterSpacing: "0.06em",
+              margin: "0 0 30px 0",
+              lineHeight: 1.1,
+            }}
+          >
+            The Art of the Cigar
+          </motion.h1>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 1.1 }}
+            style={{ display: "flex", flexDirection: "column" as const, gap: 14 }}
+          >
+            <p style={{ fontSize: "clamp(18px, 2.4vw, 22px)", lineHeight: 1.8, color: "rgba(255,252,245,0.90)", fontFamily: "'Cormorant Garamond',serif", fontWeight: 300, margin: 0 }}>
+              SmokeCraft was designed to help you experience cigars differently.
+            </p>
+            <p style={{ fontSize: "clamp(18px, 2.4vw, 22px)", lineHeight: 1.8, color: "rgba(255,252,245,0.80)", fontFamily: "'Cormorant Garamond',serif", fontWeight: 300, margin: 0 }}>
+              Not just by smoking them &mdash; but by understanding them.
+            </p>
+            <p style={{ fontSize: "clamp(18px, 2.4vw, 22px)", lineHeight: 1.8, color: "rgba(255,252,245,0.80)", fontFamily: "'Cormorant Garamond',serif", fontWeight: 300, margin: 0 }}>
+              Learn how tobacco leaves are cultivated, how blends are crafted, how wrappers change flavor, and how pairings elevate the experience.
+            </p>
+            <p style={{ fontSize: "clamp(18px, 2.4vw, 22px)", lineHeight: 1.8, color: "rgba(255,252,245,0.80)", fontFamily: "'Cormorant Garamond',serif", fontWeight: 300, margin: 0 }}>
+              Then build your own personalized cigar profile guided by master mentors, flavor science, and luxury pairing recommendations.
+            </p>
+            <p style={{ fontSize: "clamp(20px, 2.6vw, 24px)", lineHeight: 1.75, color: "rgba(212,175,55,0.88)", fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 300, margin: 0, marginTop: 4 }}>
+              Your journey into cigar culture begins here.
+            </p>
+          </motion.div>
+        </motion.div>
+
+        {/* Action buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65, duration: 1.2 }}
-          style={{
-            fontFamily: "'Cormorant Garamond',serif",
-            background: "linear-gradient(180deg, #ffffff 0%, #dfba73 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            fontSize: "clamp(2rem, 6vw, 3.5rem)",
-            fontWeight: 300,
-            letterSpacing: "0.08em",
-            margin: "0 0 20px 0",
-            textTransform: "uppercase",
-            lineHeight: 1.1,
-          }}
+          transition={{ delay: 1.3, duration: 0.9 }}
+          style={{ display: "flex", flexDirection: "column" as const, alignItems: "stretch", gap: 14, width: "100%" }}
         >
-          Welcome to SmokeCraft 360
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1, duration: 1.0 }}
-          style={{
-            fontFamily: "'Cormorant Garamond',serif",
-            fontSize: "clamp(16px, 2.2vw, 22px)",
-            fontStyle: "italic",
-            color: "rgba(255,252,245,0.82)",
-            marginBottom: "40px",
-            lineHeight: 1.6,
-          }}
-        >
-          "A cigar is more than tobacco. It is atmosphere. Timing. Ritual. Presence."
-        </motion.p>
-
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          style={GW.btn()}
-          onClick={onNext}
-        >
-          Begin The Experience
-        </motion.button>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.0, duration: 1.0 }}
-          style={{ color: `${GOLD}50`, fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 20 }}
-        >
-          4-Stage Ritual · Private Reserve Protocol
-        </motion.p>
+          <motion.button
+            whileHover={{ scale: 1.03, boxShadow: "0 0 48px rgba(212,175,55,0.38), 0 0 90px rgba(212,175,55,0.14), inset 0 1px 0 rgba(255,255,255,0.10)" }}
+            whileTap={{ scale: 0.96, y: 2, boxShadow: "inset 0px 4px 12px rgba(0,0,0,0.80)" }}
+            style={{
+              ...GW.btn(),
+              minHeight: 62,
+              fontSize: "clamp(13px, 1.8vw, 15px)",
+              letterSpacing: "0.36em",
+              boxShadow: "0 0 28px rgba(212,175,55,0.24), inset 0 1px 0 rgba(255,255,255,0.08)",
+            }}
+            onMouseDown={() => playClick()}
+            onTouchStart={() => playClick()}
+            onClick={onNext}
+          >
+            ENTER SMOKECRAFT
+          </motion.button>
+          <button
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(212,175,55,0.50)",
+              color: "rgba(212,175,55,0.82)",
+              padding: "15px 40px",
+              minHeight: 52,
+              fontSize: "clamp(11px, 1.4vw, 13px)",
+              fontWeight: 600,
+              letterSpacing: "0.30em",
+              textTransform: "uppercase" as const,
+              borderRadius: 4,
+              cursor: "pointer",
+              fontFamily: "'Inter',sans-serif",
+              transition: "all 0.25s ease",
+            }}
+            onMouseDown={() => playClick()}
+            onTouchStart={() => playClick()}
+            onClick={() => window.location.assign("/novee/")}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = "rgba(212,175,55,0.85)";
+              e.currentTarget.style.color = "rgba(212,175,55,1)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = "rgba(212,175,55,0.50)";
+              e.currentTarget.style.color = "rgba(212,175,55,0.82)";
+            }}
+          >
+            BACK
+          </button>
+        </motion.div>
       </div>
     </motion.div>
   );
@@ -804,17 +846,17 @@ function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: ()
           {/* Text block */}
           <div className="flex-1 min-w-0">
             <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 10 }}>
-              Sovereign Ritual · Phase 1
+              SmokeCraft · Your Cigar Journey
             </p>
-            <h2 style={GW.title}>The SmokeCraft Masterclass Philosophy</h2>
+            <h2 style={GW.title}>From Leaf to Legacy</h2>
             <p style={GW.para}>
-              You are not configuring software — you are executing a precision ritual. Atmosphere, legacy assets, and a personal flavor blueprint.
+              Every great cigar begins long before the first draw — in the soil, the sun, and the hands of the craftspeople who shaped it.
             </p>
             <p style={GW.para}>
-              Map your palate, choose a master mentor, cultivate your tobacco seed, and unlock the private Legacy Reserve Studio.
+              Here, you will explore the world’s great tobacco regions, discover the art of the blend, and find the master mentor who matches your palate.
             </p>
             <p style={{ ...GW.para, color: `${GOLD}80`, fontSize: "clamp(13px, 1.5vw, 15px)", fontStyle: "italic" }}>
-              Achieve Master Sommelier to commission bespoke physical assets: Cigar Box · Whiskey Decanter · Brew Vessel.
+              This is not a tutorial. This is an immersion into the culture, craft, and pleasure of the cigar.
             </p>
           </div>
 
@@ -823,13 +865,13 @@ function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: ()
             <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${GOLD}22` }}>
               <img
                 src={imgSovereignMap}
-                alt="Sovereign Roadmap of Prestige"
+                alt="Private Lounge"
                 className="w-full h-auto object-cover"
                 style={{ filter: "brightness(0.85)", maxHeight: 180, objectFit: "cover", width: "100%" }}
               />
               <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
                 <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
-                  Sovereign Roadmap of Prestige
+                  Private Lounge · Reserve Experience
                 </p>
               </div>
             </div>
@@ -842,7 +884,7 @@ function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: ()
               />
               <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
                 <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
-                  Cultivation & Harvest · Phase 2
+                  The Art of Cultivation
                 </p>
               </div>
             </div>
@@ -857,7 +899,7 @@ function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: ()
             whileTap={{ scale: 0.97 }}
             onClick={onNext}
           >
-            Select Your Master Mentor
+            Meet Your Mentor
           </motion.button>
         </div>
       </div>
@@ -885,7 +927,7 @@ function GatewayMentor({
     >
       <div style={GW.chamber} className="overflow-y-auto">
         <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 8 }}>
-          Sovereign Ritual · Phase 2
+          Your Mentor · The Craft Foundation
         </p>
         <h2 style={GW.title}>Choose Country Authority & Rolling Style</h2>
         <p style={GW.para}>
@@ -1006,7 +1048,7 @@ function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => 
 
       <div style={GW.chamber} className="overflow-y-auto">
         <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase" as const, marginBottom: 10 }}>
-          Sovereign Ritual &middot; Stage 3a &mdash; Terroir Codex
+          Tobacco Origins &middot; The Terroir Codex
         </p>
         <h2 style={GW.title}>Tobacco Terroir &amp; Craft</h2>
 
@@ -1135,7 +1177,7 @@ function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: ()
 
       <div style={GW.chamber} className="overflow-y-auto">
         <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase" as const, marginBottom: 10 }}>
-          Sovereign Ritual &middot; Stage 3b &mdash; Seed Codex
+          Seed &amp; Leaf &middot; The Biology of Flavor
         </p>
         <h2 style={GW.title}>Seed Biology &amp; Priming</h2>
 
@@ -1262,7 +1304,7 @@ function GatewayCultivation({
     >
       <div style={GW.chamber} className="overflow-y-auto">
         <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 8 }}>
-          Sovereign Ritual · Phase 3 — Foundational Asset Sourcing
+          The Growing Season · Cultivation Begins
         </p>
         <h2 style={GW.title}>Seed &amp; Soil Architecture</h2>
         <p style={GW.para}>

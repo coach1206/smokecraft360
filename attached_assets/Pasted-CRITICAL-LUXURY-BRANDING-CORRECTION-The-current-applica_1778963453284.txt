@@ -1,0 +1,45 @@
+CRITICAL LUXURY BRANDING CORRECTION: The current application text feels too corporate, operational, and investor-focused. It sounds like a software tutorial or a military dashboard instead of a premium hospitality experience. 
+
+Refactor MasterBlender.tsx, RitualStep.tsx, and your onboarding screens to entirely remove all technical jargon and enforce this exact luxury cigar culture language and layout:
+
+1. STRIP OUT ALL CORPORATE JARGON IMMEDIATELY:
+   - Permanently DELETE the following terms from ALL user-facing screens: 'Sovereign Ritual', 'Phase 1', 'Phase 2', 'Legacy Assets', 'Precision Ritual', 'Commission Bespoke Physical Assets', 'Sovereign Roadmap', and any technical software/operational phrasing.
+   - Remove all 'Phase' badges, milestone step numbers, and roadmap thumbnails that make the screen look like enterprise project management software.
+
+2. INJECT THE EXACT 5-SECOND NARRATIVE GATEWAY (STAGE 1):
+   - Replace the entire content area of the Stage 1 Cinematic Landing page with this exact copy architecture:
+     * TITLE (Large Cinematic Luxury Serif Font): 
+       The Art of the Cigar
+     * BODY TEXT (Clean Luxury Sans-Serif Font, Minimum 22px High-Contrast Scale):
+       SmokeCraft was designed to help you experience cigars differently.
+       Not just by smoking them — but by understanding them.
+       Learn how tobacco leaves are cultivated, how blends are crafted, how wrappers change flavor, and how pairings elevate the experience.
+       Then build your own personalized cigar profile guided by master mentors, flavor science, and luxury pairing recommendations.
+       Your journey into cigar culture begins here.
+     * PRIMARY ACTION BUTTON: 
+       ENTER SMOKECRAFT
+     * SECONDARY NAVIGATION BUTTON: 
+       BACK
+
+3. HIGH-READABILITY TABLET OPTIMIZATION (FOR DIM LOUNGE LIGHTING):
+   - Scale up all typography for easy readability on a tablet from a seated distance in a dim lounge environment.
+   - Body text must be sharp and set to a minimum scale of 20px–24px.
+   - All action buttons must be oversized, inviting touchscreen targets featuring a warm, rich gold/amber outer glow ambient drop.
+   - Retain the fixed, high-contrast gold border 'BACK' navigation button layout so it is completely visible against our absolute black background.
+
+4. ATMOSPHERIC SHADING & DIMENSIONAL TEXTURE:
+   - Base Color: Maintain the absolute black (#000000) base canvas field with a subtle gold radial overlay centered on the screen (#FFB000 at 4% opacity).
+   - Glassmorphic Cards: Apply deep luxury depth blur to the content panels:
+     background: linear-gradient(135deg, rgba(15, 15, 15, 0.85) 0%, rgba(5, 5, 5, 0.70) 100%);
+     backdrop-filter: blur(30px); border: 1px solid rgba(212, 175, 55, 0.15);
+   - Replace all generic or missing placeholders with dark-filtered, high-premium production imagery embedded inside the workflow:
+     * Onboarding/Portals: Elite, low-lit private whiskey/cigar lounge assets.
+     * Educational Sections (The 2 New Tobacco/Seed Screens): Deep, rich, macro textured golden-brown cured leaf shots and master craftsman rolling visuals.
+     * Signature Box Phase: Premium dark walnut wood grains.
+
+5. PRESERVE ALL HARDWARE SENSORY AUDIO AND TOUCH DYNAMICS:
+   - Keep our HTML5 SmokeCanvas running smoothly at z-index 9996, drifting organic smoke mist and rising amber embers behind the glass text cards.
+   - Keep our synthesized Web Audio API sound loops completely intact: playClick() bandpass noise burst must fire on every 'onTouchStart' event, and playSlide() must drive the velvet slider resistance sweep.
+   - Buttons must maintain the 100ms mechanical compression feel: scaling down (scale-96) and moving downward (translate-y-[2px]) with a heavy inset shadow on physical contact.
+
+Execute this comprehensive text and branding refactor now to transition the system from enterprise software into pure modern hospitality theater. Verify a clean compile via tsc --noEmit with exit 0.
