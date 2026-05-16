@@ -448,7 +448,9 @@ function SelectionCard<T extends { id: string; label: string; sub?: string; desc
   return (
     <motion.button
       onClick={onClick}
-      whileTap={{ scale: 0.93 }}
+      onMouseDown={() => playClick()}
+      onTouchStart={() => playClick()}
+      whileTap={{ scale: 0.96, y: 2, boxShadow: "inset 0px 4px 12px rgba(0,0,0,0.90), 0 0 0 1px rgba(212,175,55,0.30)" }}
       whileHover={{ scale: 1.04, y: -4 }}
       className="relative flex-shrink-0 flex flex-col overflow-hidden rounded-2xl cursor-pointer"
       style={{
