@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+
 import { io, type Socket } from "socket.io-client";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -201,12 +202,26 @@ function EventFeed({ events }: { events: OrchestrationEvent[] }) {
   );
 }
 
+// ── Tab URL sync helpers ───────────────────────────────────────────────────────
+
+type CCTab = "overview"|"awareness"|"social"|"temporal"|"adaptive"|"edge"|"learning"|"knowledge"|"compliance"|"experience"|"supply";
+const CC_VALID_TABS: CCTab[] = ["overview","awareness","social","temporal","adaptive","edge","learning","knowledge","compliance","experience","supply"];
+
+function parseCCTabFromSearch(search: string): CCTab {
+  try {
+    const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+    const raw = params.get("tab");
+    if (raw && (CC_VALID_TABS as string[]).includes(raw)) return raw as CCTab;
+  } catch { /* ignore */ }
+  return "overview";
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function CommandCenter() {
   const [venueId,   setVenueId]   = useState(DEMO_VENUE);
   const [connected, setConnected] = useState(false);
-  const [tab,       setTab]       = useState<"overview"|"awareness"|"social"|"temporal"|"adaptive"|"edge"|"learning"|"knowledge"|"compliance"|"experience"|"supply">("overview");
+  const [tab,       setTabState]  = useState<CCTab>(() => parseCCTabFromSearch(window.location.search));
 
   const [intelligence, setIntelligence] = useState<IntelligenceScore>({
     overallScore:0, engagementLevel:0, socialEnergy:0, activeGuests:0, decisionCount:0,
@@ -344,7 +359,24 @@ export default function CommandCenter() {
     } catch { /* */ } finally { setLoadingRun(false); }
   };
 
-  const TABS = ["overview","awareness","social","temporal","adaptive","edge","learning","knowledge","compliance","experience","supply"] as const;
+  const setTab = useCallback((t: CCTab) => {
+    setTabState(t);
+    const url = new URL(window.location.href);
+    if (t === "overview") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", t);
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      setTabState(parseCCTabFromSearch(window.location.search));
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   return (
     <div style={{ minHeight:"100vh", background:"#F5F2ED", fontFamily:"'Cormorant Garamond', serif", padding:"0 0 60px" }}>
@@ -380,7 +412,7 @@ export default function CommandCenter() {
 
       {/* Tabs */}
       <div style={{ display:"flex", gap:4, padding:"16px 28px 0", borderBottom:"1.5px solid rgba(26,26,27,.08)" }}>
-        {TABS.map(t => (
+        {CC_VALID_TABS.map(t => (
           <button key={t} onClick={() => setTab(t)}
             style={{ padding:"8px 18px", background: tab===t ? "#D48B00" : "transparent",
               color: tab===t ? "#fff" : "#6B5E4E", border:"none", borderRadius:"8px 8px 0 0",
