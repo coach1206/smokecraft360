@@ -353,21 +353,25 @@ function buildModuleUsageComparisonCsv(
   return rows.join("\r\n");
 }
 
-function buildProductsCsvContent(products: ProductItem[], days: number): string {
+function buildProductsCsvContent(products: ProductItem[], days: number, craftFilter: "all" | "smoke" | "pour" | "brew" | "vape" = "all"): string {
   const rows: string[] = [];
+
+  const filtered = craftFilter === "all" ? products : products.filter((p) => p.craft_type === craftFilter);
 
   rows.push("# E.A.T. Engine — Top Products Export");
   rows.push(`# Date range: last ${days} day(s)`);
+  if (craftFilter !== "all") rows.push(`# Craft filter: ${craftFilter.toUpperCase()}`);
   rows.push(`# Generated: ${new Date().toISOString()}`);
   rows.push("");
 
-  rows.push("rank,title,card_id,adds,skips,total,add_ratio_pct");
-  for (let i = 0; i < products.length; i++) {
-    const p = products[i]!;
+  rows.push("rank,title,card_id,craft_type,adds,skips,total,add_ratio_pct");
+  for (let i = 0; i < filtered.length; i++) {
+    const p = filtered[i]!;
     const addRatio = p.total > 0 ? Math.round((p.adds / p.total) * 100) : 0;
     const title = (p.title ?? "").replace(/"/g, '""');
     const cardId = p.card_id.replace(/"/g, '""');
-    rows.push(`${i + 1},"${title}","${cardId}",${p.adds},${p.skips},${p.total},${addRatio}`);
+    const craftType = (p.craft_type ?? "").replace(/"/g, '""');
+    rows.push(`${i + 1},"${title}","${cardId}","${craftType}",${p.adds},${p.skips},${p.total},${addRatio}`);
   }
 
   return rows.join("\r\n");
@@ -1305,11 +1309,12 @@ export default function EATDashboard() {
             {(userRole === "admin" || userRole === "super_admin") && tab === "products" && !productsLoading && products.length > 0 && (
               <button
                 onClick={() => {
-                  const csv = buildProductsCsvContent(products, days);
+                  const csv = buildProductsCsvContent(products, days, craftFilter);
                   const today = new Date().toISOString().slice(0, 10);
-                  triggerCsvDownload(csv, `eat-products-${days}d-${today}.csv`);
+                  const craftSegment = craftFilter !== "all" ? `-${craftFilter}` : "";
+                  triggerCsvDownload(csv, `eat-products${craftSegment}-${days}d-${today}.csv`);
                 }}
-                title={`Export top products (last ${days} day(s)) as CSV`}
+                title={`Export top products${craftFilter !== "all" ? ` (${craftFilter.toUpperCase()} only)` : ""} (last ${days} day(s)) as CSV`}
                 style={{
                   display: "flex", alignItems: "center", gap: 5,
                   background: "rgba(196,97,10,0.12)",
