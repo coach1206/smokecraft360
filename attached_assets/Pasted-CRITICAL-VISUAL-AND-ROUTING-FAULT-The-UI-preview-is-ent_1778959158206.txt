@@ -1,0 +1,20 @@
+CRITICAL VISUAL AND ROUTING FAULT: The UI preview is entirely flat, dull, and out of order. Standard light-blue web bubbles are still rendering instead of our HTML5 Canvas smoke mist. The pages lack dimensions, gradients, shades, or premium contextual background imagery, and the wizard completely freezes at the tobacco selection step with zero progression.
+
+Execute an immediate visual overhaul and structural routing fix in MasterBlender.tsx and RitualStep.tsx:
+
+1. FIX THE TOBACCO STEP PROGRESSION BLOCK:
+   - Audit the navigation handler for the cultivation/tobacco choice step. Ensure the active button triggers the next step state cleanly instead of dead-ending or freezing the UI thread.
+
+2. SYSTEM-WIDE VISUAL DIMENSIONS & GRADIENTS:
+   - Canvas Reset: Completely purge the moving blue CSS background divs. Force the HTML5 SmokeCanvas to properly map behind all elements.
+   - Cinematic Depth: Change the background base from a solid flat gray to a rich absolute black (#000000) base with a luxury ambient radial gold gradient overlay centered on the screen (#FFB000 at 4% opacity).
+   - Glassmorphic Cards: Give containers deep dimension. Apply: 'background: linear-gradient(135deg, rgba(20, 20, 20, 0.75) 0%, rgba(10, 10, 10, 0.60) 100%); backdrop-filter: blur(25px); border: 1px solid rgba(212, 175, 55, 0.18); box-shadow: 0 20px 50px rgba(0,0,0,0.9);'.
+
+3. INJECT HIGH-PREMIUM CONTEXTUAL IMAGERY:
+   - Do not leave these interfaces dark and empty. Update the layout structure to embed rich, dark-filtered cinematic imagery reflecting each phase behind the glass panels or as cards using live, stable production assets:
+     * Main Portal / Mentors Screen: Use an elite, dark-toned luxury lounge asset with premium lighting accents:
+       https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=1200&q=80
+     * Cultivation / Tobacco Origin Screen: Use a rich, premium macro shot of cured, deep-textured golden tobacco leaves with dramatic dark shading:
+       https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80
+
+Rebuild the system to enforce these premium sensory dimensions and fix the navigation loop now. Confirm via tsc --noEmit.
