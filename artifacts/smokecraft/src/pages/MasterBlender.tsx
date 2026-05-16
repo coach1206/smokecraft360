@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
 import { useLocation } from "wouter";
 import { AudioWaveToggle, useAudio } from "@/contexts/AudioContext";
@@ -440,7 +440,7 @@ function CigarSilhouette({ vitola, smokeTime }: { vitola: typeof VITOLAS[0]; smo
 // ── Shared gateway styles ───────────────────────────────────────────────────
 const GW = {
   bg: {
-    background: "radial-gradient(ellipse at center, #1c1d21 0%, #050607 100%)",
+    background: "radial-gradient(ellipse at 50% 0%, rgba(255,176,0,0.04) 0%, transparent 60%), #000000",
     minHeight: "100%",
     width: "100%",
     display: "flex",
@@ -453,10 +453,11 @@ const GW = {
     overflow: "hidden" as const,
   },
   chamber: {
-    background: "linear-gradient(135deg, rgba(20,22,26,0.97) 0%, rgba(8,9,11,0.99) 100%)",
-    backdropFilter: "blur(40px)",
-    border: "1px solid rgba(223,186,115,0.35)",
-    boxShadow: "inset 0 1px 2px rgba(255,255,255,0.08), 0 32px 80px rgba(0,0,0,0.95)",
+    background: "rgba(15,15,15,0.72)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    border: "1px solid rgba(212,175,55,0.15)",
+    boxShadow: "0 24px 64px rgba(0,0,0,0.90)",
     borderRadius: "8px",
     width: "100%",
     maxWidth: "860px",
@@ -467,18 +468,18 @@ const GW = {
   title: {
     fontFamily: "'Cormorant Garamond', serif",
     fontSize: "clamp(1.5rem, 4vw, 2.4rem)",
-    color: "#fffcf5",
+    color: "#D4AF37",
     fontWeight: 400,
     marginBottom: "20px",
-    borderBottom: "1px solid rgba(223,186,115,0.18)",
+    borderBottom: "1px solid rgba(212,175,55,0.15)",
     paddingBottom: "12px",
   },
   para: {
-    fontSize: "clamp(16px, 2vw, 20px)",
-    lineHeight: "1.8",
-    color: "#e8eaec",
+    fontSize: "clamp(14px, 1.5vw, 16px)",
+    lineHeight: "1.6",
+    color: "#E5E5E5",
     fontWeight: 400,
-    marginBottom: "20px",
+    marginBottom: "16px",
     letterSpacing: "0.02em",
   },
   btn: (dim?: boolean) => ({
@@ -499,13 +500,15 @@ const GW = {
     fontFamily: "'Inter',sans-serif",
   }),
   card: (sel: boolean) => ({
-    background: sel ? "rgba(35,38,44,0.95)" : "rgba(15,16,18,0.6)",
-    border: sel ? `2px solid ${GOLD}` : "1px solid rgba(255,255,255,0.10)",
+    background: sel ? "rgba(20,18,12,0.88)" : "rgba(12,12,12,0.70)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
+    border: sel ? `1px solid rgba(212,175,55,0.55)` : "1px solid rgba(212,175,55,0.12)",
     borderRadius: "6px",
     padding: "24px",
     cursor: "pointer",
     transition: "all 0.28s ease",
-    boxShadow: sel ? `0 0 24px ${GOLD}33` : "none",
+    boxShadow: sel ? `0 0 28px rgba(212,175,55,0.18)` : "none",
   }),
 };
 
@@ -634,13 +637,13 @@ function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: ()
             </p>
             <h2 style={GW.title}>The SmokeCraft Masterclass Philosophy</h2>
             <p style={GW.para}>
-              SmokeCraft 360 decouples software from art. Inside this sanctuary, you are not configuring metrics — you are controlling environment, sourcing legacy assets, and executing a precision ritual.
+              You are not configuring software — you are executing a precision ritual. Atmosphere, legacy assets, and a personal flavor blueprint.
             </p>
             <p style={GW.para}>
-              Through this guided progression, you will map your personal flavor profile, select a legacy master roller mentor, cultivate your foundational tobacco assets down to the seed, and unlock access to the private Legacy Reserve Studio.
+              Map your palate, choose a master mentor, cultivate your tobacco seed, and unlock the private Legacy Reserve Studio.
             </p>
-            <p style={{ ...GW.para, color: `${GOLD}80`, fontSize: "clamp(13px, 1.6vw, 16px)", fontStyle: "italic" }}>
-              Achieving Master Sommelier unlocks the rights to commence physical bespoke assets: Cigar Box · Whiskey Decanter · Brew Vessel.
+            <p style={{ ...GW.para, color: `${GOLD}80`, fontSize: "clamp(13px, 1.5vw, 15px)", fontStyle: "italic" }}>
+              Achieve Master Sommelier to commission bespoke physical assets: Cigar Box · Whiskey Decanter · Brew Vessel.
             </p>
           </div>
 
@@ -1366,6 +1369,19 @@ export default function MasterBlender() {
   const [chips,  setChips]  = useState<XPFloat[]>([]);
   const [reveal, setReveal] = useState(false);
   const [smokeSlider, setSmokeSlider] = useState(50);
+
+  // ── Force Stage 1 on every fresh mount — prevents HMR state bleed ────────
+  useLayoutEffect(() => {
+    setGateway("intro");
+    setStep(0 as 0);
+    setSel({});
+    setReveal(false);
+    setXp(0);
+    setSelectedMentor(null);
+    setSelectedSeed(null);
+    setSelectedSoil(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const chipId = useRef(0);
 
   const synergy = Math.min(
@@ -1424,7 +1440,7 @@ export default function MasterBlender() {
   return (
     <div
       className="fixed inset-0 flex flex-col overflow-hidden"
-      style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.09) 0%, #060400 60%)", fontFamily: "'Inter',sans-serif" }}
+      style={{ background: "#000000", fontFamily: "'Inter',sans-serif" }}
     >
       {/* ── Gateway overlay (intro → orientation → mentor → cultivation) ── */}
       <AnimatePresence mode="wait">
@@ -1488,9 +1504,13 @@ export default function MasterBlender() {
             sel={sel}
             onRestart={() => {
               setReveal(false);
-              setStep(0);
+              setStep(0 as 0);
               setSel({});
               setXp(0);
+              setGateway("intro");
+              setSelectedMentor(null);
+              setSelectedSeed(null);
+              setSelectedSoil(null);
             }}
           />
         )}
