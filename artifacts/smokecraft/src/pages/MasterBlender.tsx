@@ -134,6 +134,7 @@ const MENTORS = [
     style: "Traditional Entubado Rolling",
     bio: "Mastery over smooth, complex profile layering with multi-generational Cuban seed descendants.",
     tag: "THE TRADITION",
+    soilAffinity: "alluvial" as const,
   },
   {
     id: "sovereign",
@@ -142,6 +143,25 @@ const MENTORS = [
     style: "Estelí Accordion Technique",
     bio: "Specializes in high-intensity, bold, spice-forward profiles utilizing volcanic soil properties.",
     tag: "THE MODERN SOVEREIGN",
+    soilAffinity: "volcanic" as const,
+  },
+  {
+    id: "cuban",
+    name: "Don Salvador",
+    origin: "Cuba",
+    style: "Vuelta Abajo Press Method",
+    bio: "Heir to the oldest living tobacco dynasty. Commands perfect balance of cedar, leather, and refined pepper.",
+    tag: "THE CUBAN PURIST",
+    soilAffinity: "volcanic" as const,
+  },
+  {
+    id: "botanist",
+    name: "Doña Rosa",
+    origin: "Ecuador",
+    style: "Highland Shade Cultivation",
+    bio: "Cultivates under equatorial clouds producing ultra-silky, cream-forward wrappers with rare botanical nuance.",
+    tag: "THE HIGHLAND BOTANIST",
+    soilAffinity: "alluvial" as const,
   },
 ];
 
@@ -356,18 +376,23 @@ function SynergyHalo({ synergy }: { synergy: number }) {
 
 // ── Floating +XP chip ──────────────────────────────────────────────────────
 function XPChip({ chip }: { chip: XPFloat }) {
+  const isNeg = chip.amount < 0;
   return (
     <motion.div
       key={chip.id}
       initial={{ opacity: 1, y: 0, scale: 0.8, x: chip.x }}
-      animate={{ opacity: 0, y: -80, scale: 1.15 }}
+      animate={{ opacity: 0, y: isNeg ? 60 : -80, scale: 1.15 }}
       transition={{ duration: 1.1, ease: "easeOut" }}
       className="fixed z-[9999] pointer-events-none"
       style={{ top: chip.y, left: 0 }}
     >
       <span className="text-sm font-bold tracking-widest px-3 py-1 rounded-full"
-        style={{ color: GOLD, background: "rgba(212,175,55,0.15)", border: `1px solid ${GOLD}44` }}>
-        +{chip.amount} XP
+        style={{
+          color:      isNeg ? "#ef4444" : GOLD,
+          background: isNeg ? "rgba(239,68,68,0.15)" : "rgba(212,175,55,0.15)",
+          border:     `1px solid ${isNeg ? "#ef444444" : GOLD + "44"}`,
+        }}>
+        {isNeg ? chip.amount : `+${chip.amount}`} {isNeg ? "PTS" : "XP"}
       </span>
     </motion.div>
   );
@@ -1004,8 +1029,8 @@ function GatewayCultivation({
 
 // ── Alchemy Reveal ─────────────────────────────────────────────────────────
 function AlchemyReveal({
-  sel, onRestart,
-}: { sel: Sel; onRestart: () => void }) {
+  sel, onRestart, finalScore,
+}: { sel: Sel; onRestart: () => void; finalScore: number }) {
   const { speak } = useAudio();
   const { guestProfile, isReturning } = useGuestProfile();
   const [phase,   setPhase]   = useState<"scan" | "result">("scan");
@@ -1185,6 +1210,49 @@ function AlchemyReveal({
                 </p>
               </motion.div>
             )}
+
+            {/* Ritual Score Panel — sealed score + milestone breakdown */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="w-full max-w-md rounded-2xl px-5 py-4"
+              style={{
+                background:           "rgba(212,175,55,0.06)",
+                border:               `1px solid ${GOLD}28`,
+                backdropFilter:       "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[9px] tracking-widest uppercase" style={{ color: `${GOLD}70` }}>
+                  RITUAL SCORE — SEALED
+                </span>
+                <motion.span
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.6, type: "spring", stiffness: 200, damping: 14 }}
+                  className="text-2xl font-bold tabular-nums"
+                  style={{ color: GOLD, fontFamily: "'Cormorant Garamond', serif" }}
+                >
+                  {finalScore} <span className="text-sm font-normal">XP</span>
+                </motion.span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <span className="text-[8px] tracking-widest uppercase px-2 py-0.5 rounded-full"
+                  style={{ color: "#4ade80", background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.25)" }}>
+                  +M1 Cultivation Bonus
+                </span>
+                <span className="text-[8px] tracking-widest uppercase px-2 py-0.5 rounded-full"
+                  style={{ color: "#ef4444", background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)" }}>
+                  −1 Mentor Challenge
+                </span>
+                <span className="text-[8px] tracking-widest uppercase px-2 py-0.5 rounded-full"
+                  style={{ color: "#4ade80", background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.25)" }}>
+                  +M3 Harmony Bonus
+                </span>
+              </div>
+            </motion.div>
 
             {/* Spirit Pairings */}
             {(data?.spiritPairings?.length ?? 0) > 0 && (
@@ -1457,7 +1525,7 @@ function AlchemyReveal({
 export default function MasterBlender() {
   const [, nav]       = useLocation();
   const { speak, stopSpeak } = useAudio();
-  const { guestProfile }     = useGuestProfile();
+  const { guestProfile, evolveMastery } = useGuestProfile();
 
   // ── Gateway state ────────────────────────────────────────────────────────
   const [gateway,        setGateway]        = useState<GatewayPhase>("intro");
@@ -1474,6 +1542,13 @@ export default function MasterBlender() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [txId,         setTxId]         = useState<string | null>(null);
 
+  // Scoring state
+  const scoreFrozenRef             = useRef(false);
+  const [scoreFrozen,            setScoreFrozenState]   = useState(false);
+  const [mentorPenaltyFired,     setMentorPenaltyFired]    = useState(false);
+  const [cultivationBonusGiven,  setCultivationBonusGiven] = useState(false);
+  const [lastScoreDelta,         setLastScoreDelta]         = useState<number | null>(null);
+
   // ── Force Stage 1 on every fresh mount — prevents HMR state bleed ────────
   // Also wipes all legacy localStorage/sessionStorage keys so no prior session
   // can surface a returning-user state or bypass the gateway intro.
@@ -1486,6 +1561,11 @@ export default function MasterBlender() {
     setSelectedMentor(null);
     setSelectedSeed(null);
     setSelectedSoil(null);
+    scoreFrozenRef.current = false;
+    setScoreFrozenState(false);
+    setMentorPenaltyFired(false);
+    setCultivationBonusGiven(false);
+    setLastScoreDelta(null);
     try {
       // Legacy keys (older builds)
       localStorage.removeItem("titan_ritual_complete");
@@ -1522,18 +1602,45 @@ export default function MasterBlender() {
     if (sel.vitola) setSmokeSlider(sel.vitola.smoke);
   }, [sel.vitola]);
 
-  const spawnXP = useCallback((amount: number, e: React.MouseEvent) => {
+  // spawnXPAt: coordinate-based, reads scoreFrozenRef — safe in setTimeout closures
+  const spawnXPAt = useCallback((amount: number, x: number, y: number) => {
+    if (scoreFrozenRef.current) return;
     const id = ++chipId.current;
-    setChips(c => [...c, { id, amount, x: e.clientX - 30, y: e.clientY - 40 }]);
+    setChips(c => [...c, { id, amount, x: x - 30, y: y - 40 }]);
     setTimeout(() => setChips(c => c.filter(ch => ch.id !== id)), 1200);
     setXp(v => v + amount);
+    setLastScoreDelta(amount);
+    setTimeout(() => setLastScoreDelta(null), 1600);
   }, []);
+
+  const spawnXP = useCallback((amount: number, e: React.MouseEvent) => {
+    spawnXPAt(amount, e.clientX, e.clientY);
+  }, [spawnXPAt]);
 
   function select<T extends { id: string; xp: number }>(key: keyof Sel, item: T, e: React.MouseEvent) {
     setSel(s => ({ ...s, [key]: item }));
     spawnXP(item.xp, e);
     if ("mentorNote" in item) {
       setTimeout(() => speak(String((item as unknown as typeof LEAVES[0]).mentorNote ?? "")), 400);
+    }
+    // M2: Mentor challenge penalty — fires once after first leaf pick
+    if (key === "leaf" && !mentorPenaltyFired) {
+      setMentorPenaltyFired(true);
+      const px = e.clientX;
+      const py = e.clientY;
+      setTimeout(() => spawnXPAt(-1, px, py + 30), 1400);
+    }
+    // M3: Cut harmony bonus — synergy-gated pairing award
+    if (key === "cut") {
+      const cutSynergy    = (item as unknown as { synergy?: number }).synergy ?? 0;
+      const totalSynergy  = (sel.leaf?.synergy ?? 0) + (sel.wrapper?.synergy ?? 0) + (sel.vitola?.synergy ?? 0) + cutSynergy;
+      const px = e.clientX;
+      const py = e.clientY;
+      if (totalSynergy >= 80) {
+        setTimeout(() => spawnXPAt(2, px, py - 60), 900);
+      } else if (totalSynergy >= 60) {
+        setTimeout(() => spawnXPAt(1, px, py - 60), 900);
+      }
     }
   }
 
@@ -1543,9 +1650,31 @@ export default function MasterBlender() {
   }
   function prevStep() { if (step > 0) setStep(s => (s - 1) as 0|1|2|3); }
 
+  // M1: Cultivation milestone — awards bonus based on mentor/soil affinity match
+  function handleCultivationNext() {
+    if (!cultivationBonusGiven) {
+      setCultivationBonusGiven(true);
+      const affinityMap: Record<string, string> = {
+        tradition: "alluvial",
+        botanist:  "alluvial",
+        sovereign: "volcanic",
+        cuban:     "volcanic",
+      };
+      const expectedSoil = affinityMap[selectedMentor ?? ""] ?? "";
+      const bonus = selectedSoil === expectedSoil ? 5 : 2;
+      spawnXPAt(bonus, window.innerWidth / 2, window.innerHeight * 0.5);
+    }
+    setGateway("blending");
+  }
+
   async function handleRevealMatch(e: React.MouseEvent) {
     if (!canAdvance) return;
     if (step !== 3) { nextStep(); return; }
+
+    // Stage 14: capture and freeze score before any async work
+    const finalXP = xp;
+    scoreFrozenRef.current = true;
+    setScoreFrozenState(true);
 
     const x = e.clientX;
     const y = e.clientY;
@@ -1556,6 +1685,9 @@ export default function MasterBlender() {
 
     // Advance to reveal overlay immediately (optimistic)
     nextStep();
+
+    // Persist frozen score to guest ledger (fire-and-forget)
+    void evolveMastery(finalXP, { craftType: "smoke" });
 
     // Background ledger submit — data hits Command Center as screen dissolves
     if (isSubmitting) return;
@@ -1569,6 +1701,7 @@ export default function MasterBlender() {
           vitola:          sel.vitola?.label  ?? "Unknown",
           customEngraving: sel.cut?.label     ?? "",
           guestId:         guestProfile?.firstName ?? "guest",
+          finalScore:      finalXP,
         }),
       });
       if (res.ok) {
@@ -1634,7 +1767,7 @@ export default function MasterBlender() {
                   selectedSoil={selectedSoil}
                   onSeed={setSelectedSeed}
                   onSoil={setSelectedSoil}
-                  onNext={() => setGateway("blending")}
+                  onNext={handleCultivationNext}
                   onBack={() => setGateway("mentor")}
                 />
               )}
@@ -1657,6 +1790,7 @@ export default function MasterBlender() {
         {reveal && (
           <AlchemyReveal
             sel={sel}
+            finalScore={xp}
             onRestart={() => {
               setReveal(false);
               setStep(0 as 0);
@@ -1666,6 +1800,11 @@ export default function MasterBlender() {
               setSelectedMentor(null);
               setSelectedSeed(null);
               setSelectedSoil(null);
+              scoreFrozenRef.current = false;
+              setScoreFrozenState(false);
+              setMentorPenaltyFired(false);
+              setCultivationBonusGiven(false);
+              setLastScoreDelta(null);
             }}
           />
         )}
@@ -1691,10 +1830,15 @@ export default function MasterBlender() {
             initial={{ scale: 1.3 }}
             animate={{ scale: 1 }}
             className="flex items-center gap-2 px-3 py-1.5 rounded-full"
-            style={{ background: "rgba(212,175,55,0.10)", border: `1px solid ${GOLD}30` }}
+            style={{
+              background: scoreFrozen ? "rgba(239,68,68,0.10)" : "rgba(212,175,55,0.10)",
+              border:     `1px solid ${scoreFrozen ? "#ef4444" : GOLD}30`,
+            }}
           >
-            <div className="rounded-full" style={{ width: 6, height: 6, background: GOLD }} />
-            <span className="text-xs font-bold tabular-nums" style={{ color: GOLD }}>{xp} XP</span>
+            <div className="rounded-full" style={{ width: 6, height: 6, background: scoreFrozen ? "#ef4444" : GOLD }} />
+            <span className="text-xs font-bold tabular-nums" style={{ color: scoreFrozen ? "#ef4444" : GOLD }}>
+              {scoreFrozen ? "SEALED · " : ""}{xp} XP
+            </span>
           </motion.div>
         </div>
       </div>
@@ -1992,7 +2136,7 @@ export default function MasterBlender() {
         </motion.button>
       </div>
 
-      {/* Gold ticker */}
+      {/* Glassmorphic pairing ticker with live score delta micro-animations */}
       <div style={{
         position: "absolute", bottom: 0, left: 0, right: 0,
         height: 26, background: "rgba(0,0,0,0.95)", borderTop: `1px solid ${GOLD}`,
@@ -2012,6 +2156,46 @@ export default function MasterBlender() {
             <span key={i}>{t} ///</span>
           ))}
         </motion.div>
+
+        {/* Score freeze seal badge */}
+        {scoreFrozen && (
+          <div style={{
+            position: "absolute", right: 8, top: 0, bottom: 0,
+            display: "flex", alignItems: "center", gap: 4,
+            background: "rgba(0,0,0,0.92)", paddingLeft: 10,
+            pointerEvents: "none",
+          }}>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#ef4444" }} />
+            <span style={{ color: "#ef4444", fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", fontWeight: 700, whiteSpace: "nowrap" }}>
+              SCORE SEALED
+            </span>
+          </div>
+        )}
+
+        {/* Live score delta micro-animation */}
+        <AnimatePresence mode="wait">
+          {lastScoreDelta !== null && (
+            <motion.div
+              key={String(lastScoreDelta ?? 0) + chipId.current}
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 0, y: lastScoreDelta < 0 ? 10 : -10 }}
+              transition={{ duration: 1.1, ease: "easeOut" }}
+              style={{
+                position:      "absolute",
+                right:         scoreFrozen ? 110 : 8,
+                top:           "50%",
+                transform:     "translateY(-50%)",
+                fontSize:      10,
+                fontWeight:    700,
+                letterSpacing: "0.16em",
+                color:         lastScoreDelta < 0 ? "#ef4444" : "#4ade80",
+                pointerEvents: "none",
+              }}
+            >
+              {lastScoreDelta < 0 ? lastScoreDelta : `+${lastScoreDelta}`}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
