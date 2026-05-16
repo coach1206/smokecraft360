@@ -954,25 +954,25 @@ function GatewayMentor({
 function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const REGIONS = [
     {
-      region: "Dominican Republic", abbr: "D.R.",
+      region: "Dominican Republic", abbr: "D.R.", flag: "🇩🇴",
       soil: "Volcanic loam \u2014 Cibao Valley", altitude: "400\u2013900 m",
       cure: "Air-cured 45\u201360 days",
       note: "Mild cedar sweetness. Long white ash. Don Manuel\u2019s homeland leaf.",
     },
     {
-      region: "Nicaragua", abbr: "NIC",
+      region: "Nicaragua", abbr: "NIC", flag: "🇳🇮",
       soil: "Rich black silt \u2014 Jalapa & Estel\u00ed", altitude: "600\u20131 400 m",
       cure: "Double-fermented 90 days",
       note: "Volcanic spice with earth undercurrent. Cocoa finish. Alejandro\u2019s native leaf.",
     },
     {
-      region: "Cuba", abbr: "CUB",
+      region: "Cuba", abbr: "CUB", flag: "🇨🇺",
       soil: "Red laterite \u2014 Vuelta Abajo", altitude: "Sea level",
       cure: "Sun-cured \u2014 pil\u00f3n method",
       note: "The sovereign archetype. Unrivalled complexity. Don Salvador\u2019s legacy territory.",
     },
     {
-      region: "Ecuador", abbr: "ECU",
+      region: "Ecuador", abbr: "ECU", flag: "🇪🇨",
       soil: "Andean cloud-forest humus", altitude: "1 200\u20131 800 m",
       cure: "Shade-grown 60 days",
       note: "Silky cream and white pepper. Do\u00f1a Rosa\u2019s signature wrapper origin.",
@@ -1024,6 +1024,7 @@ function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => 
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <span style={{ fontSize: 22, lineHeight: "1", flexShrink: 0 }}>{t.flag}</span>
                 <span style={{
                   color: GOLD, fontSize: 10, fontWeight: 700, letterSpacing: "0.06em",
                   background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}30`,
