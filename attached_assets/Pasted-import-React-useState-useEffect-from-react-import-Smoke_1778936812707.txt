@@ -1,0 +1,51 @@
+import React, { useState, useEffect } from 'react';
+import SmokeCanvas from './SmokeCanvas'; // Animated smoke overlay
+import TouchButton from './TouchButton';   // Tactile feedback buttons
+
+export const MasterBlender = () => {
+  const [currentStage, setCurrentStage] = useState<string>('STAGE_1');
+  const [guestProfile, setGuestProfile] = useState<any>(null);
+
+  // Clear returning user cache instantly on mount to prevent jumping to Stage 10
+  useEffect(() => {
+    localStorage.removeItem('smokeCraftStage');
+    localStorage.removeItem('titan_ritual_complete');
+    sessionStorage.clear();
+    setCurrentStage('STAGE_1');
+  }, []);
+
+  const handleStageTransition = (nextStage: string) => {
+    // Play native velvet sliding sound on transition
+    const slideAudio = new Audio('/assets/audio/velvet_slide.mp3');
+    slideAudio.volume = 0.4;
+    slideAudio.play().catch(() => {});
+    
+    setCurrentStage(nextStage);
+  };
+
+  return (
+    <div className="relative w-full h-screen bg-black overflow-hidden select-none touch-none">
+      {/* 4. Atmospheric Smoke Particle Canvas Layer */}
+      <SmokeCanvas />
+
+      {/* Amber Ambient Glow Core Accent */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,176,0,0.03)_0%,transparent_70%)] pointer-events-none" />
+
+      {/* Main Glass Container Layer */}
+      <div className="relative z-10 flex flex-col items-center justify-center h-full p-8">
+        {currentStage === 'STAGE_1' && (
+          <div className="backdrop-blur-xl bg-neutral-900/65 border border-amber-500/15 p-10 rounded-2xl max-w-xl text-center shadow-2xl transition-all duration-300">
+            <h1 className="font-serif text-3xl text-[#D4AF37] mb-4 tracking-wide">THE RITUAL GATEWAY</h1>
+            <p className="text-[#E5E5E5] leading-relaxed mb-8 font-sans">
+              Initialize the sensory engine. Align the ambient profile variables to begin the masterclass sequence.
+            </p>
+            <TouchButton onClick={() => handleStageTransition('STAGE_2')}>
+              BEGIN EXPERIENCE
+            </TouchButton>
+          </div>
+        )}
+        {/* Additional stages (2-14) render sequentially below based on currentStage */}
+      </div>
+    </div>
+  );
+};

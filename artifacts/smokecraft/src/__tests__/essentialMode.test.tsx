@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { KernelModeProvider, useKernelMode } from "@/contexts/KernelModeContext";
 
@@ -528,5 +528,100 @@ describe("CommandCenter in Essential mode", () => {
     expect(screen.getByText("SmokeCraft")).toBeInTheDocument();
     expect(screen.getAllByText("Orders").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Analytics")).toBeInTheDocument();
+  });
+});
+
+// ─── CommandCenter upgrade modal ──────────────────────────────────────────────
+
+describe("CommandCenter upgrade modal", () => {
+  async function renderCommandCenter() {
+    const { default: CommandCenter } = await import("@/pages/CommandCenter");
+    return withKernel(<CommandCenter />);
+  }
+
+  it("opens the upgrade modal when a locked tile is clicked", async () => {
+    await renderCommandCenter();
+
+    const designerTile = screen.getByText("Designer").closest("button");
+    expect(designerTile).not.toBeNull();
+
+    await act(async () => {
+      designerTile!.click();
+    });
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("shows the correct feature headline in the modal", async () => {
+    await renderCommandCenter();
+
+    const designerTile = screen.getByText("Designer").closest("button");
+    await act(async () => {
+      designerTile!.click();
+    });
+
+    expect(screen.getByText("Signature Brand Designer")).toBeInTheDocument();
+  });
+
+  it("shows the correct body copy in the modal", async () => {
+    await renderCommandCenter();
+
+    const designerTile = screen.getByText("Designer").closest("button");
+    await act(async () => {
+      designerTile!.click();
+    });
+
+    expect(
+      screen.getByText(/Craft custom cigar bands.*live previews/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the correct headline for a different locked tile (Governance)", async () => {
+    await renderCommandCenter();
+
+    const governanceTile = screen.getByText("Governance").closest("button");
+    expect(governanceTile).not.toBeNull();
+
+    await act(async () => {
+      governanceTile!.click();
+    });
+
+    expect(screen.getByText("Governance & Access Control")).toBeInTheDocument();
+  });
+
+  it("closes the modal when the Close button is clicked", async () => {
+    await renderCommandCenter();
+
+    const designerTile = screen.getByText("Designer").closest("button");
+    await act(async () => {
+      designerTile!.click();
+    });
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    const closeBtn = screen.getByRole("button", { name: /not now/i });
+    await act(async () => {
+      closeBtn.click();
+    });
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("closes the modal when the backdrop is clicked", async () => {
+    await renderCommandCenter();
+
+    const designerTile = screen.getByText("Designer").closest("button");
+    await act(async () => {
+      designerTile!.click();
+    });
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    const backdrop = screen.getByTestId("sovereign-backdrop");
+    await act(async () => {
+      fireEvent.click(backdrop);
+    });
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

@@ -130,6 +130,7 @@ export function SovereignLockOverlay({
         {isOpen && (
           <>
             <motion.div
+              data-testid="sovereign-backdrop"
               className="fixed inset-0 z-[280]"
               style={{ background: "rgba(26,26,27,0.45)", backdropFilter: "blur(8px)" }}
               initial={{ opacity: 0 }}
@@ -165,7 +166,7 @@ export function SovereignLockOverlay({
                     fontSize: 12, fontWeight: 600,
                   }}
                 >
-                  Close
+                  Not Now
                 </button>
               )}
             </motion.div>
