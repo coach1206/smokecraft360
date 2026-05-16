@@ -15,14 +15,31 @@
  * moduleSlug defaults to "craft-smoke" for backwards compatibility.
  * Pass a craft-specific slug (e.g. "craft-pour") to attribute events
  * to the correct module in the E.A.T. Engine dashboard.
+ *
+ * Deduplication:
+ *   swipe_add and swipe_skip are debounced with a 300 ms coalesce window
+ *   (keyed by eventType + moduleSlug). Rapid-fire swipes collapse into a
+ *   single POST; the last payload wins. swipe_start, build_complete, and
+ *   all other events are never debounced.
  */
 
 const DEFAULT_SLUG = "craft-smoke";
+
+/** Events that are debounced to reduce high-frequency noise. */
+const DEBOUNCED_EVENTS = new Set(["swipe_add", "swipe_skip"]);
+
+/** Configurable coalesce window in ms. Exported for test overrides. */
+export let DEBOUNCE_WINDOW_MS = 300;
 
 /** Per-slug resolved module ID cache. null = resolved but not found. */
 const _moduleIdCache = new Map<string, string | null>();
 /** Per-slug in-flight fetch promises to deduplicate concurrent calls. */
 const _fetchPromises  = new Map<string, Promise<void>>();
+
+/** Pending debounce timer handles keyed by "eventType:moduleSlug". */
+const _debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+/** Coalesced payload for each pending debounced key — last write wins. */
+const _debouncedPayloads = new Map<string, Record<string, unknown> | undefined>();
 
 function ensureModuleId(slug: string): Promise<void> {
   if (_moduleIdCache.has(slug)) return Promise.resolve();
@@ -65,6 +82,30 @@ function resolveVenueId(): string | null {
   }
 }
 
+/** Internal: resolve module ID then POST the telemetry event. */
+async function fireEvent(
+  eventType: string,
+  payload: Record<string, unknown> | undefined,
+  moduleSlug: string,
+  venueId: string | null,
+): Promise<void> {
+  try {
+    await ensureModuleId(moduleSlug);
+    const moduleId = _moduleIdCache.get(moduleSlug) ?? null;
+    const body: Record<string, unknown> = { eventType };
+    if (moduleId) body.moduleId = moduleId;
+    if (venueId)  body.venueId  = venueId;
+    if (payload)  body.payload  = payload;
+    await fetch("/api/kernel/telemetry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    /* silent — telemetry must never interrupt the guest experience */
+  }
+}
+
 export function emitKernelEvent(
   eventType: string,
   payload?: Record<string, unknown>,
@@ -77,24 +118,22 @@ export function emitKernelEvent(
     void ensureModuleId(moduleSlug);
   }
 
-  // Internally async so we can await the module ID, but callers are never blocked.
-  void (async () => {
-    try {
-      await ensureModuleId(moduleSlug);
-      const moduleId = _moduleIdCache.get(moduleSlug) ?? null;
-      const body: Record<string, unknown> = { eventType };
-      if (moduleId) body.moduleId = moduleId;
-      if (venueId)  body.venueId  = venueId;
-      if (payload)  body.payload  = payload;
-      await fetch("/api/kernel/telemetry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    } catch {
-      /* silent — telemetry must never interrupt the guest experience */
-    }
-  })();
+  if (DEBOUNCED_EVENTS.has(eventType)) {
+    const key = `${eventType}:${moduleSlug}`;
+    const existing = _debounceTimers.get(key);
+    if (existing !== undefined) clearTimeout(existing);
+    _debouncedPayloads.set(key, payload);
+    const timer = setTimeout(() => {
+      _debounceTimers.delete(key);
+      const coalesced = _debouncedPayloads.get(key);
+      _debouncedPayloads.delete(key);
+      void fireEvent(eventType, coalesced, moduleSlug, venueId);
+    }, DEBOUNCE_WINDOW_MS);
+    _debounceTimers.set(key, timer);
+    return;
+  }
+
+  void fireEvent(eventType, payload, moduleSlug, venueId);
 }
 
 /**

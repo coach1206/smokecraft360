@@ -135,7 +135,7 @@ describe("emitKernelEvent", () => {
           posts[posts.length - 1][1].body as string,
         ) as Record<string, unknown>;
       },
-      { timeout: 500 },
+      { timeout: 600 },
     );
     return body;
   }
@@ -341,9 +341,11 @@ describe("emitKernelEvent", () => {
       })
       .mockRejectedValueOnce(new Error("telemetry endpoint down"));
 
+    // Use swipe_start (un-debounced) so the event fires within the 50 ms window
+    // and no pending debounce timer bleeds into subsequent tests.
     await expect(
       new Promise<void>((resolve) => {
-        emitKernelEvent("swipe_add", undefined, "craft-pour");
+        emitKernelEvent("swipe_start", undefined, "craft-pour");
         setTimeout(resolve, 50);
       }),
     ).resolves.toBeUndefined();
@@ -409,5 +411,237 @@ describe("emitKernelEvent", () => {
     emitKernelEvent("swipe_start", undefined, "craft-smoke");
     const body = await capturePost();
     expect(body.venueId).toBeUndefined();
+  });
+});
+
+// ─── emitKernelEvent — debounce behaviour ─────────────────────────────────────
+//
+// These tests use fake timers so the 300 ms window can be advanced
+// deterministically without adding real wall-clock delays.
+
+describe("emitKernelEvent — debounce behaviour", () => {
+  let emitKernelEvent: (
+    eventType: string,
+    payload?: Record<string, unknown>,
+    moduleSlug?: string,
+  ) => void;
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  /** Flush all pending microtasks (promise callbacks). */
+  async function flushPromises() {
+    await new Promise<void>((r) => queueMicrotask(r));
+    await new Promise<void>((r) => queueMicrotask(r));
+    await new Promise<void>((r) => queueMicrotask(r));
+  }
+
+  /** Return all telemetry POSTs captured so far. */
+  function telemetryPosts(): Array<Record<string, unknown>> {
+    return fetchMock.mock.calls
+      .filter(
+        ([url, opts]: [string, RequestInit]) =>
+          url === "/api/kernel/telemetry" && opts?.method === "POST",
+      )
+      .map(([, opts]: [string, RequestInit]) =>
+        JSON.parse(opts.body as string) as Record<string, unknown>,
+      );
+  }
+
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    vi.resetModules();
+    localStorage.clear();
+
+    fetchMock = makeModulesFetch();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const mod = await import("./kernelTelemetry");
+    emitKernelEvent = mod.emitKernelEvent;
+
+    // Flush the import-time warmup fetch (promise microtasks only — no timers)
+    await flushPromises();
+    fetchMock.mockClear();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  // ── swipe_add is debounced ────────────────────────────────────────────────
+
+  it("swipe_add: rapid calls within the window produce exactly one POST", async () => {
+    emitKernelEvent("swipe_add", { productId: "p1" });
+    emitKernelEvent("swipe_add", { productId: "p2" });
+    emitKernelEvent("swipe_add", { productId: "p3" });
+
+    // No POST yet — window still open
+    await flushPromises();
+    expect(telemetryPosts().length).toBe(0);
+
+    // Advance past the debounce window and flush resulting async work
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect(posts[0].eventType).toBe("swipe_add");
+  });
+
+  it("swipe_add: last payload wins when calls are coalesced", async () => {
+    emitKernelEvent("swipe_add", { productId: "first" });
+    emitKernelEvent("swipe_add", { productId: "second" });
+    emitKernelEvent("swipe_add", { productId: "last" });
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect((posts[0].payload as Record<string, unknown>).productId).toBe("last");
+  });
+
+  // ── swipe_skip is debounced ───────────────────────────────────────────────
+
+  it("swipe_skip: rapid calls within the window produce exactly one POST", async () => {
+    emitKernelEvent("swipe_skip", { cardId: "a" });
+    emitKernelEvent("swipe_skip", { cardId: "b" });
+    emitKernelEvent("swipe_skip", { cardId: "c" });
+
+    await flushPromises();
+    expect(telemetryPosts().length).toBe(0);
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect(posts[0].eventType).toBe("swipe_skip");
+  });
+
+  it("swipe_skip: last payload wins when calls are coalesced", async () => {
+    emitKernelEvent("swipe_skip", { cardId: "x" });
+    emitKernelEvent("swipe_skip", { cardId: "y" });
+    emitKernelEvent("swipe_skip", { cardId: "z" });
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect((posts[0].payload as Record<string, unknown>).cardId).toBe("z");
+  });
+
+  // ── swipe_add and swipe_skip are debounced independently ─────────────────
+
+  it("swipe_add and swipe_skip use independent debounce keys", async () => {
+    emitKernelEvent("swipe_add",  { productId: "a" });
+    emitKernelEvent("swipe_skip", { cardId: "b" });
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(2);
+    const types = posts.map((p) => p.eventType).sort();
+    expect(types).toEqual(["swipe_add", "swipe_skip"]);
+  });
+
+  // ── debounce keys are per-slug ────────────────────────────────────────────
+
+  it("swipe_add calls for different slugs are debounced independently", async () => {
+    emitKernelEvent("swipe_add", { productId: "smoke-1" }, "craft-smoke");
+    emitKernelEvent("swipe_add", { productId: "pour-1"  }, "craft-pour");
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(2);
+  });
+
+  // ── swipe_start is NOT debounced ──────────────────────────────────────────
+
+  it("swipe_start fires immediately without waiting for any timer", async () => {
+    emitKernelEvent("swipe_start", { craftType: "smoke" });
+
+    // Flush microtasks only — do not advance any timers
+    await flushPromises();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect(posts[0].eventType).toBe("swipe_start");
+  });
+
+  it("multiple swipe_start calls each fire individually (no coalescing)", async () => {
+    emitKernelEvent("swipe_start", { craftType: "smoke" });
+    emitKernelEvent("swipe_start", { craftType: "pour"  }, "craft-pour");
+
+    await flushPromises();
+    await flushPromises();
+
+    expect(telemetryPosts().length).toBe(2);
+  });
+
+  // ── build_complete is NOT debounced ───────────────────────────────────────
+
+  it("build_complete fires immediately without waiting for any timer", async () => {
+    emitKernelEvent("build_complete", { count: 5 });
+
+    await flushPromises();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect(posts[0].eventType).toBe("build_complete");
+  });
+
+  // ── a new swipe_add after window elapses starts a fresh debounce ──────────
+
+  it("swipe_add after the previous window has elapsed fires as a fresh event", async () => {
+    emitKernelEvent("swipe_add", { productId: "first-batch" });
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    fetchMock.mockClear();
+
+    emitKernelEvent("swipe_add", { productId: "second-batch" });
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect((posts[0].payload as Record<string, unknown>).productId).toBe(
+      "second-batch",
+    );
+  });
+
+  // ── debounced events carry the correct moduleId ───────────────────────────
+
+  it("debounced swipe_add resolves the correct moduleId for craft-pour", async () => {
+    emitKernelEvent("swipe_add", { productId: "w1" }, "craft-pour");
+    emitKernelEvent("swipe_add", { productId: "w2" }, "craft-pour");
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect(posts[0].moduleId).toBe("mod-pour-001");
+  });
+
+  it("debounced swipe_skip resolves the correct moduleId for craft-brew", async () => {
+    emitKernelEvent("swipe_skip", { cardId: "b1" }, "craft-brew");
+    emitKernelEvent("swipe_skip", { cardId: "b2" }, "craft-brew");
+
+    await vi.runAllTimersAsync();
+    await flushPromises();
+
+    const posts = telemetryPosts();
+    expect(posts.length).toBe(1);
+    expect(posts[0].moduleId).toBe("mod-brew-001");
   });
 });
