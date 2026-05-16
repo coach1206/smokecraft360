@@ -3091,6 +3091,10 @@ const FLASH_KEYFRAMES = `
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes liveDotPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
+  50%       { opacity: 0.7; box-shadow: 0 0 0 4px rgba(74,222,128,0); }
+}
 `;
 
 function formatRelative(iso: string): string {
@@ -3249,6 +3253,10 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
 
   const activeFilterCount = selectedTypes.size + (selectedModule ? 1 : 0) + (normalizedSearch ? 1 : 0);
 
+  const liveRecentlyActive = events.some(
+    (ev) => Date.now() - new Date(ev.occurredAt).getTime() < 60_000,
+  );
+
   const ghostTypes   = [...selectedTypes].filter((t) => !allEventTypes.includes(t));
   const moduleIsGhost = selectedModule !== "" && !allModules.includes(selectedModule);
   const hasGhostFilters = ghostTypes.length > 0 || moduleIsGhost;
@@ -3260,8 +3268,36 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)", marginBottom: 1 }}>
-            LIVE EVENT FEED
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)" }}>
+              LIVE EVENT FEED
+            </div>
+            {/* Live activity chip */}
+            <div style={{
+              display: "flex", alignItems: "center", gap: 5,
+              padding: "2px 7px",
+              borderRadius: 99,
+              border: `1px solid ${liveRecentlyActive ? "rgba(74,222,128,0.35)" : "rgba(255,255,255,0.08)"}`,
+              background: liveRecentlyActive ? "rgba(74,222,128,0.08)" : "rgba(255,255,255,0.03)",
+              transition: "all 0.6s ease",
+            }}>
+              <span style={{
+                display: "inline-block",
+                width: 6, height: 6,
+                borderRadius: "50%",
+                background: liveRecentlyActive ? "#4ade80" : "rgba(255,255,255,0.2)",
+                flexShrink: 0,
+                transition: "background 0.6s ease",
+                animation: liveRecentlyActive ? "liveDotPulse 1.6s ease-in-out infinite" : "none",
+              }} />
+              <span style={{
+                fontSize: 9, fontWeight: 700, letterSpacing: "0.15em",
+                color: liveRecentlyActive ? "rgba(74,222,128,0.85)" : "rgba(255,255,255,0.2)",
+                transition: "color 0.6s ease",
+              }}>
+                LIVE
+              </span>
+            </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <span style={{ fontSize: 12, color: "rgba(245,237,216,0.4)" }}>
