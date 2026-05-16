@@ -325,7 +325,7 @@ export function RitualStep({ config, onComplete, onBack }: RitualStepProps) {
               >
                 {confirmed
                   ? `${selected.name} Locked · Proceeding…`
-                  : `${config.lockVerb} → ${config.proceedLabel.replace("PROCEED TO ", "")}`}
+                  : `${config.lockVerb} · ${config.proceedLabel.replace("PROCEED TO ", "")}`}
               </motion.button>
             </motion.div>
           )}
@@ -347,7 +347,10 @@ export function RitualStep({ config, onComplete, onBack }: RitualStepProps) {
           onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(212,175,55,0.65)")}
           onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(200,185,155,0.32)")}
         >
-          ← Previous Session
+          <svg width={9} height={9} viewBox="0 0 9 9" fill="none" style={{ marginRight: 5, verticalAlign: "middle", display: "inline-block" }}>
+            <path d="M6 1L2 4.5l4 3.5" stroke="currentColor" strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Previous Session
         </button>
       )}
     </motion.div>

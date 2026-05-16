@@ -86,9 +86,9 @@ const VITOLAS = [
   { id: "lancero",   label: "Lancero",   smoke: 120, img: "/images/cigar4.png", xp: 18, synergy: 25, ring: 38, length: 7.5 },
 ];
 const CUTS = [
-  { id: "straight", label: "Straight Cut", sub: "Clean · Classic · Full Draw",      xp: 8,  synergy: 33, icon: "━━━" },
-  { id: "vcut",     label: "V-Cut",        sub: "Focused · Concentrated · Intense", xp: 12, synergy: 37, icon: "◁▷" },
-  { id: "punch",    label: "Punch Cut",    sub: "Circular · Controlled · Smooth",   xp: 10, synergy: 30, icon: "◉" },
+  { id: "straight", label: "Straight Cut", sub: "Clean · Classic · Full Draw",      xp: 8,  synergy: 33 },
+  { id: "vcut",     label: "V-Cut",        sub: "Focused · Concentrated · Intense", xp: 12, synergy: 37 },
+  { id: "punch",    label: "Punch Cut",    sub: "Circular · Controlled · Smooth",   xp: 10, synergy: 30 },
 ];
 
 const STEP_MENTOR: string[] = [
@@ -676,14 +676,14 @@ function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: ()
         </div>
 
         <div className="flex justify-between mt-6 gap-4">
-          <button style={GW.btn(true)} onClick={onBack}>← Back</button>
+          <button style={GW.btn(true)} onClick={onBack}>Back</button>
           <motion.button
             style={GW.btn()}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={onNext}
           >
-            Select Your Master Mentor →
+            Select Your Master Mentor
           </motion.button>
         </div>
       </div>
@@ -760,14 +760,14 @@ function GatewayMentor({
         </div>
 
         <div className="flex justify-between gap-4">
-          <button style={GW.btn(true)} onClick={onBack}>← Back</button>
+          <button style={GW.btn(true)} onClick={onBack}>Back</button>
           <motion.button
             style={GW.btn(!selected)}
             whileHover={selected ? { scale: 1.03 } : {}}
             whileTap={selected ? { scale: 0.97 } : {}}
             onClick={() => selected && onNext()}
           >
-            Confirm & Select Seed Base →
+            Confirm & Select Seed Base
           </motion.button>
         </div>
       </div>
@@ -883,14 +883,14 @@ function GatewayCultivation({
         </div>
 
         <div className="flex justify-between gap-4 mt-2">
-          <button style={GW.btn(true)} onClick={onBack}>← Back</button>
+          <button style={GW.btn(true)} onClick={onBack}>Back</button>
           <motion.button
             style={GW.btn(!canAdvance)}
             whileHover={canAdvance ? { scale: 1.03 } : {}}
             whileTap={canAdvance ? { scale: 0.97 } : {}}
             onClick={() => canAdvance && onNext()}
           >
-            Enter the Blending Chamber →
+            Enter the Blending Chamber
           </motion.button>
         </div>
       </div>
@@ -1112,7 +1112,7 @@ function AlchemyReveal({
                         {s.imageUrl ? (
                           <img src={s.imageUrl} alt={s.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         ) : (
-                          <span style={{ fontSize: 28 }}>🥃</span>
+                          <span style={{ fontSize: 9, letterSpacing: "0.18em", color: `${GOLD}55`, textTransform: "uppercase" }}>SPIRIT</span>
                         )}
                       </div>
                       <div className="px-2 py-2">
@@ -1154,7 +1154,7 @@ function AlchemyReveal({
                       }}
                     >
                       <div style={{ height: 70, background: "rgba(212,175,55,0.06)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: 28 }}>🍺</span>
+                        <span style={{ fontSize: 9, letterSpacing: "0.18em", color: `${GOLD}55`, textTransform: "uppercase" }}>BEER</span>
                       </div>
                       <div className="px-2 py-2">
                         <p className="text-[9px] font-bold leading-tight" style={{ color: "rgba(240,232,212,0.90)" }}>{b.name}</p>
@@ -1354,15 +1354,6 @@ export default function MasterBlender() {
   const [, nav]       = useLocation();
   const { speak, stopSpeak } = useAudio();
 
-  // ── Ritual eligibility guard — redirect if guest hasn't completed the ritual ──
-  useEffect(() => {
-    try {
-      const ritualDone = sessionStorage.getItem("titan_ritual_complete") === "true";
-      const accepts    = parseInt(sessionStorage.getItem("titan_swipe_accepts") ?? "0", 10);
-      if (!ritualDone || accepts < 3) nav("/");
-    } catch { nav("/"); }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   // ── Gateway state ────────────────────────────────────────────────────────
   const [gateway,        setGateway]        = useState<GatewayPhase>("intro");
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
@@ -1739,18 +1730,23 @@ export default function MasterBlender() {
                           background: "repeating-linear-gradient(0deg, rgba(212,175,55,0.03) 0px, rgba(212,175,55,0.03) 1px, transparent 1px, transparent 4px)",
                         }} />
 
-                        {/* Cut icon */}
-                        <span style={{
-                          fontSize:   cut.id === "straight" ? 28 : cut.id === "vcut" ? 24 : 32,
-                          color:      sel.cut?.id === cut.id ? GOLD : "rgba(240,232,212,0.5)",
-                          lineHeight: 1,
-                          letterSpacing: "0.1em",
-                          transition: "color 0.3s",
-                          fontFamily: "monospace",
-                          fontWeight: "bold",
-                        }}>
-                          {cut.icon}
-                        </span>
+                        {/* Cut icon — SVG */}
+                        {cut.id === "straight" && (
+                          <svg width={38} height={8} viewBox="0 0 38 8" fill="none" style={{ color: sel.cut?.id === cut.id ? GOLD : "rgba(240,232,212,0.5)", transition: "color 0.3s" }}>
+                            <rect x="0" y="3" width="38" height="2" rx="1" fill="currentColor"/>
+                          </svg>
+                        )}
+                        {cut.id === "vcut" && (
+                          <svg width={30} height={26} viewBox="0 0 30 26" fill="none" style={{ color: sel.cut?.id === cut.id ? GOLD : "rgba(240,232,212,0.5)", transition: "color 0.3s" }}>
+                            <path d="M2 2 L15 24 L28 2" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                        {cut.id === "punch" && (
+                          <svg width={34} height={34} viewBox="0 0 34 34" fill="none" style={{ color: sel.cut?.id === cut.id ? GOLD : "rgba(240,232,212,0.5)", transition: "color 0.3s" }}>
+                            <circle cx="17" cy="17" r="13" stroke="currentColor" strokeWidth="2"/>
+                            <circle cx="17" cy="17" r="5" fill="currentColor"/>
+                          </svg>
+                        )}
 
                         {/* Selected glow */}
                         {sel.cut?.id === cut.id && (
@@ -1817,7 +1813,7 @@ export default function MasterBlender() {
             border:     "none",
           }}
         >
-          {step === 3 ? "REVEAL MATCH →" : "CONTINUE →"}
+          {step === 3 ? "REVEAL MATCH" : "CONTINUE"}
         </motion.button>
       </div>
 
