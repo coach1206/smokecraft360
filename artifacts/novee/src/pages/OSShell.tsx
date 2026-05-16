@@ -1022,33 +1022,57 @@ function EditModuleModal({
   const [error,         setError]         = useState<string | null>(null);
   const [slugConflict,  setSlugConflict]  = useState<string | null>(null);
   const [slugChecking,  setSlugChecking]  = useState(false);
-  const [historyOpen,   setHistoryOpen]   = useState(false);
-  const [history,       setHistory]       = useState<AuditEntry[]>([]);
+  const [historyOpen,    setHistoryOpen]    = useState(false);
+  const [history,        setHistory]        = useState<AuditEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyTotal,   setHistoryTotal]   = useState(0);
+  const [historyPage,    setHistoryPage]    = useState(1);
+  const [historyPages,   setHistoryPages]   = useState(1);
+  const [historyField,   setHistoryField]   = useState("");
+  const [historySince,   setHistorySince]   = useState("");
+  const [historyUntil,   setHistoryUntil]   = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const checkIdRef  = useRef(0);
 
-  const loadHistory = useCallback(async () => {
-    if (historyLoading) return;
+  const HISTORY_PAGE_SIZE = 10;
+
+  const loadHistory = useCallback(async (page: number, field: string, since: string, until: string) => {
     setHistoryLoading(true);
     try {
-      const result = await apiFetch<{ history: AuditEntry[] }>(`/modules/${mod.id}/history`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
-      });
+      const params = new URLSearchParams({ page: String(page), limit: String(HISTORY_PAGE_SIZE) });
+      if (field)  params.set("field",  field);
+      if (since)  params.set("since",  new Date(since).toISOString());
+      if (until) {
+        const d = new Date(until);
+        d.setHours(23, 59, 59, 999);
+        params.set("until", d.toISOString());
+      }
+      const result = await apiFetch<{ history: AuditEntry[]; total: number; page: number; totalPages: number }>(
+        `/modules/${mod.id}/history?${params.toString()}`,
+        { headers: { Authorization: `Bearer ${adminToken}` } },
+      );
       setHistory(result.history);
+      setHistoryTotal(result.total);
+      setHistoryPage(result.page);
+      setHistoryPages(result.totalPages);
     } catch {
       // Silently fail — history is informational only
     } finally {
       setHistoryLoading(false);
     }
-  }, [mod.id, adminToken, historyLoading]);
+  }, [mod.id, adminToken]);
 
   const toggleHistory = useCallback(() => {
-    if (!historyOpen && history.length === 0) {
-      void loadHistory();
+    if (!historyOpen) {
+      void loadHistory(1, historyField, historySince, historyUntil);
     }
     setHistoryOpen((v) => !v);
-  }, [historyOpen, history.length, loadHistory]);
+  }, [historyOpen, loadHistory, historyField, historySince, historyUntil]);
+
+  const applyHistoryFilters = useCallback(() => {
+    setHistoryPage(1);
+    void loadHistory(1, historyField, historySince, historyUntil);
+  }, [loadHistory, historyField, historySince, historyUntil]);
 
   const slugFormatError = slug && !SLUG_RE.test(slug)
     ? "Slug must be lowercase letters, numbers, hyphens, or underscores"
@@ -1272,13 +1296,102 @@ function EditModuleModal({
             <span style={{ fontSize: 10, transition: "transform 0.2s", display: "inline-block", transform: historyOpen ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
             EDIT HISTORY
             {historyLoading && <span style={{ opacity: 0.5 }}>…</span>}
+            {historyOpen && !historyLoading && (
+              <span style={{ fontSize: 9, color: "rgba(245,237,216,0.35)", letterSpacing: "0.1em", marginLeft: 4 }}>
+                {historyTotal} RESULT{historyTotal !== 1 ? "S" : ""}
+              </span>
+            )}
           </button>
 
           {historyOpen && (
             <div style={{ marginTop: 10 }}>
+              {/* Filter bar */}
+              <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: "0 0 auto" }}>
+                  <span style={{ fontSize: 8, letterSpacing: "0.18em", color: "rgba(196,97,10,0.55)" }}>FIELD</span>
+                  <select
+                    value={historyField}
+                    onChange={(e) => setHistoryField(e.target.value)}
+                    style={{
+                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(196,97,10,0.2)",
+                      borderRadius: 6, padding: "5px 8px", color: "#F5EDD8",
+                      fontSize: 10, outline: "none", fontFamily: "inherit", cursor: "pointer",
+                    }}
+                  >
+                    <option value="">All fields</option>
+                    <option value="name">name</option>
+                    <option value="slug">slug</option>
+                    <option value="craftType">craftType</option>
+                    <option value="status">status</option>
+                    <option value="description">description</option>
+                    <option value="launchUrl">launchUrl</option>
+                  </select>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: "1 1 100px" }}>
+                  <span style={{ fontSize: 8, letterSpacing: "0.18em", color: "rgba(196,97,10,0.55)" }}>FROM</span>
+                  <input
+                    type="date"
+                    value={historySince}
+                    onChange={(e) => setHistorySince(e.target.value)}
+                    style={{
+                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(196,97,10,0.2)",
+                      borderRadius: 6, padding: "5px 8px", color: "#F5EDD8",
+                      fontSize: 10, outline: "none", fontFamily: "inherit",
+                      colorScheme: "dark",
+                    }}
+                  />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: "1 1 100px" }}>
+                  <span style={{ fontSize: 8, letterSpacing: "0.18em", color: "rgba(196,97,10,0.55)" }}>TO</span>
+                  <input
+                    type="date"
+                    value={historyUntil}
+                    onChange={(e) => setHistoryUntil(e.target.value)}
+                    style={{
+                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(196,97,10,0.2)",
+                      borderRadius: 6, padding: "5px 8px", color: "#F5EDD8",
+                      fontSize: 10, outline: "none", fontFamily: "inherit",
+                      colorScheme: "dark",
+                    }}
+                  />
+                </div>
+                <div style={{ display: "flex", gap: 6, flex: "0 0 auto", paddingBottom: 1 }}>
+                  <button
+                    onClick={applyHistoryFilters}
+                    disabled={historyLoading}
+                    style={{
+                      background: "rgba(196,97,10,0.15)", border: "1px solid rgba(196,97,10,0.35)",
+                      borderRadius: 6, padding: "5px 10px", color: "#C4610A",
+                      fontSize: 9, letterSpacing: "0.12em", fontWeight: 700, cursor: "pointer",
+                      opacity: historyLoading ? 0.5 : 1,
+                    }}
+                  >
+                    APPLY
+                  </button>
+                  {(historyField || historySince || historyUntil) && (
+                    <button
+                      onClick={() => {
+                        setHistoryField("");
+                        setHistorySince("");
+                        setHistoryUntil("");
+                        void loadHistory(1, "", "", "");
+                      }}
+                      style={{
+                        background: "none", border: "1px solid rgba(245,237,216,0.12)",
+                        borderRadius: 6, padding: "5px 10px", color: "rgba(245,237,216,0.4)",
+                        fontSize: 9, letterSpacing: "0.12em", cursor: "pointer",
+                      }}
+                    >
+                      CLEAR
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Results */}
               {history.length === 0 && !historyLoading ? (
                 <div style={{ fontSize: 10, color: "rgba(245,237,216,0.3)", padding: "8px 0" }}>
-                  No edits recorded yet.
+                  No edits match the current filters.
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 220, overflowY: "auto" }}>
@@ -1314,6 +1427,47 @@ function EditModuleModal({
                       )}
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {historyPages > 1 && (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10, paddingTop: 8, borderTop: "1px solid rgba(196,97,10,0.1)" }}>
+                  <button
+                    disabled={historyPage <= 1 || historyLoading}
+                    onClick={() => {
+                      const prev = historyPage - 1;
+                      setHistoryPage(prev);
+                      void loadHistory(prev, historyField, historySince, historyUntil);
+                    }}
+                    style={{
+                      background: "none", border: "1px solid rgba(196,97,10,0.25)",
+                      borderRadius: 5, padding: "4px 10px", color: "rgba(196,97,10,0.7)",
+                      fontSize: 9, letterSpacing: "0.1em", cursor: historyPage <= 1 ? "not-allowed" : "pointer",
+                      opacity: historyPage <= 1 ? 0.35 : 1,
+                    }}
+                  >
+                    ← PREV
+                  </button>
+                  <span style={{ fontSize: 9, color: "rgba(245,237,216,0.3)", letterSpacing: "0.1em" }}>
+                    PAGE {historyPage} / {historyPages}
+                  </span>
+                  <button
+                    disabled={historyPage >= historyPages || historyLoading}
+                    onClick={() => {
+                      const next = historyPage + 1;
+                      setHistoryPage(next);
+                      void loadHistory(next, historyField, historySince, historyUntil);
+                    }}
+                    style={{
+                      background: "none", border: "1px solid rgba(196,97,10,0.25)",
+                      borderRadius: 5, padding: "4px 10px", color: "rgba(196,97,10,0.7)",
+                      fontSize: 9, letterSpacing: "0.1em", cursor: historyPage >= historyPages ? "not-allowed" : "pointer",
+                      opacity: historyPage >= historyPages ? 0.35 : 1,
+                    }}
+                  >
+                    NEXT →
+                  </button>
                 </div>
               )}
             </div>

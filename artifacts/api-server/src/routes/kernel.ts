@@ -22,7 +22,7 @@ import {
 } from "@workspace/db";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { z }                             from "zod";
-import { eq, desc, sql, count, and, ne, isNull, isNotNull } from "drizzle-orm";
+import { eq, desc, sql, count, and, ne, isNull, isNotNull, gte, lte } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -244,8 +244,14 @@ router.patch("/modules/:id", requireAuth, async (req: AuthRequest, res: Response
 });
 
 // ── GET /api/kernel/modules/:id/history ───────────────────────────────────────
-// Returns the last N audit log entries for a module (admin/super_admin only).
-// Optional query param: ?limit=<1–100>  (default: 50)
+// Returns audit log entries for a module (admin/super_admin only).
+// Optional query params:
+//   ?field=<name>        — only entries whose diff contains this field key
+//   ?since=<ISO date>    — only entries at or after this timestamp
+//   ?until=<ISO date>    — only entries at or before this timestamp
+//   ?page=<1…>           — page number (default: 1)
+//   ?limit=<1–50>        — page size (default: 20, max: 50)
+// Response: { history, total, page, totalPages }
 
 router.get("/modules/:id/history", requireAuth, async (req: AuthRequest, res: Response) => {
   const role = (req as AuthRequest).user?.role;
@@ -256,25 +262,80 @@ router.get("/modules/:id/history", requireAuth, async (req: AuthRequest, res: Re
   const { id } = req.params as { id: string };
   if (!UUID_RE.test(id)) return res.status(400).json({ error: "id must be a valid UUID" });
 
-  const rawLimit = req.query.limit as string | undefined;
-  let limitN = 50;
-  if (rawLimit !== undefined) {
-    const parsed = parseInt(rawLimit, 10);
-    if (isNaN(parsed) || parsed < 1 || parsed > 100) {
-      return res.status(400).json({ error: "limit must be an integer between 1 and 100" });
+  const q = req.query as Record<string, string | undefined>;
+
+  // Parse ?limit
+  let limitN = 20;
+  if (q.limit !== undefined) {
+    const parsed = parseInt(q.limit, 10);
+    if (isNaN(parsed) || parsed < 1 || parsed > 50) {
+      return res.status(400).json({ error: "limit must be an integer between 1 and 50" });
     }
     limitN = parsed;
   }
 
+  // Parse ?page
+  let pageN = 1;
+  if (q.page !== undefined) {
+    const parsed = parseInt(q.page, 10);
+    if (isNaN(parsed) || parsed < 1) {
+      return res.status(400).json({ error: "page must be a positive integer" });
+    }
+    pageN = parsed;
+  }
+
+  // Parse ?since / ?until
+  let sinceDate: Date | undefined;
+  let untilDate: Date | undefined;
+  if (q.since !== undefined) {
+    sinceDate = new Date(q.since);
+    if (isNaN(sinceDate.getTime())) {
+      return res.status(400).json({ error: "since must be a valid ISO date string" });
+    }
+  }
+  if (q.until !== undefined) {
+    untilDate = new Date(q.until);
+    if (isNaN(untilDate.getTime())) {
+      return res.status(400).json({ error: "until must be a valid ISO date string" });
+    }
+  }
+
+  // Parse ?field — must be a safe identifier (letters, numbers, underscores)
+  const fieldFilter = q.field?.trim() || undefined;
+  if (fieldFilter !== undefined && !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(fieldFilter)) {
+    return res.status(400).json({ error: "field must be a valid field name" });
+  }
+
   try {
+    // Build WHERE conditions
+    const conditions = [eq(kernelModuleAuditLogTable.moduleId, id)];
+    if (sinceDate) conditions.push(gte(kernelModuleAuditLogTable.changedAt, sinceDate));
+    if (untilDate) conditions.push(lte(kernelModuleAuditLogTable.changedAt, untilDate));
+    if (fieldFilter) {
+      conditions.push(sql`jsonb_exists(${kernelModuleAuditLogTable.diff}::jsonb, ${fieldFilter})`);
+    }
+
+    const whereClause = and(...conditions);
+
+    const [{ total }] = await db
+      .select({ total: count() })
+      .from(kernelModuleAuditLogTable)
+      .where(whereClause);
+
     const entries = await db
       .select()
       .from(kernelModuleAuditLogTable)
-      .where(eq(kernelModuleAuditLogTable.moduleId, id))
+      .where(whereClause)
       .orderBy(desc(kernelModuleAuditLogTable.changedAt))
-      .limit(limitN);
+      .limit(limitN)
+      .offset((pageN - 1) * limitN);
 
-    return res.json({ history: entries });
+    return res.json({
+      history:    entries,
+      total,
+      page:       pageN,
+      totalPages: Math.ceil(total / limitN),
+    });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     return res.status(500).json({ error: msg });
