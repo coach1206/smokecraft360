@@ -638,6 +638,13 @@ if (process.env["NODE_ENV"] !== "test") {
   startSignalMonitor();
   RuntimeActivationService.registerWorker("reconciliation");
 
+  // Distributed Cluster Layer — must start before intelligence workers
+  // so leader election completes before venue partitioning begins
+  const { startClusterCoordinator } = await import("./distributed/clusterCoordinator");
+  startClusterCoordinator(["intelligence", "orchestration", "pos", "replay"]).catch(
+    err => logger.warn({ err }, "NOVEE OS — cluster coordinator startup failed (non-fatal)"),
+  );
+
   // Autonomous Intelligence Layer
   const { startIntelligenceWorker } = await import("./workers/intelligenceWorker");
   startIntelligenceWorker();
