@@ -582,7 +582,12 @@ router.patch("/mode/:venueId", requireAuth, async (req: AuthRequest, res: Respon
 });
 
 // ── GET /api/kernel/mode/:venueId/history ────────────────────────────────────
-// Returns mode change audit log for a venue (admin/super_admin/venue_owner only).
+// Returns mode change audit log for a venue.
+// Access policy (intentional):
+//   - super_admin / admin : can read history for any venue
+//   - venue_owner         : can read history for their own venue only (scoped by userVenueId === venueId)
+// Venue owners are granted read-only visibility into their own history so they can
+// audit who changed their mode and when, without exposing cross-venue data.
 // Optional query params:
 //   ?limit=<1–50>  — page size (default 20, max 50)
 //   ?offset=<0…>   — row offset for pagination (default 0)
