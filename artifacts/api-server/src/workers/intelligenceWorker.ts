@@ -30,6 +30,22 @@ import { runTemporalLearningCycle }           from "../intelligence/temporal/tem
 import { runAwarenessCycle }                  from "../intelligence/awareness/operationalAwarenessEngine";
 import { runAdaptiveCycle }                   from "../intelligence/adaptive/adaptiveOptimizer";
 
+// New cognition + telemetry services
+import { aggregateContext }                   from "../cognition/context/contextAggregator";
+import { scoreAndPersist }                    from "../cognition/context/contextScoring";
+import { predictMomentum }                    from "../cognition/predictive/momentumPrediction";
+import { forecastEngagement }                 from "../cognition/predictive/engagementForecasting";
+import { forecastConversions }                from "../cognition/predictive/conversionForecasting";
+import { forecastTraffic }                    from "../cognition/predictive/trafficPrediction";
+import { predictOptimalEnvironment }          from "../cognition/predictive/environmentalPrediction";
+import { evictStaleVenueState }               from "../cognition/state/venueStateEngine";
+import { evictStaleGuestState }               from "../cognition/state/guestStateEngine";
+import { optimizeAtmosphere }                 from "../cognition/environment/atmosphereOptimization";
+import { startQueueDrain }                    from "../intelligence/orchestration/orchestrationQueue";
+import { computeHeatmap }                     from "../realtime/telemetry/loungeHeatmap";
+import { computeLiveMetrics }                 from "../realtime/telemetry/liveMetrics";
+import { summarizeSessions, evictExpiredSessions } from "../realtime/telemetry/activeSessions";
+
 let evaluationTimer:  ReturnType<typeof setInterval> | null = null;
 let slowCycleTimer:   ReturnType<typeof setInterval> | null = null;
 let decayTimer:       ReturnType<typeof setInterval> | null = null;
@@ -97,6 +113,19 @@ async function evaluateVenueFull(venueId: string): Promise<void> {
     // 7. Operational awareness synthesis
     await runAwarenessCycle(venueId).catch(() => {});
 
+    // 8. Context aggregation + scoring
+    const aggregated = await aggregateContext(venueId).catch(() => null);
+    if (aggregated) await scoreAndPersist(aggregated).catch(() => {});
+
+    // 9. Momentum prediction
+    await predictMomentum(venueId).catch(() => {});
+
+    // 10. Live metrics
+    await computeLiveMetrics(venueId).catch(() => {});
+
+    // 11. Active session summary
+    await summarizeSessions(venueId).catch(() => {});
+
   } catch (err) {
     logger.warn({ err, venueId }, "intelligenceWorker: venue evaluation failed");
   }
@@ -113,10 +142,24 @@ async function runSlowCycle(): Promise<void> {
       try {
         await runTemporalLearningCycle(venueId);
         await runAdaptiveCycle(venueId);
+
+        // New predictive + environmental engines
+        await forecastEngagement(venueId).catch(() => {});
+        await forecastConversions(venueId).catch(() => {});
+        await forecastTraffic(venueId).catch(() => {});
+        await predictOptimalEnvironment(venueId).catch(() => {});
+        await optimizeAtmosphere(venueId, false).catch(() => {});
+        await computeHeatmap(venueId).catch(() => {});
       } catch (err) {
         logger.warn({ err, venueId }, "intelligenceWorker: slow cycle failed");
       }
     }));
+
+
+    // Global evictions
+    evictStaleVenueState();
+    evictStaleGuestState();
+    evictExpiredSessions();
   } finally {
     isSlowRunning = false;
   }
@@ -148,6 +191,9 @@ async function updateBehavioralMomentum(
 export function startIntelligenceWorker(): void {
   logger.info("intelligenceWorker: starting");
 
+  // Start orchestration queue drain
+  startQueueDrain(60_000);
+
   // 30-second evaluation + cognition loop
   evaluationTimer = setInterval(() => {
     runEvaluationCycle().catch((err) => {
@@ -173,7 +219,7 @@ export function startIntelligenceWorker(): void {
   setTimeout(() => { runEvaluationCycle().catch(() => {}); }, 5_000);
   setTimeout(() => { runSlowCycle().catch(() => {}); },       60_000);
 
-  logger.info("intelligenceWorker: all cycles running (30s eval / 5m learn)");
+  logger.info("intelligenceWorker: all cycles running (30s eval / 5m learn+forecast)");
 }
 
 export function stopIntelligenceWorker(): void {
