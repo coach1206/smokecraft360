@@ -178,8 +178,8 @@ export default function RevealPage() {
         setCraftType(ct);
         // Emit reveal_view and build_complete with the resolved craft-specific slug
         const slug = craftToModuleSlug(ct);
-        emitKernelEvent("reveal_view",     { sessionId },                   slug);
-        emitKernelEvent("build_complete",  { sessionId, count: loaded.length }, slug);
+        emitKernelEvent("reveal_view",    { sessionId, craftType: ct },                        slug);
+        emitKernelEvent("build_complete", { sessionId, craftType: ct, count: loaded.length }, slug);
 
         // Compute blend intelligence from recommendation tags
         const allTags = loaded.flatMap(r => r.item.tags);

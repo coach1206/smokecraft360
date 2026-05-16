@@ -67,7 +67,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
   useEffect(() => {
     animate(x, 0, { duration: 0.38, ease: [0.22, 1, 0.36, 1] });
     if (index === 0) {
-      emitKernelEvent("swipe_start", { cardId: item.id }, moduleSlug);
+      emitKernelEvent("swipe_start", { cardId: item.id, craftType }, moduleSlug);
     }
   }, [x]); // eslint-disable-line react-hooks/exhaustive-deps
 

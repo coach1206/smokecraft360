@@ -357,6 +357,29 @@ router.patch("/mode/:venueId", requireAuth, async (req: AuthRequest, res: Respon
 });
 
 // ── POST /api/kernel/telemetry ─────────────────────────────────────────────────
+//
+// Expected request body shape (validated by TelemetryIngestSchema):
+//   {
+//     eventType: string,           — e.g. "swipe_start" | "swipe_add" | "swipe_skip" | "build_complete" | "add_to_order"
+//     moduleId?:  string (uuid),   — kernel_modules.id for the emitting craft module
+//     venueId?:   string (uuid),   — venue scope; resolved from localStorage by the client
+//     payload?:   Record<string, unknown>
+//   }
+//
+// The payload MUST include craftType when the emitting client cannot guarantee
+// that a matching kernel_modules row exists for the moduleId.  The craft-activity
+// dashboard query resolves craft type via:
+//   COALESCE(payload->>'craftType', kernel_modules.craft_type, 'unknown')
+// Events where both sources are absent are grouped as 'unknown' and excluded
+// from the Craft Compare tab.
+//
+// Required payload fields per event type:
+//   swipe_start    — { craftType: "smoke"|"pour"|"brew"|"vape", cardId?: string }
+//   swipe_add      — { craftType, cardId, title }
+//   swipe_skip     — { craftType, cardId, title }
+//   build_complete — { craftType, sessionId?, count? }
+//   reveal_view    — { craftType, sessionId? }
+//   add_to_order   — { craftType, orderId?, items? }
 
 router.post("/telemetry", async (req: Request, res: Response) => {
   const parsed = TelemetryIngestSchema.safeParse(req.body);

@@ -349,6 +349,52 @@ describe("emitKernelEvent", () => {
     ).resolves.toBeUndefined();
   });
 
+  // ── craftType is always present in payload for all four craft modules ───────
+  //
+  // Regression guard for task #197: ensures every craft-specific event type
+  // carries craftType in its payload so the craft-activity dashboard query can
+  // resolve it via COALESCE(payload->>'craftType', km.craft_type) rather than
+  // silently falling back to 'unknown'.
+
+  const CRAFT_CASES = [
+    { craftType: "smoke" as const, slug: "craft-smoke" },
+    { craftType: "pour"  as const, slug: "craft-pour"  },
+    { craftType: "brew"  as const, slug: "craft-brew"  },
+    { craftType: "vape"  as const, slug: "craft-vape"  },
+  ];
+
+  for (const { craftType, slug } of CRAFT_CASES) {
+    it(`swipe_start payload includes craftType="${craftType}" for ${slug}`, async () => {
+      emitKernelEvent("swipe_start", { craftType }, slug);
+      const body = await capturePost();
+      expect((body.payload as Record<string, unknown>).craftType).toBe(craftType);
+    });
+
+    it(`swipe_add payload includes craftType="${craftType}" for ${slug}`, async () => {
+      emitKernelEvent("swipe_add", { cardId: "c1", title: "test", craftType }, slug);
+      const body = await capturePost();
+      expect((body.payload as Record<string, unknown>).craftType).toBe(craftType);
+    });
+
+    it(`swipe_skip payload includes craftType="${craftType}" for ${slug}`, async () => {
+      emitKernelEvent("swipe_skip", { cardId: "c1", title: "test", craftType }, slug);
+      const body = await capturePost();
+      expect((body.payload as Record<string, unknown>).craftType).toBe(craftType);
+    });
+
+    it(`build_complete payload includes craftType="${craftType}" for ${slug}`, async () => {
+      emitKernelEvent("build_complete", { craftType, count: 3 }, slug);
+      const body = await capturePost();
+      expect((body.payload as Record<string, unknown>).craftType).toBe(craftType);
+    });
+
+    it(`reveal_view payload includes craftType="${craftType}" for ${slug}`, async () => {
+      emitKernelEvent("reveal_view", { craftType }, slug);
+      const body = await capturePost();
+      expect((body.payload as Record<string, unknown>).craftType).toBe(craftType);
+    });
+  }
+
   // ── venueId is included when set in localStorage ──────────────────────────
 
   it("includes venueId in the POST body when set in localStorage", async () => {
