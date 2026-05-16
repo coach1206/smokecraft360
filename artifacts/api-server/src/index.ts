@@ -867,6 +867,87 @@ try {
   logger.warn({ err }, "Cognition table provisioning failed — extended cognition layer may be unavailable");
 }
 
+// ── Intelligence supplemental tables ─────────────────────────────────────────
+// orchestrator_events, supply_chain_entries, supply_verification_ledger,
+// neural_ingestion_events — defined as Drizzle schemas but need inline provision.
+try {
+  const { pool: iSupPool } = await import("@workspace/db");
+  const intelligenceSupplemental = `
+    CREATE TABLE IF NOT EXISTS orchestrator_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      session_id UUID,
+      venue_id UUID,
+      craft_type TEXT NOT NULL DEFAULT 'smoke',
+      mood TEXT NOT NULL DEFAULT 'focused',
+      pacing TEXT NOT NULL DEFAULT 'balanced',
+      confidence INTEGER NOT NULL DEFAULT 40,
+      premium_intent INTEGER NOT NULL DEFAULT 30,
+      social_energy INTEGER NOT NULL DEFAULT 40,
+      recommendation_pressure INTEGER NOT NULL DEFAULT 50,
+      atmosphere_intensity INTEGER NOT NULL DEFAULT 65,
+      venue_mode TEXT,
+      session_depth INTEGER NOT NULL DEFAULT 0,
+      avg_swipe_ms INTEGER NOT NULL DEFAULT 1500,
+      skip_ratio NUMERIC(4,3) NOT NULL DEFAULT 0.5,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS orc_evt_venue_idx    ON orchestrator_events (venue_id);
+    CREATE INDEX IF NOT EXISTS orc_evt_session_idx  ON orchestrator_events (session_id);
+    CREATE INDEX IF NOT EXISTS orc_evt_created_idx  ON orchestrator_events (created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS supply_chain_entries (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id VARCHAR(64) NOT NULL,
+      sku VARCHAR(128) NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      on_hand INTEGER NOT NULL DEFAULT 0,
+      allocated INTEGER NOT NULL DEFAULT 0,
+      reorder_threshold INTEGER NOT NULL DEFAULT 10,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS venue_sku_idx ON supply_chain_entries (venue_id, sku);
+
+    CREATE TABLE IF NOT EXISTS supply_verification_ledger (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      entry_id UUID NOT NULL REFERENCES supply_chain_entries(id),
+      venue_id VARCHAR(64) NOT NULL,
+      mutation_type VARCHAR(32) NOT NULL,
+      quantity_delta INTEGER NOT NULL,
+      previous_quantity INTEGER NOT NULL,
+      new_quantity INTEGER NOT NULL,
+      broadcasted_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS svl_venue_idx ON supply_verification_ledger (venue_id, broadcasted_at DESC);
+
+    CREATE TABLE IF NOT EXISTS neural_ingestion_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID,
+      session_id TEXT,
+      guest_id TEXT,
+      device_id TEXT,
+      event_type TEXT NOT NULL,
+      raw_payload JSONB,
+      dwell_ms REAL,
+      hesitation_ms REAL,
+      interaction_x REAL,
+      interaction_y REAL,
+      axiom_processed TEXT NOT NULL DEFAULT 'pending',
+      ingestion_phase TEXT NOT NULL DEFAULT 'shadow',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS nie_venue_idx   ON neural_ingestion_events (venue_id);
+    CREATE INDEX IF NOT EXISTS nie_session_idx ON neural_ingestion_events (session_id);
+    CREATE INDEX IF NOT EXISTS nie_type_idx    ON neural_ingestion_events (event_type);
+    CREATE INDEX IF NOT EXISTS nie_phase_idx   ON neural_ingestion_events (axiom_processed);
+  `;
+  for (const stmt of intelligenceSupplemental.split(";").map(s => s.trim()).filter(Boolean)) {
+    await iSupPool.query(stmt);
+  }
+  logger.info("Intelligence supplemental tables: orchestrator_events, supply_chain_entries, supply_verification_ledger, neural_ingestion_events provisioned");
+} catch (err) {
+  logger.warn({ err }, "Intelligence supplemental table provisioning failed — supply/orchestrator/neural routes may be unavailable");
+}
+
 // ── Users table migration — add telemetry_digest_opt_out if missing ───────────
 try {
   const { db: migDb } = await import("@workspace/db");

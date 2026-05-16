@@ -1,0 +1,44 @@
+CRITICAL MASTER SYSTEM REBUILD: The application preview has been completely gutted of its narrative soul and fails to behave like a physical commercial touchscreen display. The wizard skips directly to a static end-screen, bypassing the core cultivation and blending phases. The 'BACK' button is completely invisible (black text on a black background), leaving the user trapped. There are no textures, gradients, or dark luxury background images. Standard light-blue CSS web bubbles are rendering instead of our HTML5 Canvas smoke mist, and there is zero auditory stimulation, real-time lounge pairing feedback, or gamified point-scoring tracking.
+
+Execute an immediate, comprehensive architectural overhaul across MasterBlender.tsx, RitualStep.tsx, and your primary layout routers to permanently enforce this unified specification:
+
+1. REPAIR STEP ROUTING, NAVIGATION, AND VISIBILITY:
+   - Fix the 'BACK' button styling immediately: Ensure it uses clear, high-contrast premium typography (color: #d4af37 or rgba(255,255,255,0.85)) with an explicit border container so it is completely visible and touch-accessible against our absolute black background.
+   - Halt the fast-clicking: Re-wire the step wizard array so it cannot bypass intermediate screens. The workflow MUST step sequentially through all 14 sensory phases (Intro Cinematic -> Profile Ingest -> 4 Global Mentors Selection -> Seed/Soil Phase -> Leaf Blending Matrix -> Pairing Chamber -> Order Customization -> Vault Archive).
+   - Every phase must act as an active checkpoint: The user must make an explicit, tactile craft selection before the progression navigation unlocks.
+
+2. DETAILED BRIDGES & THE 4 GLOBAL MENTORS:
+   - Stage 1 (Cinematic Entrance): Render a premium, immersive introductory landing sequence detailing what SmokeCraft is, the mythos of the Golden Box, and the cultural journey of building a personalized cigar from seed to harvest.
+   - Stage 3 (Mentor Alignment): Display the elite selection screen featuring our 4 global master mentors: Don Manuel (Dominican Republic), Alejandro (Nicaragua), Don Salvador (Cuba), and Doña Rosa (Ecuador). Tapping a mentor must permanently assign them as the active visual/vocal authority for the duration of the blending workspace.
+
+3. ENFORCE FLUCTUATING GAMIFICATION MECHANICS:
+   - Rewrite the point state reducer to break away from linear score increases. Implement a strict, context-driven rhythm:
+     * Milestone 1 (Cultivation Transition): When the user successfully matches their seed type to the mentor's country soilAffinity matrix at Stage 4, award an initial accomplishment milestone victory (+5 XP).
+     * Milestone 2 (The Blending Pressure/Penalty): On the subsequent selection phase, trigger an automatic penalty layer where the mentor challenges their baseline choice. A red −1 PTS chip must drop downward to establish real high-stakes game tension.
+     * Milestone 3 (The Harmonic Recovery): In the Stage 7 Pairing Chamber, evaluate total structural synergy (leaf + wrapper + vitola + cut). If aligned with precision, award +1 or +2 points before the final reveal.
+   - Lock and Seal on Session End: The millisecond Stage 14 is finalized and the synchronous screen dissolve/ripple transition dispatches the payload to the database, freeze the score engine entirely (`scoreFrozenRef.current = true`). This score must be permanently committed to the supply_verification_ledger as a static historic record.
+
+4. MANIFEST LIVE HUMIDOR & LOUNGE BAR TICKER PANELS:
+   - Break up the empty layout panels. Embed a prominent, real-time glassmorphic panel on the side of the active workspace layout.
+   - As selection variables shift, this panel must dynamically display:
+     * A real-world cigar from the physical lounge humidor currently in stock that matches their current blend strategy.
+     * A parallel luxury spirit, wine, or beverage available at the lounge bar that harmonizes with that country blend's flavor matrix.
+
+5. HARDWARE TOUCHSCREEN SENSORY TACTILITY & AUDIO:
+   - Rebuild the Audio Synthesis Engine (Web Audio API): Do not use static audio file assets that lag the UI thread. Implement a native browser Web Audio API oscillator class immediately:
+     * playClick(): Synthesize a crisp, premium mechanical button click using a bandpass-filtered noise burst centered at 3400Hz, decaying cleanly over 58ms. Fire this synchronously on every 'onTouchStart' and 'onMouseDown' event.
+     * playSlide(): Synthesize a low-frequency velvet slider tone using a continuous sine wave sweeping from 210Hz down to 130Hz over 220ms to provide realistic physical resistance feedback during slider/range changes.
+   - Give Controls 3D Depth: Apply explicit 'Machined Hardware' styling to all selection cards and elements. On touch, elements must physically compress and scale down (scale-96), shift downward (translate-y-[2px]), and flash a heavy, deep inset box-shadow (inset 0px 4px 12px rgba(0,0,0,0.9)) to create a mechanical dip.
+
+6. OVERHAUL THE TEXTURE AND GRAPHICAL DIMENSIONS:
+   - Completely clear out the generic light-blue CSS background bubble divs. Ensure the HTML5 SmokeCanvas is fully visible, rendering dynamic moving smoke mist and rising amber embers behind all text cards.
+   - Change the background base from a solid flat gray to a rich absolute black (#000000) base with a luxury ambient radial gold gradient overlay centered on the screen (#FFB000 at 4% opacity).
+   - Inject rich, dark-filtered cinematic background images into the panels or layout modules to eliminate the empty appearance:
+     * Onboarding / Mentor Selection / Lounge Beverage Screens: Use an elite, dark-toned luxury lounge asset with premium lighting accents:
+       https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=1200&q=80
+     * Cultivation / Leaf / Terroir Workspace Screens: Use a rich, premium macro shot of cured, deep-textured golden tobacco leaves with dramatic dark shading:
+       https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80
+     * Signature Box Creation / Golden Box Blueprint Stages: Use a deep, physical, rich dark walnut wood grain texture:
+       https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=1200&q=80
+
+Execute this entire holistic refactor now to prioritize high-fidelity touchscreen interaction over simple form-filling. Ensure tsc --noEmit compiles flawlessly with exit 0.

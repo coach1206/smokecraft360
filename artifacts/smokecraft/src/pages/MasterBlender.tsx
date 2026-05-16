@@ -27,6 +27,28 @@ function velvetSlide(): void {
   } catch { /* blocked by browser policy — silent */ }
 }
 
+// Click tone — crisp tactile feedback for every selection
+function playClick(): void {
+  try {
+    type WinAC = typeof window & { webkitAudioContext?: typeof AudioContext };
+    const AC = window.AudioContext ?? (window as WinAC).webkitAudioContext;
+    if (!AC) return;
+    const ctx  = new AC();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(520, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(280, ctx.currentTime + 0.09);
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+    setTimeout(() => ctx.close().catch(() => {}), 500);
+  } catch { /* blocked by browser policy */ }
+}
+
 // Module-level ripple trigger (registered by RippleCanvas on mount)
 let _rippleFn: ((x: number, y: number) => void) | null = null;
 function triggerBlenderRipple(x: number, y: number): void { _rippleFn?.(x, y); }
@@ -202,44 +224,65 @@ interface PairingResult {
 }
 
 // ── Smoke drift background ─────────────────────────────────────────────────
-function SmokeDrift() {
-  const blobs = [
-    { x: "10%",  y: "20%", w: 320, dur: 18, del: 0    },
-    { x: "60%",  y: "10%", w: 260, dur: 22, del: 3    },
-    { x: "30%",  y: "55%", w: 400, dur: 26, del: 6    },
-    { x: "75%",  y: "40%", w: 290, dur: 20, del: 9    },
-    { x: "5%",   y: "70%", w: 350, dur: 24, del: 12   },
-  ];
+function SmokeCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    type Particle = { x: number; y: number; vx: number; vy: number; r: number; alpha: number; grow: number };
+    const particles: Particle[] = [];
+    const MAX = 50;
+    function spawn() {
+      particles.push({
+        x:     Math.random() * canvas!.width,
+        y:     canvas!.height + 30,
+        vx:    (Math.random() - 0.5) * 0.55,
+        vy:    -(Math.random() * 0.55 + 0.18),
+        r:     Math.random() * 55 + 35,
+        alpha: Math.random() * 0.065 + 0.018,
+        grow:  Math.random() * 0.14 + 0.04,
+      });
+    }
+    let frame = 0;
+    let raf: number;
+    function draw() {
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
+      if (frame % 5 === 0 && particles.length < MAX) spawn();
+      frame++;
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i]!;
+        p.x += p.vx; p.y += p.vy; p.r += p.grow; p.alpha -= 0.00035;
+        if (p.alpha <= 0 || p.y < -p.r * 2) { particles.splice(i, 1); continue; }
+        const g = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+        g.addColorStop(0,   `rgba(190,155,90,${p.alpha.toFixed(4)})`);
+        g.addColorStop(0.5, `rgba(130,100,55,${(p.alpha * 0.45).toFixed(4)})`);
+        g.addColorStop(1,   "rgba(0,0,0,0)");
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fillStyle = g;
+        ctx!.fill();
+      }
+      raf = requestAnimationFrame(draw);
+    }
+    raf = requestAnimationFrame(draw);
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ opacity: 0.28 }}>
-      {blobs.map((b, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            left:            b.x,
-            top:             b.y,
-            width:           b.w,
-            height:          b.w * 0.6,
-            background:      `radial-gradient(ellipse, rgba(212,175,55,0.18) 0%, rgba(180,120,30,0.08) 50%, transparent 100%)`,
-            filter:          "blur(15px)",
-          }}
-          animate={{
-            x:       [0, 40, -20, 30, 0],
-            y:       [0, -20, 30, -10, 0],
-            scale:   [1, 1.15, 0.9, 1.05, 1],
-            opacity: [0.5, 0.9, 0.6, 0.85, 0.5],
-          }}
-          transition={{
-            duration:   b.dur,
-            delay:      b.del,
-            repeat:     Infinity,
-            ease:       "easeInOut",
-            repeatType: "mirror",
-          }}
-        />
-      ))}
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 2 }}
+    />
   );
 }
 
@@ -906,18 +949,43 @@ function GatewayMentor({
 
 // ── Gateway: Cultivation (Seed + Soil) ─────────────────────────────────────
 function GatewayCultivation({
-  selectedSeed, selectedSoil,
-  onSeed, onSoil,
+  selectedSeed, selectedSoil, selectedMentor,
+  onSeed, onSoil, onXP,
   onNext, onBack,
 }: {
-  selectedSeed: string | null;
-  selectedSoil: string | null;
+  selectedSeed:   string | null;
+  selectedSoil:   string | null;
+  selectedMentor: string | null;
   onSeed: (id: string) => void;
   onSoil: (id: string) => void;
+  onXP:   (amount: number, e: React.MouseEvent) => void;
   onNext: () => void;
   onBack: () => void;
 }) {
-  const canAdvance = !!selectedSeed && !!selectedSoil;
+  const affinityMap: Record<string, string> = {
+    tradition: "alluvial",
+    botanist:  "alluvial",
+    sovereign: "volcanic",
+    cuban:     "volcanic",
+  };
+  const expectedSoil = affinityMap[selectedMentor ?? ""] ?? "";
+  const soilIsMatch  = selectedSoil !== null && selectedSoil === expectedSoil;
+  const canAdvance   = !!selectedSeed && soilIsMatch;
+
+  const [soilFeedback, setSoilFeedback] = useState<"none" | "match" | "miss">("none");
+
+  const mentorObj     = MENTORS.find(m => m.id === selectedMentor);
+  const affinityLabel = expectedSoil === "volcanic"
+    ? "Volcanic Ash — Estelí, Nicaragua"
+    : "Alluvial Valley — Cibao, D.R.";
+
+  function handleSoilClick(id: string, e: React.MouseEvent) {
+    onSoil(id);
+    const isMatch = id === expectedSoil;
+    setSoilFeedback(isMatch ? "match" : "miss");
+    onXP(isMatch ? 5 : -1, e);
+  }
+
   return (
     <motion.div
       key="gw-cultivation"
@@ -931,16 +999,81 @@ function GatewayCultivation({
         <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 8 }}>
           Sovereign Ritual · Phase 3 — Foundational Asset Sourcing
         </p>
-        <h2 style={GW.title}>Seed & Soil Architecture</h2>
+        <h2 style={GW.title}>Seed &amp; Soil Architecture</h2>
         <p style={GW.para}>
-          Every premier blend owes its life to terroir and genetics. Establish your cultivation parameters below.
+          Every premier blend owes its life to terroir and genetics. Your mentor demands precision — match the soil to their affinity field to unlock the Blending Chamber.
         </p>
+
+        {/* Mentor directive challenge banner */}
+        <div style={{
+          background:   `${GOLD}07`,
+          border:       `1px solid ${GOLD}25`,
+          borderRadius: 6,
+          padding:      "12px 16px",
+          marginBottom: 16,
+        }}>
+          <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: "0 0 4px 0" }}>
+            Mentor Directive — {mentorObj?.name ?? "Your Mentor"} · {mentorObj?.origin}
+          </p>
+          <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 13, lineHeight: 1.55, margin: 0, fontStyle: "italic" }}>
+            "{mentorObj?.bio}"
+          </p>
+          <p style={{ color: `${GOLD}55`, fontSize: 11, margin: "8px 0 0 0" }}>
+            Match your soil selection to this mentor’s terroir affinity to earn the cultivation bonus.
+          </p>
+        </div>
+
+        {/* Soil match feedback */}
+        <AnimatePresence mode="wait">
+          {soilFeedback !== "none" && (
+            <motion.div
+              key={soilFeedback}
+              initial={{ opacity: 0, y: -8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0,  scale: 1    }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.32 }}
+              style={{
+                background:   soilFeedback === "match" ? "rgba(74,222,128,0.07)" : "rgba(239,68,68,0.07)",
+                border:       `1px solid ${soilFeedback === "match" ? "rgba(74,222,128,0.30)" : "rgba(239,68,68,0.30)"}`,
+                borderRadius: 6,
+                padding:      "10px 16px",
+                marginBottom: 14,
+                display:      "flex",
+                alignItems:   "center",
+                gap:          10,
+              }}
+            >
+              <span style={{ fontSize: 18, lineHeight: 1 }}>
+                {soilFeedback === "match" ? "✓" : "✗"}
+              </span>
+              <div>
+                <p style={{
+                  color:         soilFeedback === "match" ? "#4ade80" : "#ef4444",
+                  fontSize:      12,
+                  fontWeight:    700,
+                  margin:        0,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}>
+                  {soilFeedback === "match"
+                    ? "+5 XP — Soil Affinity Aligned · Chamber Unlocked"
+                    : "-1 PTS — Terroir Mismatch · Reconsider Your Selection"}
+                </p>
+                {soilFeedback === "miss" && (
+                  <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 11, margin: "3px 0 0 0" }}>
+                    Hint: {mentorObj?.name} cultivates on {affinityLabel}
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Seed bank reference image */}
         <div className="rounded-lg overflow-hidden mb-5" style={{ border: `1px solid ${GOLD}18`, maxHeight: 200 }}>
           <img
             src={imgSeedBank}
-            alt="Tobacco Farm & Seed Bank"
+            alt="Tobacco Farm &amp; Seed Bank"
             className="w-full object-cover object-center"
             style={{ maxHeight: 200, filter: "brightness(0.8)" }}
           />
@@ -982,23 +1115,33 @@ function GatewayCultivation({
           />
           <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
             <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
-              Terroir · Seed & Soil Selection Protocol
+              Terroir · Seed &amp; Soil Selection Protocol
             </p>
           </div>
         </div>
 
-        {/* Soil selection */}
-        <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.3rem)", color: GOLD, marginBottom: 12 }}>
+        {/* Soil selection — CHALLENGE GATE */}
+        <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.3rem)", color: GOLD, marginBottom: 6 }}>
           2. Terroir Soil Environment
         </h3>
+        <p style={{ color: `${GOLD}55`, fontSize: 11, letterSpacing: "0.14em", marginBottom: 12, textTransform: "uppercase" }}>
+          Select the soil matching your mentor’s affinity — wrong choice incurs a penalty
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           {SOILS.map(so => (
             <motion.div
               key={so.id}
-              style={GW.card(selectedSoil === so.id)}
+              style={{
+                ...GW.card(selectedSoil === so.id),
+                ...(selectedSoil === so.id && soilIsMatch
+                  ? { border: "1px solid rgba(74,222,128,0.50)", boxShadow: "0 0 22px rgba(74,222,128,0.12)" }
+                  : selectedSoil === so.id && !soilIsMatch
+                  ? { border: "1px solid rgba(239,68,68,0.45)", boxShadow: "0 0 22px rgba(239,68,68,0.10)" }
+                  : {}),
+              }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => onSoil(so.id)}
+              onClick={e => handleSoilClick(so.id, e)}
             >
               <p style={{ color: `${GOLD}70`, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
                 {so.region}
@@ -1014,12 +1157,15 @@ function GatewayCultivation({
         <div className="flex justify-between gap-4 mt-2">
           <button style={GW.btn(true)} onClick={onBack}>Back</button>
           <motion.button
-            style={GW.btn(!canAdvance)}
+            style={{
+              ...GW.btn(!canAdvance),
+              ...(canAdvance ? { background: "linear-gradient(180deg,#2a6b2a 0%,#1a4a1a 100%)", border: "1px solid rgba(74,222,128,0.45)", color: "#d4f7d4" } : {}),
+            }}
             whileHover={canAdvance ? { scale: 1.03 } : {}}
             whileTap={canAdvance ? { scale: 0.97 } : {}}
             onClick={() => canAdvance && onNext()}
           >
-            Enter the Blending Chamber
+            {canAdvance ? "✓ CHAMBER UNLOCKED — Enter" : "Match Your Mentor’s Terroir First"}
           </motion.button>
         </div>
       </div>
@@ -1028,6 +1174,202 @@ function GatewayCultivation({
 }
 
 // ── Alchemy Reveal ─────────────────────────────────────────────────────────
+const HUMIDOR_RECS: Record<string, { cigar: string; spirit: string; note: string }> = {
+  "seco|connecticut":    { cigar: "Davidoff Grand Cru No.3",  spirit: "Macallan 12 Sherry Oak",   note: "Silky body + honeyed single malt" },
+  "seco|habano":         { cigar: "Montecristo No.2",          spirit: "Glenfiddich 15 Yr",         note: "Cedar spice opens Speyside oak" },
+  "seco|maduro":         { cigar: "Oliva Serie O Robusto",     spirit: "Bulleit Bourbon",           note: "Earth + wood echoed in wheated grain" },
+  "seco|oscuro":         { cigar: "CAO Cx2 Robusto",           spirit: "Woodford Reserve",          note: "Dark notes matched by rich rye" },
+  "ligero|connecticut":  { cigar: "My Father Le Bijou 1922",   spirit: "Hennessy VSOP Cognac",      note: "Full strength softened by brandy" },
+  "ligero|habano":       { cigar: "Padrón 1964 Monarca", spirit: "Don Julio 1942 Añejo", note: "Volcanic intensity + aged agave" },
+  "ligero|maduro":       { cigar: "Liga Privada No.9 Robusto", spirit: "Pappy Van Winkle 12 Yr",   note: "Broadleaf dark chocolate + rare bourbon" },
+  "ligero|oscuro":       { cigar: "Plasencia Alma Fuerte",     spirit: "Johnnie Walker Blue",       note: "Ultra-bold met with pinnacle Scotch" },
+  "viso|connecticut":    { cigar: "Arturo Fuente Hemingway",   spirit: "Dewar's 18 Year Blended",  note: "Balance between bold and refined" },
+  "viso|habano":         { cigar: "Romeo y Julieta Churchill", spirit: "Jameson 18 Year",           note: "Spice finds counterpart in Irish oak" },
+  "viso|maduro":         { cigar: "CAO Flathead V554",         spirit: "Elijah Craig Barrel Proof", note: "Earth + caramel finish aligned" },
+  "viso|oscuro":         { cigar: "Perdomo Double Aged",       spirit: "Ron Zacapa 23 Solera",      note: "Bold aged leaf meets Guatemalan rum" },
+  "candela|connecticut": { cigar: "Nat Sherman Timeless",      spirit: "Hendrick's Gin & Tonic",   note: "Botanical + grassy meets floral gin" },
+  "candela|habano":      { cigar: "Punch Gran Puro",           spirit: "Aperol Spritz",             note: "Bright vegetal refreshed by citrus" },
+  "candela|maduro":      { cigar: "Gurkha Cellar Reserve",     spirit: "Templeton Rye Whiskey",     note: "Grass meets unexpected spicy rye" },
+  "candela|oscuro":      { cigar: "La Gloria Cubana Serie R",  spirit: "Laphroaig 10 Year",         note: "Intense terroir + peated Islay Scotch" },
+};
+const DEFAULT_HUMIDOR = {
+  cigar:  "Private Reserve Blend",
+  spirit: "Macallan Double Cask 12",
+  note:   "A curated pairing awaits your final selection",
+};
+
+function HumidorPanel({ sel, synergy }: { sel: Sel; synergy: number }) {
+  const [open, setOpen] = useState(true);
+  const key      = `${sel.leaf?.id ?? ""}|${sel.wrapper?.id ?? ""}`;
+  const rec       = HUMIDOR_RECS[key] ?? DEFAULT_HUMIDOR;
+  const hasMatch  = !!sel.leaf && !!sel.wrapper;
+  const alignLabel = synergy >= 80 ? "+2 XP ALIGNMENT" : synergy >= 60 ? "+1 XP ALIGNMENT" : null;
+
+  return (
+    <div style={{
+      position:      "fixed",
+      right:         0,
+      top:           "50%",
+      transform:     "translateY(-50%)",
+      zIndex:        9000,
+      display:       "flex",
+      alignItems:    "stretch",
+      pointerEvents: "auto",
+    }}>
+      {/* Toggle tab */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width:          22,
+          background:     "rgba(10,7,0,0.88)",
+          border:         `1px solid ${GOLD}30`,
+          borderRight:    "none",
+          borderRadius:   "6px 0 0 6px",
+          cursor:         "pointer",
+          display:        "flex",
+          alignItems:     "center",
+          justifyContent: "center",
+          padding:        "16px 0",
+          color:          `${GOLD}90`,
+          fontSize:       9,
+          letterSpacing:  "0.08em",
+          writingMode:    "vertical-rl" as const,
+          backdropFilter: "blur(12px)",
+          textTransform:  "uppercase" as const,
+          fontFamily:     "'Inter',sans-serif",
+          outline:        "none",
+          flexShrink:     0,
+        }}
+      >
+        {open ? "›" : "HUMIDOR"}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 210, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.32 }}
+            style={{ overflow: "hidden", flexShrink: 0 }}
+          >
+            <div style={{
+              width:                210,
+              background:           "rgba(8,6,0,0.88)",
+              backdropFilter:       "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              border:               `1px solid ${GOLD}22`,
+              borderRight:          "none",
+              padding:              "14px",
+              display:              "flex",
+              flexDirection:        "column",
+              gap:                  10,
+              boxShadow:            `-6px 0 36px rgba(0,0,0,0.65), inset 0 1px 0 ${GOLD}14`,
+            }}>
+              {/* Header */}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, paddingBottom: 8, borderBottom: `1px solid ${GOLD}14` }}>
+                <motion.div
+                  animate={{ opacity: [0.35, 1, 0.35] }}
+                  transition={{ duration: 2.2, repeat: Infinity }}
+                  style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, flexShrink: 0 }}
+                />
+                <span style={{ color: GOLD, fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", fontWeight: 700 }}>
+                  Live Humidor
+                </span>
+                <span style={{ color: `${GOLD}40`, fontSize: 8, letterSpacing: "0.12em", marginLeft: "auto", textTransform: "uppercase" }}>
+                  AI ACTIVE
+                </span>
+              </div>
+
+              {/* Cigar match */}
+              <div>
+                <p style={{ color: `${GOLD}50`, fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", margin: "0 0 5px 0" }}>
+                  {hasMatch ? "Inventory Match" : "Awaiting Selections"}
+                </p>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={key}
+                    initial={{ opacity: 0, y: 5  }}
+                    animate={{ opacity: 1, y: 0  }}
+                    exit={{    opacity: 0, y: -5 }}
+                    transition={{ duration: 0.28 }}
+                  >
+                    <p style={{
+                      color:      "rgba(240,232,212,0.92)",
+                      fontSize:   12,
+                      fontFamily: "'Cormorant Garamond',serif",
+                      fontWeight: 500,
+                      margin:     "0 0 3px 0",
+                      lineHeight: 1.3,
+                    }}>
+                      {rec.cigar}
+                    </p>
+                    <p style={{ color: `${GOLD}50`, fontSize: 10, margin: 0, fontStyle: "italic", lineHeight: 1.4 }}>
+                      {rec.note}
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Spirit pairing */}
+              <div style={{
+                padding:      "8px 10px",
+                background:   `${GOLD}07`,
+                borderRadius: 4,
+                border:       `1px solid ${GOLD}14`,
+              }}>
+                <p style={{ color: `${GOLD}50`, fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", margin: "0 0 3px 0" }}>
+                  Spirit Pairing
+                </p>
+                <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 11, margin: 0, fontFamily: "'Cormorant Garamond',serif" }}>
+                  {rec.spirit}
+                </p>
+              </div>
+
+              {/* Alignment bonus */}
+              <AnimatePresence>
+                {alignLabel && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    style={{
+                      background:   "rgba(74,222,128,0.07)",
+                      border:       "1px solid rgba(74,222,128,0.20)",
+                      borderRadius: 4,
+                      padding:      "6px 10px",
+                      textAlign:    "center",
+                    }}
+                  >
+                    <span style={{ color: "#4ade80", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em" }}>
+                      {alignLabel}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Synergy bar */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, paddingTop: 2, borderTop: `1px solid ${GOLD}10` }}>
+                <div style={{ flex: 1, height: 2, background: `${GOLD}12`, borderRadius: 1, overflow: "hidden" }}>
+                  <motion.div
+                    animate={{ width: `${Math.min(synergy, 100)}%` }}
+                    transition={{ duration: 0.55, ease: "easeOut" }}
+                    style={{ height: "100%", background: `linear-gradient(90deg, ${GOLD}, #f5d980)`, borderRadius: 1 }}
+                  />
+                </div>
+                <span style={{ color: GOLD, fontSize: 9, fontWeight: 700, minWidth: 28, textAlign: "right" }}>
+                  {Math.round(synergy)}%
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+
 function AlchemyReveal({
   sel, onRestart, finalScore,
 }: { sel: Sel; onRestart: () => void; finalScore: number }) {
@@ -1618,6 +1960,7 @@ export default function MasterBlender() {
   }, [spawnXPAt]);
 
   function select<T extends { id: string; xp: number }>(key: keyof Sel, item: T, e: React.MouseEvent) {
+    playClick();
     setSel(s => ({ ...s, [key]: item }));
     spawnXP(item.xp, e);
     if ("mentorNote" in item) {
@@ -1652,18 +1995,6 @@ export default function MasterBlender() {
 
   // M1: Cultivation milestone — awards bonus based on mentor/soil affinity match
   function handleCultivationNext() {
-    if (!cultivationBonusGiven) {
-      setCultivationBonusGiven(true);
-      const affinityMap: Record<string, string> = {
-        tradition: "alluvial",
-        botanist:  "alluvial",
-        sovereign: "volcanic",
-        cuban:     "volcanic",
-      };
-      const expectedSoil = affinityMap[selectedMentor ?? ""] ?? "";
-      const bonus = selectedSoil === expectedSoil ? 5 : 2;
-      spawnXPAt(bonus, window.innerWidth / 2, window.innerHeight * 0.5);
-    }
     setGateway("blending");
   }
 
@@ -1765,8 +2096,10 @@ export default function MasterBlender() {
                   key="cultivation"
                   selectedSeed={selectedSeed}
                   selectedSoil={selectedSoil}
+                  selectedMentor={selectedMentor}
                   onSeed={setSelectedSeed}
                   onSoil={setSelectedSoil}
+                  onXP={spawnXP}
                   onNext={handleCultivationNext}
                   onBack={() => setGateway("mentor")}
                 />
@@ -1776,9 +2109,14 @@ export default function MasterBlender() {
         )}
       </AnimatePresence>
 
-      {/* Drifting smoke ambient */}
-      <SmokeDrift />
+      {/* HTML5 canvas smoke particles */}
+      <SmokeCanvas />
       <RippleCanvas />
+
+      {/* Live Humidor Panel — blending phase only */}
+      {gateway === "blending" && !reveal && (
+        <HumidorPanel sel={sel} synergy={synergy} />
+      )}
 
       {/* XP float chips */}
       <AnimatePresence>
@@ -1876,7 +2214,7 @@ export default function MasterBlender() {
             initial={{ opacity: 0, x: 60, filter: "blur(4px)" }}
             animate={{ opacity: 1, x: 0,  filter: "blur(0px)" }}
             exit={{ opacity: 0, x: -60, filter: "blur(4px)" }}
-            transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col h-full"
           >
             {/* Ritual moment title */}

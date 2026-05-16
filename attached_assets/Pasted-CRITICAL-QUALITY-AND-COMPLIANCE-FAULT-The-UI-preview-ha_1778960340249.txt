@@ -1,0 +1,26 @@
+CRITICAL QUALITY AND COMPLIANCE FAULT: The UI preview has been completely gutted. The wizard skips directly to a static match screen with no intermediate phases, the 'BACK' navigation button is completely invisible (black text on black background), and there are no textures, gradients, background imagery, canvas smoke elements, sound effects, or active gamification tickers. 
+
+Execute a comprehensive architectural overhaul across MasterBlender.tsx, RitualStep.tsx, and your primary routing layouts immediately:
+
+1. REPAIR NAVIGATION AND VISIBILITY:
+   - Fix the 'BACK' button styling immediately: Ensure it uses clear, high-contrast premium typography (color: #d4af37 or rgba(255,255,255,0.85)) with an explicit border container so it is completely visible against our absolute black background.
+   - Re-wire the step wizard array so it cannot bypass steps. The workflow MUST step sequentially through the 14 phases (Intro -> Profile -> Mentor Select -> Seed -> Soil -> Blending -> Harvest -> Pairing Chamber) instead of jumping directly to the final match asset.
+
+2. MANIFEST LIVE HUMIDOR & LOUNGE LIQUOR PAIRINGS:
+   - Break up the flat layout. Introduce a prominent, real-time glassmorphic panel on the side of every step screen.
+   - This panel must actively cross-reference the user's current choice and display:
+     * A real-world cigar from the physical lounge humidor currently in stock.
+     * A parallel luxury spirit or beverage available at the lounge bar that matches that country blend's flavor matrix.
+
+3. UN-HIDE THE POINT SCORING & AUDIT TICKER:
+   - Bring back the gamification loops. Ensure the top or bottom glassmorphic panel renders the live point scoring system with clear micro-animations (+5 XP / -1 PTS) that shift dynamically on user selections before the session finishes.
+   - Wire the native browser Web Audio API sounds directly to these events so the user physically hears their point changes.
+
+4. INJECT HIGH-PREMIUM EXPERIENTIAL IMAGERY:
+   - The solid dark gray blocks must be completely replaced. Layer high-fidelity, dark-filtered cinematic visuals directly into the backgrounds or card modules to provide instant dimension:
+     * PourCraft / WineCraft / Beverage Screens:
+       https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=1200&q=80
+     * Cultivation / Leaf / Terroir Workspace Screens:
+       https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80
+
+Rebuild this interface to match our exact experiential blueprints now. Ensure tsc --noEmit compiles flawlessly.
