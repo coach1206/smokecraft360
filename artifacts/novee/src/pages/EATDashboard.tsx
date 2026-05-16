@@ -527,7 +527,7 @@ function persistSavedPresets(presets: SavedPreset[]): void {
   try { localStorage.setItem(EAT_LS_PRESETS_KEY, JSON.stringify(presets)); } catch { /* ignore */ }
 }
 
-const MUTE_SS_KEY = "eat_live_mute_until";
+const MUTE_LS_KEY = "eat_live_mute_until";
 
 const MUTE_OPTIONS: { label: string; ms: number }[] = [
   { label: "5 MIN",  ms: 5  * 60 * 1000 },
@@ -663,15 +663,8 @@ export default function EATDashboard() {
   // ── Mute state ────────────────────────────────────────────────────────────
   const [muteUntil, setMuteUntilState] = useState<number | null>(() => {
     try {
-      // Do NOT restore mute after a hard page reload — spec says mute should
-      // not survive reloads. sessionStorage persists across reloads by default,
-      // so we detect a reload navigation and discard any stored value.
-      const navEntry = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
-      if (navEntry?.type === "reload") {
-        sessionStorage.removeItem(MUTE_SS_KEY);
-        return null;
-      }
-      const v = sessionStorage.getItem(MUTE_SS_KEY);
+      // Restore mute from localStorage so it survives page reloads.
+      const v = localStorage.getItem(MUTE_LS_KEY);
       if (v) {
         const n = parseInt(v, 10);
         if (Number.isFinite(n) && n > Date.now()) return n;
@@ -713,12 +706,12 @@ export default function EATDashboard() {
     const remaining = muteUntil - Date.now();
     if (remaining <= 0) {
       setMuteUntilState(null);
-      try { sessionStorage.removeItem(MUTE_SS_KEY); } catch { /* ignore */ }
+      try { localStorage.removeItem(MUTE_LS_KEY); } catch { /* ignore */ }
       return;
     }
     const id = setTimeout(() => {
       setMuteUntilState(null);
-      try { sessionStorage.removeItem(MUTE_SS_KEY); } catch { /* ignore */ }
+      try { localStorage.removeItem(MUTE_LS_KEY); } catch { /* ignore */ }
     }, remaining);
     return () => clearTimeout(id);
   }, [muteUntil]);
@@ -741,14 +734,14 @@ export default function EATDashboard() {
     const until = Date.now() + durationMs;
     setMuteUntilState(until);
     muteUntilRef.current = until;
-    try { sessionStorage.setItem(MUTE_SS_KEY, String(until)); } catch { /* ignore */ }
+    try { localStorage.setItem(MUTE_LS_KEY, String(until)); } catch { /* ignore */ }
     setShowMuteMenu(false);
   }, []);
 
   const deactivateMute = useCallback(() => {
     setMuteUntilState(null);
     muteUntilRef.current = null;
-    try { sessionStorage.removeItem(MUTE_SS_KEY); } catch { /* ignore */ }
+    try { localStorage.removeItem(MUTE_LS_KEY); } catch { /* ignore */ }
     setShowMuteMenu(false);
   }, []);
 
