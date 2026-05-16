@@ -7,7 +7,7 @@
  *   "inline"   — centered block within a tab/section (LoungeLeagueTab)
  *
  * Always renders: lock icon · "ESSENTIAL MODE ACTIVE" · feature name ·
- * optional description · "Upgrade to Sovereign" CTA → /settings
+ * optional description · "Upgrade to Sovereign" CTA → /upgrade
  */
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -68,7 +68,7 @@ function LockCore({ featureName, description }: { featureName: string; descripti
       <motion.button
         whileHover={{ scale: 1.03, boxShadow: "0 8px 28px rgba(212,139,0,0.45)" }}
         whileTap={{ scale: 0.97 }}
-        onClick={() => navigate("/settings")}
+        onClick={() => navigate("/upgrade")}
         style={{
           marginTop: 8,
           display: "flex", alignItems: "center", gap: 8,

@@ -88,6 +88,7 @@ const Demo                  = lazy(() => import('@/pages/Demo'));
 const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
 const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
 const DesignerPage          = lazy(() => import('@/pages/DesignerPage'));
+const UpgradePage           = lazy(() => import('@/pages/UpgradePage'));
 
 /* ── Lazy-loaded pages previously unregistered in router ───── */
 const PaymentSuccess        = lazy(() => import('@/pages/PaymentSuccess'));
@@ -1138,6 +1139,9 @@ export default function App() {
           </Route>
           <Route path="/designer">
             <SubPageProviders><SovereignRoute><DesignerPage /></SovereignRoute></SubPageProviders>
+          </Route>
+          <Route path="/upgrade">
+            <SubPageProviders><UpgradePage /></SubPageProviders>
           </Route>
 
           {/* ── Previously unregistered pages — recovered routes ── */}
