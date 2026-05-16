@@ -1371,6 +1371,8 @@ export default function MasterBlender() {
   const [smokeSlider, setSmokeSlider] = useState(50);
 
   // ── Force Stage 1 on every fresh mount — prevents HMR state bleed ────────
+  // Also wipes all legacy localStorage/sessionStorage keys so no prior session
+  // can surface a returning-user state or bypass the gateway intro.
   useLayoutEffect(() => {
     setGateway("intro");
     setStep(0 as 0);
@@ -1380,6 +1382,17 @@ export default function MasterBlender() {
     setSelectedMentor(null);
     setSelectedSeed(null);
     setSelectedSoil(null);
+    try {
+      // Legacy keys (older builds)
+      localStorage.removeItem("titan_ritual_complete");
+      localStorage.removeItem("smokeCraftStage");
+      localStorage.removeItem("currentStage");
+      // Session keys — ensure no returning-user profile bleeds into a fresh entry
+      sessionStorage.removeItem("smokecraft_guest");
+      sessionStorage.removeItem("axiom_eeis_journey");
+      sessionStorage.removeItem("axiom_experience_level");
+      sessionStorage.removeItem("axiom_craft_build");
+    } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const chipId = useRef(0);

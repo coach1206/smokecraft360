@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type React from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -80,6 +81,30 @@ const PORTALS = [
 // ── Main component ────────────────────────────────────────────────────────────
 export default function CraftPortalHome() {
   const [, navigate] = useLocation();
+  const [comingSoon, setComingSoon] = useState<string | null>(null);
+
+  // Wipe ALL persisted craft/guest state so every portal entry is a clean slate.
+  // Clears current session keys + legacy keys from older builds.
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem("smokecraft_guest");
+      sessionStorage.removeItem("axiom_eeis_journey");
+      sessionStorage.removeItem("axiom_experience_level");
+      sessionStorage.removeItem("axiom_craft_build");
+      localStorage.removeItem("titan_ritual_complete");
+      localStorage.removeItem("smokeCraftStage");
+      localStorage.removeItem("currentStage");
+    } catch { /* ignore */ }
+  }, []);
+
+  function handlePortalClick(portal: typeof PORTALS[number], e?: React.MouseEvent) {
+    e?.stopPropagation();
+    if (portal.active) {
+      navigate(portal.route);
+    } else {
+      setComingSoon(portal.title);
+    }
+  }
 
   return (
     <div style={{
@@ -204,7 +229,7 @@ export default function CraftPortalHome() {
           return (
             <motion.div
               key={portal.id}
-              onClick={() => navigate(portal.route)}
+              onClick={() => handlePortalClick(portal)}
               whileHover={{ scale: 1.016, boxShadow: "0 24px 72px rgba(0,0,0,0.95), 0 0 32px rgba(212,175,55,0.12)" }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               style={{
@@ -273,7 +298,7 @@ export default function CraftPortalHome() {
 
                 {/* Smoked chrome CTA button */}
                 <button
-                  onClick={e => { e.stopPropagation(); navigate(portal.route); }}
+                  onClick={e => handlePortalClick(portal, e as unknown as React.MouseEvent)}
                   style={{
                     background: "rgba(12,12,12,0.80)",
                     backdropFilter: "blur(12px)",
@@ -304,13 +329,81 @@ export default function CraftPortalHome() {
                     b.style.background = "rgba(12,12,12,0.80)";
                   }}
                 >
-                  {portal.active ? "Begin Experience" : "Select Masterclass"}
+                  {portal.active ? "Begin Experience" : "Coming Soon"}
                 </button>
               </div>
             </motion.div>
           );
         })}
       </motion.div>
+
+      {/* ── Coming Soon overlay (inactive masterclass tap) ───────────────── */}
+      <AnimatePresence>
+        {comingSoon && (
+          <motion.div
+            key="coming-soon"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            onClick={() => setComingSoon(null)}
+            style={{
+              position: "fixed", inset: 0, zIndex: 9999,
+              background: "rgba(0,0,0,0.82)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)",
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              cursor: "pointer",
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.97 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{ textAlign: "center", pointerEvents: "none" }}
+            >
+              <p style={{
+                fontSize: 8, letterSpacing: "0.50em", textTransform: "uppercase",
+                color: "rgba(212,175,55,0.50)", fontFamily: "'Inter',sans-serif",
+                marginBottom: 18,
+              }}>
+                Profound Innovations
+              </p>
+              <h2 style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontSize: "clamp(2rem, 5vw, 3.2rem)",
+                fontWeight: 300, letterSpacing: "0.12em",
+                background: "linear-gradient(180deg, #fffcf5 0%, #dfba73 100%)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                backgroundClip: "text", margin: "0 0 16px",
+              }}>
+                {comingSoon}
+              </h2>
+              <p style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontSize: "clamp(1rem, 2vw, 1.25rem)",
+                fontStyle: "italic", color: "rgba(255,252,245,0.40)",
+                letterSpacing: "0.06em", margin: "0 0 40px",
+              }}>
+                In Private Development · Sovereign Preview Coming Soon
+              </p>
+              <div style={{
+                width: 48, height: 1,
+                background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.40), transparent)",
+                margin: "0 auto 32px",
+              }} />
+              <p style={{
+                fontSize: 8, letterSpacing: "0.38em", textTransform: "uppercase",
+                color: "rgba(255,255,255,0.18)", fontFamily: "'Inter',sans-serif",
+              }}>
+                Tap anywhere to dismiss
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Footer ───────────────────────────────────────────────────────── */}
       <motion.p
