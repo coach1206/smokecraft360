@@ -411,6 +411,246 @@ try {
   logger.warn({ err }, "POS table provisioning failed — POS integration layer may be unavailable");
 }
 
+// ── Autonomous Intelligence Layer — table provisioning ───────────────────────
+try {
+  const { pool: iPool } = await import("@workspace/db");
+  const intelligenceTables = `
+    CREATE TABLE IF NOT EXISTS ai_behavior_memory (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      guest_id TEXT,
+      behavior_type TEXT NOT NULL,
+      context JSONB NOT NULL DEFAULT '{}',
+      outcome TEXT,
+      weight DOUBLE PRECISION NOT NULL DEFAULT 1.0,
+      expires_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS ai_behavior_memory_venue_idx ON ai_behavior_memory (venue_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS guest_preference_profiles (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      guest_id TEXT NOT NULL,
+      craft_affinity JSONB NOT NULL DEFAULT '{}',
+      flavor_vectors JSONB NOT NULL DEFAULT '{}',
+      mood_history JSONB NOT NULL DEFAULT '[]',
+      visit_count INT NOT NULL DEFAULT 0,
+      last_seen TIMESTAMPTZ,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (venue_id, guest_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS venue_behavior_profiles (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL UNIQUE,
+      peak_hours JSONB NOT NULL DEFAULT '[]',
+      avg_session_ms DOUBLE PRECISION NOT NULL DEFAULT 0,
+      conversion_rate DOUBLE PRECISION NOT NULL DEFAULT 0,
+      craft_distribution JSONB NOT NULL DEFAULT '{}',
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS orchestration_rules (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID,
+      name TEXT NOT NULL,
+      condition JSONB NOT NULL,
+      action JSONB NOT NULL,
+      priority INT NOT NULL DEFAULT 0,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS orchestration_rules_venue_idx ON orchestration_rules (venue_id, is_active);
+
+    CREATE TABLE IF NOT EXISTS orchestration_decisions (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      trigger TEXT NOT NULL,
+      action_type TEXT NOT NULL,
+      payload JSONB NOT NULL DEFAULT '{}',
+      confidence DOUBLE PRECISION NOT NULL DEFAULT 0,
+      executed BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS orchestration_decisions_venue_idx ON orchestration_decisions (venue_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS orchestration_audit_logs (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      decision_id UUID,
+      action_type TEXT NOT NULL,
+      actor TEXT NOT NULL DEFAULT 'system',
+      result TEXT NOT NULL,
+      metadata JSONB NOT NULL DEFAULT '{}',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS orchestration_audit_venue_idx ON orchestration_audit_logs (venue_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS ambient_scene_history (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      scene TEXT NOT NULL,
+      trigger TEXT,
+      duration_ms INT,
+      guest_reaction DOUBLE PRECISION,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS ambient_scene_history_venue_idx ON ambient_scene_history (venue_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS predictive_scores (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      guest_id TEXT,
+      score_type TEXT NOT NULL,
+      score DOUBLE PRECISION NOT NULL,
+      factors JSONB NOT NULL DEFAULT '{}',
+      valid_until TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS predictive_scores_venue_idx ON predictive_scores (venue_id, score_type, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS venue_intelligence_scores (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      overall_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      engagement_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      social_energy DOUBLE PRECISION NOT NULL DEFAULT 0,
+      inventory_health DOUBLE PRECISION NOT NULL DEFAULT 0,
+      active_guests INT NOT NULL DEFAULT 0,
+      active_sessions INT NOT NULL DEFAULT 0,
+      window_start TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      window_end TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      period TEXT NOT NULL DEFAULT '5m',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS venue_intelligence_scores_venue_idx ON venue_intelligence_scores (venue_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS automation_guardrails (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID,
+      rule_name TEXT NOT NULL UNIQUE,
+      max_actions_per_hour INT NOT NULL DEFAULT 10,
+      cooldown_ms INT NOT NULL DEFAULT 60000,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS venue_context_state (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL UNIQUE,
+      active_guests INT NOT NULL DEFAULT 0,
+      vip_count INT NOT NULL DEFAULT 0,
+      engagement_level DOUBLE PRECISION NOT NULL DEFAULT 0,
+      social_energy DOUBLE PRECISION NOT NULL DEFAULT 0,
+      mood_score DOUBLE PRECISION NOT NULL DEFAULT 0.5,
+      operational_load DOUBLE PRECISION NOT NULL DEFAULT 0,
+      inventory_pressure DOUBLE PRECISION NOT NULL DEFAULT 0,
+      revenue_momentum DOUBLE PRECISION NOT NULL DEFAULT 0,
+      ambient_scene TEXT,
+      traffic_trend TEXT NOT NULL DEFAULT 'steady',
+      anomaly_detected BOOLEAN NOT NULL DEFAULT FALSE,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS venue_digital_twins (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL UNIQUE,
+      version INT NOT NULL DEFAULT 1,
+      environmental_state JSONB NOT NULL DEFAULT '{}',
+      guest_map JSONB NOT NULL DEFAULT '{}',
+      flow_nodes JSONB NOT NULL DEFAULT '[]',
+      last_updated_at BIGINT NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS venue_state_snapshots (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      twin_version INT NOT NULL,
+      snapshot JSONB NOT NULL DEFAULT '{}',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS venue_state_snapshots_venue_idx ON venue_state_snapshots (venue_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS environmental_effectiveness (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      scene TEXT NOT NULL,
+      effect_type TEXT NOT NULL,
+      before_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      after_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      delta DOUBLE PRECISION NOT NULL DEFAULT 0,
+      measured_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS environmental_effectiveness_venue_idx ON environmental_effectiveness (venue_id, measured_at DESC);
+
+    CREATE TABLE IF NOT EXISTS behavioral_momentum (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      momentum_type TEXT NOT NULL,
+      value DOUBLE PRECISION NOT NULL DEFAULT 0,
+      UNIQUE (venue_id, momentum_type),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS predictive_context_scores (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      guest_id TEXT,
+      context_type TEXT NOT NULL,
+      score DOUBLE PRECISION NOT NULL,
+      reasoning TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS predictive_context_scores_venue_idx ON predictive_context_scores (venue_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS engagement_score_history (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      guest_id TEXT,
+      score DOUBLE PRECISION NOT NULL,
+      factors JSONB NOT NULL DEFAULT '{}',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS engagement_score_history_venue_idx ON engagement_score_history (venue_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS environmental_context (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL UNIQUE,
+      lighting_level DOUBLE PRECISION NOT NULL DEFAULT 0.5,
+      music_tempo TEXT NOT NULL DEFAULT 'moderate',
+      ambient_temperature DOUBLE PRECISION,
+      crowd_density DOUBLE PRECISION NOT NULL DEFAULT 0,
+      scent_profile TEXT,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS guest_context_profiles (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      guest_id TEXT NOT NULL,
+      session_id UUID,
+      intent TEXT,
+      mood TEXT,
+      engagement DOUBLE PRECISION NOT NULL DEFAULT 0.5,
+      craft_focus TEXT,
+      is_vip BOOLEAN NOT NULL DEFAULT FALSE,
+      metadata JSONB NOT NULL DEFAULT '{}',
+      UNIQUE (venue_id, guest_id),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS guest_context_profiles_venue_idx ON guest_context_profiles (venue_id, updated_at DESC);
+  `;
+
+  for (const stmt of intelligenceTables.split(";").map(s => s.trim()).filter(Boolean)) {
+    await iPool.query(stmt);
+  }
+  logger.info("Autonomous Intelligence Layer: all tables provisioned");
+} catch (err) {
+  logger.warn({ err }, "Intelligence table provisioning failed — intelligence layer may be unavailable");
+}
+
 // ── Users table migration — add telemetry_digest_opt_out if missing ───────────
 try {
   const { db: migDb } = await import("@workspace/db");
@@ -444,6 +684,15 @@ try {
 
 const httpServer = http.createServer(app);
 initSocketServer(httpServer);
+
+// Register intelligence & ops WebSocket rooms on top of existing socket server
+const { registerIntelligenceRooms } = await import("./realtime/websocketRooms");
+const { getIO } = await import("./lib/socketServer");
+registerIntelligenceRooms(getIO());
+
+// Initialize PostgreSQL pub/sub event bus
+const { pgPubSub } = await import("./realtime/pgPubSub");
+await pgPubSub.init();
 
 // Wire Founder Intelligence WebSocket stream (requires Socket.io to be ready)
 const { FounderIntelligenceStream } = await import("./services/founderIntelligenceStream");

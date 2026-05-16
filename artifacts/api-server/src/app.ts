@@ -62,6 +62,8 @@ import posIntegrationsRouter     from "./routes/posIntegrations";
 import posHealthRouter           from "./routes/posHealth";
 import posMenuMappingRouter      from "./routes/posMenuMapping";
 import eeisOrdersRouter          from "./routes/eeisOrders";
+import intelligenceRouter         from "./routes/intelligence";
+import orchestrationRouter        from "./routes/orchestration";
 import operationsRouter         from "./routes/operations";
 import imagesRouter             from "./routes/images";
 import enrollmentRouter         from "./routes/enrollment";
@@ -563,6 +565,10 @@ app.use("/api",                         aiConfigureRouter);
 app.use("/api",                         demoSimulateRouter);
 app.use("/api/kernel",                  kernelRouter);
 
+// ── Autonomous Intelligence Layer ─────────────────────────────────────────────
+app.use("/api/intelligence",  intelligenceRouter);
+app.use("/api/orchestration", orchestrationRouter);
+
 // ── Universal POS Integration Layer ───────────────────────────────────────────
 // Connections CRUD, credential vault, OAuth flow, on-demand sync
 app.use("/api",                         posIntegrationsRouter);
@@ -614,6 +620,10 @@ if (process.env["NODE_ENV"] !== "test") {
   startReconciliationWorker();
   startSignalMonitor();
   RuntimeActivationService.registerWorker("reconciliation");
+
+  // Autonomous Intelligence Layer
+  const { startIntelligenceWorker } = await import("./workers/intelligenceWorker");
+  startIntelligenceWorker();
 
   // Universal POS Integration Layer workers
   startInventoryWorker();

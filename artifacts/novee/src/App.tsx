@@ -8,11 +8,12 @@ const queryClient = new QueryClient({
   },
 });
 
-const CraftPortalHome  = lazy(() => import("@/pages/CraftPortalHome"));
+const CraftPortalHome   = lazy(() => import("@/pages/CraftPortalHome"));
 const SmokeCraftGateway = lazy(() => import("@/pages/SmokeCraftGateway"));
-const CraftComingSoon  = lazy(() => import("@/pages/CraftComingSoon"));
-const OSShell          = lazy(() => import("@/pages/OSShell"));
-const EATDashboard     = lazy(() => import("@/pages/EATDashboard"));
+const CraftComingSoon   = lazy(() => import("@/pages/CraftComingSoon"));
+const OSShell           = lazy(() => import("@/pages/OSShell"));
+const EATDashboard      = lazy(() => import("@/pages/EATDashboard"));
+const CommandCenter     = lazy(() => import("@/pages/CommandCenter"));
 
 function PageLoader() {
   return (
@@ -32,20 +33,23 @@ function Router() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
-        {/* ── Public craft portals ── */}
-        <Route path="/"           component={CraftPortalHome} />
-        <Route path="/smokecraft" component={SmokeCraftGateway} />
-        <Route path="/pourcraft"  component={() => <CraftComingSoon craft="pourcraft" />} />
-        <Route path="/beercraft"  component={() => <CraftComingSoon craft="beercraft" />} />
-        <Route path="/winecraft"  component={() => <CraftComingSoon craft="winecraft" />} />
+        <Route path="/"              component={CraftPortalHome} />
+        <Route path="/smokecraft"    component={SmokeCraftGateway} />
+        <Route path="/pourcraft"     component={() => <CraftComingSoon craft="pourcraft" />} />
+        <Route path="/beercraft"     component={() => <CraftComingSoon craft="beercraft" />} />
+        <Route path="/winecraft"     component={() => <CraftComingSoon craft="winecraft" />} />
 
-        {/* ── Enterprise / operational layer ── */}
-        <Route path="/sovereign"  component={OSShell} />
-        <Route path="/admin"      component={OSShell} />
-        <Route path="/ops"        component={OSShell} />
-        <Route path="/eat-engine" component={EATDashboard} />
-        <Route path="/kernel"     component={EATDashboard} />
-        <Route path="/eeie"       component={EATDashboard} />
+        <Route path="/sovereign"     component={OSShell} />
+        <Route path="/admin"         component={OSShell} />
+        <Route path="/ops"           component={OSShell} />
+        <Route path="/eat-engine"    component={EATDashboard} />
+        <Route path="/kernel"        component={EATDashboard} />
+        <Route path="/eeie"          component={EATDashboard} />
+
+        {/* Autonomous Intelligence Command Center */}
+        <Route path="/command-center" component={CommandCenter} />
+        <Route path="/intelligence"   component={CommandCenter} />
+        <Route path="/eeis"           component={CommandCenter} />
 
         <Route component={() => <Redirect to="/" />} />
       </Switch>

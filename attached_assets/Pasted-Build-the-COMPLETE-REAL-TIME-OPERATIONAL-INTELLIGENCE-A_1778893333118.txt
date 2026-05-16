@@ -1,0 +1,477 @@
+Build the COMPLETE REAL-TIME OPERATIONAL INTELLIGENCE + AUTONOMOUS CONTEXTUAL COGNITION SYSTEM for EEIS / E.A.T / SmokeCraft 360 inside the existing Novee OS architecture.
+
+The platform already contains:
+- universal POS abstraction
+- telemetry infrastructure
+- aggregation workers
+- websocket foundations
+- operational dashboards
+- inventory synchronization
+- retry/reconciliation systems
+- AI recommendation foundations
+- event pipelines
+- token vault
+- adapter registry
+- EEIS orchestration infrastructure
+
+Now build the missing:
+REAL-TIME HOSPITALITY NERVOUS SYSTEM
+
+The system must evolve from:
+“operational middleware”
+into:
+autonomous contextual hospitality intelligence.
+
+DO NOT build:
+- frontend-only systems
+- polling-heavy systems
+- disconnected services
+- duplicated telemetry logic
+- temporary architecture
+- mock orchestration
+- static automation loops
+
+Everything must be:
+- event-driven
+- replay-safe
+- rollback-safe
+- multi-tenant
+- production-grade
+- transport-abstracted
+- operationally intelligent
+- context-aware
+- autonomous
+
+Use:
+PostgreSQL LISTEN/NOTIFY
+as the pub/sub backbone.
+
+HOWEVER:
+create a transport abstraction layer so Redis Pub/Sub can later replace or augment transport WITHOUT rewrites.
+
+The Operational Command Center must live INSIDE the existing Novee OS shell.
+
+DO NOT create a standalone artifact.
+
+REQUIRED BACKEND STRUCTURE
+
+Create:
+
+server/
+├── realtime/
+│   ├── transport/
+│   │   ├── EventTransport.ts
+│   │   ├── PostgresEventTransport.ts
+│   │   └── transportRegistry.ts
+│   │
+│   ├── socket/
+│   │   ├── socketServer.ts
+│   │   ├── roomManager.ts
+│   │   ├── socketAuth.ts
+│   │   ├── heartbeatManager.ts
+│   │   ├── replaySync.ts
+│   │   ├── telemetryBroadcast.ts
+│   │   └── websocketCompression.ts
+│   │
+│   ├── telemetry/
+│   │   ├── telemetryEmitter.ts
+│   │   ├── loungeHeatmap.ts
+│   │   ├── liveMetrics.ts
+│   │   ├── engagementTracker.ts
+│   │   └── activeSessions.ts
+│   │
+│   └── certification/
+│       ├── adapterCertification.ts
+│       ├── webhookValidation.ts
+│       ├── replayIntegrity.ts
+│       ├── inventoryDriftTests.ts
+│       └── adapterHealthChecks.ts
+│
+├── cognition/
+│   ├── context/
+│   │   ├── contextEngine.ts
+│   │   ├── contextBuilder.ts
+│   │   ├── contextAggregator.ts
+│   │   ├── contextWeighting.ts
+│   │   ├── contextScoring.ts
+│   │   └── contextReplay.ts
+│   │
+│   ├── state/
+│   │   ├── venueStateEngine.ts
+│   │   ├── guestStateEngine.ts
+│   │   ├── staffStateEngine.ts
+│   │   ├── environmentalState.ts
+│   │   ├── deviceState.ts
+│   │   └── operationalState.ts
+│   │
+│   ├── temporal/
+│   │   ├── temporalPatterns.ts
+│   │   ├── engagementCycles.ts
+│   │   ├── trafficRhythms.ts
+│   │   ├── pacingEngine.ts
+│   │   └── seasonalBehavior.ts
+│   │
+│   ├── social/
+│   │   ├── socialDensity.ts
+│   │   ├── interactionMomentum.ts
+│   │   ├── groupBehavior.ts
+│   │   ├── communalEnergy.ts
+│   │   └── socialScoring.ts
+│   │
+│   ├── environment/
+│   │   ├── environmentalMemory.ts
+│   │   ├── environmentalEffectiveness.ts
+│   │   ├── moodCorrelation.ts
+│   │   ├── atmosphereOptimization.ts
+│   │   └── adaptiveEnvironment.ts
+│   │
+│   ├── digitalTwin/
+│   │   ├── venueTwin.ts
+│   │   ├── liveVenueModel.ts
+│   │   ├── operationalSimulation.ts
+│   │   ├── predictiveVenueState.ts
+│   │   └── twinSynchronization.ts
+│   │
+│   ├── predictive/
+│   │   ├── momentumPrediction.ts
+│   │   ├── engagementForecasting.ts
+│   │   ├── conversionForecasting.ts
+│   │   ├── trafficPrediction.ts
+│   │   └── environmentalPrediction.ts
+│   │
+│   └── optimization/
+│       ├── autonomousOptimization.ts
+│       ├── orchestrationAdaptation.ts
+│       ├── recommendationOptimization.ts
+│       ├── environmentalOptimization.ts
+│       └── operationalOptimization.ts
+│
+├── intelligence/
+│   ├── orchestration/
+│   │   ├── orchestrationEngine.ts
+│   │   ├── decisionEngine.ts
+│   │   ├── automationRunner.ts
+│   │   ├── orchestrationQueue.ts
+│   │   ├── orchestrationReplay.ts
+│   │   └── orchestrationRollback.ts
+│   │
+│   ├── behavior/
+│   │   ├── aiMemoryEngine.ts
+│   │   ├── preferenceEvolution.ts
+│   │   ├── behavioralScoring.ts
+│   │   ├── guestLearning.ts
+│   │   ├── venueLearning.ts
+│   │   └── recommendationLearning.ts
+│   │
+│   ├── ambient/
+│   │   ├── ambientOrchestrator.ts
+│   │   ├── lightingEngine.ts
+│   │   ├── soundEngine.ts
+│   │   ├── sceneTransitions.ts
+│   │   ├── moodScoring.ts
+│   │   └── environmentalAdaptation.ts
+│   │
+│   ├── rules/
+│   │   ├── ruleEngine.ts
+│   │   ├── triggerProcessor.ts
+│   │   ├── conditionalActions.ts
+│   │   ├── operatorOverrides.ts
+│   │   └── orchestrationPolicies.ts
+│   │
+│   └── safety/
+│       ├── confidenceThresholds.ts
+│       ├── automationGuardrails.ts
+│       ├── replayProtection.ts
+│       ├── anomalyDetection.ts
+│       └── orchestrationAudit.ts
+
+REQUIRED DATABASE TABLES
+
+Create and fully wire:
+
+- ai_behavior_memory
+- guest_preference_profiles
+- venue_behavior_profiles
+- venue_context_state
+- staff_context_profiles
+- environmental_context
+- social_engagement_state
+- temporal_behavior_patterns
+- venue_digital_twins
+- operational_awareness_scores
+- behavioral_momentum
+- environmental_effectiveness
+- predictive_context_scores
+- predictive_scores
+- adaptive_optimization_logs
+- contextual_orchestration_events
+- venue_state_snapshots
+- orchestration_rules
+- orchestration_events
+- orchestration_decisions
+- environmental_states
+- ambient_scene_history
+- engagement_scores
+- automation_guardrails
+- orchestration_audit_logs
+
+Include:
+- indexes
+- tenant scoping
+- timestamps
+- confidence scoring
+- replay support
+- rollback support
+- audit trails
+- snapshot versioning
+
+REQUIRED EVENT TRANSPORT
+
+Build:
+EventTransport interface
+
+Implement:
+PostgresEventTransport
+
+Using:
+PostgreSQL LISTEN/NOTIFY
+
+Capabilities:
+- publish()
+- subscribe()
+- reconnect handling
+- replay synchronization
+- typed payloads
+- tenant channel isolation
+- operational telemetry propagation
+
+Architecture must remain:
+transport-agnostic.
+
+REQUIRED WEBSOCKET SYSTEM
+
+Implement:
+Socket.IO operational fabric
+
+Capabilities:
+- authenticated rooms
+- venue rooms
+- admin rooms
+- device rooms
+- replay sync
+- stale socket cleanup
+- heartbeat monitoring
+- operational telemetry streaming
+- websocket compression
+- reconnect recovery
+- live synchronization
+
+Avoid polling wherever possible.
+
+REQUIRED CONTEXT ENGINE
+
+Build a unified operational awareness engine that continuously combines:
+
+- telemetry
+- venue state
+- guest behavior
+- operational load
+- AI memory
+- environmental state
+- temporal patterns
+- social energy
+- inventory pressure
+- recommendation confidence
+
+into:
+ONE CONTEXTUAL AWARENESS MODEL.
+
+All intelligence systems must consume shared contextual state.
+
+REQUIRED STATE ENGINES
+
+Track live:
+
+- venue state
+- guest state
+- staff state
+- environmental state
+- operational state
+- device state
+- orchestration state
+- social state
+
+All synchronized through websocket + event propagation.
+
+REQUIRED AI MEMORY ENGINE
+
+Track:
+- flavor evolution
+- pairing history
+- recommendation acceptance
+- environmental response
+- session progression
+- VIP behavior
+- social engagement
+- behavioral momentum
+
+Persist all learning to DB.
+
+Continuously improve recommendations.
+
+REQUIRED RULE + DECISION ENGINE
+
+Build:
+- orchestration engine
+- automation runner
+- decision engine
+- rule engine
+- trigger processor
+- operator overrides
+
+Capabilities:
+- evaluate context
+- execute adaptive orchestration
+- support rollback
+- support overrides
+- support confidence thresholds
+- support emergency disable
+- support audit replay
+
+REQUIRED AMBIENT ORCHESTRATION
+
+Build:
+- lighting adaptation
+- sound adaptation
+- environmental scene switching
+- engagement-based atmosphere response
+- intensity scaling
+- premium-mode activation
+- mood optimization
+
+Ambient systems must react to:
+- contextual awareness
+- engagement scoring
+- social momentum
+- environmental effectiveness
+- VIP presence
+- operational pacing
+
+REQUIRED DIGITAL TWIN SYSTEM
+
+Build:
+LIVE VIRTUAL VENUE MODELS
+
+Each venue twin must continuously model:
+
+- active guests
+- active sessions
+- operational load
+- environmental state
+- device activity
+- traffic flow
+- orchestration status
+- engagement heatmaps
+- ambient state
+- inventory movement
+
+Allow:
+- predictive simulation
+- engagement forecasting
+- operational strain prediction
+- environmental optimization
+- orchestration testing
+
+REQUIRED SAFETY + GUARDRAILS
+
+Implement:
+
+- automation guardrails
+- confidence thresholds
+- replay protection
+- anomaly detection
+- rollback systems
+- duplicate prevention
+- emergency disable
+- operator pause controls
+- orchestration audit trails
+- deterministic orchestration replay
+
+Never allow uncontrolled automation loops.
+
+REQUIRED OPERATIONAL COMMAND CENTER
+
+Expand Novee OS into:
+the operational nervous system.
+
+Add:
+- live telemetry streams
+- orchestration timelines
+- AI confidence overlays
+- contextual awareness scoring
+- operational momentum tracking
+- digital twin visualization
+- environmental effectiveness maps
+- social energy heatmaps
+- predictive overlays
+- device intelligence
+- adapter certification monitoring
+- ambient orchestration status
+- venue operational health
+
+The experience must feel like:
+NASA mission control for hospitality intelligence.
+
+REQUIRED LIVE EVENT FLOW
+
+Build this architecture:
+
+Telemetry Event
+↓
+EventTransport
+↓
+Context Aggregation
+↓
+State Engines
+↓
+AI Memory Update
+↓
+Decision Engine
+↓
+Rule Evaluation
+↓
+Orchestration Engine
+↓
+Ambient Adaptation
+↓
+Digital Twin Update
+↓
+Operational Command Center
+↓
+WebSocket Synchronization
+
+REQUIRED FINAL EXPERIENCE
+
+The final system must feel like:
+
+“Tesla fleet intelligence meets Apple operational orchestration meets smart-city hospitality cognition.”
+
+NOT:
+- dashboards
+- analytics software
+- cigar POS
+- automation scripts
+- recommendation widgets
+
+The platform must feel:
+- alive
+- predictive
+- adaptive
+- contextual
+- cinematic
+- intelligent
+- autonomous
+- operationally aware
+
+The final result must establish EEIS / E.A.T as:
+the contextual cognition and orchestration layer for experiential hospitality infrastructure.

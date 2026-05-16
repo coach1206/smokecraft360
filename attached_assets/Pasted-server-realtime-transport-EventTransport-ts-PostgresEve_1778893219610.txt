@@ -1,0 +1,127 @@
+server/
+├── realtime/
+│   ├── transport/
+│   │   ├── EventTransport.ts
+│   │   ├── PostgresEventTransport.ts
+│   │   └── transportRegistry.ts
+│   │
+│   ├── socket/
+│   │   ├── socketServer.ts
+│   │   ├── roomManager.ts
+│   │   ├── socketAuth.ts
+│   │   ├── heartbeatManager.ts
+│   │   ├── replaySync.ts
+│   │   ├── telemetryBroadcast.ts
+│   │   └── websocketCompression.ts
+│   │
+│   ├── telemetry/
+│   │   ├── telemetryEmitter.ts
+│   │   ├── loungeHeatmap.ts
+│   │   ├── liveMetrics.ts
+│   │   ├── engagementTracker.ts
+│   │   └── activeSessions.ts
+│   │
+│   └── certification/
+│       ├── adapterCertification.ts
+│       ├── webhookValidation.ts
+│       ├── replayIntegrity.ts
+│       ├── inventoryDriftTests.ts
+│       └── adapterHealthChecks.ts
+│
+├── cognition/
+│   ├── context/
+│   │   ├── contextEngine.ts
+│   │   ├── contextBuilder.ts
+│   │   ├── contextAggregator.ts
+│   │   ├── contextWeighting.ts
+│   │   ├── contextScoring.ts
+│   │   └── contextReplay.ts
+│   │
+│   ├── state/
+│   │   ├── venueStateEngine.ts
+│   │   ├── guestStateEngine.ts
+│   │   ├── staffStateEngine.ts
+│   │   ├── environmentalState.ts
+│   │   ├── deviceState.ts
+│   │   └── operationalState.ts
+│   │
+│   ├── temporal/
+│   │   ├── temporalPatterns.ts
+│   │   ├── engagementCycles.ts
+│   │   ├── trafficRhythms.ts
+│   │   ├── pacingEngine.ts
+│   │   └── seasonalBehavior.ts
+│   │
+│   ├── social/
+│   │   ├── socialDensity.ts
+│   │   ├── interactionMomentum.ts
+│   │   ├── groupBehavior.ts
+│   │   ├── communalEnergy.ts
+│   │   └── socialScoring.ts
+│   │
+│   ├── environment/
+│   │   ├── environmentalMemory.ts
+│   │   ├── environmentalEffectiveness.ts
+│   │   ├── moodCorrelation.ts
+│   │   ├── atmosphereOptimization.ts
+│   │   └── adaptiveEnvironment.ts
+│   │
+│   ├── digitalTwin/
+│   │   ├── venueTwin.ts
+│   │   ├── liveVenueModel.ts
+│   │   ├── operationalSimulation.ts
+│   │   ├── predictiveVenueState.ts
+│   │   └── twinSynchronization.ts
+│   │
+│   ├── predictive/
+│   │   ├── momentumPrediction.ts
+│   │   ├── engagementForecasting.ts
+│   │   ├── conversionForecasting.ts
+│   │   ├── trafficPrediction.ts
+│   │   └── environmentalPrediction.ts
+│   │
+│   └── optimization/
+│       ├── autonomousOptimization.ts
+│       ├── orchestrationAdaptation.ts
+│       ├── recommendationOptimization.ts
+│       ├── environmentalOptimization.ts
+│       └── operationalOptimization.ts
+│
+├── intelligence/
+│   ├── orchestration/
+│   │   ├── orchestrationEngine.ts
+│   │   ├── decisionEngine.ts
+│   │   ├── automationRunner.ts
+│   │   ├── orchestrationQueue.ts
+│   │   ├── orchestrationReplay.ts
+│   │   └── orchestrationRollback.ts
+│   │
+│   ├── behavior/
+│   │   ├── aiMemoryEngine.ts
+│   │   ├── preferenceEvolution.ts
+│   │   ├── behavioralScoring.ts
+│   │   ├── guestLearning.ts
+│   │   ├── venueLearning.ts
+│   │   └── recommendationLearning.ts
+│   │
+│   ├── ambient/
+│   │   ├── ambientOrchestrator.ts
+│   │   ├── lightingEngine.ts
+│   │   ├── soundEngine.ts
+│   │   ├── sceneTransitions.ts
+│   │   ├── moodScoring.ts
+│   │   └── environmentalAdaptation.ts
+│   │
+│   ├── rules/
+│   │   ├── ruleEngine.ts
+│   │   ├── triggerProcessor.ts
+│   │   ├── conditionalActions.ts
+│   │   ├── operatorOverrides.ts
+│   │   └── orchestrationPolicies.ts
+│   │
+│   └── safety/
+│       ├── confidenceThresholds.ts
+│       ├── automationGuardrails.ts
+│       ├── replayProtection.ts
+│       ├── anomalyDetection.ts
+│       └── orchestrationAudit.ts
