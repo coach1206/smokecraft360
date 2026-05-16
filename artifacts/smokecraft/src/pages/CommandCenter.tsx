@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, Activity, Layers, Lock,
 } from "lucide-react";
-import { SovereignLockOverlay } from "@/components/SovereignLockOverlay";
+import { SovereignGate } from "@/components/SovereignGate";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
 import { useEngagementContext } from "@/contexts/EngagementContext";
@@ -369,14 +369,16 @@ export default function CommandCenter() {
         const benefit = SOVEREIGN_BENEFITS[upgradeModal];
         if (!benefit) return null;
         return (
-          <SovereignLockOverlay
+          <SovereignGate
             key={upgradeModal}
             variant="modal"
             featureName={benefit.headline}
             description={benefit.body}
             isOpen={upgradeModal !== null}
             onClose={() => setUpgradeModal(null)}
-          />
+          >
+            {null}
+          </SovereignGate>
         );
       })()}
     </div>
