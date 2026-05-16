@@ -21,6 +21,8 @@ interface KernelModule {
   description: string | null;
   launchUrl: string | null;
   registeredAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
 }
 
 type KernelMode = "sovereign" | "essential";
@@ -77,6 +79,7 @@ export default function OSShell() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [editingModule, setEditingModule] = useState<KernelModule | null>(null);
   const [deletingModule, setDeletingModule] = useState<KernelModule | null>(null);
+  const [showDeletedHistory, setShowDeletedHistory] = useState(false);
   const [bootPhase, setBootPhase] = useState<"boot" | "ready">("boot");
   const [bootProgress, setBootProgress] = useState(0);
 
@@ -311,13 +314,22 @@ export default function OSShell() {
               </h2>
             </div>
             {adminToken && (
-              <button
-                onClick={() => setShowRegisterModal(true)}
-                className="novee-btn-primary"
-                style={{ padding: "8px 18px", fontSize: 11, letterSpacing: "0.15em" }}
-              >
-                + REGISTER MODULE
-              </button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => setShowDeletedHistory(true)}
+                  className="novee-btn-ghost"
+                  style={{ padding: "8px 14px", fontSize: 10, letterSpacing: "0.12em" }}
+                >
+                  🗑 DELETION LOG
+                </button>
+                <button
+                  onClick={() => setShowRegisterModal(true)}
+                  className="novee-btn-primary"
+                  style={{ padding: "8px 18px", fontSize: 11, letterSpacing: "0.15em" }}
+                >
+                  + REGISTER MODULE
+                </button>
+              </div>
             )}
           </div>
 
@@ -391,6 +403,14 @@ export default function OSShell() {
             setDeletingModule(null);
           }}
           onClose={() => setDeletingModule(null)}
+        />
+      )}
+
+      {/* Deleted Modules History panel */}
+      {showDeletedHistory && (
+        <DeletedModulesPanel
+          adminToken={adminToken}
+          onClose={() => setShowDeletedHistory(false)}
         />
       )}
 
@@ -698,12 +718,11 @@ function ConfirmDeleteModal({
         style={{ borderRadius: 16, padding: "32px 28px", width: "min(420px, 92vw)" }}
       >
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(224,82,82,0.6)", marginBottom: 6 }}>KERNEL REGISTRY · DESTRUCTIVE ACTION</div>
+          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(224,82,82,0.6)", marginBottom: 6 }}>KERNEL REGISTRY · REMOVE MODULE</div>
           <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "0.08em" }}>Delete Module?</div>
           <div style={{ fontSize: 13, color: "rgba(245,237,216,0.55)", marginTop: 10, lineHeight: 1.6 }}>
-            This will permanently remove{" "}
             <span style={{ color: "#F5EDD8", fontWeight: 600 }}>{mod.name}</span>{" "}
-            from the kernel registry. This action cannot be undone.
+            will be removed from the active registry. A record of this removal will be kept in the audit log for review by administrators.
           </div>
         </div>
 
@@ -1314,6 +1333,158 @@ function EditModuleModal({
             CANCEL
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function DeletedModulesPanel({
+  adminToken,
+  onClose,
+}: {
+  adminToken: string;
+  onClose: () => void;
+}) {
+  const [deleted, setDeleted]   = useState<KernelModule[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    apiFetch<{ modules: KernelModule[] }>("/modules/deleted", {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    })
+      .then((d) => setDeleted(d.modules))
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load deletion log"))
+      .finally(() => setLoading(false));
+  }, [adminToken]);
+
+  const fmt = (iso: string | null) => {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.78)",
+        backdropFilter: "blur(8px)", zIndex: 300,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="novee-glass"
+        style={{
+          borderRadius: 16, padding: "28px 28px 24px",
+          width: "min(680px, 95vw)", maxHeight: "80vh",
+          display: "flex", flexDirection: "column",
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
+          <div>
+            <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(224,82,82,0.6)", marginBottom: 4 }}>
+              KERNEL REGISTRY · AUDIT LOG
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "0.08em" }}>Deleted Modules</div>
+            <div style={{ fontSize: 12, color: "rgba(245,237,216,0.4)", marginTop: 4 }}>
+              Soft-deleted entries — retained for audit purposes
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="novee-btn-ghost"
+            style={{ padding: "6px 14px", fontSize: 10, letterSpacing: "0.12em", flexShrink: 0 }}
+          >
+            CLOSE
+          </button>
+        </div>
+
+        {/* Body */}
+        <div style={{ overflowY: "auto", flex: 1 }}>
+          {loading ? (
+            <div style={{ display: "flex", gap: 8, alignItems: "center", padding: "24px 0" }}>
+              <div style={{ width: 14, height: 14, border: "1.5px solid rgba(196,97,10,0.3)", borderTopColor: "#C4610A", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+              <span style={{ fontSize: 12, color: "rgba(245,237,216,0.4)" }}>Loading deletion log…</span>
+              <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+            </div>
+          ) : error ? (
+            <div style={{ padding: "16px", background: "rgba(224,82,82,0.08)", borderRadius: 8, fontSize: 13, color: "#e05252" }}>
+              {error}
+            </div>
+          ) : deleted.length === 0 ? (
+            <div style={{
+              borderRadius: 10, padding: "32px 24px", textAlign: "center",
+              color: "rgba(245,237,216,0.35)", fontSize: 13,
+              border: "1px solid rgba(245,237,216,0.06)",
+            }}>
+              No modules have been deleted yet.
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {deleted.map((mod) => (
+                <div
+                  key={mod.id}
+                  style={{
+                    borderRadius: 10, padding: "14px 16px",
+                    background: "rgba(224,82,82,0.04)",
+                    border: "1px solid rgba(224,82,82,0.14)",
+                    display: "flex", flexDirection: "column", gap: 6,
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 14, color: CRAFT_COLORS[mod.craftType] ?? "#6b7280" }}>
+                        {CRAFT_ICONS[mod.craftType] ?? "◆"}
+                      </span>
+                      <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.06em", color: "#F5EDD8" }}>
+                        {mod.name}
+                      </span>
+                      <span style={{ fontSize: 10, color: "rgba(245,237,216,0.35)", letterSpacing: "0.08em" }}>
+                        /{mod.slug}
+                      </span>
+                    </div>
+                    <span style={{
+                      fontSize: 9, letterSpacing: "0.12em", padding: "2px 8px", borderRadius: 4,
+                      background: "rgba(224,82,82,0.1)", color: "#e05252", fontWeight: 700,
+                    }}>
+                      DELETED
+                    </span>
+                  </div>
+                  {mod.description && (
+                    <div style={{ fontSize: 11, color: "rgba(245,237,216,0.4)", paddingLeft: 22 }}>
+                      {mod.description}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 16, paddingLeft: 22, marginTop: 2 }}>
+                    <span style={{ fontSize: 10, color: "rgba(245,237,216,0.3)", letterSpacing: "0.06em" }}>
+                      Removed: <span style={{ color: "rgba(245,237,216,0.55)" }}>{fmt(mod.deletedAt)}</span>
+                    </span>
+                    {mod.deletedBy && (
+                      <span style={{ fontSize: 10, color: "rgba(245,237,216,0.3)", letterSpacing: "0.06em" }}>
+                        By: <span style={{ color: "rgba(245,237,216,0.55)" }}>{mod.deletedBy}</span>
+                      </span>
+                    )}
+                    <span style={{ fontSize: 10, color: "rgba(245,237,216,0.3)", letterSpacing: "0.06em" }}>
+                      Craft: <span style={{ color: CRAFT_COLORS[mod.craftType] ?? "#6b7280" }}>{mod.craftType}</span>
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Footer count */}
+        {!loading && !error && deleted.length > 0 && (
+          <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid rgba(245,237,216,0.07)", fontSize: 10, letterSpacing: "0.1em", color: "rgba(245,237,216,0.25)" }}>
+            {deleted.length} DELETED MODULE{deleted.length !== 1 ? "S" : ""} ON RECORD
+          </div>
+        )}
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ import {
 } from "@workspace/db";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { z }                             from "zod";
-import { eq, desc, sql, count, and, ne } from "drizzle-orm";
+import { eq, desc, sql, count, and, ne, isNull, isNotNull } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -95,10 +95,44 @@ router.get("/modules", async (req: Request, res: Response) => {
     const modules = await db
       .select()
       .from(kernelModulesTable)
+      .where(isNull(kernelModulesTable.deletedAt))
       .orderBy(desc(kernelModulesTable.registeredAt));
     return res.json({ modules });
   } catch {
     return res.status(500).json({ error: "Failed to list kernel modules" });
+  }
+});
+
+// ── GET /api/kernel/modules/deleted ───────────────────────────────────────────
+// Returns soft-deleted modules for audit purposes (admin/super_admin only).
+// Optional query param: ?limit=N  (default: 100, max: 500)
+
+router.get("/modules/deleted", requireAuth, async (req: AuthRequest, res: Response) => {
+  const role = (req as AuthRequest).user?.role;
+  if (role !== "admin" && role !== "super_admin") {
+    return res.status(403).json({ error: "admin or super_admin only" });
+  }
+
+  const rawLimit = req.query.limit as string | undefined;
+  let limitN = 100;
+  if (rawLimit !== undefined) {
+    const parsed = parseInt(rawLimit, 10);
+    if (isNaN(parsed) || parsed < 1 || parsed > 500) {
+      return res.status(400).json({ error: "limit must be an integer between 1 and 500" });
+    }
+    limitN = parsed;
+  }
+
+  try {
+    const modules = await db
+      .select()
+      .from(kernelModulesTable)
+      .where(isNotNull(kernelModulesTable.deletedAt))
+      .orderBy(desc(kernelModulesTable.deletedAt))
+      .limit(limitN);
+    return res.json({ modules });
+  } catch {
+    return res.status(500).json({ error: "Failed to list deleted modules" });
   }
 });
 
@@ -248,10 +282,12 @@ router.get("/modules/:id/history", requireAuth, async (req: AuthRequest, res: Re
 });
 
 // ── DELETE /api/kernel/modules/:id ────────────────────────────────────────────
-// Permanently removes a module from the registry (admin/super_admin only).
+// Soft-deletes a module from the registry (admin/super_admin only).
+// Sets deletedAt / deletedBy; the row is retained for audit purposes.
 
 router.delete("/modules/:id", requireAuth, async (req: AuthRequest, res: Response) => {
-  const role = (req as AuthRequest).user?.role;
+  const user = (req as AuthRequest).user;
+  const role = user?.role;
   if (role !== "admin" && role !== "super_admin") {
     return res.status(403).json({ error: "admin or super_admin only" });
   }
@@ -259,13 +295,16 @@ router.delete("/modules/:id", requireAuth, async (req: AuthRequest, res: Respons
   const { id } = req.params as { id: string };
   if (!UUID_RE.test(id)) return res.status(400).json({ error: "id must be a valid UUID" });
 
+  const deletedBy = user?.email ?? user?.id ?? "unknown";
+
   try {
-    const [deleted] = await db
-      .delete(kernelModulesTable)
-      .where(eq(kernelModulesTable.id, id))
+    const [softDeleted] = await db
+      .update(kernelModulesTable)
+      .set({ deletedAt: new Date(), deletedBy })
+      .where(and(eq(kernelModulesTable.id, id), isNull(kernelModulesTable.deletedAt)))
       .returning({ id: kernelModulesTable.id });
 
-    if (!deleted) return res.status(404).json({ error: "Module not found" });
+    if (!softDeleted) return res.status(404).json({ error: "Module not found or already deleted" });
     return res.status(204).send();
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Unknown error";

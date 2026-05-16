@@ -26,6 +26,8 @@ export const kernelModulesTable = pgTable("kernel_modules", {
   launchUrl:    text("launch_url"),
   registeredAt: timestamp("registered_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt:    timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  deletedAt:    timestamp("deleted_at", { withTimezone: true }),
+  deletedBy:    text("deleted_by"),
 });
 
 export const insertKernelModuleSchema = createInsertSchema(kernelModulesTable).omit({ id: true, registeredAt: true, updatedAt: true });
