@@ -1022,6 +1022,8 @@ function EditModuleModal({
   const [error,         setError]         = useState<string | null>(null);
   const [slugConflict,  setSlugConflict]  = useState<string | null>(null);
   const [slugChecking,  setSlugChecking]  = useState(false);
+  const [slugHistory,   setSlugHistory]   = useState<{ id: string; oldSlug: string; newSlug: string; changedBy: string; changedAt: string }[]>([]);
+  const [slugHistoryLoading, setSlugHistoryLoading] = useState(false);
   const [historyOpen,    setHistoryOpen]    = useState(false);
   const [history,        setHistory]        = useState<AuditEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -1033,6 +1035,18 @@ function EditModuleModal({
   const [historyUntil,   setHistoryUntil]   = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const checkIdRef  = useRef(0);
+
+  // Load slug change history on mount
+  useEffect(() => {
+    setSlugHistoryLoading(true);
+    apiFetch<{ slugHistory: { id: string; oldSlug: string; newSlug: string; changedBy: string; changedAt: string }[] }>(
+      `/modules/${mod.id}/slug-history`,
+      { headers: { Authorization: `Bearer ${adminToken}` } },
+    )
+      .then((r) => setSlugHistory(r.slugHistory))
+      .catch(() => setSlugHistory([]))
+      .finally(() => setSlugHistoryLoading(false));
+  }, [mod.id, adminToken]);
 
   const HISTORY_PAGE_SIZE = 10;
 
@@ -1220,6 +1234,37 @@ function EditModuleModal({
           {!slugFieldError && slug.trim() !== mod.slug && (
             <div style={{ fontSize: 10, color: "#ca8a04", marginTop: -8, marginBottom: 12 }}>
               Changing the slug will invalidate any existing links or integrations using the old slug.
+            </div>
+          )}
+
+          {/* Previous slugs */}
+          {!slugHistoryLoading && slugHistory.length > 0 && (
+            <div style={{
+              marginTop: -4, marginBottom: 12,
+              background: "rgba(196,97,10,0.05)", border: "1px solid rgba(196,97,10,0.15)",
+              borderRadius: 8, padding: "8px 12px",
+            }}>
+              <div style={{ fontSize: 8, letterSpacing: "0.18em", color: "rgba(196,97,10,0.55)", marginBottom: 6 }}>
+                PREVIOUSLY ACCESSIBLE AS
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {slugHistory.map((entry) => (
+                  <div key={entry.id} style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                    <code style={{ fontSize: 10, color: "rgba(245,237,216,0.6)", fontFamily: "monospace", background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: 4 }}>
+                      /{entry.oldSlug}
+                    </code>
+                    <span style={{ fontSize: 9, color: "rgba(245,237,216,0.3)" }}>
+                      → /{entry.newSlug}
+                    </span>
+                    <span style={{ fontSize: 9, color: "rgba(245,237,216,0.25)", marginLeft: "auto" }}>
+                      {new Date(entry.changedAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ fontSize: 9, color: "rgba(245,237,216,0.3)", marginTop: 6 }}>
+                Old links to these slugs will automatically redirect to the current slug.
+              </div>
             </div>
           )}
         </div>

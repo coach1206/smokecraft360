@@ -14,6 +14,7 @@ const CraftComingSoon   = lazy(() => import("@/pages/CraftComingSoon"));
 const OSShell           = lazy(() => import("@/pages/OSShell"));
 const EATDashboard      = lazy(() => import("@/pages/EATDashboard"));
 const CommandCenter     = lazy(() => import("@/pages/CommandCenter"));
+const SlugRedirect      = lazy(() => import("@/pages/SlugRedirect"));
 
 function PageLoader() {
   return (
@@ -50,6 +51,9 @@ function Router() {
         <Route path="/command-center" component={CommandCenter} />
         <Route path="/intelligence"   component={CommandCenter} />
         <Route path="/eeis"           component={CommandCenter} />
+
+        {/* Slug resolver — handles current and historical module slugs with redirect */}
+        <Route path="/modules/:slug"  component={SlugRedirect} />
 
         <Route component={() => <Redirect to="/" />} />
       </Switch>

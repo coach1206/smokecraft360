@@ -161,3 +161,4 @@ export * from "./orchestrationEvents";
 export * from "./environmentalStates";
 export * from "./engagementScores";
 export * from "./distributedCluster";
+export * from "./kernelModuleSlugHistory";

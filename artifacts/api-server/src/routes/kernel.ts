@@ -18,6 +18,7 @@ import {
   kernelModeConfigTable,
   telemetryEventsTable,
   kernelModuleAuditLogTable,
+  kernelModuleSlugHistoryTable,
   usersTable,
 } from "@workspace/db";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
@@ -136,6 +137,93 @@ router.get("/modules/deleted", requireAuth, async (req: AuthRequest, res: Respon
   }
 });
 
+// ── GET /api/kernel/modules/by-slug/:slug ─────────────────────────────────────
+// Resolves a module by its current or any historical slug.
+// Current slug  → 200 { redirect: false, module }
+// Historical slug → 200 { redirect: true, currentSlug, module }
+//   Note: we return 200 (not 301) so that XHR/fetch clients see the body.
+//   fetch auto-follows 301s, which would swallow the redirect flag.
+//   The X-Redirect-Slug response header carries the canonical slug for
+//   non-JSON consumers (e.g. server-to-server integrations).
+// Unknown / deleted slug → 404
+
+router.get("/modules/by-slug/:slug", async (req: Request, res: Response) => {
+  const { slug } = req.params as { slug: string };
+  if (!slug || slug.length > 80) {
+    return res.status(400).json({ error: "Invalid slug" });
+  }
+
+  try {
+    // Check if slug is a current active module slug
+    const [current] = await db
+      .select()
+      .from(kernelModulesTable)
+      .where(and(eq(kernelModulesTable.slug, slug), isNull(kernelModulesTable.deletedAt)))
+      .limit(1);
+
+    if (current) {
+      return res.json({ redirect: false, module: current });
+    }
+
+    // Check slug history — find the most recent entry for this old slug
+    const [historyEntry] = await db
+      .select()
+      .from(kernelModuleSlugHistoryTable)
+      .where(eq(kernelModuleSlugHistoryTable.oldSlug, slug))
+      .orderBy(desc(kernelModuleSlugHistoryTable.changedAt))
+      .limit(1);
+
+    if (!historyEntry) {
+      return res.status(404).json({ error: "No module found with this slug" });
+    }
+
+    // Fetch the current state of that module
+    const [module] = await db
+      .select()
+      .from(kernelModulesTable)
+      .where(and(eq(kernelModulesTable.id, historyEntry.moduleId), isNull(kernelModulesTable.deletedAt)))
+      .limit(1);
+
+    if (!module) {
+      return res.status(404).json({ error: "Module has been deleted" });
+    }
+
+    // Return 200 with redirect metadata so XHR/fetch callers see the body.
+    // (HTTP 301 is auto-followed by fetch, which would hide the redirect flag.)
+    // The `redirect: true` flag signals the frontend to update its URL to currentSlug.
+    // Direct API consumers can also inspect the `X-Redirect-Slug` header for routing.
+    res.setHeader("X-Redirect-Slug", module.slug);
+    return res.json({ redirect: true, currentSlug: module.slug, module });
+  } catch {
+    return res.status(500).json({ error: "Failed to resolve slug" });
+  }
+});
+
+// ── GET /api/kernel/modules/:id/slug-history ──────────────────────────────────
+// Returns the full slug change history for a module (admin/super_admin only).
+
+router.get("/modules/:id/slug-history", requireAuth, async (req: AuthRequest, res: Response) => {
+  const role = (req as AuthRequest).user?.role;
+  if (role !== "admin" && role !== "super_admin") {
+    return res.status(403).json({ error: "admin or super_admin only" });
+  }
+
+  const { id } = req.params as { id: string };
+  if (!UUID_RE.test(id)) return res.status(400).json({ error: "id must be a valid UUID" });
+
+  try {
+    const history = await db
+      .select()
+      .from(kernelModuleSlugHistoryTable)
+      .where(eq(kernelModuleSlugHistoryTable.moduleId, id))
+      .orderBy(desc(kernelModuleSlugHistoryTable.changedAt));
+
+    return res.json({ slugHistory: history });
+  } catch {
+    return res.status(500).json({ error: "Failed to load slug history" });
+  }
+});
+
 // ── POST /api/kernel/modules ───────────────────────────────────────────────────
 
 router.post("/modules", requireAuth, async (req: AuthRequest, res: Response) => {
@@ -223,6 +311,16 @@ router.patch("/modules/:id", requireAuth, async (req: AuthRequest, res: Response
       }
 
       await tx.insert(kernelModuleAuditLogTable).values({ moduleId: id, changedBy, diff });
+
+      // Record slug change in history so old links can be redirected
+      if (parsed.data.slug && parsed.data.slug !== before.slug) {
+        await tx.insert(kernelModuleSlugHistoryTable).values({
+          moduleId:  id,
+          oldSlug:   before.slug,
+          newSlug:   parsed.data.slug,
+          changedBy,
+        });
+      }
 
       return updated;
     });
