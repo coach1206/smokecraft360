@@ -1261,9 +1261,9 @@ export default function EATDashboard() {
                     color: "rgba(245,237,216,0.25)",
                     padding: "4px 6px",
                   }}
-                  title="Delete a preset to save a new one (max 3)"
+                  title={`Delete a preset to save a new one (max ${MAX_SAVED_PRESETS})`}
                 >
-                  3/3 PRESETS
+                  {MAX_SAVED_PRESETS}/{MAX_SAVED_PRESETS} PRESETS
                 </span>
               )
             )}
