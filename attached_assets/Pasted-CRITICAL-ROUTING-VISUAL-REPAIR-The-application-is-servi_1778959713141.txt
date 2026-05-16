@@ -1,0 +1,26 @@
+CRITICAL ROUTING & VISUAL REPAIR: The application is serving two conflicting layout paths (SmokeCraft and NOVEÈ OS frameworks) which is causing a hard freeze at the tobacco selection step. Visually, the pages are flat, missing gradients, and completely lacking high-premium imagery.
+
+Execute this immediate structural code repair system-wide:
+
+1. UNTANGLE THE ROUTER AND FIX THE FREEZE:
+   - Audit the step progression inside MasterBlender.tsx and the Novee core App router. 
+   - Ensure that finishing the Terroir/Tobacco Selection step advances directly to the next logical stage within the SmokeCraft workflow (the Blend Configuration and Mentor Guidance view) instead of jumping into the generic text preference questionnaire.
+
+2. INJECT LUXURY NARRATIVE GRADIENTS & GLASS DIMENSIONS:
+   - Completely clear out the generic light-blue CSS background bubble divs. Ensure the HTML5 Canvas smoke engine handles background animations behind all content screens.
+   - Force all main cards to use our glassmorphic obsidian styling:
+     background: linear-gradient(135deg, rgba(15, 15, 15, 0.85) 0%, rgba(5, 5, 5, 0.70) 100%);
+     backdrop-filter: blur(30px);
+     border: 1px solid rgba(212, 175, 55, 0.15);
+     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
+
+3. APPLY THE PREMIUM IMAGE INFRASTRUCTURE:
+   - Embed these specific, dark-filtered production assets as contextual background elements within the layout panels:
+     * For Onboarding / Mentor Selection Screens:
+       https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=1200&q=80
+     * For Cultivation / Terroir Architecture / Tobacco Selection Screens:
+       https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80
+     * For Signature Box Creation / Golden Box Milestone Screens:
+       https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=1200&q=80
+
+Execute these layout updates, link the pages correctly, and ensure 'tsc --noEmit' exits with 0.

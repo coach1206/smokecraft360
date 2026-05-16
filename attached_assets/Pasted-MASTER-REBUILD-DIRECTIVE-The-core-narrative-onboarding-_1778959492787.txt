@@ -1,0 +1,25 @@
+MASTER REBUILD DIRECTIVE: The core narrative onboarding, mentor alignment, and dynamic scoring systems are structurally broken or hidden in the step router. We need a comprehensive refactor of MasterBlender.tsx and RitualStep.tsx to restore the true gamification sequence.
+
+Execute this strict behavioral and visual integration pass immediately:
+
+1. RESTORE SEQUENTIAL ONBOARDING ENTRANCE:
+   - Stage 1 (The Cinematic Gateway): Must render a dedicated, premium introductory landing sequence detailing what SmokeCraft is, the mythos of the Golden Box, and the cultural journey of building a personalized cigar from seed to harvest.
+   - Stage 2 (Guest Profiling): Collects initial guest data parameters.
+   - Stage 3 (The 4 Global Mentors): Renders an elite selection screen featuring 4 distinct mentors from 4 separate tobacco-producing nations. Choosing a mentor permanently assigns them as the visual/vocal authority for the duration of the blending workspace.
+   - Stage 4 (Cultivation Launch): Initializes the seed selection and the 'soul of the soil' configuration under active mentor monitoring.
+
+2. ENFORCE FLUCTUATING SCORING MECHANICS:
+   - Rewrite the point state reducer to break away from linear score increases. Implement a strict, context-driven rhythm:
+     * Milestone 1 (Cultivation Transition): When the user successfully matches their seed type to soil parameters at Stage 4, award an initial accomplishment milestone victory.
+     * Milestone 2 (The Blending Pressure): On the subsequent selection phase, execute an automatic penalty layer where the mentor challenges their baseline choice, causing the user to LOSE exactly 1 point to establish real game stakes.
+     * Milestone 3 (The Humidor & Bar Harmony): In the Stage 7 Pairing Chamber, evaluate the user's custom blend against physical cigars in the lounge's live humidor inventory and parallel drink pairings. If aligned with precision, award +1 or +2 points.
+
+3. LOCK AND SEAL ON SESSION END:
+   - The millisecond Stage 14 is finalized and the synchronous screen dissolve/ripple transition dispatches the payload to the database, freeze the score engine entirely. 
+   - This score must be permanently committed to the supply_verification_ledger as a static historic record. No further modifications to the point value are permitted until an entirely separate session encounter is initialized.
+
+4. UI FEEDBACK OVERLAY:
+   - Keep our absolute black (#000000) base canvas and active HTML5 Canvas smoke particles running. 
+   - Ensure the glassmorphic ticker panel displays real-time ticker micro-animations (+1 / -1) directly alongside the live humidor recommendation module so the user instantly experiences the consequences of their touchscreen actions.
+
+Compile and execute this holistic experience loop now. Verify all directory pathways typecheck clean via tsc --noEmit with exit 0.
