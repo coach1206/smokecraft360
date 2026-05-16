@@ -3231,6 +3231,8 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
   const [showExportPopover, setShowExportPopover] = useState(false);
   const [exportScope, setExportScope]             = useState<"filtered" | "all">("filtered");
   const [exportMinutes, setExportMinutes]         = useState<number>(0);
+  const [exportTypes, setExportTypes]             = useState<Set<string>>(new Set());
+  const [exportModule, setExportModule]           = useState<string>("");
   const exportBtnRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -3240,6 +3242,8 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
 
   useEffect(() => {
     if (!showExportPopover) return;
+    setExportTypes(new Set(selectedTypes));
+    setExportModule(selectedModule);
     const handler = (e: MouseEvent) => {
       if (exportBtnRef.current && !exportBtnRef.current.closest("[data-export-popover-root]")?.contains(e.target as Node)) {
         setShowExportPopover(false);
@@ -3247,7 +3251,7 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [showExportPopover]);
+  }, [showExportPopover]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const allEventTypes = Array.from(new Set(events.map((e) => e.eventType))).sort();
   const allModules    = Array.from(new Set(events.map((e) => e.moduleId).filter(Boolean) as string[])).sort();
@@ -3461,17 +3465,123 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
                   </div>
                 </div>
 
+                {/* Event type filter */}
+                {allEventTypes.length > 0 && (
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                      <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)" }}>
+                        EVENT TYPES
+                      </div>
+                      {exportTypes.size > 0 && (
+                        <button
+                          onClick={() => setExportTypes(new Set())}
+                          style={{
+                            background: "none", border: "none", cursor: "pointer",
+                            fontSize: 9, letterSpacing: "0.1em", color: "rgba(196,97,10,0.6)",
+                            padding: 0,
+                          }}
+                        >
+                          clear
+                        </button>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 110, overflowY: "auto" }}>
+                      {allEventTypes.map((type) => {
+                        const checked = exportTypes.has(type);
+                        return (
+                          <label
+                            key={type}
+                            style={{
+                              display: "flex", alignItems: "center", gap: 7,
+                              cursor: "pointer",
+                              padding: "3px 5px",
+                              borderRadius: 5,
+                              background: checked ? "rgba(196,97,10,0.12)" : "transparent",
+                              transition: "background 0.12s",
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => {
+                                setExportTypes((prev) => {
+                                  const next = new Set(prev);
+                                  if (next.has(type)) next.delete(type); else next.add(type);
+                                  return next;
+                                });
+                              }}
+                              style={{ accentColor: "#C4610A", width: 12, height: 12, flexShrink: 0 }}
+                            />
+                            <span style={{
+                              fontFamily: "monospace", fontSize: 10, letterSpacing: "0.04em",
+                              color: checked ? "#C4610A" : "rgba(245,237,216,0.5)",
+                              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                            }}>
+                              {type}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    {exportTypes.size === 0 && (
+                      <div style={{ fontSize: 9, color: "rgba(245,237,216,0.25)", letterSpacing: "0.07em", marginTop: 4 }}>
+                        No type filter — all types included
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Module filter */}
+                {allModules.length > 0 && (
+                  <div>
+                    <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginBottom: 6 }}>
+                      MODULE
+                    </div>
+                    <select
+                      value={exportModule}
+                      onChange={(e) => setExportModule(e.target.value)}
+                      style={{
+                        width: "100%",
+                        background: exportModule ? "rgba(196,97,10,0.15)" : "rgba(255,255,255,0.04)",
+                        border: `1px solid ${exportModule ? "rgba(196,97,10,0.45)" : "rgba(255,255,255,0.1)"}`,
+                        borderRadius: 6, padding: "5px 8px",
+                        fontSize: 10, letterSpacing: "0.06em",
+                        color: exportModule ? "#C4610A" : "rgba(245,237,216,0.45)",
+                        cursor: "pointer", outline: "none",
+                        fontFamily: "monospace",
+                      }}
+                    >
+                      <option value="">All modules</option>
+                      {allModules.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 {/* Divider + export button */}
                 <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 10 }}>
                   {(() => {
-                    const baseEvents = exportScope === "all" ? events : filteredEvents;
+                    let baseEvents = exportScope === "all" ? events : filteredEvents;
+                    if (exportTypes.size > 0) {
+                      baseEvents = baseEvents.filter((e) => exportTypes.has(e.eventType));
+                    }
+                    if (exportModule) {
+                      baseEvents = baseEvents.filter((e) => e.moduleId === exportModule);
+                    }
                     const cutoff = exportMinutes > 0 ? Date.now() - exportMinutes * 60_000 : null;
                     const exportEvents = cutoff
                       ? baseEvents.filter((e) => new Date(e.occurredAt).getTime() >= cutoff)
                       : baseEvents;
                     const parts: string[] = [];
-                    if (exportScope === "filtered" && activeFilterCount > 0) parts.push("filtered");
+                    if (exportTypes.size === 1) {
+                      parts.push([...exportTypes][0].replace(/[^a-zA-Z0-9_]/g, "_"));
+                    } else if (exportTypes.size > 1) {
+                      parts.push(`${exportTypes.size}types`);
+                    }
+                    if (exportModule) parts.push(exportModule.replace(/[^a-zA-Z0-9_]/g, "_"));
                     if (exportMinutes > 0) parts.push(`last${exportMinutes}m`);
+                    if (exportScope === "filtered" && activeFilterCount > 0 && exportTypes.size === 0 && !exportModule) parts.push("filtered");
                     if (parts.length === 0) parts.push("all");
                     const scopeLabel = parts.join("-");
                     const canExport = exportEvents.length > 0;
