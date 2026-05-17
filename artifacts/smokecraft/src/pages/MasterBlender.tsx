@@ -222,41 +222,37 @@ const MENTORS = [
   {
     id: "tradition",
     name: "Don Manuel",
+    flag: "🇩🇴",
     origin: "Dominican Republic",
     style: "Traditional Entubado Rolling",
-    bio: "Mastery over smooth, complex profile layering with multi-generational Cuban seed descendants.",
+    bio: "Mastery over smooth, complex profile layering with multi-generational Cibao Valley seed descendants. His blends carry cedar warmth, cream body, and a long, clean white ash finish.",
     tag: "THE TRADITION",
     soilAffinity: "alluvial" as const,
+    portrait: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "sovereign",
     name: "Alejandro",
+    flag: "🇳🇮",
     origin: "Nicaragua",
-    style: "Estelí Accordion Technique",
-    bio: "Specializes in high-intensity, bold, spice-forward profiles utilizing volcanic soil properties.",
+    style: "Estílí Accordion Technique",
+    bio: "Specializes in high-intensity, bold, spice-forward profiles utilizing volcanic soil properties. Dark chocolate, pepper, and earth are his signature hallmarks.",
     tag: "THE MODERN SOVEREIGN",
     soilAffinity: "volcanic" as const,
-  },
-  {
-    id: "cuban",
-    name: "Don Salvador",
-    origin: "Cuba",
-    style: "Vuelta Abajo Press Method",
-    bio: "Heir to the oldest living tobacco dynasty. Commands perfect balance of cedar, leather, and refined pepper.",
-    tag: "THE CUBAN PURIST",
-    soilAffinity: "volcanic" as const,
+    portrait: "https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "botanist",
     name: "Doña Rosa",
+    flag: "🇪🇨",
     origin: "Ecuador",
     style: "Highland Shade Cultivation",
-    bio: "Cultivates under equatorial clouds producing ultra-silky, cream-forward wrappers with rare botanical nuance.",
+    bio: "Cultivates under equatorial clouds producing ultra-silky, cream-forward wrappers with rare botanical nuance. Her profiles are floral, refined, and deceptively powerful.",
     tag: "THE HIGHLAND BOTANIST",
     soilAffinity: "alluvial" as const,
+    portrait: "https://images.unsplash.com/photo-1511113202302-ef60000a6e87?auto=format&fit=crop&w=600&q=80",
   },
 ];
-
 const SEEDS = [
   { id: "corojo",  name: "Corojo Premium", detail: "Robust, spicy intensity with classic rich pepper notes and long-leaf burn character." },
   { id: "criollo", name: "Criollo '98",    detail: "Earthy, smooth complexity balancing wood, sweet cream, and refined body." },
@@ -754,6 +750,7 @@ const GW = {
 // ── Gateway: Intro ──────────────────────────────────────────────────────────
 // ── Cockpit Idle View — NOVEE OS craft portal ────────────────────────────────
 function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
+  const [ambering, setAmbering] = useState(false);
   function playClick() {
     try {
       const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
@@ -774,8 +771,24 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
   ];
   return (
     <div
-      style={{ position: "absolute", inset: 0, background: "#000000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+      style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 65% 45% at 50% 56%, rgba(255,176,0,0.042) 0%, #000000 68%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
     >
+      {/* 1.9s amber transitional pulse */}
+      <AnimatePresence>
+        {ambering && (
+          <motion.div
+            key="amber-pulse"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0.65, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.9, times: [0, 0.25, 0.65, 1], ease: "easeInOut" }}
+            style={{
+              position: "absolute", inset: 0, pointerEvents: "none", zIndex: 999,
+              background: "radial-gradient(circle at 50% 50%, rgba(255,176,0,0.30) 0%, rgba(212,175,55,0.12) 40%, rgba(0,0,0,0) 78%)",
+            }}
+          />
+        )}
+      </AnimatePresence>
       <button
         onClick={() => window.location.assign("/novee/")}
         style={{
@@ -813,8 +826,8 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
             transition={{ delay: 0.55 + i * 0.08, duration: 0.7 }}
             whileHover={c.active ? { scale: 1.04, boxShadow: "0 0 56px rgba(212,175,55,0.32), 0 0 100px rgba(212,175,55,0.10)" } : {}}
             whileTap={c.active ? { scale: 0.96 } : {}}
-            onTouchStart={() => c.active && playClick()}
-            onClick={() => { if (c.active) { playClick(); onSmokeCraft(); } }}
+            onTouchStart={() => c.active && !ambering && playClick()}
+            onClick={() => { if (c.active && !ambering) { playClick(); setAmbering(true); setTimeout(() => onSmokeCraft(), 1900); } }}
             style={{
               border: c.active ? "1px solid rgba(212,175,55,0.60)" : "1px solid rgba(255,255,255,0.07)",
               borderRadius: 12,
@@ -1225,6 +1238,24 @@ function GatewayMentor({
   onNext: () => void;
   onBack: () => void;
 }) {
+  const { speak, stopSpeak } = useAudio();
+  const [voiceMuted, setVoiceMuted] = useState(false);
+  const prevSelected = useRef<string | null>(null);
+  const GOLD = "#d4af37";
+
+  useEffect(() => {
+    if (selected && selected !== prevSelected.current && !voiceMuted) {
+      const m = MENTORS.find(x => x.id === selected);
+      if (m) speak(`${m.name}. ${m.bio}`);
+    }
+    prevSelected.current = selected;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, voiceMuted]);
+
+  function handleMuteToggle() {
+    setVoiceMuted(v => { if (!v) stopSpeak(); return !v; });
+  }
+
   return (
     <motion.div
       key="gw-mentor"
@@ -1235,51 +1266,100 @@ function GatewayMentor({
       style={GW.bg}
     >
       <div style={GW.chamber} className="overflow-y-auto">
-        <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 8 }}>
-          Your Mentor · The Craft Foundation
-        </p>
-        <h2 style={GW.title}>Choose Country Authority & Rolling Style</h2>
-        <p style={GW.para}>
-          Your mentor establishes the rolling technique, leaf selection methodology, and draw profiles for your private reserve allocation.
-        </p>
-
-        {/* Mentor Studio reference image */}
-        <div className="rounded-lg overflow-hidden mb-5" style={{ border: `1px solid ${GOLD}18`, maxHeight: 220 }}>
-          <img
-            src={imgMentorStudio}
-            alt="Mentor Selection Studio"
-            className="w-full object-cover object-top"
-            style={{ maxHeight: 220, filter: "brightness(0.82)" }}
-          />
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
+          <div style={{ flex: 1 }}>
+            <p style={{ ...GW.para, fontSize: 10, letterSpacing: "0.38em", color: `${GOLD}80`, textTransform: "uppercase" as const, margin: "0 0 6px" }}>
+              Movement I · Phase 1
+            </p>
+            <h2 style={{ ...GW.title, margin: "0 0 6px" }}>Master Mentor Council</h2>
+            <p style={{ ...GW.para, margin: 0 }}>
+              Select your craft authority. Their technique, regional terroir, and tobacco lineage define your entire build arc.
+            </p>
+          </div>
+          <button
+            onClick={handleMuteToggle}
+            style={{
+              flexShrink: 0, marginLeft: 18, marginTop: 4,
+              background: voiceMuted ? "rgba(255,255,255,0.05)" : "rgba(212,175,55,0.12)",
+              border: `1px solid ${voiceMuted ? "rgba(255,255,255,0.15)" : "rgba(212,175,55,0.45)"}`,
+              color: voiceMuted ? "rgba(255,255,255,0.35)" : GOLD,
+              borderRadius: 4, padding: "7px 14px",
+              fontSize: 9, fontWeight: 700, letterSpacing: "0.25em",
+              textTransform: "uppercase" as const, cursor: "pointer",
+              fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap" as const,
+            }}
+          >
+            {voiceMuted ? "VOICE OFF" : "MUTE"}
+          </button>
         </div>
 
-        {/* Mentor cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          {MENTORS.map(m => (
+        {/* Portrait grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, margin: "24px 0 28px" }}>
+          {MENTORS.map((m, idx) => (
             <motion.div
               key={m.id}
-              style={GW.card(selected === m.id)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12 + idx * 0.1, duration: 0.7 }}
+              whileHover={{ scale: 1.025, boxShadow: `0 0 40px rgba(212,175,55,${selected === m.id ? "0.30" : "0.14"})` }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => onSelect(m.id)}
+              style={{
+                borderRadius: 12, overflow: "hidden",
+                border: selected === m.id ? "1.5px solid rgba(212,175,55,0.70)" : "1px solid rgba(212,175,55,0.14)",
+                background: "linear-gradient(135deg, rgba(15,15,15,0.88) 0%, rgba(5,5,5,0.75) 100%)",
+                backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)",
+                boxShadow: selected === m.id
+                  ? "0 0 36px rgba(212,175,55,0.22), 0 25px 60px rgba(0,0,0,0.95)"
+                  : "0 25px 60px rgba(0,0,0,0.95)",
+                cursor: "pointer", position: "relative" as const,
+              }}
             >
-              <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 4 }}>
-                {m.tag}
-              </p>
-              <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)", color: "#fffcf5", margin: "0 0 4px 0", fontWeight: 500 }}>
-                {m.name}
-              </h3>
-              <p style={{ color: GOLD, fontSize: 13, fontWeight: 600, marginBottom: 8 }}>{m.style}</p>
-              <p style={{ color: "#cdd0d4", fontSize: "clamp(13px, 1.5vw, 15px)", lineHeight: 1.6 }}>{m.bio}</p>
-              {selected === m.id && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  style={{ marginTop: 10, color: GOLD, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase" }}
-                >
-                  ✦ MENTOR CONFIRMED
-                </motion.div>
-              )}
+              {/* Cinematic portrait */}
+              <div style={{ position: "relative", height: 210, overflow: "hidden" }}>
+                <img
+                  src={m.portrait}
+                  alt={m.name}
+                  style={{
+                    width: "100%", height: "100%",
+                    objectFit: "cover", objectPosition: "top center",
+                    filter: "brightness(0.68) saturate(0.85) contrast(1.08)",
+                    display: "block",
+                  }}
+                />
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "55%",
+                  background: "linear-gradient(to top, rgba(5,5,5,0.92) 0%, transparent 100%)" }} />
+                <div style={{ position: "absolute", bottom: 12, left: 14 }}>
+                  <span style={{ fontSize: 20, lineHeight: 1 }}>{m.flag}</span>
+                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.22em",
+                    color: "rgba(212,175,55,0.75)", textTransform: "uppercase" as const, margin: "4px 0 0" }}>{m.origin}</p>
+                </div>
+                {selected === m.id && (
+                  <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    style={{ position: "absolute", inset: 0, border: "2px solid rgba(212,175,55,0.55)",
+                      borderRadius: 12, pointerEvents: "none" }}
+                  />
+                )}
+              </div>
+              {/* Info panel */}
+              <div style={{ padding: "16px 18px 20px" }}>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.32em",
+                  color: `${GOLD}70`, textTransform: "uppercase" as const, margin: "0 0 5px" }}>{m.tag}</p>
+                <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.15rem,2.2vw,1.45rem)",
+                  color: "#fffcf5", margin: "0 0 4px", fontWeight: 500 }}>{m.name}</h3>
+                <p style={{ color: GOLD, fontSize: 11, fontWeight: 600, margin: "0 0 10px" }}>{m.style}</p>
+                <p style={{ color: "rgba(205,208,212,0.82)", fontSize: "clamp(12px,1.4vw,13px)", lineHeight: 1.65, margin: 0 }}>{m.bio}</p>
+                {selected === m.id && (
+                  <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    style={{ marginTop: 12, color: GOLD, fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase" as const }}
+                  >
+                    ✶ MENTOR CONFIRMED
+                  </motion.div>
+                )}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -1292,7 +1372,7 @@ function GatewayMentor({
             whileTap={selected ? { scale: 0.97 } : {}}
             onClick={() => selected && onNext()}
           >
-            Confirm & Select Seed Base
+            Confirm &amp; Select Seed Base
           </motion.button>
         </div>
       </div>

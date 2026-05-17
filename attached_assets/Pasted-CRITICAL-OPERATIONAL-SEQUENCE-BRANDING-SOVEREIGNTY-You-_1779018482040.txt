@@ -1,0 +1,25 @@
+CRITICAL OPERATIONAL SEQUENCE & BRANDING SOVEREIGNTY: You are strictly forbidden from utilizing generic web grids, commercial templates, or incorrect brand names. This system is a premium hardware touchscreen console running a high-stakes luxury lounge cockpit. You must completely refactor the initialization timeline, route stack, and frontend component states across MasterBlender.tsx and all root portals to enforce this exact sequential architecture.
+
+1. FORCE THE COMPREHENSIVE SOVEREIGN BOOT TIMELINE:
+   - Level 0 (Power Up): Initialize the interface on an absolute black (#000000) canvas. Renders 'Profound Innovations LLC' centrally as the definitive corporate management signature.
+   - Level 1 (The OS Layer): Smoothly slide the view horizontally to reveal the high-end 'NOVEÈ OS' terminal frame.
+   - Level 2 (The Centralized Core): Pop up the operational dashboard frame for 'CraftHub', establishing the centralized data architecture.
+   - Level 3 (The Cockpit Portfolio): Display the 4 true operational ecosystem pillars as massive, edge-to-edge, heavily padded touchscreen blocks:
+     * SMOKECRAFT 360
+     * POURCRAFT 360
+     * BEERCRAFT 360
+     * WINECRAFT 360
+   - Format these pillars to dominate the landscape tablet viewport entirely, using thick glassmorphic layout wrappers that look like physical instrumentation.
+
+2. ENFORCE THE SENSORY DISSOLVE & ACTIVE EMBERS:
+   - When a user taps 'SMOKECRAFT 360', fire our playClick() 3400Hz mechanical audio burst and completely dissolve the portfolio grid.
+   - Transition the screen into 'The Art of the Cigar' gateway, rendering a realistic, high-fidelity premium cigar burning at the absolute bottom of the display frame. 
+   - Tie this graphic asset directly to our HTML5 SmokeCanvas at z-index 9996 so organic, moving smoke mist and amber embers rise continuously from the burning cigar base, drifting uniformly behind your interactive text layout drawers.
+   - Mirror this exact dynamic behavior across PourCraft 360, BeerCraft 360, and WineCraft 360 using their respective signature atmospheric elements when selected.
+
+3. LOCK IN THE 6-PHASE MASTERCLASS INTERACTION & QUIZ CHECKS:
+   - Retain the exact 3-Movement, 6-Phase interactive masterclass journey inside SmokeCraft 360. Keep the macro seed line graphics, the vertical plant priming matrix sliders (Volado, Seco, Ligero summing to exactly 100%), and the realistic soil mineral views.
+   - Retain the ElevenLabs voice toggles with the gold 'MUTE / VOICE OFF' buttons, and the interactive 'Palate Validation Checkpoint' quiz summaries at the end of every phase—complete with live +5XP/-2PTS scoring chips and real-time POS humidor stock/spirit pairings.
+   - Protect all live transaction tracking, backend database tables, running nightly averages, and telemetry links synced to the management CommandCenter panel.
+
+Execute this precise corporate sequence, visual sizing, and animation asset pass now. Ensure 'tsc --noEmit' passes completely clean with exit code 0.

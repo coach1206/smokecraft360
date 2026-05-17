@@ -1,0 +1,52 @@
+CRITICAL UNIFIED COCKPIT & ECOSYSTEM ARCHITECTURE: You are forbidden from deploying flat text-heavy web frames, default gray components, generic icons, or scattered, inconsistent layout wrappers. This platform is a singular, deeply unified touchscreen hospitality instrument deployed on kiosk glass in a low-light luxury lounge environment. The entire application across all modules must utilize an identical design language, fluid animation pacing, 3D hardware card compression, and heavy tactile physics.
+
+Refactor MasterBlender.tsx, RitualStep.tsx, usePosIntegration.ts, and your core router configuration files immediately to build this exact, unified production code state:
+
+1. THE UNIFIED OBSIDIAN LUXURY VISUAL SYSTEM:
+   - Base Canvas: Enforce an absolute black (#000000) backdrop field featuring a subtle, fixed centered amber/gold radial gradient overlay (#FFB000 at 4% opacity).
+   - Glassmorphism Consistency: Every container, drawer, sidebar, and quiz modal must share identical styling properties:
+     background: linear-gradient(135deg, rgba(15, 15, 15, 0.88) 0%, rgba(5, 5, 5, 0.75) 100%);
+     backdrop-filter: blur(30px); border: 1px solid rgba(212, 175, 55, 0.18); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
+   - Hardware Responsiveness: Every touch target must possess an identical 100ms haptic-style reaction: compressing downward (scale-96, translate-y-[2px]) and flashing a heavy inset shadow on direct glass contact, synchronized with our Web Audio API playClick() 3400Hz mechanical bandpass noise burst.
+   - Atmospheric Depth: Pull the HTML5 SmokeCanvas smoothly to z-index 9996 across all stages so organic smoke mist and rising embers drift uniformly over the glass layout structures.
+   - Purge Corporate Vocabulary: Permanently block the strings 'Sovereign Ritual', 'Phase 1', 'Phase 2', 'Legacy Assets', 'Precision Ritual', and 'baseline architecture' from compiling into user-facing markup.
+
+2. ABSOLUTE SYSTEM INITIALIZATION SEQUENCE (THE PORTAL ENTRANCE):
+   - Boot View: The system must initialize directly at the high-end NOVÈE OS portfolio matrix, displaying our 4 operational pillars as oversized, premium glassmorphic targets: SmokeCraft, PourCraft, WineCraft, and Asset Craft.
+   - Gate Routing: Tapping the 'SmokeCraft' tile triggers our 1.9-second amber transitional pulse, smoothly shifting the viewer into the cinematic entrance screen titled exactly: "The Art of the Cigar".
+   - Administrative Fork: Do not place text inputs as a front gate blocker. The cinematic intro card contains two clean targets:
+     * Action A (Oversized Gold Target): "ENTER MASTERCLASS" -> Bypasses all setup blocks and launches Stage 1 immediately.
+     * Action B (Inline Text Link): "RETURNING GUEST ACCESS" -> Slides up a smooth profile drawer to capture phone/last-name inputs for returning users to restore their exact session states.
+
+3. THE 3-MOVEMENT, 6-PHASE EXPERIENCE CADENCE:
+   - Restructure the entire wizard flow into 3 clear movements containing 6 high-stakes interactive Phases, separated by mandatory milestone checks to prevent passive fast-clicking:
+     * Movement I: Cultivation (Phase 1: Master Mentor Council | Phase 2: Terroir & Seed Biology)
+     * Movement II: Craftsmanship (Phase 3: The Priming Matrix | Phase 4: Curing & Fermentation Troughs)
+     * Movement III: Harmonic Reveal (Phase 5: Rolling Bench & Vitola Calibration | Phase 6: Precision Cuts & Liquid Synergy)
+
+4. VISUAL MENTOR COUNCIL WITH VOICE CONTROLS (PHASE 1):
+   - Overhaul the Mentor Selection workspace with 3 massive glassmorphic profile frames containing explicit national flags beside their titles: Don Manuel (Dominican Republic 🇩🇴), Alejandro (Nicaragua 🇳🇮), Doña Rosa (Ecuador 🇪🇨).
+   - Render highly realistic, dark-filtered cinematic portraits into each frame to secure absolute design consistency:
+     * Don Manuel Asset: https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=600&q=80
+     * Alejandro Asset: https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=600&q=80
+     * Doña Rosa Asset: https://images.unsplash.com/photo-1511113202302-ef60000a6e87?auto=format&fit=crop&w=600&q=80
+   - ElevenLabs Voice Integration: Wire an interactive gold sound toggle ('MUTE / VOICE OFF') into the upper corner of each profile. Tapping it instantly kills the synthetic voice stream, allowing guests to silently read the craft insights at their own pace.
+
+5. TERROIR, SEED PARING VISUAL ENGINES & PRIMING CONTROLLER (PHASES 2 & 3):
+   - Soil & Seed Graphics: When a user taps a tobacco origin or seed lineage, the UI must smoothly render a deep-textured, ultra-realistic macro image showing exactly what that specific regional soil mineral structure and seed strand look like in real life (e.g., Criollo, Corojo, and Connecticut Shade profiles).
+   - The Priming Matrix: Completely remove the flat three-button option array that forces a single multiple-choice selection between Seco, Viso, and Ligero. Install an interactive percentage ratio balancer (e.g., three connected multi-range dials or synchronized sliders) allowing the user to blend the leaf profile:
+     * Volado (Bottom): Explicitly label that this priming regulates burn chemistry and combustion stability.
+     * Seco / Viso (Middle): Explicitly label that this priming dictates the aromatic flavor bloom.
+     * Ligero (Top): Explicitly label that this priming delivers raw nicotine strength, body, and heavy oil density.
+   - Ratio Validation: The "CONTINUE" action remains locked until the collective percentage values total exactly 100%. Hide the auxiliary infographic layout elements ("Bunching Protocol", "Leaf Anatomy") inside smooth, collapsible disclosure accordions directly below the sliders to prevent page clutter.
+
+6. HIGH-ENGAGEMENT END-OF-PHASE QUIZ SUMMARIES & REAL POS TRACKING:
+   - Checkpoint Gates: Intercept the workflow at the absolute end of every single Phase with a dedicated 'Palate Validation Checkpoint' styled exactly as an elite interactive quiz window:
+     * Break down the key craft variables learned during that specific phase.
+     * Flash an animated point milestone ticker (+5 XP for perfect pairing choices, -2 PTS for conflicting inputs) driving the live score state.
+     * Query the real-world lounge inventory backend or display a hardcoded premium venue shortcut mapping their exact profile path to a physical cigar in stock (e.g., Padrón 1926 or Arturo Fuente Opus X) accompanied by a real product photo and the ideal luxury spirit pairing available at the bar counter to accelerate tableside upselling.
+     * Explicitly summarize the title and objectives of the upcoming Phase before enabling the gold-bordered 'ADVANCE TO NEXT ROOM' button.
+   - POS Network Sync: Stream all active kiosk session variables, terminal identifiers, and flavor ratios directly to the management CommandCenter panel in real-time, allowing bartenders and lounge floor humidors to monitor live customer builds.
+   - Nightly Leaderboard Calculation: On the final stage screen, freeze the points container completely (`scoreFrozenRef.current = true`). Run an immediate server aggregation query against the supply_verification_ledger database table to average the total scores of all entries logged on the current calendar date, positioning the user's final score directly against the running lounge standard.
+
+Execute this comprehensive visual unification, entry-sequence update, 6-Phase quiz framework, and POS-tracked blueprint now. Ensure 'tsc --noEmit' passes clean with an exit code of 0.
