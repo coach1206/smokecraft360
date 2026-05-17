@@ -268,7 +268,7 @@ const SOILS = [
   { id: "alluvial", name: "Alluvial Valley", region: "Cibao, D.R.",         detail: "Nutrient-dense loam creating silky wrapper leaves and refined, mellow body." },
 ];
 
-type GatewayPhase = "intro" | "orientation" | "mentor" | "terroir" | "seed_biology" | "cultivation" | "harvest" | "curing" | "rolling_bench" | "vitola_science" | "blending";
+type GatewayPhase = "intro" | "orientation" | "mentor" | "terroir" | "seed_biology" | "cultivation" | "gate_movement_1" | "harvest" | "curing" | "rolling_bench" | "priming_matrix" | "gate_movement_2" | "vitola_science" | "gate_movement_3" | "blending";
 
 type XPFloat  = { id: number; amount: number; x: number; y: number };
 type Sel      = {
@@ -991,7 +991,7 @@ function GatewayMentor({
         </p>
         <h2 style={GW.title}>Choose Country Authority & Rolling Style</h2>
         <p style={GW.para}>
-          Your mentor establishes the baseline architecture, rolling technique, and draw profiles for your private reserve allocation.
+          Your mentor establishes the rolling technique, leaf selection methodology, and draw profiles for your private reserve allocation.
         </p>
 
         {/* Mentor Studio reference image */}
@@ -2448,6 +2448,666 @@ function GatewayVitolaScience({ onNext, onBack }: { onNext: () => void; onBack: 
   );
 }
 
+// ── Movement II · Priming Matrix (after Rolling Bench) ───────────────────
+function GatewayPrimingMatrix({ onNext, onBack, onPrimingChange }: {
+  onNext: () => void;
+  onBack: () => void;
+  onPrimingChange?: (v: number, sv: number, l: number) => void;
+}) {
+  const [volado,  setVolado]  = useState(30);
+  const [secoViso, setSecoViso] = useState(50);
+  const [open1, setOpen1] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
+
+  const ligero = Math.max(0, 100 - volado - secoViso);
+  const total  = volado + secoViso + ligero;
+  const valid  = total === 100 && ligero >= 0;
+
+  // Notify parent whenever ratio changes
+  useEffect(() => {
+    onPrimingChange?.(volado, secoViso, ligero);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [volado, secoViso, ligero]);
+
+  function clampV(v: number, sv: number): [number, number] {
+    const used = v + sv;
+    if (used > 100) return [v, 100 - v];
+    return [v, sv];
+  }
+
+  function handleVolado(val: number) {
+    const [nv, nsv] = clampV(val, secoViso);
+    setVolado(nv); setSecoViso(nsv);
+  }
+  function handleSecoViso(val: number) {
+    const [nv, nsv] = clampV(volado, val);
+    setVolado(nv); setSecoViso(nsv);
+  }
+
+  const PRIMINGS = [
+    { id: "volado",   label: "Volado",       sub: "Bottom Tiers",     color: "#8BC34A", pct: volado,   set: handleVolado,
+      role: "Regulates burn chemistry and combustion stability. The lowest leaves absorb maximum soil sugars, ensuring an even, cool draw from first light to final third.",
+      open: open1, setOpen: setOpen1 },
+    { id: "seco_viso", label: "Seco / Viso", sub: "Middle Tiers",     color: GOLD,      pct: secoViso, set: handleSecoViso,
+      role: "Dictates the aromatic flavor bloom. Air-cured 45–60 days, these mid-priming leaves lock in cedar, leather, cocoa, and spice oils that define your blend's signature.",
+      open: open2, setOpen: setOpen2 },
+    { id: "ligero",   label: "Ligero",        sub: "Top Tiers",        color: "#ef4444", pct: ligero,   set: () => {},
+      role: "Delivers raw nicotine strength, body, and heavy oil density. Auto-calculated. Top-canopy leaves require 18–24 months minimum aging to tame peak alkaloid intensity.",
+      open: open3, setOpen: setOpen3 },
+  ];
+
+  return (
+    <motion.div key="gw-priming-matrix"
+      initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}>
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          alt="" className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.09) saturate(0.18) sepia(0.70)" }} />
+        <div style={{ position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.07) 0%, rgba(0,0,0,0.94) 100%)" }} />
+      </div>
+
+      <div style={GW.chamber} className="overflow-y-auto">
+        <MovementBadge movement="II" />
+        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
+          textTransform: "uppercase" as const, marginBottom: 10 }}>
+          Leaf Architecture · Priming Ratios
+        </p>
+        <h2 style={GW.title}>The Priming Matrix</h2>
+        <p style={{ color: "rgba(240,232,212,0.72)", fontSize: 17, lineHeight: 1.65, marginBottom: 24 }}>
+          A master blend balances all three vertical primings of the tobacco plant to control burn, aroma, and raw power.
+          Adjust the sliders until your ratio totals exactly <strong style={{ color: GOLD }}>100%</strong>.
+        </p>
+
+        {/* Ratio total indicator */}
+        <motion.div
+          animate={{ borderColor: valid ? `${GOLD}50` : "#ef444450" }}
+          style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            background: valid ? "rgba(212,175,55,0.05)" : "rgba(239,68,68,0.05)",
+            border: `1px solid ${valid ? GOLD + "40" : "#ef444440"}`,
+            borderRadius: 8, padding: "10px 18px", marginBottom: 22,
+          }}>
+          <span style={{ color: "rgba(240,232,212,0.60)", fontSize: 13, letterSpacing: "0.12em" }}>
+            TOTAL RATIO
+          </span>
+          <motion.span
+            key={total}
+            initial={{ scale: 1.15 }}
+            animate={{ scale: 1 }}
+            style={{ color: valid ? GOLD : "#ef4444", fontSize: 22, fontWeight: 800, letterSpacing: "0.06em" }}>
+            {total}%
+          </motion.span>
+          {valid && (
+            <motion.span initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
+              style={{ color: "#8BC34A", fontSize: 13, fontWeight: 700, letterSpacing: "0.14em" }}>
+              LOCKED ✓
+            </motion.span>
+          )}
+        </motion.div>
+
+        {/* Sliders */}
+        <div style={{ display: "flex", flexDirection: "column" as const, gap: 18, marginBottom: 22 }}>
+          {PRIMINGS.map((p) => (
+            <div key={p.id}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+                <div>
+                  <span style={{ color: p.color, fontSize: 16, fontWeight: 700 }}>{p.label}</span>
+                  <span style={{ color: "rgba(240,232,212,0.45)", fontSize: 12,
+                    letterSpacing: "0.14em", textTransform: "uppercase" as const, marginLeft: 10 }}>
+                    {p.sub}
+                  </span>
+                </div>
+                <motion.span key={p.pct} initial={{ scale: 1.2 }} animate={{ scale: 1 }}
+                  style={{ color: p.color, fontSize: 20, fontWeight: 800, letterSpacing: "0.06em" }}>
+                  {p.pct}%
+                </motion.span>
+              </div>
+
+              {/* Custom glassmorphic slider */}
+              <div style={{ position: "relative", height: 36, display: "flex", alignItems: "center" }}>
+                <div style={{
+                  position: "absolute", left: 0, right: 0, height: 6,
+                  background: "rgba(255,255,255,0.07)", borderRadius: 3,
+                }} />
+                <div style={{
+                  position: "absolute", left: 0, width: `${p.pct}%`, height: 6,
+                  background: `linear-gradient(90deg, ${p.color}60, ${p.color})`,
+                  borderRadius: 3, transition: "width 0.1s",
+                  boxShadow: `0 0 10px ${p.color}40`,
+                }} />
+                <input
+                  type="range" min={0} max={100} value={p.pct}
+                  disabled={p.id === "ligero"}
+                  onChange={e => p.set(Number(e.target.value))}
+                  onTouchStart={() => {}}
+                  style={{
+                    position: "absolute", left: 0, right: 0, width: "100%",
+                    height: 36, opacity: 0, cursor: p.id === "ligero" ? "not-allowed" : "pointer",
+                    margin: 0, padding: 0,
+                  }}
+                />
+                {/* Thumb indicator */}
+                <motion.div
+                  animate={{ left: `calc(${p.pct}% - 10px)` }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  style={{
+                    position: "absolute", width: 20, height: 20, borderRadius: "50%",
+                    background: p.id === "ligero" ? "#333" : p.color,
+                    border: `2px solid ${p.id === "ligero" ? "#444" : p.color}`,
+                    boxShadow: p.id === "ligero" ? "none" : `0 0 12px ${p.color}60`,
+                    pointerEvents: "none",
+                    top: "50%", transform: "translateY(-50%)",
+                  }}
+                />
+              </div>
+
+              {/* Disclosure drawer */}
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => { p.setOpen(!p.open); playClick(); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6, background: "none",
+                  border: "none", cursor: "pointer", padding: "4px 0", marginTop: 4,
+                }}>
+                <span style={{ color: `${p.color}60`, fontSize: 11, letterSpacing: "0.18em",
+                  textTransform: "uppercase" as const }}>
+                  {p.open ? "▼ Hide" : "▶ Learn"}
+                </span>
+              </motion.button>
+              <AnimatePresence>
+                {p.open && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    style={{
+                      overflow: "hidden",
+                      background: `${p.color}08`,
+                      border: `1px solid ${p.color}18`,
+                      borderRadius: 8, padding: "12px 16px", marginTop: 6,
+                    }}>
+                    <p style={{ color: "rgba(240,232,212,0.78)", fontSize: 14,
+                      lineHeight: 1.65, margin: 0 }}>{p.role}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        {/* Visual ratio bar */}
+        <div style={{ display: "flex", height: 10, borderRadius: 5, overflow: "hidden", marginBottom: 24 }}>
+          <motion.div animate={{ width: `${volado}%` }} transition={{ type: "spring", stiffness: 300 }}
+            style={{ background: "#8BC34A", height: "100%" }} />
+          <motion.div animate={{ width: `${secoViso}%` }} transition={{ type: "spring", stiffness: 300 }}
+            style={{ background: GOLD, height: "100%" }} />
+          <motion.div animate={{ width: `${ligero}%` }} transition={{ type: "spring", stiffness: 300 }}
+            style={{ background: "#ef4444", height: "100%" }} />
+        </div>
+        <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+          {[{ label: "Volado", color: "#8BC34A" }, { label: "Seco/Viso", color: GOLD }, { label: "Ligero", color: "#ef4444" }].map(l => (
+            <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
+              <span style={{ color: "rgba(240,232,212,0.55)", fontSize: 12, letterSpacing: "0.1em" }}>{l.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
+          <motion.button
+            style={{
+              ...GW.btn(!valid),
+              ...(valid
+                ? { background: "linear-gradient(135deg,#c8950a,#9e7208)", border: `1px solid ${GOLD}` }
+                : { opacity: 0.45, cursor: "not-allowed" }),
+            }}
+            whileHover={valid ? { scale: 1.03 } : {}}
+            whileTap={valid ? { scale: 0.97 } : {}}
+            onTouchStart={() => valid && playClick()}
+            onClick={() => { if (valid) { playClick(); onNext(); } }}>
+            {valid ? "Vitola Science →" : `Balance to 100% (${total}%)`}
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Movement Completion Gate I · The Cultivation Crucible ────────────────
+function GatewayMovement1Gate({
+  onNext,
+  selectedTerroir,
+  selectedSeed,
+  xp,
+}: {
+  onNext: () => void;
+  selectedTerroir: string | null;
+  selectedSeed: string | null;
+  xp: number;
+}) {
+  const country = selectedTerroir ?? "Dominican Republic";
+  const [suggestion, setSuggestion] = useState<{ cigar: string; spirit: string; spiritStyle: string; liveItems: Array<{ name: string; image_url: string | null }> } | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/master-blender/humidor-suggestions?country=${encodeURIComponent(country)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { fallback: { cigar: string; spirit: string; spiritStyle: string }; liveItems: Array<{ name: string; image_url: string | null }> } | null) => {
+        if (!d) return;
+        const cigar = d.liveItems?.[0]?.name ?? d.fallback.cigar;
+        setSuggestion({ cigar, spirit: d.fallback.spirit, spiritStyle: d.fallback.spiritStyle, liveItems: d.liveItems });
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const flag = (COUNTRY_FLAGS as Record<string, string>)[country] ?? "🌿";
+  const seedName = selectedSeed === "corojo" ? "Corojo Premium" : selectedSeed === "criollo" ? "Criollo '98" : selectedSeed ?? "Unknown";
+
+  return (
+    <motion.div key="gw-gate-1"
+      initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}>
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <div style={{ position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at 50% 20%, rgba(139,195,74,0.08) 0%, rgba(0,0,0,0.97) 100%)" }} />
+      </div>
+      <div style={{ ...GW.chamber, maxWidth: 700 }} className="overflow-y-auto">
+        {/* Achievement header */}
+        <motion.div
+          initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          style={{ textAlign: "center" as const, marginBottom: 28 }}>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>🌱</div>
+          <p style={{ color: "#8BC34A", fontSize: 11, letterSpacing: "0.38em",
+            textTransform: "uppercase" as const, marginBottom: 6 }}>
+            MOVEMENT I COMPLETE
+          </p>
+          <h2 style={{ ...GW.title, textAlign: "center" as const, borderBottom: "none", marginBottom: 4 }}>
+            The Cultivation Crucible
+          </h2>
+          <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 14, letterSpacing: "0.08em" }}>
+            Origin locked. Seed lineage confirmed. Terroir sealed.
+          </p>
+        </motion.div>
+
+        {/* Score flash */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, type: "spring", stiffness: 300 }}
+          style={{
+            display: "flex", justifyContent: "center", alignItems: "center", gap: 12,
+            background: "rgba(139,195,74,0.08)", border: "1px solid rgba(139,195,74,0.30)",
+            borderRadius: 12, padding: "16px 24px", marginBottom: 22,
+          }}>
+          <span style={{ color: "#8BC34A", fontSize: 32, fontWeight: 800 }}>+{xp} XP</span>
+          <div style={{ width: 1, height: 32, background: "rgba(139,195,74,0.25)" }} />
+          <span style={{ color: "rgba(240,232,212,0.65)", fontSize: 14, lineHeight: 1.4 }}>
+            Movement I<br/>Achievement Score
+          </span>
+        </motion.div>
+
+        {/* Origin summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 22 }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${GOLD}18`,
+            borderRadius: 10, padding: "16px 18px" }}>
+            <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.28em",
+              textTransform: "uppercase" as const, marginBottom: 6 }}>Origin Country</p>
+            <p style={{ color: "rgba(240,232,212,0.90)", fontSize: 18, fontWeight: 700, margin: 0 }}>
+              {flag} {country}
+            </p>
+          </div>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${GOLD}18`,
+            borderRadius: 10, padding: "16px 18px" }}>
+            <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.28em",
+              textTransform: "uppercase" as const, marginBottom: 6 }}>Seed Lineage</p>
+            <p style={{ color: "rgba(240,232,212,0.90)", fontSize: 18, fontWeight: 700, margin: 0 }}>
+              {seedName}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Live humidor suggestion */}
+        {suggestion && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            style={{
+              background: `${GOLD}06`, border: `1px solid ${GOLD}28`,
+              borderRadius: 12, padding: "18px 20px", marginBottom: 24,
+            }}>
+            <p style={{ color: `${GOLD}80`, fontSize: 10, letterSpacing: "0.28em",
+              textTransform: "uppercase" as const, marginBottom: 10 }}>
+              🏛 Humidor Suggestion for {country}
+            </p>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" as const }}>
+              <div>
+                <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 11, letterSpacing: "0.14em",
+                  textTransform: "uppercase" as const, marginBottom: 3 }}>Cigar</p>
+                <p style={{ color: GOLD, fontSize: 16, fontWeight: 700, margin: 0 }}>{suggestion.cigar}</p>
+              </div>
+              <div>
+                <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 11, letterSpacing: "0.14em",
+                  textTransform: "uppercase" as const, marginBottom: 3 }}>Pairing Spirit</p>
+                <p style={{ color: "rgba(240,232,212,0.88)", fontSize: 15, fontWeight: 600, margin: 0 }}>
+                  {suggestion.spirit}
+                </p>
+                <p style={{ color: `${GOLD}60`, fontSize: 12, margin: 0 }}>{suggestion.spiritStyle}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        <motion.button
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          style={{
+            ...GW.btn(),
+            width: "100%",
+            background: "linear-gradient(135deg, #6a9a30, #4a7020)",
+            border: "1px solid #8BC34A50",
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          onTouchStart={() => playClick()}
+          onClick={() => { playClick(); onNext(); }}>
+          ENTER MOVEMENT II: THE CRAFT →
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Movement Completion Gate II · Structural Integrity Summary ───────────
+function GatewayMovement2Gate({
+  onNext,
+  onBack,
+  volado,
+  secoViso,
+  ligero,
+  xp,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+  volado: number;
+  secoViso: number;
+  ligero: number;
+  xp: number;
+}) {
+  return (
+    <motion.div key="gw-gate-2"
+      initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}>
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <div style={{ position: "absolute", inset: 0,
+          background: `radial-gradient(ellipse at 50% 20%, ${GOLD}10 0%, rgba(0,0,0,0.97) 100%)` }} />
+      </div>
+      <div style={{ ...GW.chamber, maxWidth: 700 }} className="overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          style={{ textAlign: "center" as const, marginBottom: 28 }}>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>⚗️</div>
+          <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.38em",
+            textTransform: "uppercase" as const, marginBottom: 6 }}>
+            MOVEMENT II COMPLETE
+          </p>
+          <h2 style={{ ...GW.title, textAlign: "center" as const, borderBottom: "none", marginBottom: 4 }}>
+            The Structural Integrity Summary
+          </h2>
+          <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 14 }}>
+            Construction mastered. Priming ratio locked.
+          </p>
+        </motion.div>
+
+        {/* Score */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, type: "spring", stiffness: 300 }}
+          style={{
+            display: "flex", justifyContent: "center", alignItems: "center", gap: 12,
+            background: `${GOLD}08`, border: `1px solid ${GOLD}30`,
+            borderRadius: 12, padding: "16px 24px", marginBottom: 24,
+          }}>
+          <span style={{ color: GOLD, fontSize: 32, fontWeight: 800 }}>{xp} XP</span>
+          <div style={{ width: 1, height: 32, background: `${GOLD}25` }} />
+          <span style={{ color: "rgba(240,232,212,0.65)", fontSize: 14, lineHeight: 1.4 }}>
+            Running Score<br/>Movement II Locked
+          </span>
+        </motion.div>
+
+        {/* Priming ratio visual */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${GOLD}15`,
+            borderRadius: 12, padding: "20px 22px", marginBottom: 22 }}>
+          <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.28em",
+            textTransform: "uppercase" as const, marginBottom: 16 }}>
+            Custom Priming Ratio
+          </p>
+          <div style={{ display: "flex", height: 14, borderRadius: 7, overflow: "hidden", marginBottom: 14 }}>
+            <motion.div initial={{ width: 0 }} animate={{ width: `${volado}%` }} transition={{ delay: 0.6, duration: 0.8 }}
+              style={{ background: "#8BC34A", height: "100%" }} />
+            <motion.div initial={{ width: 0 }} animate={{ width: `${secoViso}%` }} transition={{ delay: 0.8, duration: 0.8 }}
+              style={{ background: GOLD, height: "100%" }} />
+            <motion.div initial={{ width: 0 }} animate={{ width: `${ligero}%` }} transition={{ delay: 1.0, duration: 0.8 }}
+              style={{ background: "#ef4444", height: "100%" }} />
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+            {[
+              { label: "Volado", pct: volado, color: "#8BC34A", role: "Burn Stability" },
+              { label: "Seco/Viso", pct: secoViso, color: GOLD, role: "Flavor Bloom" },
+              { label: "Ligero", pct: ligero, color: "#ef4444", role: "Strength & Body" },
+            ].map(p => (
+              <div key={p.label} style={{ textAlign: "center" as const }}>
+                <motion.div
+                  initial={{ scale: 0 }} animate={{ scale: 1 }}
+                  transition={{ delay: 0.9, type: "spring" }}
+                  style={{ color: p.color, fontSize: 28, fontWeight: 800, lineHeight: 1 }}>
+                  {p.pct}%
+                </motion.div>
+                <div style={{ color: "rgba(240,232,212,0.70)", fontSize: 14, fontWeight: 700 }}>{p.label}</div>
+                <div style={{ color: `${p.color}60`, fontSize: 11, letterSpacing: "0.1em" }}>{p.role}</div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        <div style={{ display: "flex", gap: 12 }}>
+          <button style={{ ...GW.btn(true), flex: "0 0 auto" }}
+            onTouchStart={() => playClick()} onClick={onBack}>Back</button>
+          <motion.button
+            style={{ ...GW.btn(), flex: 1,
+              background: `linear-gradient(135deg,#c8950a,#9e7208)`,
+              border: `1px solid ${GOLD}` }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            onTouchStart={() => playClick()}
+            onClick={() => { playClick(); onNext(); }}>
+            ENTER MOVEMENT III: THE FINISH →
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Movement Completion Gate III · The Masterclass Verdict ───────────────
+function GatewayMovement3Gate({
+  onNext,
+  onBack,
+  xp,
+  selectedTerroir,
+  volado,
+  secoViso,
+  ligero,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+  xp: number;
+  selectedTerroir: string | null;
+  volado: number;
+  secoViso: number;
+  ligero: number;
+}) {
+  const country = selectedTerroir ?? "Dominican Republic";
+  const [nightlyData, setNightlyData] = useState<{ avg: number; count: number } | null>(null);
+  const [suggestion, setSuggestion]   = useState<{ spirit: string; spiritStyle: string; descriptors: string[] } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/master-blender/nightly-average")
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { avg: number; count: number } | null) => { if (d) setNightlyData(d); })
+      .catch(() => {});
+    fetch(`/api/master-blender/humidor-suggestions?country=${encodeURIComponent(country)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { fallback: { spirit: string; spiritStyle: string; descriptors: string[] } } | null) => {
+        if (d) setSuggestion({ spirit: d.fallback.spirit, spiritStyle: d.fallback.spiritStyle, descriptors: d.fallback.descriptors });
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const nightlyAvg = nightlyData?.avg ?? 0;
+  const tierLabel  = nightlyAvg >= 90 ? "Master Blender" : nightlyAvg >= 70 ? "Senior Blend" : nightlyAvg >= 50 ? "Journeyman" : "Novice Aficionado";
+  const placement  = nightlyAvg > 0 ? (xp >= nightlyAvg ? "above" : "below") : null;
+
+  return (
+    <motion.div key="gw-gate-3"
+      initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}>
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <div style={{ position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at 50% 20%, rgba(232,116,26,0.08) 0%, rgba(0,0,0,0.97) 100%)" }} />
+      </div>
+      <div style={{ ...GW.chamber, maxWidth: 700 }} className="overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          style={{ textAlign: "center" as const, marginBottom: 28 }}>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>🏆</div>
+          <p style={{ color: "#E8741A", fontSize: 11, letterSpacing: "0.38em",
+            textTransform: "uppercase" as const, marginBottom: 6 }}>
+            MOVEMENT III · ENTERING FINAL STAGE
+          </p>
+          <h2 style={{ ...GW.title, textAlign: "center" as const, borderBottom: "none", marginBottom: 4 }}>
+            The Masterclass Verdict
+          </h2>
+          <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 14 }}>
+            Your finalized blend is cross-referenced against tonight's lounge.
+          </p>
+        </motion.div>
+
+        {/* Score vs Nightly Average */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 22 }}>
+          <div style={{ background: `${GOLD}08`, border: `1px solid ${GOLD}30`,
+            borderRadius: 12, padding: "18px 20px", textAlign: "center" as const }}>
+            <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.24em",
+              textTransform: "uppercase" as const, marginBottom: 6 }}>Your Score</p>
+            <motion.div
+              initial={{ scale: 0.5 }} animate={{ scale: 1 }}
+              transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+              style={{ color: GOLD, fontSize: 40, fontWeight: 800 }}>{xp}</motion.div>
+            <p style={{ color: "rgba(240,232,212,0.45)", fontSize: 12, margin: 0 }}>XP</p>
+          </div>
+          <div style={{ background: "rgba(232,116,26,0.05)", border: "1px solid rgba(232,116,26,0.25)",
+            borderRadius: 12, padding: "18px 20px", textAlign: "center" as const }}>
+            <p style={{ color: "rgba(232,116,26,0.65)", fontSize: 10, letterSpacing: "0.24em",
+              textTransform: "uppercase" as const, marginBottom: 6 }}>Nightly Avg</p>
+            <div style={{ color: "#E8741A", fontSize: 40, fontWeight: 800 }}>
+              {nightlyData ? Math.round(nightlyAvg) : "—"}
+            </div>
+            {nightlyData && (
+              <p style={{ color: "rgba(240,232,212,0.45)", fontSize: 12, margin: 0 }}>
+                {nightlyData.count} sessions · {tierLabel}
+              </p>
+            )}
+          </div>
+        </motion.div>
+
+        {placement && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            style={{
+              background: placement === "above" ? "rgba(139,195,74,0.08)" : "rgba(239,68,68,0.06)",
+              border: `1px solid ${placement === "above" ? "rgba(139,195,74,0.30)" : "rgba(239,68,68,0.25)"}`,
+              borderRadius: 10, padding: "12px 18px", marginBottom: 18, textAlign: "center" as const,
+            }}>
+            <p style={{ color: placement === "above" ? "#8BC34A" : "#f87171",
+              fontSize: 15, fontWeight: 700, margin: 0 }}>
+              {placement === "above"
+                ? `✓ You ranked above tonight's lounge average by ${xp - Math.round(nightlyAvg)} pts`
+                : `${Math.round(nightlyAvg) - xp} pts below tonight's lounge average — the Blending Chamber awaits`}
+            </p>
+          </motion.div>
+        )}
+
+        {/* Spirit pairing */}
+        {suggestion && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            style={{ background: `${GOLD}06`, border: `1px solid ${GOLD}25`,
+              borderRadius: 12, padding: "18px 20px", marginBottom: 22 }}>
+            <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.28em",
+              textTransform: "uppercase" as const, marginBottom: 10 }}>
+              Definitive Spirit Pairing · {country}
+            </p>
+            <p style={{ color: GOLD, fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
+              {suggestion.spirit}
+            </p>
+            <p style={{ color: `${GOLD}60`, fontSize: 13, marginBottom: 10 }}>{suggestion.spiritStyle}</p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
+              {suggestion.descriptors.map(d => (
+                <span key={d} style={{
+                  background: `${GOLD}10`, border: `1px solid ${GOLD}20`,
+                  borderRadius: 20, padding: "4px 12px", color: `${GOLD}78`,
+                  fontSize: 12, letterSpacing: "0.1em",
+                }}>{d}</span>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        <div style={{ display: "flex", gap: 12 }}>
+          <button style={{ ...GW.btn(true), flex: "0 0 auto" }}
+            onTouchStart={() => playClick()} onClick={onBack}>Back</button>
+          <motion.button
+            style={{ ...GW.btn(), flex: 1,
+              background: "linear-gradient(135deg, #a05010, #7a3a0a)",
+              border: "1px solid rgba(232,116,26,0.60)" }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            onTouchStart={() => playClick()}
+            onClick={() => { playClick(); onNext(); }}>
+            ★ ENTER THE BLENDING CHAMBER
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Alchemy Reveal ─────────────────────────────────────────────────────────
 const HUMIDOR_RECS: Record<string, { cigar: string; spirit: string; note: string }> = {
   "seco|connecticut":    { cigar: "Davidoff Grand Cru No.3",  spirit: "Macallan 12 Sherry Oak",   note: "Silky body + honeyed single malt" },
@@ -3315,6 +3975,9 @@ export default function MasterBlender() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [txId,         setTxId]         = useState<string | null>(null);
   const [loyaltyDone,  setLoyaltyDone]  = useState(false);
+  const [primingVolado,   setPrimingVolado]   = useState(30);
+  const [primingSecoViso, setPrimingSecoViso] = useState(50);
+  const [primingLigero,   setPrimingLigero]   = useState(20);
 
   // Scoring state
   const scoreFrozenRef             = useRef(false);
@@ -3334,6 +3997,9 @@ export default function MasterBlender() {
     setXp(0);
     setSelectedMentor(null);
     setSelectedSeed(null);
+    setPrimingVolado(30);
+    setPrimingSecoViso(50);
+    setPrimingLigero(20);
     setSelectedSoil(null);
     setSelectedTerroir(null);
     scoreFrozenRef.current = false;
@@ -3428,7 +4094,7 @@ export default function MasterBlender() {
 
   // M1: Cultivation milestone — awards bonus based on mentor/soil affinity match
   function handleCultivationNext() {
-    setGateway("harvest");
+    setGateway("gate_movement_1");
   }
 
   async function handleRevealMatch(e: React.MouseEvent) {
@@ -3583,25 +4249,20 @@ export default function MasterBlender() {
                   onBack={() => setGateway("harvest")}
                 />
               )}
-              {gateway === "rolling_bench" && (
-                <GatewayRollingBench
-                  key="rolling_bench"
-                  onNext={() => setGateway("vitola_science")}
-                  onBack={() => setGateway("curing")}
+              {gateway === "gate_movement_1" && (
+                <GatewayMovement1Gate
+                  key="gate_movement_1"
+                  onNext={() => setGateway("harvest")}
+                  selectedTerroir={selectedTerroir}
+                  selectedSeed={selectedSeed}
+                  xp={xp}
                 />
               )}
-              {gateway === "vitola_science" && (
-                <GatewayVitolaScience
-                  key="vitola_science"
-                  onNext={() => setGateway("blending")}
-                  onBack={() => setGateway("rolling_bench")}
-                />
-              )}
-            {gateway === "harvest" && (
+              {gateway === "harvest" && (
                 <GatewayHarvest
                   key="harvest"
                   onNext={() => setGateway("curing")}
-                  onBack={() => setGateway("cultivation")}
+                  onBack={() => setGateway("gate_movement_1")}
                 />
               )}
               {gateway === "curing" && (
@@ -3614,15 +4275,46 @@ export default function MasterBlender() {
               {gateway === "rolling_bench" && (
                 <GatewayRollingBench
                   key="rolling_bench"
-                  onNext={() => setGateway("vitola_science")}
+                  onNext={() => setGateway("priming_matrix")}
                   onBack={() => setGateway("curing")}
+                />
+              )}
+              {gateway === "priming_matrix" && (
+                <GatewayPrimingMatrix
+                  key="priming_matrix"
+                  onNext={() => setGateway("gate_movement_2")}
+                  onBack={() => setGateway("rolling_bench")}
+                  onPrimingChange={(v, sv, l) => { setPrimingVolado(v); setPrimingSecoViso(sv); setPrimingLigero(l); }}
+                />
+              )}
+              {gateway === "gate_movement_2" && (
+                <GatewayMovement2Gate
+                  key="gate_movement_2"
+                  onNext={() => setGateway("vitola_science")}
+                  onBack={() => setGateway("priming_matrix")}
+                  volado={primingVolado}
+                  secoViso={primingSecoViso}
+                  ligero={primingLigero}
+                  xp={xp}
                 />
               )}
               {gateway === "vitola_science" && (
                 <GatewayVitolaScience
                   key="vitola_science"
+                  onNext={() => setGateway("gate_movement_3")}
+                  onBack={() => setGateway("gate_movement_2")}
+                />
+              )}
+              {gateway === "gate_movement_3" && (
+                <GatewayMovement3Gate
+                  key="gate_movement_3"
                   onNext={() => setGateway("blending")}
-                  onBack={() => setGateway("rolling_bench")}
+                  onBack={() => setGateway("vitola_science")}
+                  xp={xp}
+                  selectedTerroir={selectedTerroir}
+                  volado={primingVolado}
+                  secoViso={primingSecoViso}
+                  ligero={primingLigero}
                 />
               )}
             </AnimatePresence>
@@ -3661,6 +4353,9 @@ export default function MasterBlender() {
               setXp(0);
               setGateway("intro");
               setSelectedMentor(null);
+              setPrimingVolado(30);
+              setPrimingSecoViso(50);
+              setPrimingLigero(20);
               setSelectedSeed(null);
               setSelectedSoil(null);
               scoreFrozenRef.current = false;

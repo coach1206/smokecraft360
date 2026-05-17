@@ -93,4 +93,49 @@ router.get("/nightly-average", async (req, res) => {
   }
 });
 
+// ── GET /humidor-suggestions?country=Nicaragua ────────────────────────────
+// Returns real products from the DB (category=cigar) that mention the country
+// in their name or flavor_notes, plus the hardcoded sensory matrix fallback.
+const SENSORY_FALLBACK: Record<string, { cigar: string; spirit: string; spiritStyle: string; descriptors: string[] }> = {
+  "Dominican Republic": { cigar: "Arturo Fuente Opus X",   spirit: "Highland Single Malt Scotch", spiritStyle: "12yr+ Aged",      descriptors: ["Smooth","Cedar","Cocoa"] },
+  "Nicaragua":          { cigar: "Padrón 1926 Series",      spirit: "Barrel-Proof Bourbon",        spiritStyle: "Cask Strength",   descriptors: ["Bold","Espresso","Spice"] },
+  "Ecuador":            { cigar: "Davidoff Nicaragua",       spirit: "Japanese Whisky",             spiritStyle: "Single Malt",     descriptors: ["Creamy","Aromatic","Shade-grown"] },
+  "Cuba":               { cigar: "Cohiba Behike 52",         spirit: "Ron Zacapa 23 Rum",           spiritStyle: "Sistema Solera",  descriptors: ["Earthy","Floral","Honey"] },
+  "Honduras":           { cigar: "Alec Bradley Prensado",   spirit: "Añejo Tequila",               spiritStyle: "Extra Añejo",     descriptors: ["Pepper","Leather","Earth"] },
+  "Brazil":             { cigar: "CAO Brazilia Gol!",        spirit: "Armagnac",                    spiritStyle: "XO Reserve",      descriptors: ["Sweet","Woody","Rich"] },
+};
+
+router.get("/humidor-suggestions", async (req, res) => {
+  const country = typeof req.query.country === "string" ? req.query.country.trim() : "";
+  const fallback = SENSORY_FALLBACK[country] ?? SENSORY_FALLBACK["Dominican Republic"];
+
+  try {
+    // Try to find real inventory items for this origin
+    const result = await db.execute(sql`
+      SELECT id, name, image_url, flavor_notes, tier
+      FROM products
+      WHERE
+        category = 'cigar'
+        AND active = true
+        AND (
+          name ILIKE ${"%" + country + "%"}
+          OR flavor_notes::text ILIKE ${"%" + country + "%"}
+        )
+      ORDER BY tier DESC, boost_level DESC
+      LIMIT 3
+    `);
+
+    const liveItems = (result.rows as Array<{ id: string; name: string; image_url: string | null; flavor_notes: string[]; tier: string }>);
+
+    res.json({
+      country,
+      liveItems,
+      fallback,
+    });
+  } catch (err) {
+    req.log?.error({ err }, "master-blender humidor-suggestions failed");
+    res.json({ country, liveItems: [], fallback });
+  }
+});
+
 export default router;
