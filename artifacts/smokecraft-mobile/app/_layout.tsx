@@ -13,6 +13,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import NoveeBootScreen from "@/components/NoveeBootScreen";
+import { useNoveeStore } from "@/src/store/noveeStore";
 
 if (process.env.EXPO_PUBLIC_DOMAIN) {
   setBaseUrl(`https://${process.env.EXPO_PUBLIC_DOMAIN}`);
@@ -23,6 +25,19 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
+  const { bootComplete, setBootComplete, triggerHeartbeat } = useNoveeStore();
+
+  useEffect(() => {
+    const t = setInterval(triggerHeartbeat, 10000);
+    return () => clearInterval(t);
+  }, []);
+
+  if (!bootComplete) {
+    return (
+      <NoveeBootScreen onBootComplete={() => setBootComplete(true)} />
+    );
+  }
+
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#080604" } }}>
       <Stack.Screen name="(tabs)" />

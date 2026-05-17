@@ -1,0 +1,47 @@
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNoveeStore } from '../store/noveeStore';
+
+export const SmokeCraftModule = () => {
+  const { setModule } = useNoveeStore();
+
+  return (
+    <View style="{styles.container}">
+      <View style="{styles.topBar}">
+        <TouchableOpacity onPress="{()" style="{styles.backButton}"> setModule('CraftHub')}>
+          <Text style="{styles.backText}">← RETURN TO CRAFTHUB</Text>
+        </TouchableOpacity>
+        <Text style="{styles.moduleBadge}">SMOKECRAFT 360 NATIVE ACTIVE</Text>
+      </View>
+
+      <View style="{styles.content}">
+        <View style="{styles.controlCard}">
+          <Text style="{styles.cardHeader}">Tobacco Architecture Ritual</Text>
+          <Text style="{styles.cardDescription}">Immersive flavor profiling engine and mentor session pairing active.</Text>
+          
+          <View style="{styles.buttonRow}">
+            <TouchableOpacity style="{[styles.actionBtn," styles.goldBtn]}><Text style="{styles.btnTextGold}">Begin Sabor Matrix</Text></TouchableOpacity>
+            <TouchableOpacity style="{styles.actionBtn}"><Text style="{styles.btnText}">Inventory Integration</Text></TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 40 },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 },
+  backButton: { padding: 10 },
+  backText: { color: '#D4AF37', letterSpacing: 2, fontSize: 12, fontWeight: '600' },
+  moduleBadge: { color: '#FFF', fontSize: 11, letterSpacing: 3, opacity: 0.4 },
+  content: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  controlCard: { width: '70%', backgroundColor: 'rgba(20, 18, 15, 0.85)', borderWidth: 1, borderColor: 'rgba(212,175,55,0.3)', borderRadius: 16, padding: 40, shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.5, shadowRadius: 20 },
+  cardHeader: { color: '#E5D5B3', fontSize: 24, fontWeight: '300', marginBottom: 12, letterSpacing: 1 },
+  cardDescription: { color: '#8E8A82', fontSize: 14, lineHeight: 22, marginBottom: 30 },
+  buttonRow: { flexDirection: 'row', gap: 20 },
+  actionBtn: { flex: 1, height: 50, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  goldBtn: { backgroundColor: '#D4AF37', borderColor: '#D4AF37' },
+  btnTextGold: { color: '#0A0A08', fontWeight: '700', letterSpacing: 1 },
+  btnText: { color: '#FFF', fontWeight: '600' }
+});

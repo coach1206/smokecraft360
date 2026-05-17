@@ -1,10 +1,26 @@
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import React from "react";
-import { ScrollView, StyleSheet, Text, View, Platform } from "react-native";
+import React, { useRef, useState } from "react";
+import {
+  Animated,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AmberParticles from "@/components/AmberParticles";
-import CraftPortalCard, { CRAFT_PORTALS, type CraftPortal } from "@/components/CraftPortalCard";
+import AmbientEngine from "@/components/AmbientEngine";
+import CraftPortalCard, {
+  CRAFT_PORTALS,
+  type CraftPortal,
+} from "@/components/CraftPortalCard";
 import GlassHeader from "@/components/GlassHeader";
+import NoveeOSShell from "@/components/NoveeOSShell";
+import { useNoveeStore } from "@/src/store/noveeStore";
 import { useColors } from "@/hooks/useColors";
 
 export default function CraftHubScreen() {
@@ -12,63 +28,165 @@ export default function CraftHubScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
+  const { osShellVisible, setOsShellVisible, deviceMode } = useNoveeStore();
+
+  const unlockFlash = useRef(new Animated.Value(0)).current;
+  const [unlockActive, setUnlockActive] = useState(false);
+
+  function triggerOsUnlock() {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    Animated.sequence([
+      Animated.timing(unlockFlash, { toValue: 0.22, duration: 130, useNativeDriver: false }),
+      Animated.timing(unlockFlash, { toValue: 0, duration: 180, useNativeDriver: false }),
+      Animated.timing(unlockFlash, { toValue: 0.32, duration: 130, useNativeDriver: false }),
+      Animated.timing(unlockFlash, { toValue: 0, duration: 200, useNativeDriver: false }),
+    ]).start(() => setOsShellVisible(true));
+  }
+
+  // 5-finger long press (native) — 1-finger on web
+  const unlockGesture = Gesture.LongPress()
+    .minDuration(3000)
+    .numberOfPointers(Platform.OS === "web" ? 1 : 5)
+    .onStart(() => {
+      "worklet";
+      // runOnJS needed for state + haptics from worklet
+    })
+    .runOnJS(true)
+    .onStart(triggerOsUnlock);
 
   function handlePortalPress(id: CraftPortal["id"]) {
     router.push(`/experience/${id}`);
   }
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <AmberParticles />
+    <GestureDetector gesture={unlockGesture}>
+      <View style={[styles.root, { backgroundColor: colors.background }]}>
+        <AmbientEngine />
 
-      {/* Ambient top glow */}
-      <View style={styles.topGlow} />
+        {/* Unlock flash */}
+        <Animated.View
+          style={[StyleSheet.absoluteFill, { backgroundColor: "#D4AF37", opacity: unlockFlash }]}
+          pointerEvents="none"
+        />
 
-      <GlassHeader
-        title="CRAFT HUB"
-        subtitle="NOVEE OS · SELECT YOUR RITUAL"
-      />
+        {/* Mode indicator strip */}
+        {deviceMode !== "GUEST_TABLET" && (
+          <View
+            style={[
+              styles.modeStrip,
+              {
+                backgroundColor:
+                  deviceMode === "ADMIN" ? "#f8717118" : "#D4AF3718",
+                borderBottomColor:
+                  deviceMode === "ADMIN" ? "#f8717140" : "#D4AF3740",
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.modeStripDot,
+                {
+                  backgroundColor:
+                    deviceMode === "ADMIN" ? "#f87171" : "#D4AF37",
+                },
+              ]}
+            />
+            <Text
+              style={[
+                styles.modeStripText,
+                {
+                  color: deviceMode === "ADMIN" ? "#f87171" : "#D4AF37",
+                },
+              ]}
+            >
+              NOVEE OS · {deviceMode} MODE ACTIVE
+            </Text>
+            <Pressable onPress={() => setOsShellVisible(true)} style={styles.modeStripBtn}>
+              <Ionicons name="settings-outline" size={12} color="#D4AF37" />
+            </Pressable>
+          </View>
+        )}
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 20 }]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Intelligence bar */}
-        <View style={[styles.intelBar, { borderColor: colors.border, backgroundColor: colors.muted }]}>
-          <View style={styles.intelDot} />
-          <Text style={[styles.intelText, { color: colors.mutedForeground }]}>
-            NOVEE INTELLIGENCE · RECOMMENDATION ENGINE ACTIVE
+        <GlassHeader
+          title="CRAFT HUB"
+          subtitle="NOVEE OS · SELECT YOUR RITUAL"
+        />
+
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={[
+            styles.content,
+            { paddingBottom: bottomPad + 20 },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Intelligence bar */}
+          <View
+            style={[
+              styles.intelBar,
+              {
+                borderColor: colors.border,
+                backgroundColor: colors.muted,
+              },
+            ]}
+          >
+            <View style={styles.intelDot} />
+            <Text style={[styles.intelText, { color: colors.mutedForeground }]}>
+              NOVEE INTELLIGENCE · RECOMMENDATION ENGINE ACTIVE
+            </Text>
+            <Pressable
+              onLongPress={triggerOsUnlock}
+              delayLongPress={Platform.OS === "web" ? 1200 : 99999}
+              style={styles.osHintBtn}
+            >
+              <Text style={[styles.unlockHint, { color: colors.mutedForeground }]}>
+                {Platform.OS === "web" ? "HOLD → OS" : "5-HOLD → OS"}
+              </Text>
+            </Pressable>
+          </View>
+
+          {/* Craft portals */}
+          {CRAFT_PORTALS.map((portal) => (
+            <CraftPortalCard
+              key={portal.id}
+              portal={portal}
+              onPress={handlePortalPress}
+            />
+          ))}
+
+          <Text style={[styles.footer, { color: colors.mutedForeground }]}>
+            POWERED BY NOVEE OS · INTELLIGENCE THAT ELEVATES
           </Text>
-        </View>
+        </ScrollView>
 
-        {/* Portals */}
-        {CRAFT_PORTALS.map(portal => (
-          <CraftPortalCard
-            key={portal.id}
-            portal={portal}
-            onPress={handlePortalPress}
-          />
-        ))}
-
-        {/* Footer */}
-        <Text style={[styles.footer, { color: colors.mutedForeground }]}>
-          POWERED BY NOVEE OS · INTELLIGENCE THAT ELEVATES
-        </Text>
-      </ScrollView>
-    </View>
+        {/* NOVEE OS Operator Shell */}
+        <NoveeOSShell
+          visible={osShellVisible}
+          onClose={() => setOsShellVisible(false)}
+        />
+      </View>
+    </GestureDetector>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  topGlow: {
-    position: "absolute",
-    top: 0, left: 0, right: 0,
-    height: 200,
-    backgroundColor: "rgba(196,97,10,0.06)",
-    pointerEvents: "none",
+  modeStrip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
   },
+  modeStripDot: { width: 6, height: 6, borderRadius: 3 },
+  modeStripText: {
+    fontSize: 8,
+    fontWeight: "800",
+    letterSpacing: 2,
+    flex: 1,
+  },
+  modeStripBtn: { padding: 4 },
   scroll: { flex: 1 },
   content: { padding: 16 },
   intelBar: {
@@ -82,7 +200,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   intelDot: {
-    width: 6, height: 6,
+    width: 6,
+    height: 6,
     borderRadius: 3,
     backgroundColor: "#4ade80",
   },
@@ -91,6 +210,13 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     fontWeight: "700",
     flex: 1,
+  },
+  osHintBtn: { padding: 2 },
+  unlockHint: {
+    fontSize: 7,
+    letterSpacing: 1,
+    fontWeight: "600",
+    opacity: 0.7,
   },
   footer: {
     fontSize: 8,

@@ -534,6 +534,12 @@ uri = "file://artifacts/smokecraft-mobile/assets/images/splash.png"
 type = "image"
 title = "smokecraft splash screen"
 
+[[generated]]
+id = "ihN3F13m8WznPopk7tc1m"
+uri = "file://artifacts/smokecraft-mobile/assets/images/novee-boot-logo.png"
+type = "image"
+title = "novee os boot logo"
+
 [[outputs]]
 id = "bcXlJZbThuFGk9x0tlMdt"
 uri = "file://.local/AXIOM_OS_OPERATIONS_MANUAL_SOURCE.md"

@@ -1,0 +1,58 @@
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useNoveeStore, ModuleType } from '../store/noveeStore';
+
+const { width } = Dimensions.get('window');
+
+export const CraftHub = () => {
+  const { setModule, setDeviceMode } = useNoveeStore();
+
+  // Hidden Kiosk Unlock Gesture: 5-finger long press unlocks local device diagnostics shell
+  const fiveFingerHold = Gesture.LongPress()
+    .minDuration(3000)
+    .numberOfPointers(5)
+    .onStart(() => {
+      console.log("CRITICAL: Admin Override Gesture Activated");
+      setDeviceMode('ADMIN');
+    });
+
+  const modules: { id: ModuleType; title: string; subtitle: string }[] = [
+    { id: 'SmokeCraft', title: 'SmokeCraft 360', subtitle: 'Tobacco Architecture & Flavor Pairing' },
+    { id: 'PourCraft', title: 'PourCraft 360', subtitle: 'Curated Spirits & Sommelier Matrix' },
+    { id: 'BeerCraft', title: 'BeerCraft 360', subtitle: 'Artisanal Draught & Microbrew Analytics' },
+    { id: 'VapeCraft', title: 'VapeCraft 360', subtitle: 'Custom Vapor Distillation Profiles' }
+  ];
+
+  return (
+    <GestureHandlerRootView 1 flex: style="{{" }}>
+      <GestureDetector gesture="{fiveFingerHold}">
+        <View style="{styles.container}">
+          <Text style="{styles.headerTitle}">CRAFTHUB OPERATING MATRIX</Text>
+          <Text style="{styles.headerSubtitle}">Select an immersive physical environment experience layer</Text>
+          
+          <View style="{styles.grid}">
+            {modules.map((mod) => (
+              <TouchableOpacity key="{mod.id}" onPress="{()" style="{styles.tile}"> setModule(mod.id)}>
+                <View style="{styles.glassBackground}"/>
+                <Text style="{styles.tileTitle}">{mod.title}</Text>
+                <Text style="{styles.tileSubtitle}">{mod.subtitle}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 60, justifyContent: 'center' },
+  headerTitle: { color: '#FFF', fontSize: 28, fontWeight: '200', letterSpacing: 4 },
+  headerSubtitle: { color: '#8E8A82', fontSize: 14, marginTop: 10, marginBottom: 40, fontWeight: '400' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  tile: { width: (width - 160) / 2, height: 180, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: 30, marginBottom: 30, borderWidth: 1, borderColor: 'rgba(212,175,55,0.15)', justifyContent: 'flex-end', overflow: 'hidden' },
+  glassBackground: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(10, 10, 8, 0.4)' },
+  tileTitle: { color: '#E5D5B3', fontSize: 20, fontWeight: '400', zIndex: 2, letterSpacing: 1 },
+  tileSubtitle: { color: '#8E8A82', fontSize: 12, marginTop: 6, zIndex: 2 }
+});

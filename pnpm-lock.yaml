@@ -70,7 +70,7 @@ catalogs:
       specifier: ^3.25.76
       version: 3.25.76
     zustand:
-      specifier: ^5.0.0
+      specifier: 5.0.13
       version: 5.0.13
 
 overrides:
@@ -924,6 +924,9 @@ importers:
       '@expo-google-fonts/cormorant-garamond':
         specifier: ^0.4.1
         version: 0.4.1
+      zustand:
+        specifier: 'catalog:'
+        version: 5.0.13(@types/react@19.1.17)(react@19.1.0)(use-sync-external-store@1.6.0(react@19.1.0))
     devDependencies:
       '@babel/core':
         specifier: ^7.25.2
@@ -15042,6 +15045,12 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
       react: 19.1.0
+
+  zustand@5.0.13(@types/react@19.1.17)(react@19.1.0)(use-sync-external-store@1.6.0(react@19.1.0)):
+    optionalDependencies:
+      '@types/react': 19.1.17
+      react: 19.1.0
+      use-sync-external-store: 1.6.0(react@19.1.0)
 
   zustand@5.0.13(@types/react@19.2.14)(react@19.1.0)(use-sync-external-store@1.6.0(react@19.1.0)):
     optionalDependencies:
