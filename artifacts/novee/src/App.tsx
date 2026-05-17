@@ -1,6 +1,7 @@
 import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense, lazy } from "react";
+import { EATTransitionOverlay } from "@/components/EATTransitionOverlay";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,6 +69,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <EATTransitionOverlay />
         <Router />
       </WouterRouter>
     </QueryClientProvider>

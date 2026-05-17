@@ -65,11 +65,6 @@ export default function PosAuditBridge() {
 
     if (!prevUser && currUser) {
       audit.addAuditEntry("auth.login", `${currUser.name} logged in (${currUser.role})`, currUser.name);
-      // ── EAT Mode: cinematic management handoff for elevated roles ──────
-      const EAT_TRIGGER_ROLES = ["admin", "super_admin", "venue_owner", "sovereign", "manager"];
-      if (EAT_TRIGGER_ROLES.includes(currUser.role)) {
-        window.dispatchEvent(new CustomEvent("eat:enter"));
-      }
     }
 
     prevUserRef.current = currUser;

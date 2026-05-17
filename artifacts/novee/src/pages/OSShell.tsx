@@ -157,8 +157,10 @@ export default function OSShell() {
   }, [mode, adminToken]);
 
   const handleTileClick = (id: string) => {
-    if (id === "eat") navigate("/eat-engine");
-    else if (id === "craft") setShowModuleDock(true);
+    if (id === "eat") {
+      window.dispatchEvent(new CustomEvent("eat:enter"));
+      navigate("/eat-engine");
+    } else if (id === "craft") setShowModuleDock(true);
   };
 
   const launchModule = (mod: KernelModule) => {
@@ -234,7 +236,7 @@ export default function OSShell() {
 
           {/* E.A.T. Engine quick-link */}
           <button
-            onClick={() => navigate("/eat-engine")}
+            onClick={() => { window.dispatchEvent(new CustomEvent("eat:enter")); navigate("/eat-engine"); }}
             style={{
               background: "rgba(196,97,10,0.08)", border: "1px solid rgba(196,97,10,0.2)",
               borderRadius: 6, padding: "6px 12px",
