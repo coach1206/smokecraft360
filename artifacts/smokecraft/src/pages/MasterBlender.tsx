@@ -266,7 +266,7 @@ const SOILS = [
   { id: "alluvial", name: "Alluvial Valley", region: "Cibao, D.R.",         detail: "Nutrient-dense loam creating silky wrapper leaves and refined, mellow body." },
 ];
 
-type GatewayPhase = "cockpit" | "intro" | "orientation" | "mentor" | "terroir" | "seed_biology" | "cultivation" | "gate_movement_1" | "harvest" | "curing" | "rolling_bench" | "priming_matrix" | "gate_movement_2" | "vitola_science" | "gate_movement_3" | "blending";
+type GatewayPhase = "cockpit" | "intro" | "orientation" | "mentor" | "mentor_philosophy" | "terroir" | "seed_biology" | "cultivation" | "gate_movement_1" | "harvest" | "curing" | "rolling_bench" | "priming_matrix" | "gate_movement_2" | "vitola_science" | "gate_movement_3" | "blending";
 
 type XPFloat  = { id: number; amount: number; x: number; y: number };
 type Sel      = {
@@ -1268,75 +1268,84 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
 
 // ── Gateway: Orientation ────────────────────────────────────────────────────
 function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const layers = [
+    { label: "WRAPPER",  sub: "Aroma, first impression & presentation",  color: "#d4af37" },
+    { label: "BINDER",   sub: "Structural integrity, even burn control",  color: "#c8a96e" },
+    { label: "FILLER",   sub: "Power, burn speed & flavour character",    color: "#a0906a" },
+  ];
   return (
     <motion.div
       key="gw-orientation"
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98 }}
-      transition={{ duration: 0.9 }}
-      style={GW.bg}
+      initial={{ opacity: 0, x: 60 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -60 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      style={{ ...GW.bg, display: "flex", flexDirection: "row", overflow: "hidden" }}
     >
-      <div style={GW.chamber} className="flex flex-col gap-0 overflow-y-auto">
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          {/* Text block */}
-          <div className="flex-1 min-w-0">
-            <p style={{ ...GW.para, fontSize: 16, letterSpacing: "0.18em", color: `${GOLD}90`, textTransform: "uppercase", marginBottom: 10 }}>
-              SmokeCraft · Your Cigar Journey
-            </p>
-            <h2 style={GW.title}>From Leaf to Legacy</h2>
-            <p style={GW.para}>
-              Every great cigar begins long before the first draw — in the soil, the sun, and the hands of the craftspeople who shaped it.
-            </p>
-            <p style={GW.para}>
-              Here, you will explore the world’s great tobacco regions, discover the art of the blend, and find the master mentor who matches your palate.
-            </p>
-            <p style={{ ...GW.para, color: `${GOLD}80`, fontSize: "clamp(13px, 1.5vw, 15px)", fontStyle: "italic" }}>
-              This is not a tutorial. This is an immersion into the culture, craft, and pleasure of the cigar.
-            </p>
-          </div>
-
-          {/* Reference image panels */}
-          <div className="flex flex-col gap-3 flex-shrink-0 w-full lg:w-80">
-            <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${GOLD}22` }}>
-              <img
-                src={imgSovereignMap}
-                alt="Private Lounge"
-                className="w-full h-auto object-cover"
-                style={{ filter: "brightness(0.85)", maxHeight: 180, objectFit: "cover", width: "100%" }}
-              />
-              <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
-                <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
-                  Private Lounge · Reserve Experience
-                </p>
-              </div>
+      {/* LEFT — Blueprint of Craftsmanship */}
+      <div style={{ flex: "0 0 55%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 52px 40px 52px", overflowY: "auto" }}>
+        <p style={{ margin: "0 0 10px", fontSize: 10, letterSpacing: "0.38em", color: `${GOLD}80`, textTransform: "uppercase" as const }}>
+          Movement I · Step 2
+        </p>
+        <h2 style={{ ...GW.title, margin: "0 0 18px", fontSize: "clamp(26px,3vw,40px)" }}>
+          The Blueprint of Craftsmanship
+        </h2>
+        <p style={{ ...GW.para, marginBottom: 20 }}>
+          You are not just blending leaves — you are capturing time, soil, and tradition. Before your
+          master cigar can be rolled on the bench, it begins in the earth.
+        </p>
+        <p style={{ ...GW.para, marginBottom: 28 }}>
+          A single cigar is composed of three distinct layers: the{" "}
+          <strong style={{ color: GOLD }}>wrapper</strong> that delivers the immediate aroma, the{" "}
+          <strong style={{ color: "#c8a96e" }}>binder</strong> that holds structural integrity, and the internal{" "}
+          <strong style={{ color: "#a0906a" }}>filler leaf core</strong> that dictates power, burn speed, and
+          flavour. To create a masterpiece, you must first align these three elements with intent.
+        </p>
+        {/* Three-layer anatomy row */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 32 }}>
+          {layers.map((l) => (
+            <div
+              key={l.label}
+              style={{
+                flex: 1,
+                background: "rgba(255,255,255,0.04)",
+                border: `1px solid ${l.color}33`,
+                borderRadius: 10,
+                padding: "16px 14px",
+              }}
+            >
+              <p style={{ margin: "0 0 6px", fontSize: 9, letterSpacing: "0.35em", color: l.color, textTransform: "uppercase" as const }}>{l.label}</p>
+              <p style={{ margin: 0, fontSize: 12, color: "#c8bfa8", lineHeight: 1.55 }}>{l.sub}</p>
             </div>
-            <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${GOLD}22` }}>
-              <img
-                src={imgCultivation}
-                alt="Cultivation & Harvest Protocol"
-                className="w-full object-cover"
-                style={{ filter: "brightness(0.82)", maxHeight: 150, objectFit: "cover", width: "100%" }}
-              />
-              <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
-                <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
-                  The Art of Cultivation
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-
-        <div className="flex justify-between mt-6 gap-4">
-          <button style={GW.btn(true)} onClick={onBack}>Back</button>
+        <p style={{ ...GW.para, fontStyle: "italic", color: `${GOLD}70`, fontSize: 14, marginBottom: 36 }}>
+          This is not a tutorial. This is an immersion into the culture, craft, and heritage of the cigar.
+        </p>
+        <div style={{ display: "flex", gap: 14 }}>
+          <button style={GW.btn(true)} onClick={() => { playClick(); onBack(); }}>Back</button>
           <motion.button
             style={GW.btn()}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            onClick={onNext}
+            onClick={() => { playClick(); onNext(); }}
           >
-            Meet Your Mentor
+            Meet Your Mentor →
           </motion.button>
+        </div>
+      </div>
+      {/* RIGHT — Tobacco plantation image */}
+      <div style={{ flex: "0 0 45%", position: "relative", overflow: "hidden" }}>
+        <img
+          src="https://images.unsplash.com/photo-1533470192478-9897d90d5461?auto=format&fit=crop&w=900&q=80"
+          alt="Historic premium tobacco plantation at sunrise"
+          style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.72) sepia(0.18)" }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(8,9,11,0.55) 0%, transparent 100%)" }} />
+        <div style={{ position: "absolute", bottom: 28, left: 28, right: 28 }}>
+          <p style={{ margin: 0, fontSize: 9, letterSpacing: "0.32em", color: `${GOLD}90`, textTransform: "uppercase" as const }}>
+            Historic Premium Tobacco Plantation · Sunrise
+          </p>
         </div>
       </div>
     </motion.div>
@@ -1822,6 +1831,107 @@ function MentorAssistOverlay({ mentorId, onAcknowledge }: {
   );
 }
 
+// ── Gateway: Mentor Philosophy ───────────────────────────────────────────────
+function GatewayMentorPhilosophy({
+  mentor, onNext, onBack,
+}: { mentor: typeof MENTORS[0] | null; onNext: () => void; onBack: () => void }) {
+  if (!mentor) { onBack(); return null; }
+  const blendParams: Record<string, { strength: number; body: number; complexity: number; finish: number }> = {
+    tradition: { strength: 55, body: 60, complexity: 80, finish: 90 },
+    sovereign:  { strength: 88, body: 82, complexity: 75, finish: 70 },
+    botanist:   { strength: 45, body: 50, complexity: 90, finish: 85 },
+  };
+  const p = blendParams[mentor.id] ?? { strength: 65, body: 65, complexity: 70, finish: 75 };
+  const bars = [
+    { label: "STRENGTH",   value: p.strength },
+    { label: "BODY",       value: p.body },
+    { label: "COMPLEXITY", value: p.complexity },
+    { label: "FINISH",     value: p.finish },
+  ];
+  return (
+    <motion.div
+      key="gw-mentor-philosophy"
+      initial={{ opacity: 0, x: 60 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -60 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      style={{ ...GW.bg, display: "flex", flexDirection: "row", overflow: "hidden" }}
+    >
+      {/* LEFT — Philosophy */}
+      <div style={{ flex: "0 0 55%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 52px 40px 52px", overflowY: "auto" }}>
+        <p style={{ margin: "0 0 12px", fontSize: 10, letterSpacing: "0.38em", color: `${GOLD}80`, textTransform: "uppercase" as const }}>
+          Movement I · Phase 2 · Philosophy
+        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 28 }}>
+          <img
+            src={mentor.portrait}
+            alt={mentor.name}
+            style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", border: `2px solid ${GOLD}60`, filter: "brightness(0.9)" }}
+          />
+          <div>
+            <h2 style={{ ...GW.title, margin: "0 0 4px", fontSize: "clamp(22px,2.5vw,34px)" }}>
+              {mentor.name} {mentor.flag}
+            </h2>
+            <p style={{ margin: 0, fontSize: 11, letterSpacing: "0.28em", color: `${GOLD}70`, textTransform: "uppercase" as const }}>
+              {mentor.tag}
+            </p>
+          </div>
+        </div>
+        <div style={{ borderLeft: `3px solid ${GOLD}60`, paddingLeft: 22, marginBottom: 36 }}>
+          <p style={{ ...GW.para, fontSize: "clamp(15px,1.7vw,19px)", fontStyle: "italic", lineHeight: 1.75, color: "#e8dcc8" }}>
+            “{mentor.guidance}”
+          </p>
+          <p style={{ margin: "12px 0 0", fontSize: 11, letterSpacing: "0.2em", color: `${GOLD}60`, textTransform: "uppercase" as const }}>
+            — {mentor.name}, {mentor.origin}
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 14 }}>
+          <button style={GW.btn(true)} onClick={() => { playClick(); onBack(); }}>Back</button>
+          <motion.button
+            style={GW.btn()}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => { playClick(); onNext(); }}
+          >
+            Begin the Journey →
+          </motion.button>
+        </div>
+      </div>
+      {/* RIGHT — Signature blend parameters */}
+      <div style={{ flex: "0 0 45%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 44px", background: "rgba(0,0,0,0.28)" }}>
+        <p style={{ margin: "0 0 28px", fontSize: 10, letterSpacing: "0.35em", color: `${GOLD}80`, textTransform: "uppercase" as const }}>
+          Signature Blend Parameters
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          {bars.map((b) => (
+            <div key={b.label}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 7 }}>
+                <p style={{ margin: 0, fontSize: 9, letterSpacing: "0.3em", color: `${GOLD}90`, textTransform: "uppercase" as const }}>{b.label}</p>
+                <p style={{ margin: 0, fontSize: 11, color: GOLD, fontFamily: "monospace" }}>{b.value}</p>
+              </div>
+              <div style={{ height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${b.value}%` }}
+                  transition={{ duration: 1.1, delay: 0.3, ease: "easeOut" }}
+                  style={{ height: "100%", background: `linear-gradient(to right, ${GOLD}90, ${GOLD})`, borderRadius: 3 }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 36, padding: "18px 20px", background: "rgba(212,175,55,0.07)", border: `1px solid ${GOLD}25`, borderRadius: 10 }}>
+          <p style={{ margin: "0 0 7px", fontSize: 9, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase" as const }}>
+            Regional Technique
+          </p>
+          <p style={{ margin: 0, fontSize: 14, color: "#d4c9b0", lineHeight: 1.6 }}>{mentor.style}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Gateway: Terroir ────────────────────────────────────────────────────────────────
 function GatewayTerroir({ onNext, onBack, onCountrySelect }: {
   onNext: () => void; onBack: () => void; onCountrySelect?: (country: string) => void;
 }) {
@@ -4806,15 +4916,23 @@ export default function MasterBlender() {
                   key="mentor"
                   selected={selectedMentor}
                   onSelect={setSelectedMentor}
-                  onNext={() => setGateway("terroir")}
+                  onNext={() => setGateway("mentor_philosophy")}
                   onBack={() => setGateway("orientation")}
+                />
+              )}
+              {gateway === "mentor_philosophy" && (
+                <GatewayMentorPhilosophy
+                  key="mentor_philosophy"
+                  mentor={MENTORS.find(m => m.id === selectedMentor) ?? null}
+                  onNext={() => setGateway("terroir")}
+                  onBack={() => setGateway("mentor")}
                 />
               )}
               {gateway === "terroir" && (
                 <GatewayTerroir
                   key="terroir"
                   onNext={() => setGateway("seed_biology")}
-                  onBack={() => setGateway("mentor")}
+                  onBack={() => setGateway("mentor_philosophy")}
                   onCountrySelect={(country) => {
                     setSelectedTerroir(country);
                     persistCountry(country);
