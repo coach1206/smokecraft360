@@ -1,0 +1,40 @@
+CRITICAL SYSTEM DIAGNOSTIC ANALYSIS & GAP REPORT: You are strictly forbidden from modifying any existing code, refactoring files, or generating new visual components during this pass. Your sole directive is to run a deep architectural scan on all source code files (including App.tsx, MasterBlender.tsx, RitualStep.tsx, usePosIntegration.ts, and all routing configuration structures) and generate an itemized Gap Analysis Report.
+
+Analyze the codebase against the following required business parameters and report exactly what layout logic, data structures, database schemas, or state variables are missing, broken, or lazy across ALL FOUR CRAFTS (SmokeCraft, PourCraft, BeerCraft, WineCraft):
+
+1. UNIVERSAL COCKPIT GRID LAYOUT CAPABILITY
+   - Is vertical module stacking completely prevented on the landing screen?
+   - Is SmokeCraft 360 mapped to a prominent horizontal top deck spanning 100% of the screen width?
+   - Are PourCraft 360, BeerCraft 360, and WineCraft 360 aligned side-by-side cleanly in equal horizontal columns directly beneath it?
+   - Is there a dark ambient visual motion layer active on every page (smoke mist, fluid waves, bubbles, wine legs)? Are there text-only placeholders violating this?
+   - Is the 100ms hardware tactility response (scale-96 + translate-y-[2px] + 3400Hz mechanical Web Audio API click tone) globally inherited by all interactive targets?
+
+2. ENTRY PORTAL LOCALIZED PROXIMITY HOOKS
+   - Is there a geolocation prompt immediate upon selecting a craft module to let users Opt-In or Opt-Out of proximity notifications?
+   - Is this choice bound directly to their phone number context in the backend database?
+   - Does a 5-mile boundary radius logic exist around the venue coordinates to track active local targets and handle automated or manual slow-day SMS marketing blasts?
+
+3. GOLDEN BOX INTRO & ROUNDTABLE DEMOGRAPHIC MATRICES
+   - Does "The Art of the Cigar" (and the respective intros for the other three crafts) hold perfectly static without automatic timeout bypasses?
+   - Are the Golden Box scoring rules (+5 XP / -2 PTS) and the table spend-to-points multipliers ($50, $100, $200+) written into the component states?
+   - Does the onboarding form capture all required data fields (Name, Phone, Email, Age Range, Gender, State, City) before unlocking progress?
+
+4. FRICTIONLESS RETURNING RETRIEVAL SYSTEM
+   - Is the 2-step verification login (Last Name + Last 4 Digits of Phone Number) active for returning guests?
+   - Does the state router securely fetch the JSON profile state and jump the user directly to their saved phase checkpoint, skipping the entire entry overview?
+
+5. MULTI-VISIT PROGRESSION & MILESTONE SUMMARIES
+   - Is user progression explicitly partitioned across 3 separate visits for all four crafts?
+   - Does Visit 1 strictly freeze and standby after the Phase 1 sourcing steps, preventing a user from completing a full build on day one?
+   - Are the real-time POS humidor, bar, and kitchen database lookups active at the summary checkpoints to display physical stock matches and promotional up-sells?
+   - Does the scoring odometer compare their live performance face-to-face with the active Nightly Lounge Average baseline?
+
+6. OPERATIONAL SECURITY & MAINTENANCE OVERRIDES
+   - Is the hidden manager PIN overlay active, and does it flip the viewport to display the side-by-side E.A.T. (Environment, Asset, Transaction) command dashboard?
+   - Is the interactive Drag-and-Drop Floor Map Configurator and Seating Arranger present inside the Asset panel?
+   - Is the continuous background consumption ledger saving smoking times, sitting durations, and drink volumes to track behavioral affinities?
+   - Is the 15-minute active hardware timeout, 3-minute idle dim, and 60-second glass warning sequence operational?
+   - Is the perimeter geofencing defense active to wipe staff caches and force a blackout if a terminal is moved out of its zone?
+   - Is the cross-fragmented inventory core unified to trigger automated B2B distributor reorder sheets when low-stock thresholds drop?
+
+Do not modify or fix any files. Output a clean, high-technical breakdown itemizing what is fully built out, what is missing, and what is broken.
