@@ -1,53 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="460" height="600" viewBox="0 0 460 600">
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="920" viewBox="0 0 700 920">
 
-  <!-- Card background -->
-  <rect width="460" height="600" rx="24" fill="#0F0D09"/>
-
-  <!-- Subtle inner border -->
-  <rect x="1" y="1" width="458" height="598" rx="23" fill="none" stroke="#D4AF37" stroke-width="0.8" opacity="0.35"/>
+  <!-- Background -->
+  <rect width="700" height="920" rx="28" fill="#0F0D09"/>
+  <rect x="1" y="1" width="698" height="918" rx="27" fill="none" stroke="#D4AF37" stroke-width="0.8" opacity="0.35"/>
 
   <!-- Top gold line -->
-  <line x1="50" y1="32" x2="410" y2="32" stroke="#D4AF37" stroke-width="1" opacity="0.55"/>
+  <line x1="50" y1="36" x2="650" y2="36" stroke="#D4AF37" stroke-width="1" opacity="0.6"/>
 
-  <!-- NOVEE OS -->
-  <text x="230" y="68" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="300" letter-spacing="10" fill="#D4AF37" text-anchor="middle">NOVEE OS</text>
-
-  <!-- thin rule -->
-  <line x1="170" y1="82" x2="290" y2="82" stroke="#D4AF37" stroke-width="0.6" opacity="0.4"/>
+  <!-- NOVEE OS wordmark -->
+  <text x="350" y="76" font-family="Georgia,'Times New Roman',serif" font-size="14" font-weight="300" letter-spacing="12" fill="#D4AF37" text-anchor="middle">NOVEE OS</text>
+  <line x1="270" y1="90" x2="430" y2="90" stroke="#D4AF37" stroke-width="0.6" opacity="0.4"/>
 
   <!-- SMOKECRAFT -->
-  <text x="230" y="110" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-weight="700" letter-spacing="5" fill="#E8D8B0" text-anchor="middle">SMOKECRAFT</text>
+  <text x="350" y="122" font-family="Georgia,'Times New Roman',serif" font-size="26" font-weight="700" letter-spacing="6" fill="#E8D8B0" text-anchor="middle">SMOKECRAFT</text>
+  <text x="350" y="143" font-family="Arial,Helvetica,sans-serif" font-size="9" letter-spacing="4" fill="#6A6258" text-anchor="middle">LUXURY EXPERIENCE PLATFORM · MOBILE</text>
 
-  <!-- tagline -->
-  <text x="230" y="132" font-family="Arial, Helvetica, sans-serif" font-size="8.5" letter-spacing="3.5" fill="#7A7268" text-anchor="middle">LUXURY EXPERIENCE PLATFORM</text>
-
-  <!-- QR code panel -->
-  <rect x="70" y="152" width="320" height="320" rx="14" fill="#F5E9C8"/>
-
-  <!-- QR code embedded at correct position and scale -->
-  <g transform="translate(70,152) scale(1.0666666666666667)">
+  <!-- ── QR CODE PANEL (centred) ── -->
+  <rect x="200" y="164" width="300" height="300" rx="16" fill="#F5E9C8"/>
+  <g transform="translate(200,164) scale(1.1538461538461537)">
     <path fill="#F5E9C8" d="M0 0h41v41H0z"/><path stroke="#1A1400" d="M2 2.5h7m2 0h1m3 0h1m2 0h1m2 0h2m2 0h1m4 0h1m1 0h7M2 3.5h1m5 0h1m3 0h3m2 0h1m4 0h3m1 0h5m1 0h1m5 0h1M2 4.5h1m1 0h3m1 0h1m1 0h3m2 0h4m1 0h1m2 0h2m1 0h1m1 0h3m1 0h1m1 0h3m1 0h1M2 5.5h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m2 0h4m4 0h2m2 0h1m1 0h1m1 0h3m1 0h1M2 6.5h1m1 0h3m1 0h1m1 0h1m1 0h5m4 0h2m1 0h5m3 0h1m1 0h3m1 0h1M2 7.5h1m5 0h1m1 0h3m1 0h3m5 0h1m1 0h1m1 0h2m1 0h2m1 0h1m5 0h1M2 8.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 9.5h1m5 0h2m2 0h1m1 0h5m1 0h3M2 10.5h1m1 0h5m2 0h2m2 0h1m3 0h2m3 0h1m2 0h1m4 0h5M4 11.5h1m1 0h2m1 0h6m1 0h3m1 0h3m2 0h1m4 0h1m2 0h1m1 0h1m1 0h1M3 12.5h1m1 0h1m2 0h1m1 0h1m4 0h2m2 0h2m2 0h1m5 0h1m1 0h5m1 0h2M2 13.5h2m1 0h2m2 0h1m1 0h1m6 0h1m3 0h2m1 0h2m3 0h1m1 0h2m1 0h1m2 0h1M2 14.5h1m1 0h1m3 0h1m3 0h1m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m2 0h1m4 0h1m1 0h3M3 15.5h2m1 0h1m3 0h3m1 0h1m1 0h1m2 0h3m1 0h1m1 0h4m2 0h1m1 0h1m1 0h1m1 0h1M2 16.5h1m1 0h1m2 0h3m1 0h2m3 0h4m2 0h1m4 0h3m1 0h1m3 0h1m2 0h1M2 17.5h1m4 0h1m3 0h1m1 0h1m1 0h2m3 0h5m4 0h3m2 0h2m2 0h1M2 18.5h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m3 0h3m4 0h1m2 0h3m1 0h2m1 0h1m1 0h1m1 0h1M2 19.5h6m2 0h4m1 0h1m1 0h1m2 0h4m1 0h1m4 0h2m1 0h1m2 0h2M3 20.5h2m1 0h4m3 0h1m3 0h3m6 0h1m1 0h3m1 0h1m1 0h1m2 0h2M2 21.5h2m1 0h2m3 0h2m2 0h2m1 0h1m2 0h1m2 0h3m2 0h2m1 0h1m3 0h1m1 0h2M2 22.5h1m1 0h1m1 0h1m1 0h1m5 0h2m1 0h4m1 0h1m2 0h3m1 0h1m2 0h3m1 0h3M4 23.5h1m1 0h1m2 0h1m2 0h5m4 0h1m2 0h2m2 0h1m1 0h2m3 0h3M2 24.5h2m2 0h3m1 0h2m2 0h4m10 0h3m2 0h1m1 0h2m1 0h1M4 25.5h4m1 0h1m2 0h1m3 0h1m3 0h1m1 0h3m1 0h1m1 0h3m3 0h2m1 0h2M2 26.5h1m1 0h1m3 0h2m1 0h3m3 0h1m1 0h1m2 0h1m3 0h4m1 0h2m1 0h4M2 27.5h1m1 0h1m1 0h2m1 0h1m2 0h4m1 0h2m1 0h4m1 0h4m1 0h2m1 0h1m1 0h1M2 28.5h1m2 0h2m1 0h1m1 0h2m4 0h1m2 0h1m2 0h3m4 0h1m1 0h2m3 0h3M2 29.5h1m1 0h3m2 0h1m3 0h3m2 0h1m3 0h2m1 0h1m2 0h1m5 0h1m2 0h2M2 30.5h1m1 0h1m1 0h1m1 0h1m2 0h1m2 0h3m2 0h2m3 0h4m1 0h8m1 0h1M10 31.5h2m3 0h1m2 0h1m2 0h2m2 0h1m1 0h1m2 0h1m3 0h1m1 0h1M2 32.5h7m2 0h1m1 0h3m1 0h1m4 0h1m1 0h1m1 0h1m3 0h1m1 0h1m1 0h1m1 0h1m1 0h1M2 33.5h1m5 0h1m1 0h1m6 0h2m3 0h2m5 0h2m3 0h2m2 0h1M2 34.5h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h2m1 0h1m1 0h1m2 0h1m1 0h11m1 0h1M2 35.5h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h2m3 0h5m1 0h2m1 0h1m1 0h7M2 36.5h1m1 0h3m1 0h1m1 0h2m2 0h1m2 0h1m5 0h2m1 0h1m1 0h1m2 0h1m4 0h3M2 37.5h1m5 0h1m3 0h3m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h6m2 0h1M2 38.5h7m1 0h1m3 0h2m1 0h4m6 0h1m3 0h1m1 0h2m1 0h3"/>
 
   </g>
 
-  <!-- Corner accent marks -->
-  <line x1="70" y1="152" x2="96" y2="152" stroke="#D4AF37" stroke-width="2.5"/>
-  <line x1="70" y1="152" x2="70" y2="178" stroke="#D4AF37" stroke-width="2.5"/>
-  <line x1="390" y1="152" x2="364" y2="152" stroke="#D4AF37" stroke-width="2.5"/>
-  <line x1="390" y1="152" x2="390" y2="178" stroke="#D4AF37" stroke-width="2.5"/>
-  <line x1="70" y1="472" x2="96" y2="472" stroke="#D4AF37" stroke-width="2.5"/>
-  <line x1="70" y1="472" x2="70" y2="446" stroke="#D4AF37" stroke-width="2.5"/>
-  <line x1="390" y1="472" x2="364" y2="472" stroke="#D4AF37" stroke-width="2.5"/>
-  <line x1="390" y1="472" x2="390" y2="446" stroke="#D4AF37" stroke-width="2.5"/>
+  <!-- Corner marks -->
+  <line x1="200" y1="164" x2="228" y2="164" stroke="#D4AF37" stroke-width="2.5"/>
+  <line x1="200" y1="164" x2="200" y2="192" stroke="#D4AF37" stroke-width="2.5"/>
+  <line x1="500" y1="164" x2="472" y2="164" stroke="#D4AF37" stroke-width="2.5"/>
+  <line x1="500" y1="164" x2="500" y2="192" stroke="#D4AF37" stroke-width="2.5"/>
+  <line x1="200" y1="464" x2="228" y2="464" stroke="#D4AF37" stroke-width="2.5"/>
+  <line x1="200" y1="464" x2="200" y2="436" stroke="#D4AF37" stroke-width="2.5"/>
+  <line x1="500" y1="464" x2="472" y2="464" stroke="#D4AF37" stroke-width="2.5"/>
+  <line x1="500" y1="464" x2="500" y2="436" stroke="#D4AF37" stroke-width="2.5"/>
 
-  <!-- SCAN label -->
-  <text x="230" y="510" font-family="Arial, Helvetica, sans-serif" font-size="9" letter-spacing="4" fill="#7A7268" text-anchor="middle">SCAN WITH EXPO GO</text>
+  <text x="350" y="496" font-family="Arial,Helvetica,sans-serif" font-size="9" letter-spacing="4" fill="#D4AF37" text-anchor="middle" opacity="0.8">▲  SCAN TO INSTALL  ▲</text>
 
-  <!-- bottom gold line -->
-  <line x1="50" y1="536" x2="410" y2="536" stroke="#D4AF37" stroke-width="0.6" opacity="0.35"/>
+  <!-- ── DIVIDER ── -->
+  <line x1="50" y1="520" x2="650" y2="520" stroke="#D4AF37" stroke-width="0.5" opacity="0.3"/>
 
-  <!-- footer -->
-  <text x="230" y="566" font-family="Arial, Helvetica, sans-serif" font-size="7.5" letter-spacing="2" fill="#4A4540" text-anchor="middle">POWERED BY NOVEE OS · HOSPITALITY INTELLIGENCE</text>
+  <!-- ── INSTRUCTIONS HEADING ── -->
+  <text x="350" y="552" font-family="Arial,Helvetica,sans-serif" font-size="10" letter-spacing="5" fill="#D4AF37" text-anchor="middle">HOW TO INSTALL</text>
+
+  <!-- ═══════════ iOS COLUMN ═══════════ -->
+  <!-- Panel -->
+  <rect x="44" y="568" width="290" height="300" rx="14" fill="#141210" stroke="#D4AF37" stroke-width="0.6" opacity="1" stroke-opacity="0.25"/>
+
+  <!-- iOS badge -->
+  <rect x="64" y="586" width="80" height="22" rx="5" fill="#1C1A14"/>
+  <text x="104" y="601" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing="2" fill="#D4AF37" text-anchor="middle"> iPhone / iPad</text>
+
+  <!-- Steps -->
+  <circle cx="75" cy="632" r="9" fill="#D4AF37"/>
+  <text x="75" y="636" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#0F0D09" text-anchor="middle">1</text>
+  <text x="93" y="629" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#E8D8B0">Open the App Store</text>
+  <text x="93" y="645" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="#7A7268">on your iPhone or iPad</text>
+
+  <circle cx="75" cy="678" r="9" fill="#D4AF37"/>
+  <text x="75" y="682" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#0F0D09" text-anchor="middle">2</text>
+  <text x="93" y="675" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#E8D8B0">Search "Expo Go"</text>
+  <text x="93" y="691" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="#7A7268">by Expo Project, Inc. — free app</text>
+
+  <circle cx="75" cy="724" r="9" fill="#D4AF37"/>
+  <text x="75" y="728" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#0F0D09" text-anchor="middle">3</text>
+  <text x="93" y="721" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#E8D8B0">Install &amp; Open Expo Go</text>
+  <text x="93" y="737" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="#7A7268">tap "Scan QR Code" inside the app</text>
+
+  <circle cx="75" cy="770" r="9" fill="#D4AF37"/>
+  <text x="75" y="774" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#0F0D09" text-anchor="middle">4</text>
+  <text x="93" y="767" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#E8D8B0">Point at QR above</text>
+  <text x="93" y="783" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="#7A7268">SmokeCraft loads instantly</text>
+
+  <text x="189" y="845" font-family="Arial,Helvetica,sans-serif" font-size="8.5" letter-spacing="1.5" fill="#4A4540" text-anchor="middle">iOS 16+ REQUIRED</text>
+
+  <!-- ═══════════ ANDROID COLUMN ═══════════ -->
+  <rect x="366" y="568" width="290" height="300" rx="14" fill="#141210" stroke="#D4AF37" stroke-width="0.6" opacity="1" stroke-opacity="0.25"/>
+
+  <!-- Android badge -->
+  <rect x="386" y="586" width="100" height="22" rx="5" fill="#1C1A14"/>
+  <text x="436" y="601" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing="2" fill="#D4AF37" text-anchor="middle"> Android / Tablet</text>
+
+  <circle cx="397" cy="632" r="9" fill="#C4610A"/>
+  <text x="397" y="636" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#0F0D09" text-anchor="middle">1</text>
+  <text x="415" y="629" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#E8D8B0">Open Google Play Store</text>
+  <text x="415" y="645" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="#7A7268">on your Android phone or tablet</text>
+
+  <circle cx="397" cy="678" r="9" fill="#C4610A"/>
+  <text x="397" y="682" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#0F0D09" text-anchor="middle">2</text>
+  <text x="415" y="675" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#E8D8B0">Search "Expo Go"</text>
+  <text x="415" y="691" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="#7A7268">by Expo Project, Inc. — free app</text>
+
+  <circle cx="397" cy="724" r="9" fill="#C4610A"/>
+  <text x="397" y="728" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#0F0D09" text-anchor="middle">3</text>
+  <text x="415" y="721" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#E8D8B0">Install &amp; Open Expo Go</text>
+  <text x="415" y="737" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="#7A7268">tap the camera icon to scan</text>
+
+  <circle cx="397" cy="770" r="9" fill="#C4610A"/>
+  <text x="397" y="774" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#0F0D09" text-anchor="middle">4</text>
+  <text x="415" y="767" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#E8D8B0">Point at QR above</text>
+  <text x="415" y="783" font-family="Arial,Helvetica,sans-serif" font-size="9.5" fill="#7A7268">SmokeCraft loads instantly</text>
+
+  <text x="511" y="845" font-family="Arial,Helvetica,sans-serif" font-size="8.5" letter-spacing="1.5" fill="#4A4540" text-anchor="middle">ANDROID 10+ REQUIRED</text>
+
+  <!-- ── BOTTOM RULE + FOOTER ── -->
+  <line x1="50" y1="884" x2="650" y2="884" stroke="#D4AF37" stroke-width="0.6" opacity="0.3"/>
+  <text x="350" y="906" font-family="Arial,Helvetica,sans-serif" font-size="7.5" letter-spacing="2" fill="#3A3830" text-anchor="middle">POWERED BY NOVEE OS · CRAFT INTELLIGENCE · LUXURY HOSPITALITY PLATFORM</text>
 
 </svg>
