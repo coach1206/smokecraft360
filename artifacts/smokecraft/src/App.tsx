@@ -38,6 +38,7 @@ import { TrifectaProvider }           from '@/contexts/TrifectaContext';
 import { SovereignInsightCube }       from '@/components/SovereignInsightCube';
 import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
 import PhantomHUD                     from '@/components/PhantomHUD';
+import { SplashController }           from '@/components/SplashController';
 import { KernelModeProvider }         from '@/contexts/KernelModeContext';
 import { SovereignRoute }             from '@/components/SovereignRoute';
 import InactivityGuard               from '@/components/InactivityGuard';
@@ -983,6 +984,8 @@ export default function App() {
     <Router>
       <BrandPartnerFirewall />
       <GuestAmbientLayer />
+      {/* ── Cinematic 4-stage brand intro — fixed overlay, session-gated ── */}
+      <SplashController />
       <Suspense fallback={<PageLoader />}>
         <Switch>
           {/* ── Enterprise / AI (standalone — no full provider stack needed) ── */}

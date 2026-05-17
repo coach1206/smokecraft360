@@ -1065,10 +1065,7 @@ function CraftHubInner() {
       </div>
 
       {/* ── Landscape Cockpit Grid: SmokeCraft top + 3-craft bottom row ── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: 0.15 }}
+      <div
         style={{
           flex:          1,
           display:       "flex",
@@ -1116,7 +1113,7 @@ function CraftHubInner() {
             />
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* ── Partner LogoAnchors — DayOne360 & WifeX ── */}
       <div style={{ position: "relative", zIndex: 10, flexShrink: 0 }}>
