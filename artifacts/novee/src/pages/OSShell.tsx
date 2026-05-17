@@ -192,17 +192,11 @@ export default function OSShell() {
       }}>
         {/* Wordmark */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 28, height: 28,
-            border: "1.5px solid rgba(196,97,10,0.6)",
-            borderRadius: 6,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 11, fontWeight: 800, color: "#C4610A", letterSpacing: "0.05em",
-          }}>N</div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.25em", color: "#F5EDD8" }}>NOVEE OS</div>
-            <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(196,97,10,0.6)", marginTop: -1 }}>PROFOUND INNOVATIONS</div>
-          </div>
+          <img
+            src="/novee/images/logo_novee.png"
+            alt="NOVEE OS"
+            style={{ height: 36, width: "auto", objectFit: "contain", filter: "drop-shadow(0 0 6px rgba(196,97,10,0.4))" }}
+          />
         </div>
 
         {/* Mode indicator + toggle */}
