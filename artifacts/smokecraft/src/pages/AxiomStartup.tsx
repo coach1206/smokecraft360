@@ -230,7 +230,7 @@ export default function AxiomStartup({ onComplete }: { onComplete: () => void })
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      style={{ position: "fixed", inset: 0, background: "#000", zIndex: 99999, pointerEvents: "none" }}
+      style={{ position: "fixed", inset: 0, background: "#0A0808", zIndex: 99999, pointerEvents: "none" }}
     />
   );
 
@@ -245,7 +245,12 @@ export default function AxiomStartup({ onComplete }: { onComplete: () => void })
           style={{
             position:       "fixed",
             inset:          0,
-            background:     "#000",
+            background:     [
+              "#0A0808",
+              "radial-gradient(ellipse 90% 55% at 50% 0%, rgba(196,97,10,0.11) 0%, transparent 60%)",
+              "radial-gradient(ellipse 50% 35% at 20% 90%, rgba(212,139,0,0.06) 0%, transparent 55%)",
+              "radial-gradient(ellipse 40% 30% at 80% 70%, rgba(196,97,10,0.04) 0%, transparent 55%)",
+            ].join(", "),
             zIndex:         99999,
             display:        "flex",
             flexDirection:  "column",
