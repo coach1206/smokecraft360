@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="580">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#12100C"/>
+      <stop offset="100%" stop-color="#0A0A08"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="440" height="580" fill="url(#bg)" rx="24"/>
+
+  <!-- Top gold border line -->
+  <rect x="40" y="28" width="360" height="1" fill="#D4AF37" opacity="0.6"/>
+
+  <!-- NOVEE OS wordmark -->
+  <text x="220" y="70" font-family="Georgia, serif" font-size="13" font-weight="300" letter-spacing="10" fill="#D4AF37" text-anchor="middle">NOVEE OS</text>
+
+  <!-- Thin separator -->
+  <rect x="160" y="84" width="120" height="0.5" fill="#D4AF37" opacity="0.4"/>
+
+  <!-- SMOKECRAFT label -->
+  <text x="220" y="108" font-family="Georgia, serif" font-size="22" font-weight="700" letter-spacing="6" fill="#E5D5B3" text-anchor="middle">SMOKECRAFT</text>
+
+  <!-- Subtitle -->
+  <text x="220" y="128" font-family="Arial, sans-serif" font-size="9" letter-spacing="3" fill="#8E8A82" text-anchor="middle">LUXURY EXPERIENCE PLATFORM</text>
+
+  <!-- QR code container -->
+  <rect x="60" y="148" width="320" height="320" fill="#0A0A08" rx="16"/>
+  <rect x="60" y="148" width="320" height="320" fill="none" stroke="#D4AF37" stroke-width="1" rx="16" opacity="0.3"/>
+  <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAFACAYAAADNkKWqAAAAAklEQVR4AewaftIAAAxZSURBVO3BwY0d245FwS2iBkI5wxmdoX10hjNapDagkQf4mS9xS+KK+PX9/fuPAGAhEwAsZQKApUwAsJQJAJYyAcBSJgBYygQAS5kAYCkTACxlAoClTACwlAkAljIBwFImAFjKBABLfemhLte/KnJ0V5frJHL0pi7XlcjRE12uk8jRXV2uJyJHT3S5rkSOPqnLdSVydNLl+ldFju4yAcBSJgBYygQAS5kAYCkTACxlAoClTACw1JdeFjn6qbpcb4kcnXS53hQ5uqvLdRI5ekvk6KTLddLleiJydKXL9a+KHP1UXa63mABgKRMALGUCgKVMALCUCQCWMgHAUiYAWOpLH9blekvk6E1drrdEjp7ocr2ly3USOTrpcl2JHJ1Ejk66XJ8SOTrpcv2tulxviRx9igkAljIBwFImAFjKBABLmQBgKRMALGUCgKW+hFdEjk66XJ8SOXqiy3XS5bqry3USOTqJHH1Kl+skcvRElwv/LRMALGUCgKVMALCUCQCWMgHAUiYAWOpL+JG6XG/pcp1Ejk4iR2/pcp10uU4iRyddrk/pcp1Ejk4iR/hvmQBgKRMALGUCgKVMALCUCQCWMgHAUiYAWOpLHxY5+hd1uZ6IHJ10uf5FkaOTLtebIkdXulxPRI5Oulx3RY7eFDn6F5kAYCkTACxlAoClTACwlAkAljIBwFImAFjqSy/rcm0UOTrpcr0pcnSly/VEl+skcnTS5boSOfpbRY5OulwnkaOTLtdbulwbmQBgKRMALGUCgKVMALCUCQCWMgHAUiYAWOpLD0WO8L+LHD0ROXpLl+skcvRTdbme6HJ9SpfrLZEj/H8mAFjKBABLmQBgKRMALGUCgKVMALCUCQCW+vX9/fuPHuhynUSOTrpcP1Xk6K4u1xORoye6XFciR2/qct0VOXpTl+skcnRXl+skcvQpXa6fKnL0KSYAWMoEAEuZAGApEwAsZQKApUwAsNSv7+/ff/RBXa6TyNGVLtcTkaOTLtffKnJ0pcv1psjRSZfrLZGjJ7pcVyJHn9TluhI5eqLLdRI5OulyXYkcnXS5TiJHbzEBwFImAFjKBABLmQBgKRMALGUCgKVMALDUr+/v33/0oi7XSeTopMt1JXL0RJfrJHJ00uW6Ejn6pC7XXZGjJ7pcd0WOnuhynUSOfqou10nk6EqX66eKHJ10uZ6IHN1lAoClTACwlAkAljIBwFImAFjKBABLmQBgqS891OX6lC7XSeToJHJ00uU6iRxd6XKdRI7eFDl6S5frJHL0li7Xm7pcd0WOnogcnXS5rkSOTrpcT0SOTrpcd0WOTrpcbzEBwFImAFjKBABLmQBgKRMALGUCgKVMALDUr+/v33/0QJfrJHJ00uU6iRy9pct1Ejl6S5frJHJ00uU6iRxd6XKdRI5OulxPRI6udLmeiByddLlOIkd3dblOIkef0uU6iRyddLneEjn6FBMALGUCgKVMALCUCQCWMgHAUiYAWMoEAEt96aHI0UmX6y1drpPI0Unk6Iku10aRo5Mu10mX667I0UmX6yRydNLlekuX6yRydFeX6yRydNLlOokcnXS5rkSOTrpcJ5Gjt5gAYCkTACxlAoClTACwlAkAljIBwFJfeqjLdRI5Ouly3RU5OulyvSlydKXL9abI0Vu6XG+KHN3V5TqJHD0RObqry/VEl+skcvSWyNGnRI5OulwnkaO7TACwlAkAljIBwFImAFjKBABLmQBgKRMALPWlD4scfUrk6FMiRyddrpPI0UmX667I0Zu6XG/pcj0ROborcvREl+uky/UpXa5/kQkAljIBwFImAFjKBABLmQBgKRMALGUCgKW+9GFdrpPI0ZUu10nk6KTLdRI5Ouly/VSRo7u6XG+KHH1Kl+stXa43RY6udLlOulwnkaMnIkdXulwnkaNPMQHAUiYAWMoEAEuZAGApEwAsZQKApUwAsNSv7+/ff/RAl+tvFTl6osv1KZGjky7XlcjRSZfrJHL0RJfrUyJHJ12uK5GjT+py3RU5OulynUSO7upyPRE5eosJAJYyAcBSJgBYygQAS5kAYCkTACxlAoClfn1///6jF3W5nogcXelyfVLk6C1drpPI0Vu6XG+KHP2NulwnkaOTLtdbIkcnXa6TyNFJl+skcnRXl+uJyNFdJgBYygQAS5kAYCkTACxlAoClTACw1Jce6nI9ETk66XLdFTl6U5frrsjRSeTopMt1V+ToicjRE12uK5GjJ7pcb4kcfVLk6EqX6yRy9ETk6KTLdSVy9FOZAGApEwAsZQKApUwAsJQJAJYyAcBSJgBY6ksvixyddLlOIkdXulxPdLlOIkcnkaONulyf0uU6iRw90eW60uV6InJ00uW6K3J00uV6U+ToSpfrpzIBwFImAFjKBABLmQBgKRMALGUCgKVMALDUlx6KHP2tIkcnXa6TyNFdXa5P6XKdRI4+pct1Ejl6ost1V+ToiS7XSeTopMt1V+ToTV2ut0SO3mICgKVMALCUCQCWMgHAUiYAWMoEAEuZAGCpX9/fv//ogS7XE5Gju7pcb4ocnXS57oocPdHl+pTIEf53Xa63RI6e6HKdRI5Oulx3RY5OulwnkaO7TACwlAkAljIBwFImAFjKBABLmQBgKRMALPWlhyJHT3S5PiVydNLlOokc3dXlOokcnUSO7upynUSO3tTluhI5OulyvSlydKXLdRI5+ltFjk66XHdFjk66XJ9iAoClTACwlAkAljIBwFImAFjKBABLfemhLtdJ5OiJyNFbulxv6XI90eU6iRzdFTk66XKdRI5OulwnkaO3RI4+pcv1psjRlS7XE5Gjt3S5nogcvcUEAEuZAGApEwAsZQKApUwAsJQJAJYyAcBSX/qLdbmeiByddLnuihyddLme6HLdFTl6ost1Ejk66XK9pct1Ejk66XJ9SuTopMt1V+TopMt1Ejk66XJdiRz9VCYAWMoEAEuZAGApEwAsZQKApUwAsJQJAJb69f39+48e6HKdRI6e6HLdFTk66XKdRI5Oulx3RY4+pct1Ejl6ost1Ejm6q8v1psjRp3S5TiJHV7pcT0SO3tLlelPk6C4TACxlAoClTACwlAkAljIBwFImAFjKBABLfenDulyfEjk66XKdRI7e0uV6S+ToiS7XSeTop4ocnXS5rkSOnuhynUSO7oocvanLdRI5uhI5OulyfYoJAJYyAcBSJgBYygQAS5kAYCkTACxlAoClfn1///6jB7pcJ5Gjky7XSeToSpfrJHJ00uU6iRzd1eU6iRw90eV6S+ToiS7XXZGjN3W5PiVydNLl2ihydNLlOokc3WUCgKVMALCUCQCWMgHAUiYAWMoEAEv9+v7+/Ue4pct1V+ToTV2uK5GjJ7pcJ5Gju7pcT0SOnuhyXYkcnXS5TiJHT3S5rkSO3tTlOokcXelynUSOPsUEAEuZAGApEwAsZQKApUwAsJQJAJYyAcBSX3qoy/WvihydRI6udLme6HJ9SpfrJHL0lsjRSZfriS7XSeToSpfrJHL0U3W5TiJHP1WX6yRydJcJAJYyAcBSJgBYygQAS5kAYCkTACxlAoClvvSyyNFP1eV6ost1JXL0ROTop+pynUSOPqXLdRI5uity9KYu11siR2/qcl2JHP1UJgBYygQAS5kAYCkTACxlAoClTACwlAkAlvrSh3W53hI5+qm6XG+KHF3pcj0ROTrpcp1Ejq50uU4iR090uU4iR1e6XD9Vl+un6nKdRI4+xQQAS5kAYCkTACxlAoClTACwlAkAljIBwFJfAv5jkaO3dLne1OW6Ejk66XI9ETk66XJdiRyddLl+qi7Xp5gAYCkTACxlAoClTACwlAkAljIBwFJfwiu6XCeRoye6XHdFjk66XJ8SOXqiy/VE5OhKl+skcnTS5XoicnSly3USOfqULtdPZQKApUwAsJQJAJYyAcBSJgBYygQAS5kAYKkvfVjk6G8VObqry/UpXa6TyNFJl+skcnTS5borcrRVl+uuLtenRI6e6HK9xQQAS5kAYCkTACxlAoClTACwlAkAljIBwFK/vr9//9EDXa5/VeTopMt1JXL0pi7XXZGjky7Xp0SO/lZdrpPI0Vu6XCeRo5Mu1xORoytdrjdFju4yAcBSJgBYygQAS5kAYCkTACxlAoClTACw1K/v799/BAALmQBgKRMALGUCgKVMALCUCQCWMgHAUiYAWMoEAEuZAGApEwAsZQKApUwAsJQJAJYyAcBS/wfKg7fSfQf4wAAAAABJRU5ErkJggg==" x="60" y="148" width="320" height="320" rx="12"/>
+
+  <!-- Corner marks -->
+  <rect x="60" y="148" width="20" height="2" fill="#D4AF37" opacity="0.7"/>
+  <rect x="60" y="148" width="2" height="20" fill="#D4AF37" opacity="0.7"/>
+  <rect x="360" y="148" width="20" height="2" fill="#D4AF37" opacity="0.7"/>
+  <rect x="378" y="148" width="2" height="20" fill="#D4AF37" opacity="0.7"/>
+  <rect x="60" y="466" width="20" height="2" fill="#D4AF37" opacity="0.7"/>
+  <rect x="60" y="448" width="2" height="20" fill="#D4AF37" opacity="0.7"/>
+  <rect x="360" y="466" width="20" height="2" fill="#D4AF37" opacity="0.7"/>
+  <rect x="378" y="448" width="2" height="20" fill="#D4AF37" opacity="0.7"/>
+
+  <!-- SCAN TO DOWNLOAD -->
+  <text x="220" y="502" font-family="Arial, sans-serif" font-size="9" letter-spacing="4" fill="#8E8A82" text-anchor="middle">SCAN TO DOWNLOAD · EXPO GO REQUIRED</text>
+
+  <!-- Bottom gold line -->
+  <rect x="40" y="526" width="360" height="0.5" fill="#D4AF37" opacity="0.35"/>
+
+  <!-- Footer -->
+  <text x="220" y="556" font-family="Arial, sans-serif" font-size="8" letter-spacing="2" fill="#6B6560" text-anchor="middle">POWERED BY NOVEE OS · HOSPITALITY INTELLIGENCE</text>
+</svg>

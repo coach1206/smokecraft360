@@ -551,3 +551,9 @@ id = "1HsBAIpAJw83R1Tj1bO2e"
 uri = "file://attached_assets/smokecraft-expo-qr.png"
 type = "image"
 title = "SmokeCraft Mobile — Expo Go QR Code"
+
+[[outputs]]
+id = "ZjbSHXQIplft_nsvSSuy2"
+uri = "file://attached_assets/novee-smokecraft-qr.svg"
+type = "image"
+title = "NOVEE OS / SMOKECRAFT — Download QR Code"
