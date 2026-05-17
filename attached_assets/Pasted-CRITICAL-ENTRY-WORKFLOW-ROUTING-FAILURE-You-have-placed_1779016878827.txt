@@ -1,0 +1,21 @@
+CRITICAL ENTRY WORKFLOW & ROUTING FAILURE: You have placed the LoyaltyGateway/Returning Guest login form as the absolute first screen the user sees upon loading the workspace. This is completely incorrect and destroys the luxury hospitality experience. 
+
+Completely restructure the route initialization inside MasterBlender.tsx and the root view architecture to execute this exact entry sequence:
+
+1. FORCE COCKPIT IDLE VIEW (THE 4 CRAFTS PORTAL):
+   - The absolute baseline idle screen of the system must load the premium NOVEÈ OS portfolio matrix. The user must see the 4 operational pillars laid out as oversized glassmorphic targets: SmokeCraft, PourCraft, WineCraft, and Asset Craft.
+   - Tapping the 'SmokeCraft' tile must dispatch our playClick() 3400Hz audio burst and smoothly route the guest into the cinematic landing zone.
+
+2. RE-ROUTE THE CINEMATIC "ART OF THE CIGAR" GATEWAY AS THE ENTRY POINT:
+   - When entering SmokeCraft, render the large luxury title "The Art of the Cigar" over our HTML5 SmokeCanvas drifting mist particles at z-index 9996 against the absolute black (#000000) base field. 
+
+3. FORK THE ENROLLMENT / RETURNING EXPERIENCE IMMERSIVELY:
+   - Do not display the 'Last Name / Phone Number' input fields as a persistent gate page. Instead, provide two clean, oversized action buttons at the bottom of the cinematic landing card:
+     * Button A (Primary Gold Target): "ENTER MASTERCLASS" -> Drops the user instantly into Stage 1 (The Mentor Council / Initial Blend Matrix) with zero administrative gates.
+     * Button B (Secondary Text Anchor): "RETURNING GUEST ACCESS" -> Only when this is actively tapped does a smoked glass profile drawer slide up using a 100ms hardware transition to reveal the verification inputs.
+
+4. PRESERVE EVERY MOVEMENT GATE, POS MATCHING & HARDWARE TACTILITY LAYER:
+   - Keep our strict 15-minute section breaks intact, along with the Intermittent Movement Completion summary pages that show real-time scores (+5 XP / -2 PTS) and venue inventory pairing pictures (e.g., matching Padrón or Opus X stock from the humidor with live bar whiskey recommendations).
+   - Ensure the BACK button and session timeout modals maintain top layer depth z-index 999999 so no interaction traps cause a system freeze.
+
+Re-sequence the entry stack execution logic now to clear the form landing entirely. Verify all types compile perfectly via tsc --noEmit with exit code 0.

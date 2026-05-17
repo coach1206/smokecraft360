@@ -4,7 +4,6 @@ import { useLocation } from "wouter";
 import { AudioWaveToggle, useAudio } from "@/contexts/AudioContext";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { getStaffLine } from "@/lib/CraftVoiceRouter";
-import LoyaltyGateway  from "@/components/LoyaltyGateway";
 
 // Velvet slide tone (Web Audio synth — no external file)
 function velvetSlide(): void {
@@ -268,7 +267,7 @@ const SOILS = [
   { id: "alluvial", name: "Alluvial Valley", region: "Cibao, D.R.",         detail: "Nutrient-dense loam creating silky wrapper leaves and refined, mellow body." },
 ];
 
-type GatewayPhase = "intro" | "orientation" | "mentor" | "terroir" | "seed_biology" | "cultivation" | "gate_movement_1" | "harvest" | "curing" | "rolling_bench" | "priming_matrix" | "gate_movement_2" | "vitola_science" | "gate_movement_3" | "blending";
+type GatewayPhase = "cockpit" | "intro" | "orientation" | "mentor" | "terroir" | "seed_biology" | "cultivation" | "gate_movement_1" | "harvest" | "curing" | "rolling_bench" | "priming_matrix" | "gate_movement_2" | "vitola_science" | "gate_movement_3" | "blending";
 
 type XPFloat  = { id: number; amount: number; x: number; y: number };
 type Sel      = {
@@ -753,7 +752,143 @@ const GW = {
 };
 
 // ── Gateway: Intro ──────────────────────────────────────────────────────────
-function GatewayIntro({ onNext }: { onNext: () => void }) {
+// ── Cockpit Idle View — NOVEE OS craft portal ────────────────────────────────
+function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
+  function playClick() {
+    try {
+      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = 3400; o.type = "sine";
+      g.gain.setValueAtTime(0, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.11, ctx.currentTime + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.08);
+    } catch {}
+  }
+  const crafts = [
+    { id: "smoke", label: "SmokeCraft",  sub: "The Craft of the Cigar",   active: true },
+    { id: "pour",  label: "PourCraft",   sub: "The Craft of the Pour",    active: false },
+    { id: "wine",  label: "WineCraft",   sub: "The Craft of the Vine",    active: false },
+    { id: "asset", label: "AssetCraft",  sub: "The Craft of the Moment",  active: false },
+  ];
+  return (
+    <div
+      style={{ position: "absolute", inset: 0, background: "#000000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+    >
+      <button
+        onClick={() => window.location.assign("/novee/")}
+        style={{
+          position: "absolute", top: 24, left: 24,
+          background: "transparent",
+          border: "1px solid rgba(212,175,55,0.4)",
+          color: "rgba(212,175,55,0.75)",
+          padding: "10px 20px", borderRadius: 4,
+          fontSize: 11, fontWeight: 700,
+          letterSpacing: "0.24em", textTransform: "uppercase" as const,
+          cursor: "pointer", fontFamily: "'Inter',sans-serif",
+          zIndex: 9999999,
+        }}
+      >← NOVEE OS</button>
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.9 }}
+        style={{ textAlign: "center", marginBottom: 52 }}
+      >
+        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.42em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, margin: "0 0 10px" }}>NOVEE OS // CRAFT SELECT</p>
+        <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 300, color: "#ffffff", letterSpacing: "0.08em", margin: 0 }}>Choose Your Craft</h1>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.9 }}
+        style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 18, width: "min(640px, 90vw)" }}
+      >
+        {crafts.map((c, i) => (
+          <motion.button
+            key={c.id}
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.55 + i * 0.08, duration: 0.7 }}
+            whileHover={c.active ? { scale: 1.04, boxShadow: "0 0 56px rgba(212,175,55,0.32), 0 0 100px rgba(212,175,55,0.10)" } : {}}
+            whileTap={c.active ? { scale: 0.96 } : {}}
+            onTouchStart={() => c.active && playClick()}
+            onClick={() => { if (c.active) { playClick(); onSmokeCraft(); } }}
+            style={{
+              background: c.active
+                ? "linear-gradient(135deg, rgba(30,22,0,0.92) 0%, rgba(18,14,0,0.85) 100%)"
+                : "rgba(18,18,18,0.60)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: c.active ? "1px solid rgba(212,175,55,0.55)" : "1px solid rgba(255,255,255,0.07)",
+              borderRadius: 12,
+              padding: "32px 24px",
+              display: "flex", flexDirection: "column" as const, alignItems: "flex-start",
+              cursor: c.active ? "pointer" : "default",
+              textAlign: "left" as const,
+              boxShadow: c.active ? "0 0 28px rgba(212,175,55,0.14), inset 0 1px 0 rgba(255,255,255,0.06)" : "none",
+              opacity: c.active ? 1 : 0.38,
+              minHeight: 130,
+              position: "relative" as const,
+              overflow: "hidden",
+            }}
+          >
+            <span style={{
+              position: "absolute", top: 12, right: 14,
+              fontSize: 8, fontWeight: 700, letterSpacing: "0.25em",
+              color: c.active ? "rgba(212,175,55,0.70)" : "rgba(255,255,255,0.28)",
+              fontFamily: "'Inter',sans-serif", textTransform: "uppercase" as const,
+            }}>{c.active ? "ACTIVE" : "COMING SOON"}</span>
+            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.3rem,2.2vw,1.65rem)", fontWeight: 400, color: c.active ? "#d4af37" : "rgba(255,255,255,0.35)", margin: "0 0 6px", letterSpacing: "0.04em" }}>{c.label}</p>
+            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, fontWeight: 400, color: c.active ? "rgba(255,252,245,0.55)" : "rgba(255,255,255,0.20)", margin: 0, letterSpacing: "0.14em", textTransform: "uppercase" as const }}>{c.sub}</p>
+          </motion.button>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
+  onEnterNew: () => void;
+  onBack: () => void;
+  onStartSession: (xp: number) => void;
+}) {
+  const [drawerOpen,  setDrawerOpen]  = useState(false);
+  const [lastName,    setLastName]    = useState("");
+  const [phoneLast4,  setPhoneLast4]  = useState("");
+  const [loading,     setLoading]     = useState(false);
+  const [errMsg,      setErrMsg]      = useState<string | null>(null);
+
+  function playClick() {
+    try {
+      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = 3400; o.type = "sine";
+      g.gain.setValueAtTime(0, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.11, ctx.currentTime + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.08);
+    } catch {}
+  }
+
+  async function handleLookup() {
+    if (!lastName.trim() || phoneLast4.trim().length !== 4) return;
+    setLoading(true); setErrMsg(null);
+    try {
+      const res = await fetch("/api/auth/guest-return", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lastName: lastName.trim(), phoneLast4: phoneLast4.trim() }),
+      });
+      if (!res.ok) { setErrMsg("Profile not found. Please check your details."); setLoading(false); return; }
+      const profile = await res.json() as { totalMastery?: number };
+      setLoading(false);
+      onStartSession(profile.totalMastery ?? 0);
+    } catch { setErrMsg("Connection error. Try again."); setLoading(false); }
+  }
+
   return (
     <motion.div
       key="gw-intro"
@@ -780,7 +915,6 @@ function GatewayIntro({ onNext }: { onNext: () => void }) {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center px-6 pb-12 pt-10 w-full max-w-2xl mx-auto min-h-screen">
-        {/* Glassmorphic narrative panel */}
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
@@ -815,7 +949,6 @@ function GatewayIntro({ onNext }: { onNext: () => void }) {
           >
             The Art of the Cigar
           </motion.h1>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -858,9 +991,9 @@ function GatewayIntro({ onNext }: { onNext: () => void }) {
               boxShadow: "0 0 28px rgba(212,175,55,0.24), inset 0 1px 0 rgba(255,255,255,0.08)",
             }}
             onTouchStart={() => playClick()}
-            onClick={onNext}
+            onClick={() => { playClick(); onEnterNew(); }}
           >
-            ENTER SMOKECRAFT
+            ENTER MASTERCLASS
           </motion.button>
           <button
             style={{
@@ -879,13 +1012,112 @@ function GatewayIntro({ onNext }: { onNext: () => void }) {
               transition: "all 0.25s ease",
             }}
             onTouchStart={() => playClick()}
-            onClick={() => window.location.assign("/novee/")}
-
+            onClick={() => { playClick(); setDrawerOpen(true); }}
           >
-            BACK
+            RETURNING GUEST ACCESS
+          </button>
+          <button
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(212,175,55,0.28)",
+              color: "rgba(212,175,55,0.50)",
+              padding: "12px 40px",
+              minHeight: 44,
+              fontSize: "clamp(10px, 1.2vw, 11px)",
+              fontWeight: 600,
+              letterSpacing: "0.28em",
+              textTransform: "uppercase" as const,
+              borderRadius: 4,
+              cursor: "pointer",
+              fontFamily: "'Inter',sans-serif",
+              transition: "all 0.25s ease",
+            }}
+            onTouchStart={() => playClick()}
+            onClick={() => { playClick(); onBack(); }}
+          >
+            ← BACK
           </button>
         </motion.div>
       </div>
+
+      {/* Returning guest slide-up drawer */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ duration: 0.1, ease: "easeOut" }}
+            style={{
+              position: "fixed", bottom: 0, left: 0, right: 0,
+              background: "rgba(8,6,2,0.96)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              borderTop: "1px solid rgba(212,175,55,0.35)",
+              borderRadius: "20px 20px 0 0",
+              padding: "36px 32px 48px",
+              zIndex: 9999998,
+            }}
+          >
+            <div style={{ maxWidth: 480, margin: "0 auto" }}>
+              <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.4rem,2.4vw,1.85rem)", color: "#d4af37", fontWeight: 300, margin: "0 0 6px", letterSpacing: "0.04em" }}>Returning Guest Access</p>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, color: "rgba(255,252,245,0.45)", letterSpacing: "0.18em", textTransform: "uppercase" as const, margin: "0 0 28px" }}>Verify your identity to resume your journey</p>
+              <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 20 }}>
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={e => { setLastName(e.target.value); setErrMsg(null); }}
+                  style={{
+                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.30)",
+                    borderRadius: 6, padding: "16px 18px", color: "#fff",
+                    fontSize: 15, fontFamily: "'Inter',sans-serif", outline: "none", width: "100%",
+                    boxSizing: "border-box" as const,
+                  }}
+                />
+                <input
+                  type="tel"
+                  placeholder="Last 4 of phone"
+                  maxLength={4}
+                  value={phoneLast4}
+                  onChange={e => { setPhoneLast4(e.target.value.replace(/\D/g, "").slice(0, 4)); setErrMsg(null); }}
+                  style={{
+                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.30)",
+                    borderRadius: 6, padding: "16px 18px", color: "#fff",
+                    fontSize: 15, fontFamily: "'Inter',sans-serif", outline: "none", width: "100%",
+                    boxSizing: "border-box" as const,
+                  }}
+                />
+              </div>
+              {errMsg && <p style={{ color: "#f87171", fontSize: 12, fontFamily: "'Inter',sans-serif", margin: "0 0 14px" }}>{errMsg}</p>}
+              <div style={{ display: "flex", gap: 12 }}>
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={handleLookup}
+                  disabled={loading || !lastName.trim() || phoneLast4.length !== 4}
+                  style={{
+                    flex: 1, ...GW.btn(), minHeight: 54, fontSize: "clamp(11px,1.5vw,13px)",
+                    letterSpacing: "0.28em",
+                    opacity: (!lastName.trim() || phoneLast4.length !== 4) ? 0.45 : 1,
+                    cursor: (!lastName.trim() || phoneLast4.length !== 4) ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {loading ? "SEARCHING\u2026" : "CONFIRM IDENTITY"}
+                </motion.button>
+                <button
+                  onClick={() => { setDrawerOpen(false); setErrMsg(null); setLastName(""); setPhoneLast4(""); }}
+                  style={{
+                    background: "transparent", border: "1px solid rgba(212,175,55,0.28)",
+                    color: "rgba(212,175,55,0.55)", padding: "14px 22px", borderRadius: 4,
+                    fontSize: 11, fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase" as const,
+                    cursor: "pointer", fontFamily: "'Inter',sans-serif",
+                  }}
+                >CANCEL</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -3960,7 +4192,7 @@ export default function MasterBlender() {
   const { guestProfile, evolveMastery } = useGuestProfile();
 
   // ── Gateway state ────────────────────────────────────────────────────────
-  const [gateway,        setGateway]        = useState<GatewayPhase>("intro");
+  const [gateway,        setGateway]        = useState<GatewayPhase>("cockpit");
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
   const [selectedSeed,   setSelectedSeed]   = useState<string | null>(null);
   const [selectedSoil,    setSelectedSoil]    = useState<string | null>(null);
@@ -3974,7 +4206,6 @@ export default function MasterBlender() {
   const [smokeSlider, setSmokeSlider] = useState(50);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [txId,         setTxId]         = useState<string | null>(null);
-  const [loyaltyDone,  setLoyaltyDone]  = useState(false);
   const [primingVolado,   setPrimingVolado]   = useState(30);
   const [primingSecoViso, setPrimingSecoViso] = useState(50);
   const [primingLigero,   setPrimingLigero]   = useState(20);
@@ -3990,7 +4221,7 @@ export default function MasterBlender() {
   // Also wipes all legacy localStorage/sessionStorage keys so no prior session
   // can surface a returning-user state or bypass the gateway intro.
   useLayoutEffect(() => {
-    setGateway("intro");
+    setGateway("cockpit");
     setStep(0 as 0);
     setSel({});
     setReveal(false);
@@ -4154,28 +4385,23 @@ export default function MasterBlender() {
     "The Final Cut",
   ];
 
-  // ── Loyalty Gateway — pre-session return-visit checkpoint ──────────────
-  if (!loyaltyDone) {
-    return (
-      <LoyaltyGateway
-        onNewGuest={() => setLoyaltyDone(true)}
-        onStartSession={(seedXp) => {
-          setXp(seedXp);
-          setGateway("blending");
-          setLoyaltyDone(true);
-        }}
-      />
-    );
-  }
+
 
   return (
     <div
       className="fixed inset-0 flex flex-col overflow-hidden"
       style={{ background: "#000000", fontFamily: "'Inter',sans-serif" }}
     >
+      {/* ── Cockpit — solid top-layer portal, rendered independently ── */}
+      {gateway === "cockpit" && (
+        <div style={{ position: "fixed", inset: 0, background: "#000000", zIndex: 99998, display: "flex", flexDirection: "column" }}>
+          <CockpitIdleView onSmokeCraft={() => setGateway("intro")} />
+        </div>
+      )}
+
       {/* ── Gateway overlay (intro → orientation → mentor → cultivation) ── */}
       <AnimatePresence mode="wait">
-        {gateway !== "blending" && (
+        {gateway !== "blending" && gateway !== "cockpit" && (
           <motion.div
             key="gateway-overlay"
             className="absolute inset-0 z-[9995] overflow-y-auto"
@@ -4186,7 +4412,12 @@ export default function MasterBlender() {
           >
             <AnimatePresence mode="wait">
               {gateway === "intro" && (
-                <GatewayIntro key="intro" onNext={() => setGateway("orientation")} />
+                <GatewayIntro
+                  key="intro"
+                  onEnterNew={() => setGateway("orientation")}
+                  onBack={() => setGateway("cockpit")}
+                  onStartSession={(seedXp) => { setXp(seedXp); setGateway("blending"); }}
+                />
               )}
               {gateway === "orientation" && (
                 <GatewayOrientation
