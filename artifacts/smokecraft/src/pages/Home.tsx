@@ -1167,14 +1167,6 @@ export default function Home() {
           boxShadow: "0 6px 24px rgba(26,26,27,0.14)",
           transition: "transform 250ms ease, opacity 250ms ease, border-color 250ms ease",
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "translateY(-1px)";
-          e.currentTarget.style.borderColor = "rgba(212,139,0,0.55)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.borderColor = "rgba(212,139,0,0.28)";
-        }}
       >
         <ArrowLeft size={12} />
         Experience Hub
@@ -1961,8 +1953,6 @@ export default function Home() {
                 <a href="/dashboard"
                   className="text-[8px] uppercase tracking-[0.22em] transition-colors duration-200"
                   style={{ color: "rgba(107,94,78,0.25)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.45)")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(107,94,78,0.25)")}
                 >
                   Partner Dashboard
                 </a>
@@ -2381,8 +2371,7 @@ export default function Home() {
                 <button data-testid="btn-start-over" onClick={handleStartOver}
                   className="inline-flex items-center gap-2.5 text-xs uppercase tracking-[0.25em] group transition-all duration-300"
                   style={{ color: "rgba(107,94,78,0.40)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.7)")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(107,94,78,0.40)")}>
+                  >
                   <RotateCcw size={13} className="group-hover:-rotate-90 transition-transform duration-500" />
                   {isDemoMode ? "Exit Demo" : "Begin Anew"}
                 </button>

@@ -203,19 +203,17 @@ function LiveFeed() {
 // ── Mode card ─────────────────────────────────────────────────────────────────
 
 function ModeCard({ mode, onClick }: { mode: typeof MODES[number]; onClick: () => void }) {
-  const [hovered, setHovered] = useState(false);
   const Icon = mode.icon;
   return (
     <motion.button
-      whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
       style={{
-        background: hovered ? `${mode.color}0d` : T.card,
-        border: `1px solid ${hovered ? mode.color + "55" : T.border}`,
+        background: T.card,
+        border: `1px solid ${T.border}`,
         borderRadius: 13, padding: "18px 18px", cursor: "pointer", textAlign: "left",
         transition: "all 0.2s", width: "100%",
-        boxShadow: hovered ? `0 0 20px ${mode.color}15` : "none",
+        boxShadow: "none",
       }}
     >
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
@@ -231,9 +229,9 @@ function ModeCard({ mode, onClick }: { mode: typeof MODES[number]; onClick: () =
           <div style={{ fontSize: 9, color: mode.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>{mode.subtitle}</div>
           <div style={{ fontSize: 11, color: T.muted, lineHeight: 1.55 }}>{mode.desc}</div>
         </div>
-        <motion.div animate={{ x: hovered ? 3 : 0 }} style={{ color: mode.color, paddingTop: 2 }}>
+        <div style={{ color: mode.color, paddingTop: 2 }}>
           <Play size={12} />
-        </motion.div>
+        </div>
       </div>
     </motion.button>
   );

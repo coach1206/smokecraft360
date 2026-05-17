@@ -236,9 +236,7 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, craftType = "s
                   </p>
                 </div>
                 <button onClick={onClose} className="p-2 rounded-full transition-colors duration-200"
-                  style={{ background: "rgba(26,26,27,0.06)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.10)")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.06)")}>
+                  style={{ background: "rgba(26,26,27,0.06)" }}>
                   <X size={16} style={{ color: "rgba(107,94,78,0.52)" }} />
                 </button>
               </div>

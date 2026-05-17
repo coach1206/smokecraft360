@@ -295,8 +295,6 @@ function OperationsView() {
             fontSize: 11, fontWeight: 600, color: T.muted,
             transition: "border-color 0.15s, color 0.15s",
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(212,139,0,0.35)"; (e.currentTarget as HTMLElement).style.color = "#1A1A1B"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = T.border; (e.currentTarget as HTMLElement).style.color = T.muted; }}
         >
           <ExternalLink size={12} />
           Open Full Operations Module

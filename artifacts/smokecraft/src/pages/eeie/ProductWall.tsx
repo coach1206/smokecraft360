@@ -240,8 +240,6 @@ export function ProductWallTab({ T }: Props) {
                     <img
                       src={p.image} alt={p.name}
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.4s" }}
-                      onMouseEnter={e => { (e.target as HTMLImageElement).style.transform = "scale(1.06)"; }}
-                      onMouseLeave={e => { (e.target as HTMLImageElement).style.transform = "scale(1)"; }}
                       onError={(e) => {
                         const img = e.target as HTMLImageElement;
                         img.style.display = "none";

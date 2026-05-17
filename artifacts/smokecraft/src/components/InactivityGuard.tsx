@@ -229,7 +229,6 @@ export default function InactivityGuard() {
               <motion.button
                 whileHover={{ scale: 1.02, boxShadow: "0 0 28px rgba(212,175,55,0.28)" }}
                 whileTap={{   scale: 0.96, y: 2, boxShadow: "inset 0px 4px 12px rgba(0,0,0,0.80)" }}
-                onMouseDown={handleDismissWarning}
                 onTouchStart={handleDismissWarning}
                 style={{
                   width:        "100%",
@@ -255,7 +254,6 @@ export default function InactivityGuard() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{   scale: 0.96, y: 2, boxShadow: "inset 0px 4px 12px rgba(0,0,0,0.80)" }}
-                onMouseDown={handleNewExperience}
                 onTouchStart={handleNewExperience}
                 style={{
                   width:        "100%",

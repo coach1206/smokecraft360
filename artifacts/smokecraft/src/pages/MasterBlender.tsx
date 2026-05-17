@@ -519,7 +519,6 @@ function SelectionCard<T extends { id: string; label: string; sub?: string; desc
   return (
     <motion.button
       onClick={onClick}
-      onMouseDown={() => playClick()}
       onTouchStart={() => playClick()}
       whileTap={{ scale: 0.96, y: 2, boxShadow: "inset 0px 4px 12px rgba(0,0,0,0.90), 0 0 0 1px rgba(212,175,55,0.30)" }}
       whileHover={{ scale: 1.04, y: -4 }}
@@ -858,7 +857,6 @@ function GatewayIntro({ onNext }: { onNext: () => void }) {
               letterSpacing: "0.36em",
               boxShadow: "0 0 28px rgba(212,175,55,0.24), inset 0 1px 0 rgba(255,255,255,0.08)",
             }}
-            onMouseDown={() => playClick()}
             onTouchStart={() => playClick()}
             onClick={onNext}
           >
@@ -880,17 +878,9 @@ function GatewayIntro({ onNext }: { onNext: () => void }) {
               fontFamily: "'Inter',sans-serif",
               transition: "all 0.25s ease",
             }}
-            onMouseDown={() => playClick()}
             onTouchStart={() => playClick()}
             onClick={() => window.location.assign("/novee/")}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = "rgba(212,175,55,0.85)";
-              e.currentTarget.style.color = "rgba(212,175,55,1)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = "rgba(212,175,55,0.50)";
-              e.currentTarget.style.color = "rgba(212,175,55,0.82)";
-            }}
+
           >
             BACK
           </button>
@@ -1465,7 +1455,7 @@ function GatewayTerroir({ onNext, onBack, onCountrySelect }: {
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
           <button
             style={GW.btn(true)}
-            onMouseDown={() => playClick()}
+            onTouchStart={() => playClick()}
             onClick={onBack}
           >
             Back
@@ -1475,7 +1465,7 @@ function GatewayTerroir({ onNext, onBack, onCountrySelect }: {
               ...GW.btn(!selectedRegion),
               ...(selectedRegion ? {} : { opacity: 0.45, cursor: "not-allowed" }),
             }}
-            onMouseDown={() => selectedRegion && playClick()}
+            onTouchStart={() => selectedRegion && playClick()}
             whileHover={selectedRegion ? { scale: 1.03 } : {}}
             whileTap={selectedRegion ? { scale: 0.97, y: 2 } : {}}
             onClick={() => { if (!selectedRegion) return; onCountrySelect?.(selectedRegion); onNext(); }}
@@ -1619,14 +1609,14 @@ function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: ()
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
           <button
             style={GW.btn(true)}
-            onMouseDown={() => playClick()}
+            onTouchStart={() => playClick()}
             onClick={onBack}
           >
             Back
           </button>
           <motion.button
             style={GW.btn()}
-            onMouseDown={() => playClick()}
+            onTouchStart={() => playClick()}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97, y: 2 }}
             onClick={onNext}
@@ -2053,7 +2043,7 @@ function GatewayHarvest({ onNext, onBack }: { onNext: () => void; onBack: () => 
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-          <button style={GW.btn(true)} onMouseDown={() => playClick()} onClick={onBack}>Back</button>
+          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <ReadTimer seconds={45} onReady={() => setReadyToAdvance(true)} />
             <motion.button
@@ -2061,7 +2051,7 @@ function GatewayHarvest({ onNext, onBack }: { onNext: () => void; onBack: () => 
                 ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
               whileHover={readyToAdvance ? { scale: 1.03 } : {}}
               whileTap={readyToAdvance ? { scale: 0.97 } : {}}
-              onMouseDown={() => readyToAdvance && playClick()}
+              onTouchStart={() => readyToAdvance && playClick()}
               onClick={() => readyToAdvance && onNext()}>
               {readyToAdvance ? "Curing Barn →" : "Reading…"}
             </motion.button>
@@ -2177,7 +2167,7 @@ function GatewayCuring({ onNext, onBack }: { onNext: () => void; onBack: () => v
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-          <button style={GW.btn(true)} onMouseDown={() => playClick()} onClick={onBack}>Back</button>
+          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <ReadTimer seconds={50} onReady={() => setReadyToAdvance(true)} />
             <motion.button
@@ -2185,7 +2175,7 @@ function GatewayCuring({ onNext, onBack }: { onNext: () => void; onBack: () => v
                 ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
               whileHover={readyToAdvance ? { scale: 1.03 } : {}}
               whileTap={readyToAdvance ? { scale: 0.97 } : {}}
-              onMouseDown={() => readyToAdvance && playClick()}
+              onTouchStart={() => readyToAdvance && playClick()}
               onClick={() => readyToAdvance && onNext()}>
               {readyToAdvance ? "Rolling Bench →" : "Reading…"}
             </motion.button>
@@ -2302,7 +2292,7 @@ function GatewayRollingBench({ onNext, onBack }: { onNext: () => void; onBack: (
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-          <button style={GW.btn(true)} onMouseDown={() => playClick()} onClick={onBack}>Back</button>
+          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <ReadTimer seconds={55} onReady={() => setReadyToAdvance(true)} />
             <motion.button
@@ -2310,7 +2300,7 @@ function GatewayRollingBench({ onNext, onBack }: { onNext: () => void; onBack: (
                 ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
               whileHover={readyToAdvance ? { scale: 1.03 } : {}}
               whileTap={readyToAdvance ? { scale: 0.97 } : {}}
-              onMouseDown={() => readyToAdvance && playClick()}
+              onTouchStart={() => readyToAdvance && playClick()}
               onClick={() => readyToAdvance && onNext()}>
               {readyToAdvance ? "Vitola Science →" : "Reading…"}
             </motion.button>
@@ -2435,7 +2425,7 @@ function GatewayVitolaScience({ onNext, onBack }: { onNext: () => void; onBack: 
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-          <button style={GW.btn(true)} onMouseDown={() => playClick()} onClick={onBack}>Back</button>
+          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <ReadTimer seconds={50} onReady={() => setReadyToAdvance(true)} />
             <motion.button
@@ -2447,7 +2437,7 @@ function GatewayVitolaScience({ onNext, onBack }: { onNext: () => void; onBack: 
               }}
               whileHover={readyToAdvance ? { scale: 1.03 } : {}}
               whileTap={readyToAdvance ? { scale: 0.97 } : {}}
-              onMouseDown={() => readyToAdvance && playClick()}
+              onTouchStart={() => readyToAdvance && playClick()}
               onClick={() => readyToAdvance && onNext()}>
               {readyToAdvance ? "★ Enter The Blending Chamber" : "Reading…"}
             </motion.button>

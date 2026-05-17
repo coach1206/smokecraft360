@@ -49,14 +49,6 @@ export function MoodDiscovery({ accent = "#D48B00", onSelect }: Props) {
             WebkitBackdropFilter: "blur(12px)",
             transition: "background 0.3s, border-color 0.3s",
           }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = `${accent}25`;
-            (e.currentTarget as HTMLButtonElement).style.borderColor = `${accent}60`;
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = "rgba(245,242,237,0.08)";
-            (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(245,242,237,0.15)";
-          }}
         >
           {mood}
         </motion.button>

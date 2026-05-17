@@ -344,8 +344,6 @@ export default function AICoach({
                   color:        "#1A1A1B",
                   transition:   "background 0.15s",
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${accentColor}20`; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = `${accentColor}0d`; }}
               >
                 <span style={{
                   fontSize:      10,

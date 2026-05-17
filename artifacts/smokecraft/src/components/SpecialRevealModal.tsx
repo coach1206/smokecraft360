@@ -280,8 +280,6 @@ export default function SpecialRevealModal({ item, onClose, onAddToDraft }: Spec
                 boxShadow: "0 4px 20px rgba(212,139,0,0.35)",
                 transition: "transform 0.15s, box-shadow 0.15s",
               }}
-              onMouseOver={e => { (e.target as HTMLButtonElement).style.transform = "translateY(-1px)"; }}
-              onMouseOut={e => { (e.target as HTMLButtonElement).style.transform = ""; }}
             >
               {ctaText}
             </button>

@@ -204,8 +204,6 @@ export default function WelcomeEEIE() {
                 transition: "background 0.10s",
                 boxShadow: k !== null ? "inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3)" : "none",
               }}
-              onMouseEnter={e => { if (k !== null) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; }}
-              onMouseLeave={e => { if (k !== null) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; }}
             >
               {k ?? ""}
             </motion.button>
@@ -223,8 +221,6 @@ export default function WelcomeEEIE() {
             fontFamily: "'Orbitron',sans-serif", letterSpacing: "0.16em",
             cursor: "pointer", transition: "background 0.14s",
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,212,255,0.15)")}
-          onMouseLeave={e => (e.currentTarget.style.background = "rgba(0,212,255,0.09)")}
         >
           ENTER NEW SESSION
         </motion.button>

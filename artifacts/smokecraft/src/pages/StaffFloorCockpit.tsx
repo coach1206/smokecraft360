@@ -576,8 +576,6 @@ function ActionBtn({ label, onClick, color }: { label: string; onClick: () => vo
         transition:    "background 0.2s",
         whiteSpace:    "nowrap",
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = `${color}28`)}
-      onMouseLeave={e => (e.currentTarget.style.background = `${color}14`)}
     >
       {label}
     </button>

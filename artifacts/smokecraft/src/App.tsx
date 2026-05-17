@@ -432,8 +432,6 @@ function PhaseEnvironment({
       }}>
         {HOVER_CRAFTS.map(craft => (
           <div key={craft}
-            onMouseEnter={() => startDwell(craft)}
-            onMouseLeave={cancelDwell}
             onTouchStart={() => startDwell(craft)}
             onTouchEnd={cancelDwell}
             style={{ position: 'relative', cursor: 'none' }}
@@ -457,8 +455,6 @@ function PhaseEnvironment({
 
       {/* EEIS hidden trigger — long-press on left panel area */}
       <div
-        onMouseDown={startEEIS}
-        onMouseUp={cancelEEIS}
         onTouchStart={startEEIS}
         onTouchEnd={cancelEEIS}
         style={{
@@ -632,8 +628,6 @@ function PhaseEEIS({ onExit }: { onExit: () => void }) {
                 color: n.color, cursor: 'pointer',
                 transition: 'background 0.15s, border-color 0.15s',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${n.color}18`; (e.currentTarget as HTMLButtonElement).style.borderColor = n.color; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = `${n.color}55`; }}
             >
               {n.label}
             </button>

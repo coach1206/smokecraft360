@@ -74,8 +74,6 @@ function BulletCard({ bullet, index }: { bullet: Bullet; index: number }) {
       initial={{ opacity: 0, x: -24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: bullet.delay, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       onTouchStart={() => setHovered(true)}
       onTouchEnd={() => setHovered(false)}
       style={{

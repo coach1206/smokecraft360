@@ -263,7 +263,7 @@ export default function LoyaltyGateway({ onNewGuest, onStartSession }: Props) {
         alignItems:     "center",
         justifyContent: "center",
         minHeight:      "100vh",
-        padding:        "40px 24px",
+        padding:        "max(40px, env(safe-area-inset-top, 40px)) 24px max(40px, env(safe-area-inset-bottom, 40px))",
         position:       "relative",
         zIndex:         10,
       }}
@@ -484,7 +484,7 @@ export default function LoyaltyGateway({ onNewGuest, onStartSession }: Props) {
         alignItems:     "center",
         justifyContent: "center",
         minHeight:      "100vh",
-        padding:        "40px 24px",
+        padding:        "max(40px, env(safe-area-inset-top, 40px)) 24px max(40px, env(safe-area-inset-bottom, 40px))",
         position:       "relative",
         zIndex:         10,
       }}

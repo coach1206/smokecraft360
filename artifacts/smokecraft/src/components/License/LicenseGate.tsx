@@ -108,8 +108,6 @@ export function LicenseGate() {
                 border:     "1px solid rgba(255,255,255,0.35)",
                 color:      "rgba(255,250,240,0.98)",
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.28)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.17)"; }}
             >
               Fix Billing
             </button>

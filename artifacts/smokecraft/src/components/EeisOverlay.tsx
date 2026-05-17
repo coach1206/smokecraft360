@@ -605,9 +605,6 @@ export function HandoffTrigger() {
 
   return (
     <div
-      onMouseDown={e => startPress(e.clientX, e.clientY)}
-      onMouseUp={cancelPress}
-      onMouseLeave={cancelPress}
       onTouchStart={e => {
         const t = e.touches[0];
         startPress(t.clientX, t.clientY);

@@ -287,8 +287,6 @@ function EATModuleCard({ tile, index, onNav }: {
           whileTap={{ scale: 0.96 }}
           onClick={e => { e.stopPropagation(); onNav(tile.path); }}
           style={{ color: tile.accent, borderColor: `${tile.accent}50`, background: `${tile.accent}12` }}
-          onMouseEnter={e => { const b = e.currentTarget; b.style.background = `${tile.accent}22`; b.style.borderColor = `${tile.accent}70`; }}
-          onMouseLeave={e => { const b = e.currentTarget; b.style.background = `${tile.accent}12`; b.style.borderColor = `${tile.accent}50`; }}
         >
           ENTER MODULE <ArrowRight size={13} />
         </motion.button>
@@ -417,8 +415,6 @@ function XPortNodeCard({ index, onConfigured, onStream }: {
             disabled={!portId.trim() || !relayUrl.trim()}
             className="eat-btn-primary"
             style={{ fontFamily: C.header, fontSize: "0.62rem", letterSpacing: "0.20em", padding: "11px 0", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, color: C.amberHi, borderColor: `${C.amberHi}50`, background: `${C.amberHi}12`, opacity: (!portId.trim() || !relayUrl.trim()) ? 0.45 : 1 }}
-            onMouseEnter={e => { if (portId.trim() && relayUrl.trim()) (e.currentTarget as HTMLButtonElement).style.background = `${C.amberHi}22`; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = `${C.amberHi}12`; }}
           >
             <Zap size={11} /> CONFIGURE PORT
           </button>
@@ -810,8 +806,6 @@ export default function TitanEATHub() {
                 letterSpacing: "0.30em", color: C.redHi, cursor: "pointer", textTransform: "uppercase",
                 transition: "background 0.18s",
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.18)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
             >
               RELEASE HUB
             </motion.button>
@@ -872,14 +866,10 @@ export default function TitanEATHub() {
 
           <motion.button whileTap={{ scale: 0.93 }} onClick={() => handleNav("/eeie-command")}
             style={{ padding: "8px 16px", borderRadius: 9, background: "rgba(46,91,255,0.10)", border: "1px solid rgba(46,91,255,0.28)", color: C.cobaltHi, fontFamily: C.header, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", cursor: "pointer", textTransform: "uppercase" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(46,91,255,0.22)"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(46,91,255,0.10)"; }}
           >EEIE HUB</motion.button>
 
           <motion.button whileTap={{ scale: 0.91 }} onClick={() => doExit()}
             style={{ padding: "8px 16px", borderRadius: 9, background: "rgba(46,91,255,0.08)", border: "1px solid rgba(46,91,255,0.20)", color: `${C.cobaltHi}BB`, fontFamily: C.header, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", cursor: "pointer", textTransform: "uppercase" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(46,91,255,0.18)"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(46,91,255,0.08)"; }}
           >SECURE EXIT</motion.button>
         </div>
       </div>
@@ -1044,8 +1034,6 @@ export default function TitanEATHub() {
                   <button
                     onClick={handleLockdown}
                     style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "12px 0", borderRadius: 10, width: "100%", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.28)", fontFamily: C.header, fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.20em", color: C.redHi, cursor: "pointer", transition: "background 0.18s" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.18)"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
                   >
                     <AlertTriangle size={12} /> EMERGENCY LOCKDOWN
                   </button>
@@ -1168,8 +1156,6 @@ export default function TitanEATHub() {
                     transition: "background 0.18s", textTransform: "uppercase",
                     opacity: (!sectorDeviceId.trim() || !sectorCurrentSector.trim()) ? 0.45 : 1,
                   }}
-                  onMouseEnter={e => { if (sectorDeviceId.trim() && sectorCurrentSector.trim()) (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.18)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
                 >
                   <MapPin size={12} /> VERIFY PROXIMITY
                 </button>
@@ -1236,8 +1222,6 @@ export default function TitanEATHub() {
                     letterSpacing: "0.20em", color: C.cobaltHi, cursor: "pointer",
                     opacity: !hzDeviceId.trim() ? 0.45 : 1, textTransform: "uppercase",
                   }}
-                  onMouseEnter={e => { if (hzDeviceId.trim()) (e.currentTarget as HTMLButtonElement).style.background = "rgba(46,91,255,0.20)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(46,91,255,0.10)"; }}
                 >
                   <Link2 size={11} /> BIND DEVICE TO ZONE
                 </button>
@@ -1298,8 +1282,6 @@ export default function TitanEATHub() {
                   cursor: "pointer", opacity: !hbDeviceId.trim() ? 0.45 : 1,
                   flexShrink: 0, textTransform: "uppercase",
                 }}
-                onMouseEnter={e => { if (hbDeviceId.trim()) (e.currentTarget as HTMLButtonElement).style.opacity = "0.80"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = hbDeviceId.trim() ? "1" : "0.45"; }}
               >
                 {hbActive ? <><RefreshCw size={11} style={{ animation: "spin 2s linear infinite" }} /> STOP MONITOR</> : <><Activity size={11} /> START MONITOR</>}
               </button>

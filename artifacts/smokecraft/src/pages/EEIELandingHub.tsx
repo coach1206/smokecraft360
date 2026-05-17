@@ -664,8 +664,6 @@ function EEIEModuleCard({
         boxShadow: `0 4px 32px rgba(0,0,0,0.50), 0 0 0 1px ${tile.accent}18, inset 0 1px 0 rgba(255,255,255,0.08)`,
         backdropFilter: "blur(14px)",
       }}
-      onMouseEnter={e => (e.currentTarget.style.borderColor = `${tile.accent}45`)}
-      onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
     >
       {/* Top edge shimmer */}
       <div style={{
@@ -737,14 +735,6 @@ function EEIEModuleCard({
             fontSize: 10, fontWeight: 700, letterSpacing: "0.18em",
             cursor: "pointer", fontFamily: "'Orbitron',sans-serif",
             transition: "background 0.18s, border-color 0.18s",
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = `${tile.accent}30`;
-            (e.currentTarget as HTMLButtonElement).style.borderColor = `${tile.accent}70`;
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = `${tile.accent}18`;
-            (e.currentTarget as HTMLButtonElement).style.borderColor = `${tile.accent}42`;
           }}
         >
           ENTER MODULE <ArrowRight size={13} />
@@ -832,8 +822,6 @@ export default function EEIELandingHub() {
             fontWeight: 700,
             textShadow: "0 0 12px rgba(0,212,255,0.45)",
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,212,255,0.13)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,212,255,0.06)"; }}
         >
           <ChevronLeft size={14} /> ESC // RETURN
         </motion.button>
@@ -877,8 +865,6 @@ export default function EEIELandingHub() {
               color: C.silver, fontSize: 11, fontWeight: 600,
               letterSpacing: "0.10em", cursor: "pointer", fontFamily: "'Inter',sans-serif",
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${C.blue}1A`; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = `${C.blue}0C`; }}
           >
             SOVEREIGN HUB
           </motion.button>
@@ -896,14 +882,6 @@ export default function EEIELandingHub() {
               letterSpacing: "0.14em", cursor: "pointer",
               fontFamily: "'Orbitron',sans-serif",
               transition: "background 0.14s, border-color 0.14s",
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,212,255,0.15)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,212,255,0.40)";
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,212,255,0.08)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,212,255,0.22)";
             }}
           >
             SECURE EXIT

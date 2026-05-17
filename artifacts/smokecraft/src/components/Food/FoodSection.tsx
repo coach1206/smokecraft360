@@ -80,14 +80,6 @@ function FoodCard({
         boxShadow:  "0 4px 20px rgba(26,26,27,0.06)",
         backdropFilter: "blur(8px)",
       }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = meta.color.replace("0.75", "0.3");
-        (e.currentTarget as HTMLElement).style.boxShadow  = `0 8px 32px rgba(26,26,27,0.10), 0 0 0 1px ${meta.color.replace("0.75", "0.15")}`;
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = "rgba(26,26,27,0.09)";
-        (e.currentTarget as HTMLElement).style.boxShadow  = "0 4px 20px rgba(26,26,27,0.06)";
-      }}
     >
       {/* Rank glow for top pick */}
       {rank === 0 && (

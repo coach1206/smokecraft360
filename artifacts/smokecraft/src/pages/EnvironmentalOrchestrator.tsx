@@ -586,8 +586,6 @@ function AtmosphericZone({
     <motion.div
       animate={{ scale, opacity, filter: blur }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={startDwell}
-      onMouseLeave={cancelDwell}
       onTouchStart={startDwell}
       onTouchEnd={cancelDwell}
       style={{

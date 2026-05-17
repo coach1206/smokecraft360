@@ -405,6 +405,31 @@ a {
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── iOS Safari: prevent keyboard-triggered viewport zoom ────────────────── */
+/* iOS 10+ ignores user-scalable=no for accessibility. Any focused input with  */
+/* font-size < 16px causes the viewport to zoom in. Override every inline      */
+/* React style with !important so no component can accidentally drop below 16. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* ── Safe-area-inset utilities (iPad Pro notch / home indicator) ─────────── */
+/* Usage: add pb-safe / pt-safe to any fixed container near a screen edge.    */
+:root {
+  --sat: env(safe-area-inset-top,    0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left,   0px);
+  --sar: env(safe-area-inset-right,  0px);
+}
+.pb-safe  { padding-bottom: var(--sab) !important; }
+.pt-safe  { padding-top:    var(--sat) !important; }
+.mb-safe  { margin-bottom:  var(--sab) !important; }
+/* Combined: existing bottom padding + safe-area — min 24px so it always shows */
+.pb-safe-add-6  { padding-bottom: max(24px, var(--sab)) !important; }
+.pb-safe-add-10 { padding-bottom: max(40px, var(--sab)) !important; }
+
 /* ── Haptic Visual Ripple ─────────────────────────────────────────────────── */
 /* Apply .ax-haptic to any interactive element for a tactile press burst.     */
 

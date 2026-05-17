@@ -187,12 +187,6 @@ export default function UpgradeRequired() {
               transition: "opacity 0.15s",
               minHeight: 52,
             }}
-            onMouseEnter={e =>
-              ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.88")
-            }
-            onMouseLeave={e =>
-              ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")
-            }
           >
             <Mail size={15} strokeWidth={2} />
             Contact Us to Upgrade
@@ -216,12 +210,6 @@ export default function UpgradeRequired() {
               minHeight: 52,
               transition: "color 0.15s",
             }}
-            onMouseEnter={e =>
-              ((e.currentTarget as HTMLButtonElement).style.color = C.text)
-            }
-            onMouseLeave={e =>
-              ((e.currentTarget as HTMLButtonElement).style.color = C.muted)
-            }
           >
             <ArrowLeft size={15} strokeWidth={2} />
             Back to Dashboard

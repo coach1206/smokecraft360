@@ -187,8 +187,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
               <a href="/" className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] transition-colors duration-200"
                 style={{ color: "rgba(107,94,78,0.45)" }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.75)")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(107,94,78,0.45)")}>
+                >
                 <ArrowLeft size={11} />SmokeCraft
               </a>
             </motion.div>

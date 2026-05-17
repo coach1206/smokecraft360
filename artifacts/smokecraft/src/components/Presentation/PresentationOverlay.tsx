@@ -243,8 +243,6 @@ export function PresentationOverlay() {
                       onClick={exit}
                       className="p-1.5 rounded-full transition-colors duration-200"
                       style={{ background: "rgba(26,26,27,0.06)" }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.11)")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.06)")}
                       title="Exit Presentation"
                     >
                       <X size={12} style={{ color: "rgba(107,94,78,0.52)" }} />
@@ -374,8 +372,6 @@ export function PresentationOverlay() {
                       onClick={exit}
                       className="text-[9px] uppercase tracking-[0.2em] transition-colors duration-200"
                       style={{ color: "rgba(107,94,78,0.30)" }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.55)")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(107,94,78,0.30)")}
                     >
                       Exit Presentation
                     </button>

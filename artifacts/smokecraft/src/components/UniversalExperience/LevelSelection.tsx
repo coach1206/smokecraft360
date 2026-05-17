@@ -204,8 +204,6 @@ export function LevelSelection({ craftType, accent, onSelect, onBack }: Props) {
               animate={{ opacity: dimmed ? 0.28 : 1, x: 0 }}
               transition={{ delay: i * 0.07, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               whileTap={!tier.locked ? { scale: 0.96 } : {}}
-              onMouseEnter={() => setHoverId(tier.id)}
-              onMouseLeave={() => setHoverId(null)}
               onTouchStart={() => { if (!tier.locked) setHoverId(tier.id); }}
               onTouchEnd={() => setHoverId(null)}
               onClick={() => handleSelect(tier)}

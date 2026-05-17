@@ -309,8 +309,6 @@ function GlassButton({ label, sub, icon, accent, onClick, primary }: GlassButton
   return (
     <motion.button
       type="button"
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
       onTouchStart={() => setHov(true)}
       onTouchEnd={() => setHov(false)}
       whileTap={{ scale: 0.96 }}

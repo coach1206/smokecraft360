@@ -50,8 +50,10 @@ const INPUT_BASE: React.CSSProperties = {
   border: "1px solid rgba(212,139,0,0.18)",
   borderRadius: 8,
   color: "rgba(26,26,27,0.88)",
-  fontSize: 13,
-  padding: "10px 12px",
+  // 16px minimum: iOS Safari zooms on focus if font-size < 16px (ignores user-scalable=no)
+  fontSize: 16,
+  // 13px v-padding → ~44px touch height (16px line-height + 2×13px + 2px border)
+  padding: "13px 12px",
   outline: "none",
   fontFamily: "'Inter', 'SF Pro Display', sans-serif",
   transition: "border-color 0.15s, box-shadow 0.15s",

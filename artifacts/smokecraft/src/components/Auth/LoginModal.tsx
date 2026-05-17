@@ -81,8 +81,6 @@ export function LoginModal({ onClose, showClose = true }: LoginModalProps) {
             </div>
             {showClose && (
               <button onClick={onClose} className="p-1.5 rounded-lg transition-colors" style={{ color: "rgba(107,94,78,0.40)" }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.7)")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(107,94,78,0.40)")}
               >
                 <X size={16} />
               </button>
