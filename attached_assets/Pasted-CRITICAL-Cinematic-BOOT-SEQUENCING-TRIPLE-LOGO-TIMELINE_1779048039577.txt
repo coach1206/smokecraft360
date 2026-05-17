@@ -1,0 +1,23 @@
+CRITICAL Cinematic BOOT SEQUENCING, TRIPLE-LOGO TIMELINE, & ANTI-BLUR OVERRIDE: The initialization engine is running too fast and completely missing our brand identity progression. You must refactor App.tsx, SplashController.tsx, and all primary landing/routing hooks to implement an absolute, 4-stage sequential timeline using our three distinct high-premium logo assets. Verify 'tsc --noEmit' passes perfectly with exit code 0.
+
+1. GLOBAL VISUAL PHYSICS & ANTI-BLUR SAFEGUARDS
+   - Force all splash stages to render over a solid, pitch-black background configuration (#000000).
+   - Apply absolute hardware-acceleration properties to all three image container views ('transform: translate3d(0,0,0); will-change: transform, opacity; backface-visibility: hidden;') to eliminate the runtime transition blur completely.
+
+2. STAGE 1: PROFOUND INNOVATION SIGNATURE CORE
+   - Mount the 'Profound Innovation' logo centrally using a smooth, linear 1.5-second opacity fade-in.
+   - Programmatically freeze the state engine: enforce an immutable 3.5-second static hold timer (3500ms) on this layout.
+
+3. STAGE 2: NOVEE OS PLATFORM PORTAL
+   - At the conclusion of the 3.5s corporate hold, execute a controlled 2.0-second horizontal slide-and-dissolve animation to clear out corporate assets and shift the 'NOVEE OS' emblem and 'Intelligence That Elevates' signature into the center frame.
+   - Enforce a strict, un-bypassable 4.0-second static hold timer (4000ms) here to guarantee maximum brand prestige on the tablet glass.
+
+4. STAGE 3: CRAFTHUB GATEWAY OVERLAY (NEW INTEGRATION)
+   - Following the 4.0s OS portal hold, execute a 2.0-second smooth centered scale-zoom and fade transition to bring the heavily textured gold-and-iron 'CRAFTHUB - INTRO TO SMOKE CRAFT' emblem into central focus.
+   - Enforce an absolute 3.5-second static hold timer (3500ms) on this gateway step to firmly establish the platform's module hub framework.
+
+5. STAGE 4: STABILIZED LANDSCAPE COCKPIT REVEAL
+   - Immediately following the 3.5s CraftHub intro hold, execute our 1.9-second sensory dissolve to transition directly into the main cockpit.
+   - Force all 4 brand pillars to mount instantly into their fixed, symmetrical landscape grid (SmokeCraft 360 spanning 100% width on top; PourCraft 360, BeerCraft 360, and WineCraft 360 grouped side-by-side cleanly directly below it) with zero container layout shifts or delayed flex calculations.
+
+Execute this comprehensive triple-logo timing lock, anti-blur hardware styling pass, and stabilized cockpit reveal sequence now.
