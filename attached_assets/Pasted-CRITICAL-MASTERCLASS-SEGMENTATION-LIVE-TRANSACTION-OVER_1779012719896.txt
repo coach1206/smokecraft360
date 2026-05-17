@@ -1,0 +1,39 @@
+CRITICAL MASTERCLASS SEGMENTATION & LIVE TRANSACTION OVERRIDE: The system requires a complete structural alignment to lock down the 15-minute kiosk experience. Do not drop the user backwards into login gateways or return access stubs upon step finalization. You must implement high-engagement Movement Completion Summary Gates to celebrate progress, map scores, and display matching real-world venue inventory at the end of each section.
+
+Refactor MasterBlender.tsx, RitualStep.tsx, usePosIntegration.ts, and your step router components immediately to enforce this exact production specification:
+
+1. INTERACTIVE DESIGN FOR "THE PRIMING MATRIX":
+   - Step Header: Title must read exactly "The Priming Matrix". Sub-header text: "A master blend balances all three vertical primings of the tobacco plant to control burn, aroma, and raw power."
+   - Interaction: Delete any flat buttons forcing a single-choice select between Seco, Viso, and Ligero. Install an interactive, glassmorphic percentage ratio balancer (e.g., three synchronized multi-range sliders) allowing the user to blend the leaf profile:
+     * Volado (Bottom Tiers): Explicitly label that this priming regulates burn chemistry and combustion stability.
+     * Seco / Viso (Middle Tiers): Explicitly label that this priming dictates the aromatic flavor bloom.
+     * Ligero (Top Tiers): Explicitly label that this priming delivers raw nicotine strength, body, and heavy oil density.
+   - Core Logic: Enforce that collective slider inputs must total exactly 100% before the user can click "CONTINUE". Clean up any overlapping cards; tuck the technical "Bunching Protocol" and "Leaf Anatomy" data inside smooth, collapsible disclosure drawers underneath the sliders.
+
+2. INJECT MOVEMENT COMPLETION SUMMARY GATES (PREVENT GUEST KICK-BACK):
+   - Prevent the system from looping or kicking the user out to a login/enrollment screen after choices are locked.
+   - Install a mandatory, high-fidelity Celebration & Summary Gate immediately upon completing each of our 3 main movements:
+     * Movement I Gate (The Cultivation Crucible): Displays an elegant breakdown of the chosen origin country and seed lineage, flash-animates the accumulated points, and suggests an immediate real-world product available in the humidor.
+     * Movement II Gate (The Structural Integrity Summary): Renders a clean visual summary of the custom Volado/Seco/Ligero priming ratio, logs the terminal data, and locks in the movement achievement score.
+     * Movement III Gate (The Masterclass Verdict): Displays the finalized blend, cross-references total points against the running live "Nightly Lounge Average" from the database, and exposes the definitive custom luxury spirit pairing.
+
+3. HARDCODE THE LIVE VENUE POS, INVENTORY, & AUTOMATED PAIRING ENGINE:
+   - Establish live data transport loops straight to the venue's physical POS and humidor inventory tracking ledgers:
+     * As ratios or regions shift, dynamically query the humidor stock to suggest real items (e.g., Arturo Fuente Opus X for Dominican 🇩🇴; Padrón 1926 for Nicaraguan 🇳🇮) accompanied by authentic product imagery.
+     * Hardcode an automated premium sensory matrix for the bar items: Dominican profiles auto-suggest Aged Highland Single Malt Scotch or VSOP Cognac; Nicaraguan profiles auto-suggest Barrel-Proof Bourbon or Single-Barrel Añejo Rum; Ecuadorian profiles auto-suggest Japanese Whiskey or Refined Armagnac.
+     * Log terminal identifier and active blend telemetry to the management CommandCenter panel in real-time to allow floor staff to execute context-aware tableside upselling.
+
+4. 15-MINUTE PACED WORKFLOW INTERVALS & REAL-TIME TICKER:
+   - Structure the 14+ wizard steps into 3 distinct high-engagement movements with clear educational barriers that prevent passive rapid click-throughs:
+     * Movement I (Minutes 0–5): Origin, Heritage Seed Lines (Corojo/Criollo), and Soil Terroir (Potassium vs. Clay).
+     * Movement II (Minutes 5–10): The Priming Matrix, Harvest Tiers, Curing Barns, Fermentation Bulks, and the Rolling Bench.
+     * Movement III (Minutes 10–15): Vitola Gauge Science, Precision Cut Profiles (Straight/V-Cut/Punch), and Live Bar Spirit Harmonies.
+   - Live Points: Award +5 XP for perfect mentor-seed-soil matches, and drop a red -2 PTS penalty chip for conflicting inputs. Wire adjustments directly to the Web Audio API playClick() bandpass noise burst.
+   - Score Freeze: On final submission of Stage 14, freeze the engine data (`scoreFrozenRef.current = true`). Execute a live server aggregation query against the supply_verification_ledger table to calculate the real-time average score of all entries logged on the current date, displaying the user's final score directly alongside the 'Nightly Lounge Average' and their community placement tier.
+
+5. MIDNIGHT OBSIDIAN PALETTE & TOUCH SCREEN INTERACTIVE DYNAMICS:
+   - Permanently DELETE the following terms from all files: 'Sovereign Ritual', 'Phase 1', 'Phase 2', 'Legacy Assets', 'Precision Ritual', 'Commission Bespoke Physical Assets', 'Sovereign Roadmap', and 'baseline architecture'.
+   - Color Profile: Set canvas to an absolute black (#000000) base field with a 4% opacity centered gold overlay (#FFB000). Pull the HTML5 SmokeCanvas to z-index 9996 so organic smoke mist drifts cleanly across all text cards.
+   - Touch targets must be oversized with a warm, gold-tintED outer glow drop, utilizing a 100ms hardware tactility response: compression scale-96 and translate-y-[2px] on direct glass touch.
+
+Execute this comprehensive, 15-minute interactive ecosystem, completion gate framework, and POS-tracked blueprint now. Verify tsc --noEmit exits clean with code 0.
