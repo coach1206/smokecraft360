@@ -766,11 +766,11 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
       o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.08);
     } catch {}
   }
-  const crafts = [
-    { id: "smoke", label: "SmokeCraft",  sub: "The Craft of the Cigar",   active: true },
-    { id: "pour",  label: "PourCraft",   sub: "The Craft of the Pour",    active: false },
-    { id: "wine",  label: "WineCraft",   sub: "The Craft of the Vine",    active: false },
-    { id: "asset", label: "AssetCraft",  sub: "The Craft of the Moment",  active: false },
+  const crafts: { id: string; label: string; sub: string; active: boolean; img: string }[] = [
+    { id: "smoke", label: "SmokeCraft",  sub: "The Craft of the Cigar",   active: true,  img: "/images/scenes/smokecraft-card.jpg" },
+    { id: "pour",  label: "PourCraft",   sub: "The Craft of the Pour",    active: false, img: "/images/scenes/pourcraft-card.jpg" },
+    { id: "wine",  label: "WineCraft",   sub: "The Craft of the Vine",    active: false, img: "/images/scenes/brewcraft-card.jpg" },
+    { id: "asset", label: "AssetCraft",  sub: "The Craft of the Moment",  active: false, img: "/images/scenes/vapecraft-card.jpg" },
   ];
   return (
     <div
@@ -816,32 +816,49 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
             onTouchStart={() => c.active && playClick()}
             onClick={() => { if (c.active) { playClick(); onSmokeCraft(); } }}
             style={{
-              background: c.active
-                ? "linear-gradient(135deg, rgba(30,22,0,0.92) 0%, rgba(18,14,0,0.85) 100%)"
-                : "rgba(18,18,18,0.60)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: c.active ? "1px solid rgba(212,175,55,0.55)" : "1px solid rgba(255,255,255,0.07)",
+              border: c.active ? "1px solid rgba(212,175,55,0.60)" : "1px solid rgba(255,255,255,0.07)",
               borderRadius: 12,
-              padding: "32px 24px",
+              padding: 0,
               display: "flex", flexDirection: "column" as const, alignItems: "flex-start",
               cursor: c.active ? "pointer" : "default",
               textAlign: "left" as const,
-              boxShadow: c.active ? "0 0 28px rgba(212,175,55,0.14), inset 0 1px 0 rgba(255,255,255,0.06)" : "none",
-              opacity: c.active ? 1 : 0.38,
-              minHeight: 130,
+              boxShadow: c.active ? "0 0 32px rgba(212,175,55,0.18), inset 0 1px 0 rgba(255,255,255,0.06)" : "none",
+              minHeight: 160,
               position: "relative" as const,
               overflow: "hidden",
+              background: "transparent",
             }}
           >
-            <span style={{
-              position: "absolute", top: 12, right: 14,
-              fontSize: 8, fontWeight: 700, letterSpacing: "0.25em",
-              color: c.active ? "rgba(212,175,55,0.70)" : "rgba(255,255,255,0.28)",
-              fontFamily: "'Inter',sans-serif", textTransform: "uppercase" as const,
-            }}>{c.active ? "ACTIVE" : "COMING SOON"}</span>
-            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.3rem,2.2vw,1.65rem)", fontWeight: 400, color: c.active ? "#d4af37" : "rgba(255,255,255,0.35)", margin: "0 0 6px", letterSpacing: "0.04em" }}>{c.label}</p>
-            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, fontWeight: 400, color: c.active ? "rgba(255,252,245,0.55)" : "rgba(255,255,255,0.20)", margin: 0, letterSpacing: "0.14em", textTransform: "uppercase" as const }}>{c.sub}</p>
+            {/* Background image */}
+            <img
+              src={c.img}
+              alt={c.label}
+              style={{
+                position: "absolute", inset: 0,
+                width: "100%", height: "100%",
+                objectFit: "cover",
+                opacity: c.active ? 0.72 : 0.28,
+                filter: c.active ? "saturate(1.1) brightness(0.8)" : "saturate(0.3) brightness(0.55)",
+              }}
+            />
+            {/* Gradient overlay */}
+            <div style={{
+              position: "absolute", inset: 0,
+              background: c.active
+                ? "linear-gradient(160deg, rgba(14,10,0,0.55) 0%, rgba(5,3,0,0.78) 100%)"
+                : "linear-gradient(160deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.82) 100%)",
+            }} />
+            {/* Content */}
+            <div style={{ position: "relative", zIndex: 1, padding: "28px 24px", width: "100%" }}>
+              <span style={{
+                position: "absolute", top: 12, right: 16,
+                fontSize: 8, fontWeight: 700, letterSpacing: "0.25em",
+                color: c.active ? "rgba(212,175,55,0.80)" : "rgba(255,255,255,0.30)",
+                fontFamily: "'Inter',sans-serif", textTransform: "uppercase" as const,
+              }}>{c.active ? "ACTIVE" : "COMING SOON"}</span>
+              <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.4rem,2.4vw,1.8rem)", fontWeight: 400, color: c.active ? "#d4af37" : "rgba(255,255,255,0.38)", margin: "0 0 6px", letterSpacing: "0.04em" }}>{c.label}</p>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, fontWeight: 400, color: c.active ? "rgba(255,252,245,0.62)" : "rgba(255,255,255,0.22)", margin: 0, letterSpacing: "0.14em", textTransform: "uppercase" as const }}>{c.sub}</p>
+            </div>
           </motion.button>
         ))}
       </motion.div>
