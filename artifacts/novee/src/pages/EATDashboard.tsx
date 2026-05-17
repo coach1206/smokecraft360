@@ -18,6 +18,9 @@ import {
   PieChart, Pie,
 } from "recharts";
 import { apiFetch } from "@/lib/api";
+import { motion } from "framer-motion";
+import { AmbientEmberField } from "@/components/AmbientEmberField";
+import { usePremiumAudio } from "@/hooks/usePremiumAudio";
 
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
@@ -611,6 +614,7 @@ function deltaPercent(current: number, prior: number): number | null {
 
 export default function EATDashboard() {
   const [, navigate] = useLocation();
+  const { glassChime } = usePremiumAudio();
 
   const [userRole] = useState<string | null>(() => parseJwtRole());
 
@@ -852,7 +856,7 @@ export default function EATDashboard() {
     if (isInitial) setLoading(true);
     const compareParam = ce ? `&compareDays=${cd}` : "";
     apiFetch<TelemetrySummary>(`/telemetry/summary?days=${d}${compareParam}`)
-      .then((res) => { setData(res); setLastUpdated(new Date()); setStale(false); })
+      .then((res) => { setData(res); setLastUpdated(new Date()); setStale(false); glassChime(); })
       .catch(() => { if (!isInitial) setStale(true); else setData(EMPTY_SUMMARY); })
       .finally(() => { if (isInitial) setLoading(false); });
   }, [days, compareDays, compareEnabled]);
@@ -1042,15 +1046,10 @@ export default function EATDashboard() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0D0D0E", color: "#F5EDD8" }}>
+    <div style={{ minHeight: "100vh", background: "#0D0D0E", color: "#F5EDD8", position: "relative" }}>
 
-      {/* Ambient top glow */}
-      <div style={{
-        position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
-        width: "70%", height: 1,
-        background: "linear-gradient(90deg, transparent, rgba(196,97,10,0.5), transparent)",
-        zIndex: 10,
-      }} />
+      {/* Cinematic ambient field */}
+      <AmbientEmberField />
 
       {/* Header */}
       <header style={{

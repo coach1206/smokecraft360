@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 
 import { io, type Socket } from "socket.io-client";
 import { motion, AnimatePresence } from "framer-motion";
+import { AmbientEmberField } from "@/components/AmbientEmberField";
+import { usePremiumAudio } from "@/hooks/usePremiumAudio";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -219,6 +221,7 @@ function parseCCTabFromSearch(search: string): CCTab {
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function CommandCenter() {
+  const { chronographTick } = usePremiumAudio();
   const [venueId,   setVenueId]   = useState(DEMO_VENUE);
   const [connected, setConnected] = useState(false);
   const [tab,       setTabState]  = useState<CCTab>(() => parseCCTabFromSearch(window.location.search));
@@ -379,7 +382,8 @@ export default function CommandCenter() {
   }, []);
 
   return (
-    <div style={{ minHeight:"100vh", background:"#0D0D0E", fontFamily:"'Inter', sans-serif", padding:"0 0 60px", color:"#F5EDD8" }}>
+    <div style={{ minHeight:"100vh", background:"#0D0D0E", fontFamily:"'Inter', sans-serif", padding:"0 0 60px", color:"#F5EDD8", position:"relative" }}>
+      <AmbientEmberField />
       {/* Header */}
       <header className="novee-bezel novee-glow-top" style={{ padding:"0 28px", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
         <div>
@@ -405,43 +409,56 @@ export default function CommandCenter() {
           placeholder="Venue ID"
           onKeyDown={(e) => e.key === "Enter" && handleConnect()}
         />
-        <button onClick={handleConnect} className="novee-btn-primary">
+        <button onClick={() => { chronographTick(); handleConnect(); }} className="novee-btn-primary">
           CONNECT
         </button>
       </div>
 
       {/* Tabs */}
-      <div style={{ display:"flex", gap:2, padding:"16px 28px 0", borderBottom:"1px solid rgba(196,97,10,0.15)", overflowX:"auto" }}>
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        style={{ display:"flex", gap:2, padding:"16px 28px 0", borderBottom:"1px solid rgba(196,97,10,0.15)", overflowX:"auto" }}
+      >
         {CC_VALID_TABS.map(t => (
-          <button key={t} onClick={() => setTab(t)}
+          <button key={t} onClick={() => { chronographTick(); setTab(t); }}
             className={`novee-tab${tab===t ? " active" : ""}`}>
             {t}
           </button>
         ))}
-      </div>
+      </motion.div>
 
       <div style={{ padding:"20px 28px", display:"flex", flexDirection:"column", gap:16 }}>
         {/* ── Overview Tab ── */}
         {tab === "overview" && (
-          <>
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{ visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } } }}
+            style={{ display:"flex", flexDirection:"column", gap:16 }}
+          >
             {/* Score rings */}
+            <motion.div variants={{ hidden: { opacity:0, y:20 }, visible: { opacity:1, y:0, transition:{ duration:0.5, ease:[0.16,1,0.3,1] } } }}>
             <Panel title="Intelligence Scores">
               <div style={{ display:"flex", gap:20, flexWrap:"wrap", justifyContent:"space-around" }}>
                 <ScoreRing value={intelligence.overallScore}    label="Overall"/>
                 <ScoreRing value={intelligence.engagementLevel} label="Engagement"/>
                 <ScoreRing value={intelligence.socialEnergy}    label="Social"/>
                 <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
-                  <span style={{ fontSize:36, fontWeight:700, color:"#1A1A1B" }}>{intelligence.activeGuests}</span>
-                  <span style={{ fontSize:11, color:"#6B5E4E", letterSpacing:"0.05em" }}>ACTIVE GUESTS</span>
+                  <span style={{ fontSize:36, fontWeight:700, color:"#F5EDD8" }}>{intelligence.activeGuests}</span>
+                  <span style={{ fontSize:11, color:"rgba(245,237,216,0.5)", letterSpacing:"0.05em" }}>ACTIVE GUESTS</span>
                 </div>
                 <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
                   <span style={{ fontSize:36, fontWeight:700, color:"#D48B00" }}>{intelligence.decisionCount}</span>
-                  <span style={{ fontSize:11, color:"#6B5E4E", letterSpacing:"0.05em" }}>DECISIONS</span>
+                  <span style={{ fontSize:11, color:"rgba(245,237,216,0.5)", letterSpacing:"0.05em" }}>DECISIONS</span>
                 </div>
               </div>
             </Panel>
+            </motion.div>
 
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
+            <motion.div variants={{ hidden: { opacity:0, y:20 }, visible: { opacity:1, y:0, transition:{ duration:0.5, ease:[0.16,1,0.3,1] } } }}
+              style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
               {/* Digital twin */}
               <Panel title={`Digital Twin — v${twin?.version ?? 0}`}>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
@@ -468,19 +485,20 @@ export default function CommandCenter() {
               {/* Ambient control */}
               <Panel title="Ambient Control">
                 {["PREMIUM LOUNGE","SOCIAL LOUNGE","ENERGIZE","INTIMATE","STANDARD"].map(scene => (
-                  <button key={scene} onClick={() => triggerScene(scene)} disabled={loadingScene}
+                  <button key={scene} onClick={() => { chronographTick(); triggerScene(scene); }} disabled={loadingScene}
                     style={{ width:"100%", padding:"10px 16px", marginBottom:6,
-                      background: activeScene===scene ? "rgba(212,139,0,.18)" : "#fff",
-                      border: activeScene===scene ? "1.5px solid #D48B00" : "1.5px solid rgba(26,26,27,.1)",
-                      borderRadius:8, color: activeScene===scene ? "#7A5000" : "#1A1A1B",
+                      background: activeScene===scene ? "rgba(196,97,10,0.22)" : "rgba(255,255,255,0.04)",
+                      border: activeScene===scene ? "1.5px solid rgba(212,139,0,0.65)" : "1.5px solid rgba(255,255,255,0.08)",
+                      borderRadius:8, color: activeScene===scene ? "#F0C060" : "rgba(245,237,216,0.6)",
                       fontSize:12, fontWeight:700, letterSpacing:"0.07em", cursor:"pointer",
-                      fontFamily:"inherit", textTransform:"uppercase" as const }}>
+                      fontFamily:"inherit", textTransform:"uppercase" as const,
+                      transition:"all 0.15s ease" }}>
                     {scene}
                   </button>
                 ))}
               </Panel>
-            </div>
-          </>
+            </motion.div>
+          </motion.div>
         )}
 
         {/* ── Awareness Tab ── */}

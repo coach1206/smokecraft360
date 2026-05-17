@@ -9,8 +9,11 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { motion } from "framer-motion";
 import { useLocation } from "wouter";
 import { apiFetch } from "@/lib/api";
+import { AmbientEmberField } from "@/components/AmbientEmberField";
+import { usePremiumAudio } from "@/hooks/usePremiumAudio";
 
 interface KernelModule {
   id: string;
@@ -71,6 +74,7 @@ function resolveVenueId(): string {
 
 export default function OSShell() {
   const [, navigate]    = useLocation();
+  const { mechanicalClick } = usePremiumAudio();
   const [mode, setMode] = useState<KernelMode>("sovereign");
   const [modules, setModules] = useState<KernelModule[]>([]);
   const [loadingModules, setLoadingModules] = useState(true);
@@ -177,11 +181,8 @@ export default function OSShell() {
   return (
     <div style={{ minHeight: "100vh", background: "#0D0D0E", color: "#F5EDD8", position: "relative", overflow: "hidden" }}>
 
-      {/* Ambient background */}
-      <div style={{
-        position: "fixed", inset: 0, pointerEvents: "none",
-        background: "radial-gradient(ellipse 120% 60% at 50% 0%, rgba(196,97,10,0.06) 0%, transparent 65%)",
-      }} />
+      {/* Cinematic ambient field */}
+      <AmbientEmberField />
 
       {/* Top bezel nav */}
       <header className="novee-bezel novee-glow-top" style={{
@@ -263,17 +264,23 @@ export default function OSShell() {
           </p>
         </div>
 
-        {/* Feature tile grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-          gap: 16,
-          marginBottom: 56,
-        }}>
+        {/* Feature tile grid — staggered cinematic entrance */}
+        <motion.div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: 16,
+            marginBottom: 56,
+            position: "relative", zIndex: 1,
+          }}
+          initial="hidden"
+          animate="visible"
+          variants={{ visible: { transition: { staggerChildren: 0.075, delayChildren: 0.1 } } }}
+        >
           {tiles.map((tile) => (
-            <button
+            <motion.button
               key={tile.id}
-              onClick={() => handleTileClick(tile.id)}
+              onClick={() => { mechanicalClick(); handleTileClick(tile.id); }}
               className={tile.id === "eat" ? "novee-module-card novee-glass-ember" : "novee-module-card novee-card"}
               style={{
                 borderRadius: 14, padding: "28px 22px",
@@ -281,9 +288,26 @@ export default function OSShell() {
                 display: "flex", flexDirection: "column", gap: 14,
                 minHeight: 120,
               }}
+              variants={{
+                hidden:  { opacity: 0, y: 28, scale: 0.94 },
+                visible: { opacity: 1, y: 0,  scale: 1, transition: { duration: 0.58, ease: [0.16, 1, 0.3, 1] } },
+              }}
+              whileHover={{
+                scale: 1.025,
+                boxShadow: tile.id === "eat"
+                  ? "0 0 0 1.5px rgba(212,139,0,0.7), 0 12px 40px rgba(196,97,10,0.28), inset 0 1px 0 rgba(255,200,80,0.2)"
+                  : "0 0 0 1.5px rgba(212,139,0,0.45), 0 8px 28px rgba(196,97,10,0.16), inset 0 1px 0 rgba(255,200,80,0.12)",
+                transition: { duration: 0.18, ease: "easeOut" },
+              }}
+              whileTap={{ scale: 0.965, transition: { duration: 0.08 } }}
             >
-              <div style={{ fontSize: 26, color: "#C4610A", lineHeight: 1,
-                filter: tile.id === "eat" ? "drop-shadow(0 0 8px rgba(196,97,10,0.5))" : undefined }}>{tile.icon}</div>
+              <motion.div
+                style={{ fontSize: 26, color: "#C4610A", lineHeight: 1,
+                  filter: tile.id === "eat" ? "drop-shadow(0 0 8px rgba(196,97,10,0.5))" : undefined }}
+                whileHover={{ filter: "drop-shadow(0 0 14px rgba(212,139,0,0.75))", transition: { duration: 0.2 } }}
+              >
+                {tile.icon}
+              </motion.div>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.20em", color: "#F5EDD8", fontFamily: "'Cormorant Garamond', serif" }}>
                   {tile.label}
@@ -297,9 +321,9 @@ export default function OSShell() {
                   {modules.filter(m => m.status === "active").length} active →
                 </div>
               )}
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
 
         {/* Module Registry */}
         <section>
