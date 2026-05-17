@@ -405,6 +405,7 @@ export default function ExperienceControlPanel() {
     pour:   { ...blankSettings },
     brew:   { ...blankSettings },
     vape:   { ...blankSettings },
+    wine:   { ...blankSettings },
   });
   const [saving,  setSaving]  = useState(false);
   const [saved,   setSaved]   = useState(false);
@@ -426,6 +427,7 @@ export default function ExperienceControlPanel() {
           pour:   rowToSettings(d.perCraft.pour  ?? null),
           brew:   rowToSettings(d.perCraft.brew  ?? null),
           vape:   rowToSettings(d.perCraft.vape  ?? null),
+          wine:   rowToSettings(d.perCraft.wine  ?? null),
         });
       })
       .catch(() => setError("Could not load settings"))

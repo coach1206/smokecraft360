@@ -12,7 +12,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RotateCcw, ChevronRight, Sparkles } from "lucide-react";
 
-type CraftType = "smoke" | "pour" | "brew" | "vape";
+type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 interface Props {
   craftType:     CraftType;
@@ -54,6 +54,13 @@ const RECAP_CONFIG: Record<CraftType, {
     unlockLabel:  "What You Built",
     unlocks:      ["Cloud Profile Activated", "Flavor Frequency Mapped", "Ambient Sync Calibrated"],
     returnPrompt: "Your atmosphere identity is deepening. Return to unlock hidden frequencies.",
+  },
+  wine: {
+    sessionLabel: "Tonight's Vintage",
+    recapIntro:   ["You discovered", "a world of terroir."],
+    unlockLabel:  "What You Unlocked",
+    unlocks:      ["Varietal Profile Mapped", "Cellar Access Initiated", "Vintage Palette Calibrated"],
+    returnPrompt: "Your wine identity is evolving. Return to explore reserve expressions.",
   },
   smoke: {
     sessionLabel: "Tonight's Selection",

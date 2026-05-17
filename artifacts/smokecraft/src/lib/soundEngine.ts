@@ -60,6 +60,12 @@ const AMBIENT_CONFIG: Record<CraftType, {
     loop:        true,
     description: "Ambient synth, vapor inhale, low atmospheric hum",
   },
+  wine: {
+    src:         [`${BASE_PATH}/ambient_wine.mp3`, `${BASE_PATH}/ambient_wine.ogg`],
+    volume:      0.18,
+    loop:        true,
+    description: "Soft cellar ambience, gentle pour, intimate murmur",
+  },
 };
 
 const INTERACTION_CONFIG: Record<string, {

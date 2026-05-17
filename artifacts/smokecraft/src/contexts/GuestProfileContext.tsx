@@ -62,7 +62,7 @@ export interface EnrollPayload {
   atmospherePreference?: string;
   experienceLevel?:     string;
   boldnessPreference?:  string;
-  craftType?:           "smoke" | "pour" | "brew" | "vape";
+  craftType?:           "smoke" | "pour" | "brew" | "vape" | "wine";
   mentorId?:            string;
 }
 

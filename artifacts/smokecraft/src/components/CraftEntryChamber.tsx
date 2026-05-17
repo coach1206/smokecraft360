@@ -15,7 +15,7 @@
  *                     → MentorReveal immediately → onBegin()
  *
  * Props:
- *   type     — craft type slug ("smoke" | "pour" | "brew" | "vape")
+ *   type     — craft type slug ("smoke" | "pour" | "brew" | "vape" | "wine")
  *   theme    — CraftTheme from craftThemes.ts (accent, bgImage, etc.)
  *   onBegin  — callback when user starts the discovery experience
  *   onBack   — callback to return to CraftHub
@@ -676,7 +676,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         atmospherePreference: answers.atmospherePreference || undefined,
         boldnessPreference:   answers.boldnessPreference || undefined,
         experienceLevel:      answers.experienceLevel || undefined,
-        craftType:            type as "smoke" | "pour" | "brew" | "vape",
+        craftType:            type as "smoke" | "pour" | "brew" | "vape" | "wine",
         mentorId:             pick,
       });
       setScene("mentor");

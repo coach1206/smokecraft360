@@ -11,7 +11,7 @@
  * Opening lines fire on craft entry; step lines fire on MasterBlender transitions.
  */
 
-export type CraftType = "smoke" | "pour" | "brew" | "vape";
+export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 export interface CraftVoiceConfig {
   persona:       string;
@@ -160,6 +160,7 @@ export const CRAFT_VOICE_CONFIGS: Record<CraftType, CraftVoiceConfig> = {
   pour:  POUR_VOICE,
   brew:  BREW_VOICE,
   vape:  VAPE_VOICE,
+  wine:  POUR_VOICE,
 };
 
 export function getCraftVoice(type: CraftType | string): CraftVoiceConfig {

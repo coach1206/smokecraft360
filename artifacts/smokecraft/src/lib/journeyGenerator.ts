@@ -1,4 +1,4 @@
-export type CraftType = "smoke" | "pour" | "brew" | "vape";
+export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 const JOURNEYS: Record<CraftType, string[]> = {
   smoke: [
@@ -24,6 +24,12 @@ const JOURNEYS: Record<CraftType, string[]> = {
     "Atmosphere Sync",
     "Cloud Expansion",
     "Sensory Enhancement",
+  ],
+  wine: [
+    "Vintage Discovery",
+    "Terroir Mapping",
+    "Cellar Access",
+    "Reserve Unlock",
   ],
 };
 

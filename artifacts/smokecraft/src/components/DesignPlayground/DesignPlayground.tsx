@@ -94,7 +94,7 @@ function getHardware(fields: Record<string, string>) {
 }
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
-export type PlaygroundCraft = "smoke" | "brew" | "pour" | "vape";
+export type PlaygroundCraft = "smoke" | "brew" | "pour" | "vape" | "wine";
 
 export interface ColorSwatch  { id: string; label: string; primary: string; accent: string; locked?: boolean }
 export interface EmblemOption { id: string; label: string }

@@ -15,7 +15,7 @@
 import { useEffect, useRef } from "react";
 
 interface Props {
-  craftType:  "smoke" | "pour" | "brew" | "vape";
+  craftType:  "smoke" | "pour" | "brew" | "vape" | "wine";
   accent:     string;
   intensity?: number;          // 0.0 = minimal, 1.0 = full cinematic
   fullScreen?: boolean;        // true = fixed overlay, false = absolute fill parent

@@ -50,7 +50,7 @@ import {
   DEFAULT_VAPE_STATE,
 }                                                    from "./VapeDesignPanel";
 
-type CraftType  = "smoke" | "brew" | "pour" | "vape";
+type CraftType  = "smoke" | "brew" | "pour" | "vape" | "wine";
 type StudioTab  = "preview" | "design" | "history";
 
 const CRAFT_LABEL: Record<CraftType, string> = {
@@ -58,6 +58,7 @@ const CRAFT_LABEL: Record<CraftType, string> = {
   brew:  "BrewCraft",
   pour:  "PourCraft",
   vape:  "VapeCraft",
+  wine:  "WineCraft",
 };
 
 const CRAFT_HEADLINE: Record<CraftType, string> = {
@@ -65,6 +66,7 @@ const CRAFT_HEADLINE: Record<CraftType, string> = {
   brew:  "Your Signature Brew",
   pour:  "Your Signature Pour",
   vape:  "Your Signature Line",
+  wine:  "Your Signature Cuvée",
 };
 
 const GOLD     = "rgba(212,139,0,0.95)";
@@ -94,6 +96,7 @@ type AllDesignState = {
   brew:  BrewDesignState;
   pour:  PourDesignState;
   vape:  VapeDesignState;
+  wine:  VapeDesignState;
 };
 
 function buildInitialSmokeState(
@@ -158,6 +161,7 @@ export default function SignatureStudio({
     brew:  DEFAULT_BREW_STATE,
     pour:  DEFAULT_POUR_STATE,
     vape:  DEFAULT_VAPE_STATE,
+    wine:  DEFAULT_VAPE_STATE,
   });
   const [drafts,       setDrafts]       = useState<DesignDraft[]>([]);
   const [loadingDrafts,setLoadingDrafts]= useState(false);

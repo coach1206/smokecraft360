@@ -44,6 +44,22 @@ const C = {
   dim:      "rgba(245,235,215,0.22)",
 };
 
+// ── Global tactility: 100ms micro-compression + 3 400 Hz acoustic burst ──────
+function playTactile() {
+  try {
+    const ctx = new (window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = 3400; o.type = "sine";
+    g.gain.setValueAtTime(0, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.09, ctx.currentTime + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.10);
+    o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.10);
+  } catch { /* non-blocking */ }
+}
+
 // ── Time-gated cinematic video background ─────────────────────────────────────
 function CinematicVideo() {
   const hour = new Date().getHours();
@@ -458,7 +474,7 @@ function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTr
       }}
       onPointerEnter={() => onActivate()}
       onPointerLeave={() => { onDeactivate(); setPressed(false); }}
-      onPointerDown={() => setPressed(true)}
+      onPointerDown={() => { setPressed(true); playTactile(); }}
       onPointerUp={() => { if (pressed) { setPressed(false); onTrigger(); } }}
       onPointerCancel={() => setPressed(false)}
     >
@@ -1048,7 +1064,7 @@ function CraftHubInner() {
         <IntelStatusBar />
       </div>
 
-      {/* ── 4 Vertical Blades ── */}
+      {/* ── Landscape Cockpit Grid: SmokeCraft top + 3-craft bottom row ── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -1056,28 +1072,50 @@ function CraftHubInner() {
         style={{
           flex:          1,
           display:       "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           position:      "relative",
           zIndex:        10,
           overflow:      "hidden",
           minHeight:     0,
         }}
       >
-        {CRAFT_MODULES.map((mod, i) => (
-          <BladePortal
-            key={mod.id}
-            mod={mod}
-            active={activeBlade === mod.id}
-            index={i}
-            total={CRAFT_MODULES.length}
-            onActivate={() => setActiveBlade(mod.id)}
-            onDeactivate={() => setActiveBlade(null)}
-            onTrigger={() => {
-              ExperienceFlowEngine.startCraft(mod.id);
-              setPortal({ route: mod.route, color: mod.color });
-            }}
-          />
-        ))}
+        {/* Top deck: SmokeCraft 360 — full horizontal width */}
+        <div style={{ flex: "0 0 46%", display: "flex", borderBottom: "1px solid rgba(212,139,0,0.12)" }}>
+          {CRAFT_MODULES.slice(0, 1).map((mod) => (
+            <BladePortal
+              key={mod.id}
+              mod={mod}
+              active={activeBlade === mod.id}
+              index={0}
+              total={1}
+              onActivate={() => setActiveBlade(mod.id)}
+              onDeactivate={() => setActiveBlade(null)}
+              onTrigger={() => {
+                ExperienceFlowEngine.startCraft(mod.id);
+                setPortal({ route: mod.route, color: mod.color });
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Bottom row: PourCraft · BeerCraft · WineCraft — equal thirds */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden" }}>
+          {CRAFT_MODULES.slice(1).map((mod, i) => (
+            <BladePortal
+              key={mod.id}
+              mod={mod}
+              active={activeBlade === mod.id}
+              index={i}
+              total={CRAFT_MODULES.length - 1}
+              onActivate={() => setActiveBlade(mod.id)}
+              onDeactivate={() => setActiveBlade(null)}
+              onTrigger={() => {
+                ExperienceFlowEngine.startCraft(mod.id);
+                setPortal({ route: mod.route, color: mod.color });
+              }}
+            />
+          ))}
+        </div>
       </motion.div>
 
       {/* ── Partner LogoAnchors — DayOne360 & WifeX ── */}

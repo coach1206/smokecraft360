@@ -19,7 +19,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export type RotatorCraftType = "smoke" | "pour" | "brew" | "vape" | "all";
+export type RotatorCraftType = "smoke" | "pour" | "brew" | "vape" | "wine" | "all";
 
 const CRAFT_POOLS: Record<RotatorCraftType, string[]> = {
   smoke: [
@@ -50,6 +50,12 @@ const CRAFT_POOLS: Record<RotatorCraftType, string[]> = {
     "/images/vape/vape_social.png",
     "/images/vape/vape_hookah.png",
     "/images/vape/vape_device.png",
+  ],
+  wine: [
+    "/images/wine/wine_cellar.png",
+    "/images/wine/wine_tasting.png",
+    "/images/wine/wine_vineyard.png",
+    "/images/wine/wine_glass.png",
   ],
   all: [
     "/images/smoke/smoke_selection.png",

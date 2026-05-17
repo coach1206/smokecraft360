@@ -28,7 +28,7 @@ interface OrderModalProps {
   drink?:     ProductResult;
   food?:      FoodResult;
   venueId?:   string;
-  craftType?: "smoke" | "pour" | "brew" | "vape";
+  craftType?: "smoke" | "pour" | "brew" | "vape" | "wine";
   onClose:    () => void;
   onSuccess:  (orderId: string, orderType: OrderType) => void;
 }

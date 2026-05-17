@@ -16,7 +16,7 @@ interface TierInfo {
 
 interface Props {
   guestProfileId: string | null;
-  craftType:      "smoke" | "pour" | "brew" | "vape";
+  craftType:      "smoke" | "pour" | "brew" | "vape" | "wine";
   localXp:        number; // optimistic local XP (from swipes before server confirms)
   onAchievement:  (a: Achievement) => void;
 }

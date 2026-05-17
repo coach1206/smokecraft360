@@ -10,7 +10,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type CraftType  = "smoke" | "pour" | "brew" | "vape" | null;
+export type CraftType  = "smoke" | "pour" | "brew" | "vape" | "wine" | null;
 export type ActiveMode = "patron" | "staff";
 
 interface Axiom360State {

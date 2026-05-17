@@ -44,6 +44,7 @@ const CRAFT_COLORS: Record<NonNullable<CraftType>, string> = {
   pour:  "#D48B00",
   brew:  "#C4782A",
   vape:  "#7C5CF6",
+  wine:  "#9B1C1C",
 };
 
 const DEFAULT_STATE: EnvironmentalState = {

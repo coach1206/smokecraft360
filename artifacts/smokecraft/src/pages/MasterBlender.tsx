@@ -963,6 +963,22 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
   const [loading,     setLoading]     = useState(false);
   const [errMsg,      setErrMsg]      = useState<string | null>(null);
 
+  // ── Demographic capture form ──
+  const [showDemoForm, setShowDemoForm] = useState(false);
+  const [demoFullName, setDemoFullName] = useState("");
+  const [demoPhone,    setDemoPhone]    = useState("");
+  const [demoEmail,    setDemoEmail]    = useState("");
+  const [demoAge,      setDemoAge]      = useState("");
+  const [demoGender,   setDemoGender]   = useState<"M"|"F"|"X"|"">("");
+  const [demoState,    setDemoState]    = useState("");
+  const [demoCity,     setDemoCity]     = useState("");
+
+  const demoComplete = demoFullName.trim().length > 1 &&
+    demoPhone.replace(/\D/g, "").length >= 10 &&
+    demoEmail.includes("@") &&
+    demoAge !== "" && demoGender !== "" &&
+    demoState !== "" && demoCity.trim().length > 0;
+
   function playClick() {
     try {
       const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
@@ -1115,6 +1131,53 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
           </motion.div>
         </motion.div>
 
+        {/* ── Golden Box scoring disclosures ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1, duration: 0.8 }}
+          style={{
+            background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.04) 100%)",
+            border: "1px solid rgba(212,175,55,0.22)",
+            borderRadius: 10,
+            padding: "18px 22px",
+            marginBottom: 18,
+            width: "100%",
+          }}
+        >
+          <p style={{ margin: "0 0 10px", fontSize: 9, letterSpacing: "0.28em", color: "rgba(212,175,55,0.65)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>
+            ❖ The Golden Box — Scoring Rules
+          </p>
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 7 }}>
+            {[
+              { icon: "+5 XP", text: "Component chemistry match — flavors align with blend formula" },
+              { icon: "−2 PTS", text: "Mentor regional contradiction — out-of-profile leaf selection" },
+            ].map(r => (
+              <div key={r.icon} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, fontWeight: 700,
+                  color: r.icon.startsWith("+") ? "#4ade80" : "#f87171", minWidth: 48 }}>{r.icon}</span>
+                <span style={{ fontSize: 10, color: "rgba(245,235,215,0.60)", lineHeight: 1.4 }}>{r.text}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ margin: "12px 0 0", borderTop: "1px solid rgba(212,175,55,0.14)", paddingTop: 10 }}>
+            <p style={{ margin: "0 0 8px", fontSize: 9, letterSpacing: "0.22em", color: "rgba(212,175,55,0.50)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>
+              Table Spend Multipliers
+            </p>
+            {[
+              { range: "$50 – $99.99",   xp: "+10 XP",             badge: null },
+              { range: "$100 – $199.99",  xp: "+25 XP",             badge: null },
+              { range: "$200+",               xp: "+60 XP",             badge: "Elite Vault Badge" },
+            ].map(t => (
+              <div key={t.range} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
+                <span style={{ fontSize: 10, color: "rgba(245,235,215,0.50)", minWidth: 110 }}>{t.range}</span>
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, fontWeight: 700, color: "#D4AF37" }}>{t.xp}</span>
+                {t.badge && <span style={{ fontSize: 9, background: "rgba(212,175,55,0.18)", border: "1px solid rgba(212,175,55,0.35)", borderRadius: 4, padding: "2px 7px", color: "#D4AF37", letterSpacing: "0.12em" }}>{t.badge}</span>}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Action buttons */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -1133,7 +1196,7 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
               boxShadow: "0 0 28px rgba(212,175,55,0.24), inset 0 1px 0 rgba(255,255,255,0.08)",
             }}
             onTouchStart={() => playClick()}
-            onClick={() => { playClick(); onEnterNew(); }}
+            onClick={() => { playClick(); setShowDemoForm(true); }}
           >
             BEGIN JOURNEY
           </motion.button>
@@ -1183,6 +1246,125 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
           </button>
         </motion.div>
       </div>
+
+      {/* ── Demographic capture form slide-up ── */}
+      <AnimatePresence>
+        {showDemoForm && (
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ duration: 0.32, ease: "easeOut" }}
+            style={{
+              position: "fixed", bottom: 0, left: 0, right: 0,
+              background: "rgba(6,4,2,0.97)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              borderTop: "1px solid rgba(212,175,55,0.30)",
+              borderRadius: "20px 20px 0 0",
+              padding: "32px 28px 44px",
+              zIndex: 9999998,
+              maxHeight: "90dvh",
+              overflowY: "auto",
+            }}
+          >
+            <div style={{ maxWidth: 640, margin: "0 auto" }}>
+              <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.3rem,2.2vw,1.7rem)", color: "#d4af37", fontWeight: 300, margin: "0 0 4px", letterSpacing: "0.04em" }}>
+                Guest Profile
+              </p>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, color: "rgba(255,252,245,0.40)", letterSpacing: "0.18em", textTransform: "uppercase" as const, margin: "0 0 24px" }}>
+                Complete all fields to unlock the gold BEGIN JOURNEY action
+              </p>
+
+              {/* 2-column grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+                {[
+                  { label: "Full Name", val: demoFullName, set: setDemoFullName, type: "text", placeholder: "Jane Doe", span: 2 },
+                  { label: "Mobile Phone", val: demoPhone, set: (v: string) => setDemoPhone(v.replace(/\D/g,"").slice(0,10)), type: "tel", placeholder: "10-digit number", span: 1 },
+                  { label: "Email Address", val: demoEmail, set: setDemoEmail, type: "email", placeholder: "you@example.com", span: 1 },
+                  { label: "City", val: demoCity, set: setDemoCity, type: "text", placeholder: "City", span: 1 },
+                ].map(f => (
+                  <div key={f.label} style={{ gridColumn: `span ${f.span}` }}>
+                    <p style={{ margin: "0 0 5px", fontSize: 9, letterSpacing: "0.18em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>{f.label}</p>
+                    <input
+                      type={f.type}
+                      placeholder={f.placeholder}
+                      value={f.val}
+                      onChange={e => f.set(e.target.value)}
+                      style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.28)", borderRadius: 6, padding: "13px 16px", color: "#fff", fontSize: 14, fontFamily: "'Inter',sans-serif", outline: "none", boxSizing: "border-box" as const }}
+                    />
+                  </div>
+                ))}
+
+                {/* Age Range */}
+                <div>
+                  <p style={{ margin: "0 0 5px", fontSize: 9, letterSpacing: "0.18em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>Age Range</p>
+                  <select value={demoAge} onChange={e => setDemoAge(e.target.value)}
+                    style={{ width: "100%", background: "rgba(20,15,5,0.95)", border: "1px solid rgba(212,175,55,0.28)", borderRadius: 6, padding: "13px 16px", color: demoAge ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 14, fontFamily: "'Inter',sans-serif", outline: "none" }}>
+                    <option value="" disabled>Select range</option>
+                    {["21-30","31-45","46-60","61+"].map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+
+                {/* State */}
+                <div>
+                  <p style={{ margin: "0 0 5px", fontSize: 9, letterSpacing: "0.18em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>State</p>
+                  <select value={demoState} onChange={e => setDemoState(e.target.value)}
+                    style={{ width: "100%", background: "rgba(20,15,5,0.95)", border: "1px solid rgba(212,175,55,0.28)", borderRadius: 6, padding: "13px 16px", color: demoState ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 14, fontFamily: "'Inter',sans-serif", outline: "none" }}>
+                    <option value="" disabled>Select state</option>
+                    {["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"].map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* Gender toggles */}
+              <div style={{ marginBottom: 22 }}>
+                <p style={{ margin: "0 0 8px", fontSize: 9, letterSpacing: "0.18em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>Gender</p>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {(["M","F","X"] as const).map(g => (
+                    <button key={g} onClick={() => setDemoGender(g)}
+                      style={{
+                        flex: 1, padding: "11px 0", borderRadius: 6, fontSize: 12, fontWeight: 700,
+                        letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif", cursor: "pointer",
+                        background: demoGender === g ? "rgba(212,175,55,0.18)" : "rgba(255,255,255,0.03)",
+                        border: `1px solid ${demoGender === g ? "rgba(212,175,55,0.60)" : "rgba(212,175,55,0.18)"}`,
+                        color: demoGender === g ? "#D4AF37" : "rgba(245,235,215,0.45)",
+                        transition: "all 0.18s ease",
+                      }}>
+                      {g === "M" ? "Male" : g === "F" ? "Female" : "Prefer Not to Say"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: 12 }}>
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  disabled={!demoComplete}
+                  onClick={() => { if (demoComplete) { setShowDemoForm(false); onEnterNew(); } }}
+                  style={{
+                    flex: 1, ...GW.btn(), minHeight: 54, fontSize: "clamp(11px,1.5vw,13px)",
+                    letterSpacing: "0.28em",
+                    opacity: demoComplete ? 1 : 0.38,
+                    cursor: demoComplete ? "pointer" : "not-allowed",
+                  }}
+                >
+                  UNLOCK JOURNEY
+                </motion.button>
+                <button onClick={() => setShowDemoForm(false)}
+                  style={{
+                    background: "transparent", border: "1px solid rgba(212,175,55,0.25)",
+                    color: "rgba(212,175,55,0.50)", padding: "14px 22px", borderRadius: 4,
+                    fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase" as const,
+                    cursor: "pointer", fontFamily: "'Inter',sans-serif",
+                  }}>
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Returning guest slide-up drawer */}
       <AnimatePresence>

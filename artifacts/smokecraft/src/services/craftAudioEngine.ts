@@ -25,7 +25,7 @@
 
 import { isMuted } from "./sound";
 
-export type CraftType = "smoke" | "pour" | "brew" | "vape";
+export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 // ── Shared AudioContext ───────────────────────────────────────────────────────
 
@@ -279,6 +279,7 @@ const LAYER_BUILDERS: Record<CraftType, (ctx: AudioContext, dest: AudioNode) => 
   pour:  buildPourLayer,
   brew:  buildBrewLayer,
   vape:  buildVapeLayer,
+  wine:  buildVapeLayer,
 };
 
 // ── One-shot event sounds ─────────────────────────────────────────────────────

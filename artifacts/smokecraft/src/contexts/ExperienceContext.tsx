@@ -29,7 +29,7 @@ import {
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-export type Module          = "portal" | "smoke" | "pour" | "brew" | "vape";
+export type Module          = "portal" | "smoke" | "pour" | "brew" | "vape" | "wine";
 export type InventoryStatus = "synced" | "stale" | "error";
 
 export interface GuestProfile {

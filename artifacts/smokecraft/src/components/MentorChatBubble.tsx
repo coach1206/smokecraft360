@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   mentorId:    string;
-  craftType:   "smoke" | "pour" | "brew" | "vape";
+  craftType:   "smoke" | "pour" | "brew" | "vape" | "wine";
   recentTags:  string[];
   guestLevel:  string;
   swipeAction: "add" | "skip" | null;

@@ -31,7 +31,7 @@ export type SovereignCommand = "BLACKOUT" | "API_LOCK" | "PURGE";
 export type Region           = "DR" | "US" | "EU" | "GLOBAL";
 
 export interface TrifectaProfile {
-  craftType:   "smoke" | "pour" | "brew" | "vape";
+  craftType:   "smoke" | "pour" | "brew" | "vape" | "wine";
   boldness:    number;        // 0–100 from enrollment
   atmosphere:  string;        // "bold" | "relaxed" | "reflective" | "social"
   guestTier?:  "ENTRY" | "RISING" | "REFINED" | "ELITE" | "MASTER";

@@ -5,7 +5,7 @@ import html2canvas from "html2canvas";
 import { logShareEvent } from "@/services/api";
 
 export interface ShareCardProps {
-  craftType: "smoke" | "brew" | "pour" | "vape" | string;
+  craftType: "smoke" | "brew" | "pour" | "vape" | "wine" | string;
   styleTitle: string;
   moodTitle: string;
   recommendationName: string;

@@ -5,7 +5,7 @@ import { CigarBandPreview } from "@/components/Band/CigarBandPreview";
 import type { BlendDesign } from "@/services/storage";
 import CraftRenderer from "@/components/CraftRenderer/CraftRenderer";
 
-export type LiveCraft = "smoke" | "brew" | "pour" | "vape";
+export type LiveCraft = "smoke" | "brew" | "pour" | "vape" | "wine";
 
 export interface LiveMeters { flavor: number; strength: number; balance: number }
 

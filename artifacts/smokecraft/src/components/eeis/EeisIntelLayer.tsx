@@ -83,6 +83,17 @@ const INTEL_DATA: Record<Exclude<Module, "portal">, {
       { sku: "VP-214", label: "Elf Bar Lost Mary",   margin: 55, stock: 2,  stockLabel: "CRITICAL", note: "⚠ Trending item — 2 remaining · move now" },
     ],
   },
+  wine: {
+    accent:   "#9B1C1C",
+    subtitle: "VINEYARD INTELLIGENCE LAYER",
+    revenue:  "+$210 margin opportunity detected",
+    cards: [
+      { sku: "WN-101", label: "Opus One Napa Valley",  margin: 78, stock: 4,  stockLabel: "LOW",      note: "Flagship Cab · highest table spend tonight" },
+      { sku: "WN-214", label: "Penfolds Grange Shiraz",margin: 71, stock: 3,  stockLabel: "LOW",      note: "Reserve tier · strong profile match" },
+      { sku: "WN-318", label: "Dom Pérignon Champagne",margin: 68, stock: 8,  stockLabel: "MED",      note: "Celebration driver · fast mover on weekends" },
+      { sku: "WN-422", label: "Caymus Cabernet",        margin: 62, stock: 14, stockLabel: "HIGH",     note: "Crowd favourite · consistent table volume" },
+    ],
+  },
 };
 
 // ── Live inventory fetch helpers ───────────────────────────────────────────────
@@ -91,6 +102,7 @@ const CATEGORY_MAP: Record<Exclude<Module, "portal">, string> = {
   pour:  "alcohol",
   brew:  "beer",
   vape:  "vape",
+  wine:  "wine",
 };
 
 const TIER_MARGIN: Record<string, number> = { premium: 83, mid: 69, standard: 56 };

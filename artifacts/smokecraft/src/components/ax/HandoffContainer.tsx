@@ -54,7 +54,7 @@ import { vibrate, HAPTIC }  from "@/lib/haptics";
 import { useTranslation }   from "react-i18next";
 import { Pulse }            from "./Pulse";
 import {
-  SMOKE_SCENES, POUR_SCENES, BREW_SCENES, VAPE_SCENES,
+  SMOKE_SCENES, POUR_SCENES, BREW_SCENES, WINE_SCENES,
 } from "@/data/craftScenes";
 import type { CraftScene } from "@/data/craftScenes";
 import { getWeightedScenes } from "@/lib/weightedEngine";
@@ -89,7 +89,7 @@ const CRAFT_SCENES: Record<string, CraftScene[]> = {
   smoke: SMOKE_SCENES,
   pour:  POUR_SCENES,
   brew:  BREW_SCENES,
-  vape:  VAPE_SCENES,
+  wine:  WINE_SCENES,
 };
 
 // ── Pricing engine ────────────────────────────────────────────────────────────

@@ -142,28 +142,28 @@ export const BREW_SCENES: CraftScene[] = [
   },
 ];
 
-// ── VapeCraft 360 ──────────────────────────────────────────────────────────────
+// ── WineCraft 360 ──────────────────────────────────────────────────────────────
 
-export const VAPE_SCENES: CraftScene[] = [
+export const WINE_SCENES: CraftScene[] = [
   {
-    id: "device", label: "Modern Device", sub: "Engineered for connoisseurs",
-    image: "/images/vape/vape_device.png",
-    tags: ["tech", "premium", "solo"], weight: 1,
+    id: "wine_cellar", label: "Reserve Cellar", sub: "Aged to perfection in oak",
+    image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80",
+    tags: ["premium", "night", "solo", "cellar"], weight: 9,
   },
   {
-    id: "hookah", label: "Hookah Lounge", sub: "Opulent atmosphere, premium blends",
-    image: "/images/vape/vape_hookah.png",
-    tags: ["social", "group", "night"], weight: 1,
+    id: "wine_glass", label: "Crystal Service", sub: "Hand-poured elegance",
+    image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80",
+    tags: ["premium", "social", "night"], weight: 8,
   },
   {
-    id: "modern", label: "Flavor Clouds", sub: "Sleek. Elevated. Yours.",
-    image: "/images/vape/vape_modern.png",
-    tags: ["flavor", "light", "solo"], weight: 1,
+    id: "wine_barrel", label: "Barrel Room", sub: "French oak maturation",
+    image: "https://images.unsplash.com/photo-1583394293214-7b3e6c9eba4b?auto=format&fit=crop&w=800&q=80",
+    tags: ["premium", "solo", "barrel"], weight: 7,
   },
   {
-    id: "social", label: "Night Session", sub: "Shared experiences, signature moments",
-    image: "/images/vape/vape_social.png",
-    tags: ["night", "social", "urban"], weight: 1,
+    id: "wine_vineyard", label: "Vineyard Estate", sub: "Terroir from vine to glass",
+    image: "https://images.unsplash.com/photo-1567696153798-9111f9cd3d0d?auto=format&fit=crop&w=800&q=80",
+    tags: ["social", "day", "estate"], weight: 6,
   },
 ];
 
@@ -186,8 +186,8 @@ export const CRAFT_MODULES: CraftModule[] = [
     scenes: BREW_SCENES,
   },
   {
-    id: "vape", title: "VapeCraft 360", tagline: "Futuristic sensory immersion — enter the dimension",
-    color: "#a855f7", route: "/experience/vape", badge: "💨  VAPOR",
-    scenes: VAPE_SCENES,
+    id: "wine", title: "WineCraft 360", tagline: "Deep terroir, velvet tannins — from vine to glass",
+    color: "#8B1A2F", route: "/wine", badge: "🍷  WINE",
+    scenes: WINE_SCENES,
   },
 ];

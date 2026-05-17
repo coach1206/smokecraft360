@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 
-type CraftType = "smoke" | "pour" | "brew" | "vape";
+type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 interface CraftExplanation {
   quote:   string[];
@@ -50,6 +50,16 @@ const EXPLANATIONS: Record<CraftType, CraftExplanation> = {
       { icon: "∿", title: "Evolve Your Cloud Signature", desc: "Each session deepens your sensory signature and unlocks new layers." },
       { icon: "⚡", title: "Unlock Hidden Frequencies", desc: "Rare blends surface as your profile matures — no shortcut exists." },
       { icon: "✦", title: "Ambient Sync Intelligence",  desc: "The environment reacts to your choices. Nothing here is passive." },
+    ],
+  },
+  wine: {
+    quote: ["The vine remembers", "every season", "in its fruit."],
+    sub: "WineCraft 360 — Terroir Intelligence Engine",
+    pillars: [
+      { icon: "○", title: "Map Your Palate",           desc: "From light Pinot to bold Cab — your taste signature is permanent." },
+      { icon: "◇", title: "Explore Terroir",           desc: "Region, vintage, climate — every detail shapes the glass." },
+      { icon: "⬡", title: "Unlock Cellar Reserves",    desc: "Rare vintages surface as your profile deepens." },
+      { icon: "✶", title: "Master the Varietal Map",   desc: "A full spectrum of discovery awaits the discerning palate." },
     ],
   },
   smoke: {

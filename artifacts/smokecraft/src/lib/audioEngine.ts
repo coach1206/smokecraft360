@@ -294,7 +294,7 @@ export function playPillClink(): void {
  * brew  — carbonation hiss + low pub ambience
  * vape  — coil hum + neon flicker
  */
-export function playCraftAmbient(craftType: "smoke" | "pour" | "brew" | "vape"): () => void {
+export function playCraftAmbient(craftType: "smoke" | "pour" | "brew" | "vape" | "wine"): () => void {
   const ac = getAudioContext();
   if (!ac) return () => {};
   // Non-null alias so closures below can use it without TS narrowing loss

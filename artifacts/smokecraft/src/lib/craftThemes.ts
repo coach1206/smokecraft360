@@ -2,7 +2,7 @@
  * craftThemes — per-craft visual configuration for the Universal Swipe Engine.
  */
 
-export type CraftType = "smoke" | "pour" | "brew" | "vape";
+export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 export interface CraftTheme {
   type:        CraftType;
@@ -60,6 +60,17 @@ export const CRAFT_THEMES: Record<CraftType, CraftTheme> = {
     cardBg:      "rgba(3,0,10,0.95)",
     badgeLabel:  "VAPOR",
     visualWords: ["neon", "futuristic", "electric"],
+  },
+  wine: {
+    type:        "wine",
+    label:       "WineCraft 360",
+    tagline:     "Discover the perfect vintage",
+    accent:      "#9B1C1C",
+    accentSoft:  "#722F37",
+    bgImage:     "/images/wine/wine_cellar.png",
+    cardBg:      "rgba(10,2,2,0.92)",
+    badgeLabel:  "WINE",
+    visualWords: ["vineyard", "elegant", "terroir"],
   },
 };
 

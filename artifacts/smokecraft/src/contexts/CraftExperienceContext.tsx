@@ -18,7 +18,7 @@ import {
   type ReactNode,
 } from "react";
 
-export type CraftType = "smoke" | "pour" | "brew" | "vape";
+export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 export interface SwipeRecord {
   itemId:    string;

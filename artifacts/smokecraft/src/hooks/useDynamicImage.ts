@@ -13,7 +13,7 @@
 import { useState, useEffect, useRef } from "react";
 import { getAuthHeaders }              from "@/services/auth";
 
-export type CraftType = "pour" | "brew" | "smoke" | "vape";
+export type CraftType = "pour" | "brew" | "smoke" | "vape" | "wine";
 
 interface UseDynamicImageOptions {
   craft:     CraftType;

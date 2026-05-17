@@ -81,7 +81,7 @@ const INTERIORS = {
 type WoodKey     = keyof typeof WOODS;
 type TrimKey     = keyof typeof TRIMS;
 type InteriorKey = keyof typeof INTERIORS;
-type CraftKey    = "smoke" | "pour" | "brew" | "vape";
+type CraftKey    = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 const CRAFT_TYPES: { id: CraftKey; label: string; icon: string }[] = [
   { id: "smoke", label: "SmokeCraft", icon: "🚬" },

@@ -17,7 +17,7 @@ interface HandoffState {
 
 interface Props {
   guestProfileId: string | null;
-  craftType:      "smoke" | "pour" | "brew" | "vape";
+  craftType:      "smoke" | "pour" | "brew" | "vape" | "wine";
 }
 
 const DISCOVERY_MESSAGES = [

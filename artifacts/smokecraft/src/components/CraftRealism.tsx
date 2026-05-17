@@ -518,3 +518,54 @@ export function CraftRealism({
     default:      return null;
   }
 }
+
+// ── WineLegs — WineCraft: deep velvet wine legs rolling down dark backlit glass ──
+export function WineLegs({ accent }: RealisticsProps) {
+  const LEGS = Array.from({ length: 7 }, (_, i) => ({
+    id: i,
+    left: 8 + i * 12 + Math.random() * 4,
+    delay: i * 0.55 + Math.random() * 0.4,
+    dur: 3.2 + Math.random() * 1.8,
+    width: 2 + Math.random() * 3,
+    height: 38 + Math.random() * 40,
+    opacity: 0.32 + Math.random() * 0.28,
+  }));
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+      {/* Backlit glass glow at bottom */}
+      <div style={{
+        position: "absolute", bottom: 0, left: 0, right: 0, height: "22%",
+        background: `radial-gradient(ellipse 80% 60% at 50% 100%, ${accent}18 0%, transparent 80%)`,
+      }} />
+      {/* Rolling wine legs */}
+      {LEGS.map(leg => (
+        <div key={leg.id} style={{ position: "absolute", bottom: "18%", left: `${leg.left}%`, overflow: "visible" }}>
+          <style>{`
+            @keyframes wine-leg-${leg.id} {
+              0%   { transform: scaleY(0); opacity: 0; }
+              15%  { opacity: ${leg.opacity}; }
+              80%  { opacity: ${leg.opacity * 0.7}; }
+              100% { transform: scaleY(1); opacity: 0; }
+            }
+          `}</style>
+          <div
+            style={{
+              width: leg.width,
+              height: leg.height,
+              background: `linear-gradient(to bottom, ${accent}55 0%, ${accent}22 60%, transparent 100%)`,
+              borderRadius: "0 0 50% 50%",
+              transformOrigin: "top center",
+              animation: `wine-leg-${leg.id} ${leg.dur}s ${leg.delay}s infinite ease-in-out`,
+            }}
+          />
+        </div>
+      ))}
+      {/* Deep velvet ambient vignette */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "radial-gradient(ellipse 100% 70% at 50% 0%, transparent 40%, rgba(10,0,5,0.55) 100%)",
+        pointerEvents: "none",
+      }} />
+    </div>
+  );
+}

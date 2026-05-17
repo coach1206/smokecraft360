@@ -116,6 +116,24 @@ const SENSORY_PROFILES: Record<NonNullable<CraftType>, SensoryProfile> = {
     backgroundFilter:   "brightness(0.33) saturate(0.75) hue-rotate(210deg)",
     soundTexture:       "vaporous",
   },
+  wine: {
+    craft:              "wine",
+    primaryColor:       "#9B1C1C",
+    secondaryColor:     "#722F37",
+    ambientLux:         42,
+    warmth:             70,
+    density:            30,
+    refractionStrength: 60,
+    breathAmplitude:    0.022,
+    breathFrequency:    0.18,
+    motionInertia:      0.72,
+    particleSize:       4,
+    particleOpacity:    0.62,
+    glowRadius:         120,
+    glowOpacity:        0.24,
+    backgroundFilter:   "brightness(0.30) saturate(1.4) sepia(0.30)",
+    soundTexture:       "warm",
+  },
 };
 
 // ── Interpolated environment state ────────────────────────────────────────────

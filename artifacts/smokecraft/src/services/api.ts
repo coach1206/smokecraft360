@@ -29,7 +29,7 @@ export type AvailabilityLabel =
 export interface ProductResult {
   id: string;
   name: string;
-  category: "cigar" | "alcohol" | "beer" | "vape";
+  category: "cigar" | "alcohol" | "beer" | "vape" | "wine";
   flavorNotes: string[];
   strength: number;
   moodTags: string[];
@@ -343,7 +343,7 @@ export async function fetchSessionForecast(params: {
 
 /** Fire-and-forget — records the user's preference snapshot for trend analytics. */
 export function trackPreferences(params: {
-  category:          "cigar" | "alcohol" | "beer" | "vape";
+  category:          "cigar" | "alcohol" | "beer" | "vape" | "wine";
   flavorPreferences: string[];
   strength:          number;
   mood:              string;
@@ -376,7 +376,7 @@ export async function persistExperience(
 // ── Share event tracking ──────────────────────────────────────────────────────
 
 export interface ShareEventParams {
-  craftType:          "smoke" | "brew" | "pour" | "vape" | string;
+  craftType:          "smoke" | "brew" | "pour" | "vape" | "wine" | string;
   score:              number;
   recommendationName: string;
   shareMethod:        "download" | "native";
@@ -1481,7 +1481,7 @@ export interface DemandEventParams {
   eventType:    DemandEventType;
   venueId?:     string;
   sessionId?:   string;
-  craftType?:   "smoke" | "pour" | "brew" | "vape";
+  craftType?:   "smoke" | "pour" | "brew" | "vape" | "wine";
 }
 
 /** Fire-and-forget — captures a demand signal. Never blocks the UI. */
@@ -2246,7 +2246,7 @@ export async function postScore(inputs: ScoreInputs): Promise<ScoreResult | null
 export interface SavedBuildCard {
   id:                 string;
   userId:             string;
-  craftType:          "smoke" | "brew" | "pour" | "vape";
+  craftType:          "smoke" | "brew" | "pour" | "vape" | "wine";
   styleTitle:         string;
   moodTitle:          string;
   recommendationName: string;
@@ -2255,7 +2255,7 @@ export interface SavedBuildCard {
 }
 
 export async function saveBuildCard(params: {
-  craftType:          "smoke" | "brew" | "pour" | "vape";
+  craftType:          "smoke" | "brew" | "pour" | "vape" | "wine";
   styleTitle:         string;
   moodTitle:          string;
   recommendationName: string;
@@ -2289,7 +2289,7 @@ export async function fetchSavedBuilds(): Promise<SavedBuildCard[]> {
 // ── Craft Builds ──────────────────────────────────────────────────────────────
 
 export interface CraftBuildUpsert {
-  craft:        "smoke" | "brew" | "pour" | "vape";
+  craft:        "smoke" | "brew" | "pour" | "vape" | "wine";
   phase?:       "intro" | "style" | "profile" | "match" | "reveal";
   styleChoice?: string;
   moodChoice?:  string;

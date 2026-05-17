@@ -5,9 +5,12 @@ import { Clock, AlertTriangle } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 
-const IDLE_TIMEOUT_MS     = 60 * 1000;
-const WARNING_DURATION_MS = 30 * 1000;
-const KIOSK_FAILSAFE_MS   = 5  * 1000; // auto-dismiss if input frozen on kiosk
+const SESSION_TIMEOUT_MS  = 15 * 60 * 1000; // 15-min absolute session limit
+const IDLE_DIM_MS         =  3 * 60 * 1000; // 3-min idle → dim + warning
+const WARNING_DURATION_MS =      60 * 1000; // 60s glass warning countdown
+const KIOSK_FAILSAFE_MS   =       5 * 1000; // auto-dismiss if input frozen on kiosk
+// Legacy alias keeps downstream references intact
+const IDLE_TIMEOUT_MS = IDLE_DIM_MS;
 const EXEMPT_PATHS = ["/", "/entry", "/pin-login", "/intro", "/demo"];
 
 export default function InactivityGuard() {
@@ -15,7 +18,7 @@ export default function InactivityGuard() {
   const { currentUser, setCurrentUser } = usePosContext();
   const cc = useCommandCenter();
   const [showWarning, setShowWarning]   = useState(false);
-  const [countdown, setCountdown]       = useState(30);
+  const [countdown, setCountdown]       = useState(60);
 
   const idleTimerRef      = useRef<ReturnType<typeof setTimeout>  | null>(null);
   const warningTimerRef   = useRef<ReturnType<typeof setTimeout>  | null>(null);
@@ -55,7 +58,7 @@ export default function InactivityGuard() {
     idleTimerRef.current = setTimeout(() => {
       warningActiveRef.current = true;
       setShowWarning(true);
-      setCountdown(30);
+      setCountdown(60);
 
       countdownRef.current = setInterval(() => {
         setCountdown(prev => (prev <= 1 ? 0 : prev - 1));
@@ -71,7 +74,7 @@ export default function InactivityGuard() {
           clearAllTimers();
           warningActiveRef.current = false;
           setShowWarning(false);
-          setCountdown(30);
+          setCountdown(60);
           startIdleTimer();
         }
       }, KIOSK_FAILSAFE_MS);
@@ -83,7 +86,7 @@ export default function InactivityGuard() {
     clearAllTimers();
     warningActiveRef.current = false;
     setShowWarning(false);
-    setCountdown(30);
+    setCountdown(60);
     startIdleTimer();
   }, [clearAllTimers, startIdleTimer]);
 
@@ -92,7 +95,7 @@ export default function InactivityGuard() {
     clearAllTimers();
     warningActiveRef.current = false;
     setShowWarning(false);
-    setCountdown(30);
+    setCountdown(60);
     setCurrentUser(null);
     // Hard navigate to ensure all MasterBlender state is wiped
     window.location.href = "/smokecraft";
@@ -115,7 +118,7 @@ export default function InactivityGuard() {
         idleTimerRef.current = setTimeout(() => {
           warningActiveRef.current = true;
           setShowWarning(true);
-          setCountdown(30);
+          setCountdown(60);
 
           countdownRef.current = setInterval(() => {
             setCountdown(prev => (prev <= 1 ? 0 : prev - 1));
@@ -130,7 +133,7 @@ export default function InactivityGuard() {
               clearAllTimers();
               warningActiveRef.current = false;
               setShowWarning(false);
-              setCountdown(30);
+              setCountdown(60);
               startIdleTimer();
             }
           }, KIOSK_FAILSAFE_MS);

@@ -16,7 +16,7 @@ import { SignalVisualizationEngine } from "@/engines/SignalVisualizationEngine";
 /** sessionStorage key — EEIS overlay reads this to show live journey tier */
 export const EEIS_JOURNEY_KEY = "axiom_eeis_journey";
 
-type CraftType = "smoke" | "pour" | "brew" | "vape";
+type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 export type ExperienceLevel =
   | "curious"
@@ -63,6 +63,13 @@ const TIERS: Record<CraftType, LevelTier[]> = {
     { id: "scholar",    title: "Connoisseur",          badge: "IV",  desc: "Deep knowledge of tobacco culture and aging science.", unlocks: "Reserve room + aged expressions", locked: false },
     { id: "master",     title: "Reserve Master",       badge: "V",   desc: "Elite access. The rarest cigars, curated for your palate.", unlocks: "Allocated releases + humidor access", locked: true },
   ],
+  wine: [
+    { id: "curious",    title: "Curious Sipper",       badge: "I",   desc: "Exploring wine for the first time. Light, fresh, and approachable.", unlocks: "Entry varieties + flavor intro", locked: false },
+    { id: "explorer",   title: "Grape Explorer",       badge: "II",  desc: "Learning varietals, regions, and the role of terroir.", unlocks: "Regional profiles + vintage guide", locked: false },
+    { id: "enthusiast", title: "Terroir Enthusiast",   badge: "III", desc: "Understanding vintage variation and food pairing principles.", unlocks: "Reserve selections + cellar notes", locked: false },
+    { id: "scholar",    title: "Sommelier Scholar",    badge: "IV",  desc: "Deep knowledge of wine-making, aging, and service.", unlocks: "Cellar access + rare vintages", locked: false },
+    { id: "master",     title: "Grand Cru Master",     badge: "V",   desc: "Elite palate. The finest expressions curated exclusively.", unlocks: "Allocated releases + private cellar", locked: true },
+  ],
 };
 
 export const SESSION_LEVEL_KEY = "axiom_experience_level";
@@ -108,7 +115,7 @@ export function LevelSelection({ craftType, accent, onSelect, onBack }: Props) {
   }
 
   const craftLabel: Record<CraftType, string> = {
-    pour: "PourCraft 360", brew: "BrewCraft 360", vape: "VapeCraft 360", smoke: "SmokeCraft 360",
+    pour: "PourCraft 360", brew: "BrewCraft 360", vape: "VapeCraft 360", smoke: "SmokeCraft 360", wine: "WineCraft 360",
   };
 
   return (

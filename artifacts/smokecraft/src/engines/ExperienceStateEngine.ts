@@ -31,7 +31,7 @@ export type EmotionalPacing =
   | "cooling"    // post-reveal / post-order — settling back down
   | "suspended"; // staff handoff — environment held
 
-export type CraftType = "smoke" | "pour" | "brew" | "vape" | null;
+export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine" | null;
 
 export interface ExperienceState {
   stage:          JourneyStage;

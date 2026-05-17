@@ -100,7 +100,7 @@ const RewardsModule         = lazy(() => import('@/pages/RewardsModule'));
 const OrdersModule          = lazy(() => import('@/pages/OrdersModule'));
 const BrewCraft             = lazy(() => import('@/pages/BrewCraft'));
 const PourCraft             = lazy(() => import('@/pages/PourCraft'));
-const VapeCraft             = lazy(() => import('@/pages/VapeCraft'));
+const WineCraft             = lazy(() => import('@/pages/WineCraft'));
 const SARV                  = lazy(() => import('@/pages/SARV'));
 const SovereignCommand      = lazy(() => import('@/pages/SovereignCommand'));
 const LaunchReadiness       = lazy(() => import('@/pages/LaunchReadiness'));
@@ -238,7 +238,7 @@ const CRAFT_DATA: Record<string, { name: string; color: string; glow: string; im
   smoke: { name: 'SMOKECRAFT',  color: '#c8860a', glow: 'rgba(200,134,10,0.45)',  img: '/images/scenes/smokecraft-card.jpg', tagline: 'Aged Leaf · Warm Ember · Sovereign Smoke' },
   pour:  { name: 'POURCRAFT',   color: '#d4af37', glow: 'rgba(212,175,55,0.45)',  img: '/images/scenes/pourcraft-card.jpg',  tagline: 'Single Malt · Crystal Glass · Liquid Gold' },
   brew:  { name: 'BREWCRAFT',   color: '#b87333', glow: 'rgba(184,115,51,0.45)',  img: '/images/scenes/brewcraft-card.jpg',  tagline: 'Cold Craft · Copper Warmth · Fresh Pour' },
-  vape:  { name: 'VAPECRAFT',   color: '#8b5cf6', glow: 'rgba(139,92,246,0.45)', img: '/images/scenes/vapecraft-card.jpg',  tagline: 'Vapor Drift · Kinetic Haze · Neon Atmosphere' },
+  wine:  { name: 'WINECRAFT',   color: '#8B1A2F', glow: 'rgba(139,26,47,0.45)',  img: '/images/scenes/craft-hub.jpg',         tagline: 'Deep Velvet · Wine Legs · Terroir Soul' },
 };
 
 /* ── PHASE 1: THE VOID ─────────────────────────────────────── */
@@ -384,7 +384,7 @@ function PhaseCalibrate({ progress }: { progress: number }) {
 }
 
 /* ── PHASE 4 WRAPPER: ENVIRONMENT + DWELL ──────────────────── */
-const HOVER_CRAFTS = ['smoke', 'pour', 'brew', 'vape'];
+const HOVER_CRAFTS = ['smoke', 'pour', 'brew', 'wine'];
 
 function PhaseEnvironment({
   onDwell, onEEIS, entering,
@@ -648,7 +648,7 @@ function PhaseEEIS({ onExit }: { onExit: () => void }) {
 
 /* ── PHASE 7: RECAP ─────────────────────────────────────────── */
 function PhaseRecap({ onRestart }: { onRestart: () => void }) {
-  const DISCOVERIES = ['SMOKECRAFT 360', 'POURCRAFT 360', 'BREWCRAFT 360', 'VAPECRAFT 360'];
+  const DISCOVERIES = ['SMOKECRAFT 360', 'POURCRAFT 360', 'BREWCRAFT 360', 'WINECRAFT 360'];
   return (
     <div style={{ ...fullBleed('#000'), flexDirection: 'column', gap: 32 }} onClick={onRestart}>
       <div style={{ fontSize: 9, letterSpacing: '0.5em', color: 'rgba(212,175,55,0.5)', fontFamily: 'monospace' }}>SESSION COMPLETE</div>
@@ -1167,8 +1167,8 @@ export default function App() {
           <Route path="/pour">
             <SubPageProviders><PourCraft /></SubPageProviders>
           </Route>
-          <Route path="/vape">
-            <SubPageProviders><VapeCraft /></SubPageProviders>
+          <Route path="/wine">
+            <SubPageProviders><WineCraft /></SubPageProviders>
           </Route>
           <Route path="/sarv">
             <SubPageProviders><SARV /></SubPageProviders>

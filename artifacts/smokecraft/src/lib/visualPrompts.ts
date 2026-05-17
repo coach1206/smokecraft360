@@ -9,7 +9,7 @@
  *   buildPrompt("smoke", "Smoky & Bold", ["smoky", "bold", "earthy"])
  */
 
-export type CraftType = "smoke" | "pour" | "brew" | "vape";
+export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 export interface VisualPromptConfig {
   baseStyle:      string;
@@ -54,6 +54,14 @@ export const CRAFT_VISUAL_CONFIGS: Record<CraftType, VisualPromptConfig> = {
     composition:  "device hero shot, vapor cloud mid-exhale, dramatic atmosphere",
     colorPalette: "deep purple, electric blue, silver, black, vapor white",
     negativePrompt: "clinical, sterile, daylight, realistic smoke (not vapor), dirty",
+  },
+  wine: {
+    baseStyle:    "fine wine editorial photography, vineyard estate luxury, cellar depth",
+    lighting:     "warm candlelight or golden dusk, wine glass refraction, deep shadow",
+    atmosphere:   "intimate cellar or estate dining, tannin elegance, old-world refinement",
+    composition:  "glass hero shot, decanted pour, vineyard bokeh background",
+    colorPalette: "deep burgundy, ruby red, garnet, champagne gold, dark oak",
+    negativePrompt: "casual setting, bright overhead light, supermarket, plastic cups",
   },
 };
 
@@ -136,6 +144,12 @@ export const SOUND_HOOKS = {
     swipeSkip:  "vape_soft_exhale",
     reveal:     "vape_ambient_synth",
     addToOrder: "vape_device_click",
+  },
+  wine: {
+    swipeAdd:   "wine_cork_pop",
+    swipeSkip:  "wine_soft_pass",
+    reveal:     "wine_glass_ring",
+    addToOrder: "wine_pour_finish",
   },
 } as const;
 

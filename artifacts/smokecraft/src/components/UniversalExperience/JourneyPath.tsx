@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 
-type CraftType = "smoke" | "pour" | "brew" | "vape";
+type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 interface Waypoint { icon: string; label: string; desc: string }
 
@@ -43,6 +43,15 @@ const BASE_WAYPOINTS: Record<CraftType, [string, Waypoint[]]> = {
       { icon: "☁", label: "Cloud Layer",          desc: "Density and texture dialed" },
       { icon: "⚡", label: "Ambient Sync",        desc: "Environment reacts to you" },
       { icon: "◎", label: "Sensory Enhancement",  desc: "Full profile activated" },
+    ],
+  ],
+  wine: [
+    "Tonight's Vintage",
+    [
+      { icon: "○", label: "Varietal Discovery",    desc: "Your palate mapped" },
+      { icon: "◈", label: "Terroir Exploration",    desc: "Region and vintage calibrated" },
+      { icon: "⬡", label: "Cellar Access",          desc: "Reserve tier unlocked" },
+      { icon: "✶", label: "Signature Vintage",      desc: "Your perfect expression awaits" },
     ],
   ],
   smoke: [

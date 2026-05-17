@@ -5,7 +5,7 @@
 import { getStoredToken } from "./auth";
 
 export type PerformanceMode = "cinematic" | "balanced" | "low-power";
-export type ExperienceCraftType = "smoke" | "pour" | "brew" | "vape";
+export type ExperienceCraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 export type VenueMode = "lounge" | "nightlife" | "premium" | "social" | "calm" | "event";
 
 export interface ExperienceControlRow {

@@ -200,7 +200,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
 
       {/* Re-export ShareCard overlay */}
       {reexportCard && (() => {
-        const ct = reexportCard.craftType as "smoke" | "brew" | "pour" | "vape";
+        const ct = reexportCard.craftType as "smoke" | "brew" | "pour" | "vape" | "wine";
         const colors = CRAFT_ACCENTS[ct] ?? CRAFT_ACCENTS["smoke"]!;
         return (
           <ShareCard

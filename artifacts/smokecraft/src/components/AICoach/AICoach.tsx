@@ -7,7 +7,7 @@ import { getCoachLines, pickCoachLine } from "@/config/craftCoachLines";
 import type { CraftMoodCard, CraftStyleCard } from "@/components/CraftFlow";
 
 type Phase     = "intro" | "style" | "profile" | "match" | "reveal";
-type CraftType = "smoke" | "brew" | "pour" | "vape";
+type CraftType = "smoke" | "brew" | "pour" | "vape" | "wine";
 
 interface FixOption {
   label:  string;
@@ -47,6 +47,7 @@ const CRAFT_GLYPH: Record<CraftType, string> = {
   brew:  "🍺",
   pour:  "🥃",
   vape:  "💨",
+  wine:  "🍷",
 };
 
 export default function AICoach({

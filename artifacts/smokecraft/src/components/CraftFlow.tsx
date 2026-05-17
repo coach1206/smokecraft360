@@ -36,7 +36,7 @@ import ShareCard from "@/components/ShareCard/ShareCard";
 import { JourneyPath }       from "@/components/UniversalExperience/JourneyPath";
 import { ExperienceRecap }   from "@/components/UniversalExperience/ExperienceRecap";
 
-export type CraftCategory = "beer" | "alcohol" | "vape";
+export type CraftCategory = "beer" | "alcohol" | "vape" | "wine";
 
 export interface CraftStyleCard {
   id: string;
@@ -87,7 +87,7 @@ export interface CraftFlowConfig {
   /** When true, suppress cross-category pairing in reveal (used by VapeCraft). */
   hidePairing?: boolean;
   /** Craft type for DB build persistence. Derived from testIdPrefix when omitted. */
-  craftType?: "smoke" | "brew" | "pour" | "vape";
+  craftType?: "smoke" | "brew" | "pour" | "vape" | "wine";
 }
 
 /**
@@ -96,7 +96,7 @@ export interface CraftFlowConfig {
  * Phase-aware: profile phase (mood confirmed) allows the full score range.
  */
 function deriveScoreInputs(
-  craftType: "smoke" | "brew" | "pour" | "vape",
+  craftType: "smoke" | "brew" | "pour" | "vape" | "wine",
   phase:     "intro" | "style" | "profile" | "match" | "reveal",
   style:     CraftStyleCard,
   mood:      CraftMoodCard | null,
@@ -815,6 +815,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                   {config.styles.map((style, i) => {
                     const engineType: EngineCraftType =
                       config.category === "beer" ? "beer"    :
+                      config.category === "wine" ? "wine"    :
                       config.category === "vape" ? "vape"    :
                       style.id === "rich"        ? "wine"    : "whiskey";
                     const engineColor = extractGradientColor(style.gradient) || "#8a6030";

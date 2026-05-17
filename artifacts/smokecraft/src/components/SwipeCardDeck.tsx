@@ -39,7 +39,7 @@ interface Props {
   /** Kernel module slug for telemetry attribution. Defaults to "craft-smoke". */
   moduleSlug?:  string;
   /** Craft type included in telemetry event payloads. Defaults to "smoke". */
-  craftType?:   "smoke" | "pour" | "brew" | "vape";
+  craftType?:   "smoke" | "pour" | "brew" | "vape" | "wine";
 }
 
 /* ── Single top card ─────────────────────────────────────────── */
@@ -52,7 +52,7 @@ interface TopCardProps {
   rightLabel:    string;
   leftLabel:     string;
   moduleSlug:    string;
-  craftType:     "smoke" | "pour" | "brew" | "vape";
+  craftType:     "smoke" | "pour" | "brew" | "vape" | "wine";
 }
 
 function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, leftLabel, moduleSlug, craftType }: TopCardProps) {

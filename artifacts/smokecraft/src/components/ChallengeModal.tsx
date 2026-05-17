@@ -16,7 +16,7 @@ export interface ChallengeQuestion {
 
 interface Props {
   challenge:    ChallengeQuestion | null;
-  craftType:    "smoke" | "pour" | "brew" | "vape";
+  craftType:    "smoke" | "pour" | "brew" | "vape" | "wine";
   guestLevel:   string;
   onAnswer:     (wasCorrect: boolean, xp: number) => void;
   onDismiss:    () => void;

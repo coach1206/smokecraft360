@@ -1489,7 +1489,7 @@ export default function ExperiencePage() {
 
       {/* ── Craft Sensory Canvas — physics-based ambient overlay ─────────────── */}
       <CraftSensoryCanvas
-        craftType={type as "smoke" | "pour" | "brew" | "vape"}
+        craftType={type as "smoke" | "pour" | "brew" | "vape" | "wine"}
         accent={theme.accent}
         intensity={0.55}
       />
@@ -1755,7 +1755,7 @@ export default function ExperiencePage() {
       {/* AI Mentor Chat — streaming OpenAI response after each ADD swipe */}
       <MentorChatBubble
         mentorId={mentor?.id ?? "traditionalist"}
-        craftType={type as "smoke" | "pour" | "brew" | "vape"}
+        craftType={type as "smoke" | "pour" | "brew" | "vape" | "wine"}
         recentTags={addedTags.slice(-8)}
         guestLevel={guestProfile?.masteryTier ?? "explorer"}
         swipeAction={mentorSwipeAction}
@@ -1960,7 +1960,7 @@ export default function ExperiencePage() {
     {guestProfile && ritualComplete && (
       <ProgressionHUD
         guestProfileId={guestProfile.id}
-        craftType={type as "smoke" | "pour" | "brew" | "vape"}
+        craftType={type as "smoke" | "pour" | "brew" | "vape" | "wine"}
         localXp={localXp}
         onAchievement={setPendingAchievement}
       />
@@ -1975,13 +1975,13 @@ export default function ExperiencePage() {
     {/* Assisted discovery — staff handoff smoked glass overlay */}
     <AssistedDiscoveryOverlay
       guestProfileId={guestProfile?.id ?? null}
-      craftType={type as "smoke" | "pour" | "brew" | "vape"}
+      craftType={type as "smoke" | "pour" | "brew" | "vape" | "wine"}
     />
 
     {/* AI Challenge modal — fires every 5 ADD swipes */}
     <ChallengeModal
       challenge={activeChallenge}
-      craftType={type as "smoke" | "pour" | "brew" | "vape"}
+      craftType={type as "smoke" | "pour" | "brew" | "vape" | "wine"}
       guestLevel={guestProfile?.masteryTier ?? "explorer"}
       onAnswer={(wasCorrect, xp) => {
         setLocalXp(prev => prev + xp);
@@ -2146,7 +2146,7 @@ export default function ExperiencePage() {
     {/* ── Order Modal ───────────────────────────────────────────────────── */}
     <OrderModal
       isOpen={orderModalOpen}
-      craftType={(["smoke","pour","brew","vape"].includes(type) ? type : "smoke") as "smoke" | "pour" | "brew" | "vape"}
+      craftType={(["smoke","pour","brew","vape"].includes(type) ? type : "smoke") as "smoke" | "pour" | "brew" | "vape" | "wine"}
       onClose={() => setOrderModalOpen(false)}
       onSuccess={() => setOrderModalOpen(false)}
     />

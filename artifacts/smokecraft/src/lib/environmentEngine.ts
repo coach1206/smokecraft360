@@ -11,7 +11,7 @@
  *   - All mutations are small incremental nudges, not hard resets
  */
 
-export type CraftType = "smoke" | "pour" | "brew" | "vape";
+export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 export type LightingMood =
   | "warm_amber"    // smoky / bold / earthy → warmer ember
@@ -160,6 +160,7 @@ const CRAFT_DEFAULTS: Record<CraftType, Partial<EnvironmentState>> = {
   pour:  { lightingMood: "golden_soft",   bgBrightness: 0.45, glowStrength: 0.40, particleDensity: 0.3 },
   brew:  { lightingMood: "crystal_clean", bgBrightness: 0.52, glowStrength: 0.30, particleDensity: 0.5 },
   vape:  { lightingMood: "neon_pulse",    bgBrightness: 0.30, glowStrength: 0.80, particleDensity: 0.9 },
+  wine:  { lightingMood: "warm_amber",    bgBrightness: 0.60, glowStrength: 0.45, particleDensity: 0.3 },
 };
 
 // ── Lighting mood → visual parameters ────────────────────────────────────────
