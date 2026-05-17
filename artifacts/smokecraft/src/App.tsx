@@ -39,6 +39,8 @@ import { SovereignInsightCube }       from '@/components/SovereignInsightCube';
 import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
 import PhantomHUD                     from '@/components/PhantomHUD';
 import { SplashController }           from '@/components/SplashController';
+import { EATTransitionOverlay }       from '@/components/EATTransitionOverlay';
+import PosAuditBridge                 from '@/components/PosAuditBridge';
 import { KernelModeProvider }         from '@/contexts/KernelModeContext';
 import { SovereignRoute }             from '@/components/SovereignRoute';
 import InactivityGuard               from '@/components/InactivityGuard';
@@ -193,6 +195,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <SovereignInsightCube />
                                           <SovereignSocketBridge />
                                           <StealthHandoff />
+                                          <PosAuditBridge />
                                         </PresentationProvider>
                                         </HapticProvider>
                                         </TrifectaProvider>
@@ -986,6 +989,8 @@ export default function App() {
       <GuestAmbientLayer />
       {/* ── Cinematic 4-stage brand intro — fixed overlay, session-gated ── */}
       <SplashController />
+      {/* ── EAT management handoff — fixed overlay, triggered by eat:enter ── */}
+      <EATTransitionOverlay />
       <Suspense fallback={<PageLoader />}>
         <Switch>
           {/* ── Enterprise / AI (standalone — no full provider stack needed) ── */}

@@ -1,0 +1,24 @@
+CRITICAL MANAGEMENT HANDOFF INITIALIZATION, E.A.T. LOGO TRANSITION TIMELINE, & HARDWARE OVERRIDE: The transition from guest mode to the manager control deck is un-styled and lacks sensory weight. You must refactor PosAuditBridge.tsx, usePosIntegration.ts, App.tsx, and TitanEATHub.tsx to implement this exact high-performance WebGL/CSS physics transition loop utilizing the physical E.A.T. System logo asset. Verify 'tsc --noEmit' passes with exit code 0.
+
+1. STAGE 1: GEOMETRIC SHATTER & LIQUID RIPPLE DISRUPTION
+   - The exact millisecond a staff member inputs a verified administrative security PIN, seize the active UI state rendering layer.
+   - Inject a full-screen HTML5 WebGL canvas overlay over the viewport, executing a high-velocity liquid displacement ripple wave effect across the layout container. 
+   - Concurrently, execute a 180-degree vertical flip matrix transformation ('transform: rotateY(180deg) scale(0.95); transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);') to visually mask and dissolve the guest session architecture into a solid pitch-black background layer (#000000).
+
+2. STAGE 2: THE SHADOW EMERGENCE & EXPLOSIVE LOGO SCALE
+   - Out of the pitch-black void, materialize the heavy, gold-and-iron 'E.A.T. SYSTEM' emblem asset centrally.
+   - Animate the emblem's entry using an aggressive, physics-driven scale exponential curve: scale up rapidly from scale-0 to scale-1.3 (130% viewport size) over exactly 0.8 seconds while running an opacity sweep from 0 to 1.
+   - Audio Sync: Synchronize this emergence loop with a low-frequency bass-drop sub-sweep context generated natively via the Web Audio API to emphasize the depth of the system switch.
+
+3. STAGE 3: HIGH-TENSION DENSE SNAP-BACK & EMISSION FLASH
+   - Immediately following the peak of the 130% scale expansion, execute a high-tension elastic snap-back animation over exactly 0.4 seconds, compressing the E.A.T. logo down to its permanent scale-1.0 size ('transform: scale(1.0); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);').
+   - The absolute millisecond the logo strikes scale-1.0, fire a sharp, brilliant gold outer neon drop-shadow emission flash ('filter: drop-shadow(0 0 35px rgba(212,175,55,0.7));') across the chiseled boundary lines to lock the system into active command state.
+
+4. STAGE 4: FLUID WORKSPACE DEPLOYMENT
+   - 0.5 seconds after the gold flash locks, gracefully fade out the E.A.T. system logo and slide open the full multi-panel E.A.T. (Environment, Asset, Transaction) Management Command Dashboard:
+     * Left Column: E - Environment telemetry, active canvas states, and system network health.
+     * Center Column: A - Asset allocation maps, live back-bar fluid ounces, humidor cabinet inventories, and the interactive Drag-and-Drop Floor Map Configurator.
+     * Right Column: T - Transaction analytics, profile demographic indexes, current session spend tallies, and live tableside drink counts.
+   - State Snapshot Retention: Ensure that when staff clicks 'Resume Guest Journey', the management interface collapses cleanly, executes a rapid mirror flip, and instantly re-hydrates the cached customer session state precisely where they left off.
+
+Execute this comprehensive E.A.T. transition loop, WebGL ripple disruption pass, and physics-based snap-back scaling routine now.

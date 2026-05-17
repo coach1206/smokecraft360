@@ -349,7 +349,12 @@ export default function PinLogin() {
             setFailedAttempts(0);
             setSuccess(data.role ?? "staff");
             cc.addAuditEntry("auth.pin_login", `${data.name ?? "Staff"} authenticated (${data.role ?? "staff"})`, data.name ?? "Staff");
-            const dest = data.redirectTo ?? (data.role === "staff" ? "/pos" : "/dashboard");
+            const EAT_ROLES = ["admin", "super_admin", "venue_owner", "sovereign", "manager"];
+            const dest = data.redirectTo ?? (
+              data.role === "staff" ? "/pos" :
+              EAT_ROLES.includes(data.role ?? "") ? "/titan-eat" :
+              "/dashboard"
+            );
             setTimeout(() => navigate(dest), 950);
           } else if (data.error === "too_many_attempts") {
             const until = Date.now() + (data.retryAfterSeconds ?? LOCKOUT_SECONDS) * 1000;

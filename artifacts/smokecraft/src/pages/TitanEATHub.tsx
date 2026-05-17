@@ -21,6 +21,7 @@ import {
   Smartphone, Signal,
 } from "lucide-react";
 import { SovereignMemory } from "@/pages/WelcomeEEIE";
+import { usePosIntegration } from "@/hooks/usePosIntegration";
 import {
   EATBridge,
   EATSovereignLedger,
@@ -438,6 +439,9 @@ function XPortNodeCard({ index, onConfigured, onStream }: {
 export default function TitanEATHub() {
   const [, navigate] = useLocation();
 
+  /* ── Guest journey snapshot (Resume handoff) ── */
+  const { getGuestResumePath, clearGuestSnapshot } = usePosIntegration();
+
   /* ── Page state ── */
   const [rippling,   setRippling]   = useState(false);
   const [isLockedDown, setIsLockedDown] = useState(false);
@@ -737,6 +741,14 @@ export default function TitanEATHub() {
     setTimeout(() => navigate(path), 720);
   }, [navigate]);
 
+  /* ── Resume Guest Journey — mirror-flip exit back to saved guest path ── */
+  const handleResumeGuest = useCallback(() => {
+    const path = getGuestResumePath() ?? "/craft-hub";
+    clearGuestSnapshot();
+    setRippling(true);
+    setTimeout(() => navigate(path), 620);
+  }, [getGuestResumePath, clearGuestSnapshot, navigate]);
+
   const linkedCount = Object.values(linkStates).filter(s => s === "LINKED").length;
 
   return (
@@ -867,6 +879,25 @@ export default function TitanEATHub() {
           <motion.button whileTap={{ scale: 0.93 }} onClick={() => handleNav("/eeie-command")}
             style={{ padding: "8px 16px", borderRadius: 9, background: "rgba(46,91,255,0.10)", border: "1px solid rgba(46,91,255,0.28)", color: C.cobaltHi, fontFamily: C.header, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", cursor: "pointer", textTransform: "uppercase" }}
           >EEIE HUB</motion.button>
+
+          {/* Resume Guest Journey — shown only when a guest snapshot exists */}
+          {getGuestResumePath() && (
+            <motion.button
+              whileTap={{ scale: 0.93 }}
+              onClick={handleResumeGuest}
+              style={{
+                padding: "8px 16px", borderRadius: 9,
+                background: "rgba(212,139,0,0.12)",
+                border: "1px solid rgba(212,139,0,0.40)",
+                color: C.amberHi,
+                fontFamily: C.header, fontSize: 9, fontWeight: 700,
+                letterSpacing: "0.18em", cursor: "pointer", textTransform: "uppercase",
+                boxShadow: "0 0 12px rgba(212,139,0,0.18)",
+              }}
+            >
+              RESUME GUEST JOURNEY
+            </motion.button>
+          )}
 
           <motion.button whileTap={{ scale: 0.91 }} onClick={() => doExit()}
             style={{ padding: "8px 16px", borderRadius: 9, background: "rgba(46,91,255,0.08)", border: "1px solid rgba(46,91,255,0.20)", color: `${C.cobaltHi}BB`, fontFamily: C.header, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", cursor: "pointer", textTransform: "uppercase" }}
