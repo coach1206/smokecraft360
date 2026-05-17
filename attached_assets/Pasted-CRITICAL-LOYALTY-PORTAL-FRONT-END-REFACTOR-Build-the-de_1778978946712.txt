@@ -1,0 +1,24 @@
+CRITICAL LOYALTY PORTAL FRONT-END REFACTOR: Build the dedicated, front-end Return-Visit Login and Dashboard screen within MasterBlender.tsx and a new component file called LoyaltyGateway.tsx. This screen must serve as the primary entry checkpoint for guests, allowing them to lookup their historical profiles, see their competitive status against the 'Nightly Lounge Average', and view the exact points required to level up before initiating a new masterclass session.
+
+Execute this design and coding pass end-to-end to enforce this exact premium specification:
+
+1. THE CINEMATIC IDLE STATE & INPUT FIELD:
+   - Construct a striking, low-lit entry view titled "The Art of the Cigar" using our large cinematic serif typography. 
+   - Feature a singular, minimalist, smoked-glass input field with a deep gold border accent (rgba(212,175,55,0.2)) where returning guests enter their unique session identifier or loyalty pin.
+   - The interactive "Access Masterclass" button must mechanically compress on contact (scale-96, translate-y-[2px]) and synchronously fire our Web Audio API playClick() 3400Hz bandpass tone.
+
+2. DYNAMIC LOYALTY PROFILE DASHBOARD REVEAL:
+   - When a valid identifier is submitted, bypass the standard intro and smoothly animate a glassmorphic dashboard card into center focus (backdrop-filter: blur(30px), background: linear-gradient(135deg, rgba(15,15,15,0.85) 0%, rgba(5,5,5,0.70) 100%)).
+   - Display a personalized greeting based on their historical database record (e.g., "Welcome Back, Cultivated Beginner").
+   - Showcase a high-fidelity visual progress gauge mapping out their accumulated XP and calculating the exact numerical threshold required to unlock the next milestone rank tier.
+   - Embed a prominent leaderboard micro-widget displaying the user's historical score compared directly against the current, real-time 'Nightly Lounge Average' stored in the supply_verification_ledger.
+
+3. REVENUE DRIVEN LOCKED-STATE ALERTS:
+   - If the user has only configured a blend for one country historically, display an alert banner stating: "Vault Locked: You must complete a masterclass selection for TWO different countries to qualify for the Golden Box archive." 
+   - Provide a large, inviting touch target to immediately spin up Session II (12 Mins) or Session III (15 Mins) based on their current progress rank, instantly querying the humidor inventory database.
+
+4. PRESERVE ALL PREMIUM COCKPIT VISUAL TEXTURES:
+   - Retain the absolute black (#000000) canvas background with the 4% radial gold gradient overlay (#FFB000). 
+   - Ensure the HTML5 SmokeCanvas operates flawlessly at z-index 9996, allowing organic smoke mist and rising embers to drift gracefully behind the login cards. Ensure the timeout modal unmounts properly with pointer-events auto intact at z-index 999999.
+
+Refactor the front-end user lookup state router now. Ensure all property interfaces compile clean via tsc --noEmit with exit 0.

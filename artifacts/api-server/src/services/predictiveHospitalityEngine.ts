@@ -72,16 +72,20 @@ function storePrediction(p: HospitalityPrediction): void {
 
 // ── Behavioral scoring ────────────────────────────────────────────────────────
 
+// Columns mapped from actual orchestrator_events schema
+// (skip_ratio, confidence, premium_intent, social_energy, avg_swipe_ms, session_depth)
 interface RawSessionData extends Record<string, unknown> {
-  session_id:     string;
-  venue_id:       string;
-  guest_id:       string | null;
-  event_count:    string;
-  skip_count:     string;
-  add_count:      string;
-  unique_types:   string;
-  elapsed_ms:     string;
-  event_count_l5: string;   // last 5 min event count (pace check)
+  session_id:       string;
+  venue_id:         string;
+  guest_id:         string | null;
+  event_count:      string;
+  avg_skip_ratio:   string;   // AVG(skip_ratio)   — replaces skip_count/add_count
+  avg_confidence:   string;   // AVG(confidence)
+  avg_premium:      string;   // AVG(premium_intent)
+  avg_social:       string;   // AVG(social_energy)
+  avg_swipe_ms:     string;   // AVG(avg_swipe_ms) — replaces elapsed_ms
+  max_depth:        string;   // MAX(session_depth) — replaces unique_types
+  event_count_l5:   string;   // recent-window row count
 }
 
 function scoreHesitation(avgTimeBetweenMs: number, skipRatio: number): number {
@@ -198,23 +202,27 @@ async function evolveMemory(
 // ── Core analysis cycle ───────────────────────────────────────────────────────
 
 async function analyzeActiveSessions(): Promise<void> {
+  // Uses actual orchestrator_events columns (skip_ratio, confidence, premium_intent, etc.)
+  // event_type does not exist on this table — behavioral signals are pre-aggregated per row.
   const rows = await db.execute<RawSessionData>(sql`
     SELECT
       session_id,
       venue_id,
-      MAX(guest_id)                                                                        AS guest_id,
+      MAX(NULL::text)                                                                      AS guest_id,
       COUNT(*)                                                                             AS event_count,
-      SUM(CASE WHEN event_type = 'swipe_skip'  THEN 1 ELSE 0 END)                         AS skip_count,
-      SUM(CASE WHEN event_type IN ('swipe_add','order_confirmed') THEN 1 ELSE 0 END)       AS add_count,
-      COUNT(DISTINCT event_type)                                                           AS unique_types,
-      EXTRACT(EPOCH FROM (MAX(created_at) - MIN(created_at))) * 1000                      AS elapsed_ms,
+      AVG(skip_ratio)::float                                                               AS avg_skip_ratio,
+      AVG(confidence)::float                                                               AS avg_confidence,
+      AVG(premium_intent)::float                                                           AS avg_premium,
+      AVG(social_energy)::float                                                            AS avg_social,
+      AVG(avg_swipe_ms)::float                                                             AS avg_swipe_ms,
+      MAX(session_depth)                                                                   AS max_depth,
       SUM(CASE WHEN created_at > NOW() - INTERVAL '5 minutes' THEN 1 ELSE 0 END)          AS event_count_l5
     FROM orchestrator_events
     WHERE created_at > NOW() - INTERVAL '15 minutes'
       AND session_id IS NOT NULL
       AND venue_id   IS NOT NULL
     GROUP BY session_id, venue_id
-    HAVING COUNT(*) >= 3
+    HAVING COUNT(*) >= 2
   `);
 
   const io = getIO();
@@ -222,23 +230,19 @@ async function analyzeActiveSessions(): Promise<void> {
   for (const row of rows.rows) {
     try {
       const eventCount   = Number(row.event_count)    || 0;
-      const skipCount    = Number(row.skip_count)     || 0;
-      const addCount     = Number(row.add_count)      || 0;
-      const uniqueTypes  = Number(row.unique_types)   || 1;
-      const elapsedMs    = Number(row.elapsed_ms)     || 1;
       const eventCountL5 = Number(row.event_count_l5) || 0;
+      // Behavioral signals are pre-aggregated in orchestrator_events rows
+      const skipRatio    = Number(row.avg_skip_ratio) || 0.5;
+      const addRatio     = 1 - skipRatio;
+      const uniqueTypes  = Math.max(1, Number(row.max_depth) || 1);
+      const swipeMs      = Number(row.avg_swipe_ms)   || 1500;
 
-      const avgTimeBetweenMs = eventCount > 1 ? elapsedMs / (eventCount - 1) : 0;
-      const skipRatio        = eventCount > 0 ? skipCount / eventCount : 0;
-      const addRatio         = eventCount > 0 ? addCount  / eventCount : 0;
-      const uniqueGuests     = 1;  // derived from session context
-
-      const hesitation = scoreHesitation(avgTimeBetweenMs, skipRatio);
+      const hesitation = scoreHesitation(swipeMs, skipRatio);
       const curiosity  = scoreCuriosity(uniqueTypes, eventCount);
       const confidence = scoreConfidence(addRatio, skipRatio);
       const fatigue    = scoreFatigue(eventCountL5, eventCount);
       const premium    = scorePremiumIntent(addRatio, confidence, curiosity);
-      const social     = Math.min(100, uniqueGuests * 33);
+      const social     = Math.min(100, Math.round(Number(row.avg_social) || 40));
       const composite  = Math.round(
         hesitation * 0.15 + curiosity * 0.25 + confidence * 0.25 +
         (100 - fatigue) * 0.15 + premium * 0.20,

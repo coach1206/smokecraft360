@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { AudioWaveToggle, useAudio } from "@/contexts/AudioContext";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { getStaffLine } from "@/lib/CraftVoiceRouter";
+import LoyaltyGateway  from "@/components/LoyaltyGateway";
 
 // Velvet slide tone (Web Audio synth — no external file)
 function velvetSlide(): void {
@@ -3323,6 +3324,7 @@ export default function MasterBlender() {
   const [smokeSlider, setSmokeSlider] = useState(50);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [txId,         setTxId]         = useState<string | null>(null);
+  const [loyaltyDone,  setLoyaltyDone]  = useState(false);
 
   // Scoring state
   const scoreFrozenRef             = useRef(false);
@@ -3495,6 +3497,20 @@ export default function MasterBlender() {
     "Vitola & Smoke Time",
     "The Final Cut",
   ];
+
+  // ── Loyalty Gateway — pre-session return-visit checkpoint ──────────────
+  if (!loyaltyDone) {
+    return (
+      <LoyaltyGateway
+        onNewGuest={() => setLoyaltyDone(true)}
+        onStartSession={(seedXp) => {
+          setXp(seedXp);
+          setGateway("blending");
+          setLoyaltyDone(true);
+        }}
+      />
+    );
+  }
 
   return (
     <div
