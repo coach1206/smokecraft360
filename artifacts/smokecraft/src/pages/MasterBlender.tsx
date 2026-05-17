@@ -228,6 +228,7 @@ const MENTORS = [
     bio: "Mastery over smooth, complex profile layering with multi-generational Cibao Valley seed descendants. His blends carry cedar warmth, cream body, and a long, clean white ash finish.",
     tag: "THE TRADITION",
     soilAffinity: "alluvial" as const,
+    guidance: "In the Cibao Valley we speak of balance as a living force — not a calculation. Observe every priming tier before you. The tobacco leaf will confirm when your hand has made the right choice. Proceed with precision; your blend reveals your character.",
     portrait: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=600&q=80",
   },
   {
@@ -239,6 +240,7 @@ const MENTORS = [
     bio: "Specializes in high-intensity, bold, spice-forward profiles utilizing volcanic soil properties. Dark chocolate, pepper, and earth are his signature hallmarks.",
     tag: "THE MODERN SOVEREIGN",
     soilAffinity: "volcanic" as const,
+    guidance: "The volcano demands conviction. In Esteli we do not deliberate — we commit. Every decision here must carry the weight of intention. Half-measures produce forgettable blends. Choose boldly, or return to the beginning.",
     portrait: "https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=600&q=80",
   },
   {
@@ -250,6 +252,7 @@ const MENTORS = [
     bio: "Cultivates under equatorial clouds producing ultra-silky, cream-forward wrappers with rare botanical nuance. Her profiles are floral, refined, and deceptively powerful.",
     tag: "THE HIGHLAND BOTANIST",
     soilAffinity: "alluvial" as const,
+    guidance: "Beneath Andean clouds, I learned that complexity is earned through restraint. Study what is before you carefully — the elegant answer is rarely the obvious one. In the highlands, we trust the process, and the process rewards only those who listen.",
     portrait: "https://images.unsplash.com/photo-1511113202302-ef60000a6e87?auto=format&fit=crop&w=600&q=80",
   },
 ];
@@ -1132,28 +1135,30 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
             onTouchStart={() => playClick()}
             onClick={() => { playClick(); onEnterNew(); }}
           >
-            ENTER MASTERCLASS
+            BEGIN JOURNEY
           </motion.button>
           <button
             style={{
               background: "transparent",
-              border: "1px solid rgba(212,175,55,0.50)",
-              color: "rgba(212,175,55,0.82)",
-              padding: "15px 40px",
-              minHeight: 52,
-              fontSize: "clamp(11px, 1.4vw, 13px)",
-              fontWeight: 600,
-              letterSpacing: "0.30em",
+              border: "none",
+              color: "rgba(212,175,55,0.55)",
+              padding: "10px 20px",
+              minHeight: 44,
+              fontSize: "clamp(10px, 1.2vw, 11px)",
+              fontWeight: 500,
+              letterSpacing: "0.32em",
               textTransform: "uppercase" as const,
-              borderRadius: 4,
               cursor: "pointer",
               fontFamily: "'Inter',sans-serif",
+              textDecoration: "underline",
+              textDecorationColor: "rgba(212,175,55,0.24)",
+              textUnderlineOffset: "5px",
               transition: "all 0.25s ease",
             }}
             onTouchStart={() => playClick()}
             onClick={() => { playClick(); setDrawerOpen(true); }}
           >
-            RETURNING GUEST ACCESS
+            RETURNING MASTERCLASS GUEST
           </button>
           <button
             style={{
@@ -1746,6 +1751,73 @@ function CountryTracker({ currentCountry }: { currentCountry: string | null }) {
           ? "★ Dual-origin mastery achieved — Golden Box Vault access granted."
           : "Complete a second origin masterclass to unlock the Golden Box Vault and Master Sommelier status."}
       </p>
+    </motion.div>
+  );
+}
+
+// ── Mentor Assist Overlay — slides up on each intermediate phase ──────────────────
+function MentorAssistOverlay({ mentorId, onAcknowledge }: {
+  mentorId: string | null;
+  onAcknowledge: () => void;
+}) {
+  const mentor = MENTORS.find(m => m.id === mentorId);
+  if (!mentor) return null;
+  return (
+    <motion.div
+      key={`ma-${mentorId}`}
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      exit={{ y: "100%" }}
+      transition={{ delay: 0.65, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+      style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50000,
+        background: "linear-gradient(to top, rgba(4,2,0,0.99) 0%, rgba(10,7,2,0.97) 100%)",
+        backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
+        borderTop: "1px solid rgba(212,175,55,0.40)",
+        borderRadius: "22px 22px 0 0",
+        padding: "24px 28px 40px",
+        boxShadow: "0 -28px 80px rgba(0,0,0,0.90)",
+      }}
+    >
+      <div style={{ maxWidth: 640, margin: "0 auto" }}>
+        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.48em",
+          color: "rgba(212,175,55,0.48)", textTransform: "uppercase" as const, margin: "0 0 16px" }}>
+          MASTER MENTOR ASSIST • GUIDANCE MODE
+        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 18 }}>
+          <img src={mentor.portrait} alt={mentor.name}
+            style={{ width: 70, height: 70, borderRadius: "50%", objectFit: "cover",
+              border: "2px solid rgba(212,175,55,0.50)",
+              boxShadow: "0 0 30px rgba(212,175,55,0.24), 0 8px 20px rgba(0,0,0,0.85)" }} />
+          <div>
+            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.5rem",
+              color: "#ffffff", fontWeight: 300, margin: "0 0 4px", letterSpacing: "0.04em" }}>
+              {mentor.flag} {mentor.name}
+            </p>
+            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.28em",
+              color: "rgba(212,175,55,0.50)", textTransform: "uppercase" as const, margin: 0 }}>
+              {mentor.tag}
+            </p>
+          </div>
+        </div>
+        <div style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.18)",
+          borderRadius: 10, padding: "16px 20px", marginBottom: 22 }}>
+          <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.08rem", lineHeight: 1.78,
+            color: "rgba(240,232,212,0.90)", margin: 0, fontStyle: "italic" }}>
+            &ldquo;{mentor.guidance}&rdquo;
+          </p>
+        </div>
+        <motion.button
+          whileTap={{ scale: 0.96, y: 2 }}
+          onClick={onAcknowledge}
+          style={{ width: "100%", ...GW.btn(), minHeight: 56,
+            fontSize: "clamp(11px,1.6vw,13px)", letterSpacing: "0.34em",
+            background: "linear-gradient(135deg, rgba(212,175,55,0.20) 0%, rgba(180,145,30,0.16) 100%)",
+            border: "1px solid rgba(212,175,55,0.58)", color: GOLD }}
+        >
+          I UNDERSTAND — CONTINUE
+        </motion.button>
+      </div>
     </motion.div>
   );
 }
@@ -2892,47 +2964,70 @@ function GatewayPrimingMatrix({ onNext, onBack, onPrimingChange }: {
   onBack: () => void;
   onPrimingChange?: (v: number, sv: number, l: number) => void;
 }) {
-  const [volado,  setVolado]  = useState(30);
-  const [secoViso, setSecoViso] = useState(50);
-  const [open1, setOpen1] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const [open3, setOpen3] = useState(false);
+  const [volado,       setVolado]       = useState(30);
+  const [secoViso,     setSecoViso]     = useState(50);
+  const [open1,        setOpen1]        = useState(false);
+  const [open2,        setOpen2]        = useState(false);
+  const [open3,        setOpen3]        = useState(false);
+  const [penaltyFlash, setPenaltyFlash] = useState(false);
 
-  const ligero = Math.max(0, 100 - volado - secoViso);
-  const total  = volado + secoViso + ligero;
-  const valid  = total === 100 && ligero >= 0;
+  const ligero   = Math.max(0, 100 - volado - secoViso);
+  const total    = volado + secoViso + ligero;
+  const valid    = total === 100 && ligero >= 0;
+  const dominant = (volado >= secoViso && volado >= ligero) ? "volado"
+    : (secoViso >= ligero) ? "seco" : "ligero";
 
-  // Notify parent whenever ratio changes
   useEffect(() => {
     onPrimingChange?.(volado, secoViso, ligero);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volado, secoViso, ligero]);
 
   function clampV(v: number, sv: number): [number, number] {
-    const used = v + sv;
-    if (used > 100) return [v, 100 - v];
+    if (v + sv > 100) return [v, 100 - v];
     return [v, sv];
   }
-
   function handleVolado(val: number) {
-    const [nv, nsv] = clampV(val, secoViso);
-    setVolado(nv); setSecoViso(nsv);
+    const [nv, nsv] = clampV(val, secoViso); setVolado(nv); setSecoViso(nsv);
   }
   function handleSecoViso(val: number) {
-    const [nv, nsv] = clampV(volado, val);
-    setVolado(nv); setSecoViso(nsv);
+    const [nv, nsv] = clampV(volado, val); setVolado(nv); setSecoViso(nsv);
+  }
+  function playError() {
+    try {
+      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = 640;
+      o.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + 0.30);
+      o.type = "sine";
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.38);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.40);
+    } catch {}
   }
 
   const PRIMINGS = [
-    { id: "volado",   label: "Volado",       sub: "Bottom Tiers",     color: "#8BC34A", pct: volado,   set: handleVolado,
+    { id: "volado",    label: "Volado",    sub: "Bottom Tiers",  color: "#8BC34A", pct: volado,   set: handleVolado,
       role: "Regulates burn chemistry and combustion stability. The lowest leaves absorb maximum soil sugars, ensuring an even, cool draw from first light to final third.",
       open: open1, setOpen: setOpen1 },
-    { id: "seco_viso", label: "Seco / Viso", sub: "Middle Tiers",     color: GOLD,      pct: secoViso, set: handleSecoViso,
-      role: "Dictates the aromatic flavor bloom. Air-cured 45–60 days, these mid-priming leaves lock in cedar, leather, cocoa, and spice oils that define your blend's signature.",
+    { id: "seco_viso", label: "Seco/Viso", sub: "Middle Tiers",  color: GOLD,      pct: secoViso, set: handleSecoViso,
+      role: "Dictates the aromatic flavor bloom. Air-cured 45\u201360 days, these mid-priming leaves lock in cedar, leather, cocoa, and spice oils that define your blend's signature.",
       open: open2, setOpen: setOpen2 },
-    { id: "ligero",   label: "Ligero",        sub: "Top Tiers",        color: "#ef4444", pct: ligero,   set: () => {},
-      role: "Delivers raw nicotine strength, body, and heavy oil density. Auto-calculated. Top-canopy leaves require 18–24 months minimum aging to tame peak alkaloid intensity.",
+    { id: "ligero",    label: "Ligero",    sub: "Top Tiers",     color: "#ef4444", pct: ligero,   set: () => {},
+      role: "Delivers raw nicotine strength, body, and heavy oil density. Auto-calculated. Top-canopy leaves require 18\u201324 months minimum aging to tame peak alkaloid intensity.",
       open: open3, setOpen: setOpen3 },
+  ];
+  const LEAF_VISUALS = [
+    { id: "volado", pct: volado,   color: "#8BC34A", label: "Volado",
+      img: "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=700&q=80",
+      desc: "High-sugar base leaf \u00b7 Burn stability" },
+    { id: "seco",   pct: secoViso, color: GOLD,      label: "Seco / Viso",
+      img: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=700&q=80",
+      desc: "Aromatic bloom layer \u00b7 Flavor expression" },
+    { id: "ligero", pct: ligero,   color: "#ef4444", label: "Ligero",
+      img: "https://images.unsplash.com/photo-1533779183510-8738c1c4bab0?auto=format&fit=crop&w=700&q=80",
+      desc: "Crown-tier strength \u00b7 Raw intensity" },
   ];
 
   return (
@@ -2949,168 +3044,223 @@ function GatewayPrimingMatrix({ onNext, onBack, onPrimingChange }: {
           background: "radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.07) 0%, rgba(0,0,0,0.94) 100%)" }} />
       </div>
 
-      <div style={GW.chamber} className="overflow-y-auto">
-        <MovementBadge movement="II" />
-        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
-          textTransform: "uppercase" as const, marginBottom: 10 }}>
-          Leaf Architecture · Priming Ratios
-        </p>
-        <h2 style={GW.title}>The Priming Matrix</h2>
-        <p style={{ color: "rgba(240,232,212,0.72)", fontSize: 17, lineHeight: 1.65, marginBottom: 24 }}>
-          A master blend balances all three vertical primings of the tobacco plant to control burn, aroma, and raw power.
-          Adjust the sliders until your ratio totals exactly <strong style={{ color: GOLD }}>100%</strong>.
-        </p>
-
-        {/* Ratio total indicator */}
-        <motion.div
-          animate={{ borderColor: valid ? `${GOLD}50` : "#ef444450" }}
-          style={{
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-            background: valid ? "rgba(212,175,55,0.05)" : "rgba(239,68,68,0.05)",
-            border: `1px solid ${valid ? GOLD + "40" : "#ef444440"}`,
-            borderRadius: 8, padding: "10px 18px", marginBottom: 22,
-          }}>
-          <span style={{ color: "rgba(240,232,212,0.60)", fontSize: 13, letterSpacing: "0.12em" }}>
-            TOTAL RATIO
-          </span>
-          <motion.span
-            key={total}
-            initial={{ scale: 1.15 }}
-            animate={{ scale: 1 }}
-            style={{ color: valid ? GOLD : "#ef4444", fontSize: 22, fontWeight: 800, letterSpacing: "0.06em" }}>
-            {total}%
-          </motion.span>
-          {valid && (
-            <motion.span initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
-              style={{ color: "#8BC34A", fontSize: 13, fontWeight: 700, letterSpacing: "0.14em" }}>
-              LOCKED ✓
-            </motion.span>
-          )}
-        </motion.div>
-
-        {/* Sliders */}
-        <div style={{ display: "flex", flexDirection: "column" as const, gap: 18, marginBottom: 22 }}>
-          {PRIMINGS.map((p) => (
-            <div key={p.id}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-                <div>
-                  <span style={{ color: p.color, fontSize: 16, fontWeight: 700 }}>{p.label}</span>
-                  <span style={{ color: "rgba(240,232,212,0.45)", fontSize: 12,
-                    letterSpacing: "0.14em", textTransform: "uppercase" as const, marginLeft: 10 }}>
-                    {p.sub}
-                  </span>
-                </div>
-                <motion.span key={p.pct} initial={{ scale: 1.2 }} animate={{ scale: 1 }}
-                  style={{ color: p.color, fontSize: 20, fontWeight: 800, letterSpacing: "0.06em" }}>
-                  {p.pct}%
-                </motion.span>
-              </div>
-
-              {/* Custom glassmorphic slider */}
-              <div style={{ position: "relative", height: 36, display: "flex", alignItems: "center" }}>
-                <div style={{
-                  position: "absolute", left: 0, right: 0, height: 6,
-                  background: "rgba(255,255,255,0.07)", borderRadius: 3,
-                }} />
-                <div style={{
-                  position: "absolute", left: 0, width: `${p.pct}%`, height: 6,
-                  background: `linear-gradient(90deg, ${p.color}60, ${p.color})`,
-                  borderRadius: 3, transition: "width 0.1s",
-                  boxShadow: `0 0 10px ${p.color}40`,
-                }} />
-                <input
-                  type="range" min={0} max={100} value={p.pct}
-                  disabled={p.id === "ligero"}
-                  onChange={e => p.set(Number(e.target.value))}
-                  onTouchStart={() => {}}
-                  style={{
-                    position: "absolute", left: 0, right: 0, width: "100%",
-                    height: 36, opacity: 0, cursor: p.id === "ligero" ? "not-allowed" : "pointer",
-                    margin: 0, padding: 0,
-                  }}
-                />
-                {/* Thumb indicator */}
-                <motion.div
-                  animate={{ left: `calc(${p.pct}% - 10px)` }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  style={{
-                    position: "absolute", width: 20, height: 20, borderRadius: "50%",
-                    background: p.id === "ligero" ? "#333" : p.color,
-                    border: `2px solid ${p.id === "ligero" ? "#444" : p.color}`,
-                    boxShadow: p.id === "ligero" ? "none" : `0 0 12px ${p.color}60`,
-                    pointerEvents: "none",
-                    top: "50%", transform: "translateY(-50%)",
-                  }}
-                />
-              </div>
-
-              {/* Disclosure drawer */}
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                onClick={() => { p.setOpen(!p.open); playClick(); }}
-                style={{
-                  display: "flex", alignItems: "center", gap: 6, background: "none",
-                  border: "none", cursor: "pointer", padding: "4px 0", marginTop: 4,
-                }}>
-                <span style={{ color: `${p.color}60`, fontSize: 11, letterSpacing: "0.18em",
-                  textTransform: "uppercase" as const }}>
-                  {p.open ? "▼ Hide" : "▶ Learn"}
-                </span>
-              </motion.button>
-              <AnimatePresence>
-                {p.open && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    style={{
-                      overflow: "hidden",
-                      background: `${p.color}08`,
-                      border: `1px solid ${p.color}18`,
-                      borderRadius: 8, padding: "12px 16px", marginTop: 6,
-                    }}>
-                    <p style={{ color: "rgba(240,232,212,0.78)", fontSize: 14,
-                      lineHeight: 1.65, margin: 0 }}>{p.role}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+      {/* Bad-planning penalty flash */}
+      <AnimatePresence>
+        {penaltyFlash && (
+          <motion.div key="penalty-flash"
+            initial={{ opacity: 0, scale: 0.90 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            style={{ position: "fixed", inset: 0, zIndex: 99998,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: "rgba(239,68,68,0.06)", pointerEvents: "none" }}>
+            <div style={{ background: "rgba(239,68,68,0.14)",
+              border: "1.5px solid rgba(239,68,68,0.72)",
+              borderRadius: 16, padding: "28px 52px", textAlign: "center" as const,
+              boxShadow: "0 0 70px rgba(239,68,68,0.35)" }}>
+              <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "2rem",
+                color: "#ef4444", fontWeight: 300, margin: "0 0 6px",
+                letterSpacing: "0.05em" }}>BLEND IMBALANCE DETECTED</p>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.28em",
+                color: "rgba(239,68,68,0.78)", textTransform: "uppercase" as const, margin: 0 }}>
+                −2 PTS — Contradicts mentor philosophy
+              </p>
             </div>
-          ))}
-        </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* Visual ratio bar */}
-        <div style={{ display: "flex", height: 10, borderRadius: 5, overflow: "hidden", marginBottom: 24 }}>
-          <motion.div animate={{ width: `${volado}%` }} transition={{ type: "spring", stiffness: 300 }}
-            style={{ background: "#8BC34A", height: "100%" }} />
-          <motion.div animate={{ width: `${secoViso}%` }} transition={{ type: "spring", stiffness: 300 }}
-            style={{ background: GOLD, height: "100%" }} />
-          <motion.div animate={{ width: `${ligero}%` }} transition={{ type: "spring", stiffness: 300 }}
-            style={{ background: "#ef4444", height: "100%" }} />
-        </div>
-        <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
-          {[{ label: "Volado", color: "#8BC34A" }, { label: "Seco/Viso", color: GOLD }, { label: "Ligero", color: "#ef4444" }].map(l => (
-            <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
-              <span style={{ color: "rgba(240,232,212,0.55)", fontSize: 12, letterSpacing: "0.1em" }}>{l.label}</span>
-            </div>
-          ))}
-        </div>
+      {/* Horizontal split chamber */}
+      <div style={{ ...GW.chamber, maxWidth: 1020, display: "flex", flexDirection: "row" as const,
+        gap: 26, padding: "30px 26px", alignItems: "stretch", minHeight: 0 }}>
 
-        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
-          <motion.button
+        {/* LEFT: Slider control panel */}
+        <div style={{ flex: "0 0 54%", display: "flex", flexDirection: "column" as const,
+          overflowY: "auto" as const }}>
+          <MovementBadge movement="II" />
+          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.24em",
+            color: `${GOLD}88`, textTransform: "uppercase" as const, marginBottom: 4 }}>
+            Leaf Architecture · Priming Ratios
+          </p>
+          <h2 style={{ ...GW.title, marginBottom: 10 }}>The Priming Matrix</h2>
+
+          {/* Ratio total indicator */}
+          <motion.div
+            animate={{ borderColor: valid ? `${GOLD}50` : "#ef444450" }}
             style={{
-              ...GW.btn(!valid),
-              ...(valid
-                ? { background: "linear-gradient(135deg,#c8950a,#9e7208)", border: `1px solid ${GOLD}` }
-                : { opacity: 0.45, cursor: "not-allowed" }),
-            }}
-            whileHover={valid ? { scale: 1.03 } : {}}
-            whileTap={valid ? { scale: 0.97 } : {}}
-            onTouchStart={() => valid && playClick()}
-            onClick={() => { if (valid) { playClick(); onNext(); } }}>
-            {valid ? "Vitola Science →" : `Balance to 100% (${total}%)`}
-          </motion.button>
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              background: valid ? "rgba(212,175,55,0.05)" : "rgba(239,68,68,0.05)",
+              border: `1px solid ${valid ? GOLD + "40" : "#ef444440"}`,
+              borderRadius: 8, padding: "7px 14px", marginBottom: 14,
+            }}>
+            <span style={{ color: "rgba(240,232,212,0.55)", fontSize: 11, letterSpacing: "0.12em" }}>TOTAL RATIO</span>
+            <motion.span key={total} initial={{ scale: 1.18 }} animate={{ scale: 1 }}
+              style={{ color: valid ? GOLD : "#ef4444", fontSize: 22, fontWeight: 800 }}>
+              {total}%
+            </motion.span>
+            {valid && (
+              <motion.span initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
+                style={{ color: "#8BC34A", fontSize: 12, fontWeight: 700, letterSpacing: "0.14em" }}>
+                LOCKED ✓
+              </motion.span>
+            )}
+          </motion.div>
+
+          {/* Sliders */}
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 14 }}>
+            {PRIMINGS.map((p) => (
+              <div key={p.id}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 5 }}>
+                  <div>
+                    <span style={{ color: p.color, fontSize: 14, fontWeight: 700 }}>{p.label}</span>
+                    <span style={{ color: "rgba(240,232,212,0.42)", fontSize: 10,
+                      letterSpacing: "0.14em", textTransform: "uppercase" as const, marginLeft: 8 }}>{p.sub}</span>
+                  </div>
+                  <motion.span key={p.pct} initial={{ scale: 1.2 }} animate={{ scale: 1 }}
+                    style={{ color: p.color, fontSize: 20, fontWeight: 800 }}>{p.pct}%</motion.span>
+                </div>
+                <div style={{ position: "relative", height: 34, display: "flex", alignItems: "center" }}>
+                  <div style={{ position: "absolute", left: 0, right: 0, height: 6,
+                    background: "rgba(255,255,255,0.07)", borderRadius: 3 }} />
+                  <div style={{ position: "absolute", left: 0, width: `${p.pct}%`, height: 6,
+                    background: `linear-gradient(90deg, ${p.color}60, ${p.color})`,
+                    borderRadius: 3, transition: "width 0.08s",
+                    boxShadow: `0 0 10px ${p.color}40` }} />
+                  <input type="range" min={0} max={100} value={p.pct}
+                    disabled={p.id === "ligero"}
+                    onChange={e => p.set(Number(e.target.value))}
+                    style={{ position: "absolute", left: 0, right: 0, width: "100%",
+                      height: 34, opacity: 0,
+                      cursor: p.id === "ligero" ? "not-allowed" : "pointer",
+                      margin: 0, padding: 0 }} />
+                  <motion.div animate={{ left: `calc(${p.pct}% - 10px)` }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    style={{ position: "absolute", width: 20, height: 20, borderRadius: "50%",
+                      background: p.id === "ligero" ? "#333" : p.color,
+                      border: `2px solid ${p.id === "ligero" ? "#444" : p.color}`,
+                      boxShadow: p.id === "ligero" ? "none" : `0 0 12px ${p.color}60`,
+                      pointerEvents: "none", top: "50%", transform: "translateY(-50%)" }} />
+                </div>
+                <motion.button whileTap={{ scale: 0.98 }}
+                  onClick={() => { p.setOpen(!p.open); playClick(); }}
+                  style={{ display: "flex", alignItems: "center", gap: 6, background: "none",
+                    border: "none", cursor: "pointer", padding: "3px 0", marginTop: 2 }}>
+                  <span style={{ color: `${p.color}60`, fontSize: 10, letterSpacing: "0.18em",
+                    textTransform: "uppercase" as const }}>
+                    {p.open ? "▼ Hide" : "► Learn"}
+                  </span>
+                </motion.button>
+                <AnimatePresence>
+                  {p.open && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      style={{ overflow: "hidden", background: `${p.color}08`,
+                        border: `1px solid ${p.color}18`, borderRadius: 8,
+                        padding: "10px 14px", marginTop: 4 }}>
+                      <p style={{ color: "rgba(240,232,212,0.78)", fontSize: 13, lineHeight: 1.65, margin: 0 }}>{p.role}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+
+          {/* Ratio bar */}
+          <div style={{ display: "flex", height: 7, borderRadius: 4, overflow: "hidden", marginBottom: 8 }}>
+            <motion.div animate={{ width: `${volado}%` }} transition={{ type: "spring", stiffness: 300 }}
+              style={{ background: "#8BC34A", height: "100%" }} />
+            <motion.div animate={{ width: `${secoViso}%` }} transition={{ type: "spring", stiffness: 300 }}
+              style={{ background: GOLD, height: "100%" }} />
+            <motion.div animate={{ width: `${ligero}%` }} transition={{ type: "spring", stiffness: 300 }}
+              style={{ background: "#ef4444", height: "100%" }} />
+          </div>
+          <div style={{ display: "flex", gap: 12, marginBottom: 18 }}>
+            {[{ l: "Volado", c: "#8BC34A" }, { l: "Seco/Viso", c: GOLD }, { l: "Ligero", c: "#ef4444" }].map(x => (
+              <div key={x.l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div style={{ width: 8, height: 8, borderRadius: 2, background: x.c }} />
+                <span style={{ color: "rgba(240,232,212,0.50)", fontSize: 11 }}>{x.l}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Buttons — pinned to bottom */}
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginTop: "auto" }}>
+            <button style={{ ...GW.btn(true), flexShrink: 0 }}
+              onTouchStart={() => playClick()} onClick={onBack}>Back</button>
+            <motion.button
+              style={{
+                ...GW.btn(!valid), flex: 1,
+                ...(valid
+                  ? { background: "linear-gradient(135deg,#c8950a,#9e7208)", border: `1px solid ${GOLD}` }
+                  : { opacity: 0.45, cursor: "not-allowed" }),
+              }}
+              whileHover={valid ? { scale: 1.03 } : {}}
+              whileTap={valid ? { scale: 0.96, y: 2 } : {}}
+              onTouchStart={() => valid && playClick()}
+              onClick={() => {
+                if (!valid) return;
+                playClick();
+                if (ligero > 48) {
+                  playError();
+                  setPenaltyFlash(true);
+                  setTimeout(() => setPenaltyFlash(false), 1900);
+                }
+                onNext();
+              }}>
+              {valid ? "Vitola Science →" : `Balance to 100% (${total}%)`}
+            </motion.button>
+          </div>
+        </div>
+
+        {/* RIGHT: Real-time leaf visual gallery */}
+        <div style={{ flex: 1, position: "relative" as const, borderRadius: 12,
+          overflow: "hidden", minHeight: 320,
+          background: "rgba(0,0,0,0.45)",
+          border: "1px solid rgba(212,175,55,0.09)" }}>
+          {/* Stacked leaf images — opacity & scale driven by ratios */}
+          {LEAF_VISUALS.map((lv) => (
+            <motion.div key={lv.id}
+              animate={{
+                opacity: Math.max(0.05, lv.pct / 100),
+                scale: dominant === lv.id ? 1.06 : 0.99,
+              }}
+              transition={{ type: "spring", stiffness: 110, damping: 22 }}
+              style={{ position: "absolute", inset: 0 }}>
+              <img src={lv.img} alt={lv.label}
+                style={{ width: "100%", height: "100%", objectFit: "cover",
+                  filter: dominant === lv.id
+                    ? "saturate(1.35) brightness(0.70)"
+                    : "saturate(0.50) brightness(0.38)" }} />
+              {dominant === lv.id && (
+                <motion.div
+                  animate={{ boxShadow: [
+                    `inset 0 0 50px 18px ${lv.color}18`,
+                    `inset 0 0 90px 36px ${lv.color}35`,
+                    `inset 0 0 60px 22px ${lv.color}22`,
+                  ] }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ position: "absolute", inset: 0, borderRadius: 12 }} />
+              )}
+            </motion.div>
+          ))}
+          {/* Dominant leaf info — bottom overlay */}
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 2,
+            background: "linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0) 100%)",
+            padding: "50px 18px 18px", borderRadius: "0 0 12px 12px" }}>
+            {LEAF_VISUALS.filter(lv => lv.id === dominant).map(lv => (
+              <motion.div key={lv.id}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.36em",
+                  color: `${lv.color}65`, textTransform: "uppercase" as const, margin: "0 0 5px" }}>DOMINANT LEAF</p>
+                <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.4rem",
+                  color: lv.color, fontWeight: 300, margin: "0 0 4px" }}>{lv.label}</p>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.14em",
+                  color: "rgba(240,232,212,0.48)", margin: 0 }}>{lv.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -4399,6 +4549,7 @@ export default function MasterBlender() {
 
   // ── Gateway state ────────────────────────────────────────────────────────
   const [bootDone, setBootDone] = useState(false);
+  const [mentorAcknowledged, setMentorAcknowledged] = useState(false);
   const [gateway,        setGateway]        = useState<GatewayPhase>("cockpit");
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
   const [selectedSeed,   setSelectedSeed]   = useState<string | null>(null);
@@ -4423,6 +4574,12 @@ export default function MasterBlender() {
   const [mentorPenaltyFired,     setMentorPenaltyFired]    = useState(false);
   const [cultivationBonusGiven,  setCultivationBonusGiven] = useState(false);
   const [lastScoreDelta,         setLastScoreDelta]         = useState<number | null>(null);
+
+  // ── Reset mentor overlay when entering a new phase that requires it ───────
+  useEffect(() => {
+    const OVERLAY_PHASES: GatewayPhase[] = ["terroir","seed_biology","harvest","curing","rolling_bench","vitola_science"];
+    if ((OVERLAY_PHASES as string[]).includes(gateway)) setMentorAcknowledged(false);
+  }, [gateway]);
 
   // ── Force Stage 1 on every fresh mount — prevents HMR state bleed ────────
   // Also wipes all legacy localStorage/sessionStorage keys so no prior session
@@ -4760,6 +4917,17 @@ export default function MasterBlender() {
               )}
             </AnimatePresence>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Mentor Assist Overlay — gate-locked until acknowledged ── */}
+      <AnimatePresence>
+        {!mentorAcknowledged && !!selectedMentor &&
+          (["terroir","seed_biology","harvest","curing","rolling_bench","vitola_science"] as GatewayPhase[]).includes(gateway) && (
+          <MentorAssistOverlay
+            mentorId={selectedMentor}
+            onAcknowledge={() => setMentorAcknowledged(true)}
+          />
         )}
       </AnimatePresence>
 

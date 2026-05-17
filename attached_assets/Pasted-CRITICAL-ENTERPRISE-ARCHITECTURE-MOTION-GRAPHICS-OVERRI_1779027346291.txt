@@ -1,0 +1,54 @@
+CRITICAL ENTERPRISE ARCHITECTURE & MOTION GRAPHICS OVERRIDE: You are forbidden from deploying flat, text-heavy web frames, generic browser elements, or inaccurate brand names. This is a unified touchscreen hardware console running a premium luxury lounge cockpit. The entire application across all modules must utilize an identical design language, fluid animation pacing, oversized touch targets, 3D hardware card compression, and interactive master mentor assist overlays.
+
+Refactor MasterBlender.tsx, RitualStep.tsx, usePosIntegration.ts, and your root view router configuration files immediately to build this exact, unified production code state:
+
+1. ABSOLUTE OPERATIONAL BOOT SEQUENCE (THE POWER-UP PIPELINE):
+   - Level 0 (Power Up): Initialize the interface on an absolute black (#000000) canvas. Renders 'Profound Innovations LLC' centrally as the definitive corporate management signature.
+   - Level 1 (The OS Layer): Executes a 1.2-second smooth horizontal slide transition to reveal the high-end 'NOVEÈ OS' platform terminal frame.
+   - Level 2 (The Centralized Core): Pops up the centralized data architecture dashboard frame: 'CraftHub'.
+   - Level 3 (The Cockpit Portfolio): Display the 4 true operational enterprise pillars as massive, edge-to-edge widescreen glassmorphic panels in a landscape tablet viewport layout:
+     * SMOKECRAFT 360
+     * POURCRAFT 360
+     * BEERCRAFT 360
+     * WINECRAFT 360
+   - Sensory Dissolve: When a user taps 'SMOKECRAFT 360', fire our playClick() 3400Hz mechanical audio burst and completely dissolve the portfolio grid. Transition the screen into the cinematic gateway titled exactly: "The Art of the Cigar".
+   - Ambient Anchor: Render a realistic, high-fidelity premium cigar burning at the absolute bottom of the display window with moving ash embers. Pull the HTML5 SmokeCanvas to z-index 9996 so organic, moving smoke mist rises continuously from the burning base, drifting uniformly behind your text panes.
+   - Clean Fork (New vs. Returning): The cinematic intro screen features two oversized touchscreen targets overlaid on the smoke canvas:
+     * Target A (Oversized Primary Gold Action Block): "BEGIN JOURNEY" -> Instantly drops a new user directly into Phase 1 of the masterclass with zero onboarding blocks or login fields.
+     * Target B (Secondary Inline Text Link): "RETURNING MASTERCLASS GUEST" -> Slides up a smooth, glassmorphic profile drawer to capture phone/last-name inputs only when pressed.
+
+2. THE 3-MOVEMENT, 6-PHASE MASTERCLASS JOURNEY:
+   - Structure the entire wizard flow into 3 clear movements containing 6 high-stakes interactive Phases, separated by mandatory milestone checks to prevent passive rapid click-throughs:
+     * Movement I: Cultivation (Phase 1: Master Mentor Council | Phase 2: Terroir & Seed Biology)
+     * Movement II: Craftsmanship (Phase 3: The Priming Matrix | Phase 4: Curing & Fermentation Chambers)
+     * Movement III: Harmonic Reveal (Phase 5: Rolling Bench & Vitola Calibration | Phase 6: Precision Cuts & Liquid Synergy)
+
+3. HIGH-FIDELITY MENTOR COUNCIL WITH ELEVENLABS LAYER (PHASE 1):
+   - Rebuild the Mentor Selection workspace with 3 massive glassmorphic profile frames containing explicit national flags beside their titles: Don Manuel (Dominican Republic 🇩🇴), Alejandro (Nicaragua 🇳🇮), Doña Rosa (Ecuador 🇪🇨).
+   - Render highly realistic, premium AI-generated portraits into each frame to secure absolute design consistency (Don Manuel wearing an old-world traditional hat, Alejandro representing bold modern intensity, and Doña Rosa displaying elegant, refined complexity).
+   - Voice Integration: Wire an interactive gold sound toggle ('MUTE / VOICE OFF') into the upper corner of each profile. Tapping it instantly terminates the synthetic ElevenLabs voice stream, allowing guests to silently read the craft insights at their own pace.
+
+4. INTERACTIVE MENTOR ASSIST OVERLAYS & BAD PLANNING PENALTIES:
+   - On every intermediate process screen (Germination, Terroir, Curing, Fermentation, Rolling, Vitolas, and Cuts), the selected Master Mentor portrait must smoothly animate and slide back up over the content layout as a high-priority 'MASTER MENTOR ASSIST • GUIDANCE MODE' overlay panel.
+   - The Mentor explicitly dictates tableside instructions and sensory insights. The "CONTINUE" button is completely locked. The user cannot skip through the slide; they must interact with the mentor window to verify comprehension.
+   - Bad Planning Penalties: If a user selects a leaf priming, curing rate, or seed varietal that directly contradicts their Mentor's core philosophy or regional terroir rules, the engine must trigger an immediate penalty animation. Flash a red gold-rimmed alert card, play a down-sweep error tone via the Web Audio API, and deduct points dynamically (-2 PTS) from their running score to penalize sloppy planning.
+
+5. HORIZONTAL LEAF WORKSPACE & THE PRIMING MATRIX (PHASES 2 & 3):
+   - Soil & Seed Graphics: When a user taps a tobacco origin or seed lineage, the UI must smoothly render a deep-textured, ultra-realistic macro image showing exactly what that specific regional soil mineral structure (e.g., Volcanic Potassium vs. Alluvial Clay) and seed strand look like in real life.
+   - The Priming Matrix: Enforce a strict horizontal, side-by-side widescreen split grid to eliminate visual clutter and vertical compression:
+     * Left Input Drawer: A premium glassmorphic panel hosting three synchronized multi-range sliders or architectural range dials to mix the leaf percentages. Volado (Bottom = burn control), Seco/Viso (Middle = aromatic bloom), and Ligero (Top = raw strength and oil density).
+     * Right Visual Drawer: Features high-fidelity, ultra-realistic macro imagery of the actual selected leaves. As the user moves the sliders, the corresponding leaf graphics dynamically scale, illuminate with a gold inner glow, and animate to show the exact vein structures, thickness, and oil saturation transitions in real-time.
+   - Ratio Validation: The "CONTINUE" action remains locked until the collective percentage values total exactly 100%. Hide the auxiliary infographic layout elements ("Bunching Protocol", "Leaf Anatomy") inside smooth, collapsible touch-interactive disclosure accordions positioned neatly below the matrix controls.
+
+6. RE-ENGINEER COMPONENT SUMMARY GATES, LEADERBOARDS, & REAL POS LINK:
+   - Checkpoint Gates: Intercept the workflow at the absolute end of every single Phase with a dedicated 'Palate Validation Checkpoint' styled exactly as an elite interactive quiz window:
+     * Flash an animated counter rendering their running score alongside an achievement badge.
+     * Query the venue's physical POS and humidor ledger table in real-time. Dynamically display a real product photo of a premium cigar currently in stock at the lounge that matches their exact selection path (e.g., a high-Ligero blend matches a Padrón 1926 or similar) along with the ideal liquor or whiskey pairing currently on promotion at the bar counter to accelerate immediate tableside sales.
+     * Stream active terminal ID, flavor ratios, and transaction logs to the management CommandCenter panel synchronously.
+     * Nightly Leaderboard Calculation: Freeze points container entirely on Stage 14 (scoreFrozenRef.current = true). Run an immediate query against the supply_verification_ledger table to aggregate the running average score of all logged entry metrics for the current calendar date, displaying their final score directly face-to-face against the nightly competitive house standard.
+
+7. HARDWARE NAVIGATION & COMPRESSION TACTILITY LAYER:
+   - Navigation Security: Force the gold-bordered 'BACK' button container row to absolute top-layer precedence ('position: fixed; z-index: 999999; pointer-events: auto;') to guarantee flawless touch responsiveness on tablet glass hardware at all times.
+   - Compression Dynamics: All interactive cards, sliders, and targets must feature an oversized touch-target profile and execute a 100ms hardware tactility animation: compressing scale-96 and translating vertically by translate-y-[2px] on direct glass contact, synchronized with our playClick() 3400Hz mechanical noise burst.
+
+Execute this comprehensive entry-sequence pathing, animated mentor interception, visual leaf pairing, and POS-synced layout overhaul now. Ensure 'tsc --noEmit' passes perfectly with exit code 0.
