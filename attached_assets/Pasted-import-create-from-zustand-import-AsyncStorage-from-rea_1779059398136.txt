@@ -1,0 +1,88 @@
+import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export type ModuleType = 'CraftHub' | 'SmokeCraft' | 'PourCraft' | 'BeerCraft' | 'VapeCraft' | 'StaffCockpit';
+export type DeviceMode = 'GUEST_TABLET' | 'STAFF_COCKPIT' | 'KIOSK' | 'ADMIN';
+export type AmbiProfile = 'SILK_SMOKE' | 'AMBER_GLOW' | 'MIDNIGHT_LOUNGE' | 'VIP_GOLD';
+
+interface OfflineAction {
+  id: string;
+  type: string;
+  payload: any;
+  timestamp: number;
+}
+
+interface NoveeState {
+  currentModule: ModuleType;
+  deviceMode: DeviceMode;
+  isOnline: boolean;
+  ambiProfile: AmbiProfile;
+  activeSessionId: string | null;
+  syncQueue: OfflineAction[];
+  heartbeatIntervalId: any | null;
+  
+  // Actions
+  setModule: (module: ModuleType) => void;
+  setDeviceMode: (mode: DeviceMode) => void;
+  setOnlineStatus: (status: boolean) => void;
+  setAmbiProfile: (profile: AmbiProfile) => void;
+  queueOfflineAction: (type: string, payload: any) => void;
+  processSyncQueue: () => Promise<void>;
+  triggerHeartbeat: () => void;
+}
+
+export const useNoveeStore = create<NoveeState>((set, get) => ({
+  currentModule: 'CraftHub',
+  deviceMode: 'GUEST_TABLET',
+  isOnline: true,
+  ambiProfile: 'SILK_SMOKE',
+  activeSessionId: null,
+  syncQueue: [],
+  heartbeatIntervalId: null,
+
+  setModule: (module) => set({ currentModule: module }),
+  setDeviceMode: (mode) => set({ deviceMode: mode }),
+  setOnlineStatus: (status) => {
+    set({ isOnline: status });
+    if (status) get().processSyncQueue();
+  },
+  setAmbiProfile: (profile) => set({ ambiProfile: profile }),
+  
+  queueOfflineAction: (type, payload) => {
+    const newAction: OfflineAction = { id: Math.random().toString(), type, payload, timestamp: Date.now() };
+    set((state) => ({ syncQueue: [...state.syncQueue, newAction] }));
+    // Persist to local cache for crash safety
+    AsyncStorage.setItem('novee_sync_queue', JSON.stringify(get().syncQueue));
+  },
+
+  processSyncQueue: async () => {
+    const { syncQueue, isOnline } = get();
+    if (!isOnline || syncQueue.length === 0) return;
+    
+    // Process queue items sequentially against the existing backend REST API
+    for (const action of syncQueue) {
+      try {
+        // Mock API call execution logic
+        console.log(`Syncing action ${action.type} to centralized server...`);
+      } catch (err) {
+        console.error("Sync chunk failed, preserving remainder of queue", err);
+        return;
+      }
+    }
+    set({ syncQueue: [] });
+    await AsyncStorage.removeItem('novee_sync_queue');
+  },
+
+  triggerHeartbeat: () => {
+    // Device orchestration & monitoring telemetry payload
+    const telemetry = {
+      deviceId: "NV-DEVICE-77X",
+      mode: get().deviceMode,
+      activeSession: get().activeSessionId,
+      battery: 0.94,
+      timestamp: Date.now()
+    };
+    console.log("Device Heartbeat Output:", telemetry);
+    // Send telemetry to existing Node.js endpoint via non-blocking call
+  }
+}));

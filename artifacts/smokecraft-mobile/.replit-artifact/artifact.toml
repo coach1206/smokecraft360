@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/smokecraft-mobile/"
+title = "SmokeCraft Mobile"
+version = "1.0.0"
+id = "artifacts/smokecraft-mobile"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/smokecraft-mobile/" ]
+localPort = 25359
+
+[services.development]
+run = "pnpm --filter @workspace/smokecraft-mobile run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/smokecraft-mobile", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/smokecraft-mobile", "run", "serve" ]
+
+[services.env]
+PORT = "25359"
+BASE_PATH = "/smokecraft-mobile/"

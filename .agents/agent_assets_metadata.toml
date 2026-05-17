@@ -522,6 +522,18 @@ uri = "file://artifacts/novee/public/images/brewcraft-card.png"
 type = "image"
 title = "brewcraft craft beer pour tulip glass editorial"
 
+[[generated]]
+id = "_mVbD0xdNhPfv3P30FHO8"
+uri = "file://artifacts/smokecraft-mobile/assets/images/icon.png"
+type = "image"
+title = "smokecraft mobile icon"
+
+[[generated]]
+id = "ONDFGwbRQI9BU5jv0jiTZ"
+uri = "file://artifacts/smokecraft-mobile/assets/images/splash.png"
+type = "image"
+title = "smokecraft splash screen"
+
 [[outputs]]
 id = "bcXlJZbThuFGk9x0tlMdt"
 uri = "file://.local/AXIOM_OS_OPERATIONS_MANUAL_SOURCE.md"
