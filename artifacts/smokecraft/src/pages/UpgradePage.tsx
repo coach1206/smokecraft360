@@ -119,7 +119,7 @@ export default function UpgradePage() {
             fontSize: 16, color: C.muted,
             lineHeight: 1.7, maxWidth: 520, margin: "0 auto",
           }}>
-            Sovereign gives your venue the complete Axiom OS intelligence stack —
+            Sovereign gives your venue the complete NOVEE OS intelligence stack —
             from AI-driven recommendations to enterprise-grade financial reconciliation.
           </p>
         </motion.div>

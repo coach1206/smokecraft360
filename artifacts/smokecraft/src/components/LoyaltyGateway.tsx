@@ -318,7 +318,7 @@ export default function LoyaltyGateway({ onNewGuest, onStartSession }: Props) {
         style={{ color: `${GOLD}70`, fontSize: 9, letterSpacing: "0.42em",
           textTransform: "uppercase", marginBottom: 20 }}
       >
-        Axiom OS · Loyalty Portal
+        NOVEE OS · Loyalty Portal
       </motion.p>
 
       {/* Headline */}
