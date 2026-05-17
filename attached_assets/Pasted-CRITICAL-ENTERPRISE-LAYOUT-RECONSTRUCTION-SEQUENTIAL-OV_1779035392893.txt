@@ -1,0 +1,58 @@
+CRITICAL ENTERPRISE LAYOUT RECONSTRUCTION & SEQUENTIAL OVERRIDE: The current user interface has severe continuity, spacing, hierarchy, and immersion problems. Content is stacked vertically, text is bleeding, section margins clip, and the BACK button is completely unresponsive due to layout layer occlusion. You are strictly forbidden from styling this screen like a generic website or using mobile-style stacking forms. This platform is a singular, deeply unified touchscreen luxury console running a premium tablet cockpit viewport. Rebuild MasterBlender.tsx, RitualStep.tsx, App.tsx, usePosIntegration.ts, and your navigation router layers immediately to enforce this exact, non-negotiable production layout specification.
+
+1. SEQUENCE LEVEL 0-3 ENGINE BOOT PIPELINE:
+   - Level 0 (Power Up / Idle Loop): Initialize the system interface on an absolute black (#000000) canvas. Renders 'Profound Innovations LLC' centrally as the premium corporate signature.
+   - Level 1 (The OS Layer): Executes a 1.2-second smooth horizontal slide transition to reveal the high-end 'NOVEÈ OS' platform terminal frame.
+   - Level 2 (The Central Core): Instantly initializes the core data engine frame: 'CraftHub'.
+   - Level 3 (The Cockpit Portfolio): Display the 4 true operational enterprise pillars as massive, edge-to-edge widescreen glassmorphic panels in an uncompromising landscape tablet layout:
+     * SMOKECRAFT 360
+     * POURCRAFT 360
+     * BEERCRAFT 360
+     * WINECRAFT 360
+   - Sensory Dissolve Sequence: Tapping 'SMOKECRAFT 360' fires our playClick() 3400Hz mechanical audio burst and runs a 1.9-second sensory transition. The portfolio grid must completely fade away, replacing the screen with the cinematic gateway titled exactly: "The Art of the Cigar".
+   - Ambient Anchor: Render an ultra-realistic premium cigar burning continuously at the absolute bottom of the display window with animated ash embers. Pull the HTML5 SmokeCanvas to layer depth z-index 9996 so organic, moving smoke mist and amber particles drift uniformly up behind your control panels to ensure readability in dim lounge environments.
+   - The Clean Experiential Fork: The cinematic intro screen features two oversized touchscreen targets overlaid on the smoke canvas—strictly prohibiting cold login fields for new guests:
+     * Target A (Oversized Primary Gold Action Block): "BEGIN JOURNEY" -> Instantly drops a new user directly into Phase 1 / Stage 1 of the masterclass without onboarding barriers.
+     * Target B (Secondary Inline Text Link): "RETURNING MASTERCLASS GUEST" -> Slides up a smooth, glassmorphic profile drawer to capture phone/last-name inputs only when pressed.
+
+2. THE 3-MOVEMENT, 6-PHASE MASTERCLASS FRAMEWORK:
+   - Structure the wizard journey into 3 distinct structural movements containing 6 high-stakes interactive Phases, separated by mandatory milestone checks to prevent passive skipping:
+     * Movement I: Cultivation (Phase 1: Master Mentor Council | Phase 2: Terroir & Seed Biology)
+     * Movement II: Craftsmanship (Phase 3: The Priming Matrix | Phase 4: Curing & Fermentation Chambers)
+     * Movement III: Harmonic Reveal (Phase 5: Rolling Bench & Vitola Calibration | Phase 6: Precision Cuts & Liquid Synergy)
+
+3. PHASE 1 DESIGN: THE REALISTIC MENTOR COUNCIL & ELEVENLABS LAYER:
+   - The Mentor Selection view must feature 3 massive, high-contrast glassmorphic profile columns containing explicit national flags beside their headers: Don Manuel (Dominican Republic 🇩🇴), Alejandro (Nicaragua 🇳🇮), Doña Rosa (Ecuador 🇪🇨).
+   - Render highly realistic, premium AI-generated portraits into each card to secure elite visual consistency (Don Manuel wearing an old-world traditional hat, Alejandro representing bold volcanic intensity, and Doña Rosa displaying elegant, refined complexity).
+   - Voice Stream Integration: Wire an interactive gold sound toggle ('MUTE / VOICE OFF') into the upper corner of each profile. Tapping it instantly terminates the synthetic ElevenLabs voice stream, allowing guests to silently read the craft insights at their own pace.
+
+4. ANIMATED MENTOR ASSIST OVERLAYS & BAD PLANNING PENALTIES:
+   - On every intermediate process screen (Germination, Terroir, Curing, Fermentation, Rolling, Vitolas, and Cuts), the selected Master Mentor portrait must smoothly animate and slide back up over the content layout as a high-priority 'MASTER MENTOR ASSIST • GUIDANCE MODE' overlay panel.
+   - The Mentor explicitly dictates tableside instructions and sensory insights. The "CONTINUE" button is completely locked. The user cannot skip through the slide; they must interact with the mentor window to verify comprehension.
+   - Bad Planning Penalties: If a user selects a leaf priming, curing rate, or seed varietal that directly contradicts their Mentor's core philosophy or regional terroir rules, the engine must trigger an immediate penalty animation. Flash a red gold-rimmed alert card, play a down-sweep error tone via the Web Audio API, and deduct points dynamically (-2 PTS) from their running score to penalize sloppy planning.
+
+5. PHASE 3 DESIGN: THE ULTIMATE "CHOOSE YOUR FILLER LEAF" CONSISTENCY REFACTOR:
+   - Completely rewrite the Stage 5 filler layout to fix all bleeding sections, competing visual anchors, and text overlaps. Rebuild the screen to guide the eye in a clean cinematic progression:
+   - Top Progression Bar Fix: Permanently remove the disconnected 'synergy circle' UI. Replace it with a clean, horizontal cinematic progress indicator at the top of the glass viewport tracking the real journey: Filler Leaf → Wrapper → Shape & Size → Cut → Pairing
+   - Section 1 — Header Typography: Set Title to "Choose Your Filler Leaf". Set Subtext to: "The filler leaf shapes the body, strength, burn speed, and overall character of your cigar. Each tobacco leaf contributes different flavor notes and smoking behavior. Select the foundation that best matches your desired experience." Add cinematic tobacco imagery behind the header with subtle smoke movement.
+   - Section 2 — Educational Visual Centerpiece: Add exactly ONE focused centerpiece visual—an exploded cigar anatomy diagram or animated cigar cross-section with highlighted filler sections and soft glowing educational hotspots so the user understands wrapper, binder, filler, and construction without paragraphs of text.
+   - Section 3 — Side-By-Side Leaf Selection Cards: Force the cards into an expansive, landscape-optimized horizontal split grid (60% Width for input matrix, 40% Width for dynamic visual showcase). Render 3 massive, clean, luxury glassmorphic selection cards aligned perfectly side-by-side with equal spacing and strict layout bounds so nothing bleeds outside containers:
+     * CARD 1: SECO (Light Body • Smooth Burn | Flavor Notes: Cream • Cedar • Toasted Almond | Experience: Balanced and approachable with a cooler burn and softer finish. | Best For: Relaxed evenings and smoother whiskey pairings. | Indicator: Beginner)
+     * CARD 2: VISO (Medium Body • Aromatic Balance | Flavor Notes: Earth • Cocoa • Spice | Experience: Adds complexity and layered aroma while maintaining smooth balance. | Best For: Classic cigar lovers wanting fuller flavor without overpowering strength. | Indicator: Intermediate)
+     * CARD 3: LIGERO (Full Body • Slow Burn | Flavor Notes: Pepper • Espresso • Dark Chocolate | Experience: The strongest leaf in the blend delivering bold intensity and rich smoke density. | Best For: Experienced smokers and stronger bourbon pairings. | Indicator: Expert)
+   - Matrix Integration: Each card must feature a custom tactile adjustment slider directly embedded within it (Volado, Seco, Ligero) allowing guests to dynamically mix leaf percentages. A 100ms hardware touch compression must trigger on card touch (scale-96, translate-y-[2px]) alongside our playClick() audio pulse.
+   - De-Clutter Accordions: Tuck the technical "Bunching Protocol" and "Leaf Anatomy" descriptions inside clean, touch-interactive collapsible disclosure accordions positioned neatly below the matrix controls so margins never clip.
+   - Allocation Validation Engine: Enforce that collective slider inputs must total exactly 100% to validate the blend.
+   - Right Visual Viewport Panel (40% Width): Absolutely do not render generic retail boxes or store text lists here. Instead, as the user adjusts the sliders on the left, this panel must dynamically highlight, scale, and update high-fidelity macro graphics of the raw tobacco leaves in real-time (showing accurate vein structures and oil saturation levels), while synchronously querying the venue's live database to display an matching in-stock premium cigar (e.g., Padrón 1926 or Arturo Fuente Opus X) and ideal lounge bar liquor pairing on promotion to drive tableside upselling.
+
+6. END-OF-PHASE CHECKPOINT GATES & REAL POS LINK:
+   - Checkpoint Gates: Intercept the workflow at the absolute end of every single Phase with a dedicated 'Palate Validation Checkpoint' styled exactly as an elite touchscreen quiz window:
+     * Flash an animated counter rendering their running score alongside an achievement badge.
+     * Stream active terminal ID, flavor ratios, and transaction logs to the management CommandCenter panel synchronously.
+     * Nightly Leaderboard Calculation: Freeze points container entirely on Stage 14 (scoreFrozenRef.current = true). Run an immediate query against the supply_verification_ledger table to aggregate the running average score of all logged entry metrics for the current calendar date, displaying their final score directly face-to-face against the nightly competitive house standard.
+
+7. HARDWARE NAVIGATION SECURITY LAYER:
+   - Navigation Security: Force the gold-bordered 'BACK' button container row to absolute top-layer precedence ('position: fixed; z-index: 999999; pointer-events: auto;') to guarantee flawless touch responsiveness on tablet glass hardware at all times, preventing transparent parent grids from capturing touch inputs.
+   - Action Button: The 'CONFIRM BLEND' button must remain fixed consistently in the lower right footer, never overlap content, remain disabled until the user hits a validated 100% blend layout, and glow softly with a warm gold neon outer glow drop shadow once selection is validated.
+
+Execute this complete industrial luxury redesign, side-by-side orientation, boot sequence animation routing, and matrix logic sweep now. Ensure 'tsc --noEmit' passes completely clean with exit code 0.

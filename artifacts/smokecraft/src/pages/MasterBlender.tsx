@@ -5010,33 +5010,45 @@ export default function MasterBlender() {
         </div>
       </div>
 
-      {/* ── Synergy Halo ── */}
-      <div className="relative z-10 flex justify-center flex-shrink-0 mt-0">
-        <SynergyHalo synergy={synergy} />
-      </div>
-
-      {/* ── Step indicator ── */}
-      <div className="relative z-10 flex justify-center gap-3 mt-1 flex-shrink-0">
-        {STEP_LABELS.map((label, i) => (
-          <div key={label} className="flex flex-col items-center gap-1">
-            <div
-              className="rounded-full transition-all duration-300"
-              style={{
-                width:     8, height: 8,
-                background: i <= step ? GOLD : "rgba(212,175,55,0.20)",
-                boxShadow:  i === step ? `0 0 10px ${GOLD}` : "none",
-              }}
-            />
-            <span className="text-[7px] tracking-widest uppercase hidden sm:block"
-              style={{ color: i === step ? GOLD : "rgba(212,175,55,0.35)" }}>
-              {label}
-            </span>
+      {/* ── Cinematic journey progress bar — blending chamber ── */}
+      {gateway === "blending" && !reveal && (
+        <div style={{ position: "relative", zIndex: 10, padding: "10px 24px 0", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {(["FILLER LEAF","WRAPPER","SHAPE & SIZE","THE CUT"] as const).map((label, i) => (
+              <div key={label} style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 5 }}>
+                  <motion.div
+                    animate={{
+                      background: i < step ? GOLD : i === step ? "rgba(212,175,55,0.18)" : "rgba(255,255,255,0.04)",
+                      boxShadow: i === step ? `0 0 16px ${GOLD}99, 0 0 6px ${GOLD}60` : "none",
+                    }}
+                    transition={{ duration: 0.4 }}
+                    style={{ width: 28, height: 28, borderRadius: "50%",
+                      border: i <= step ? `1.5px solid ${GOLD}BB` : "1.5px solid rgba(255,255,255,0.10)",
+                      display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {i < step
+                      ? <span style={{ color: "#0a0700", fontSize: 11, fontWeight: 800 }}>✓</span>
+                      : <span style={{ color: i === step ? GOLD : "rgba(255,255,255,0.22)", fontSize: 10, fontWeight: 700 }}>{i + 1}</span>
+                    }
+                  </motion.div>
+                  <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 7, letterSpacing: "0.22em",
+                    color: i === step ? GOLD : "rgba(255,255,255,0.24)",
+                    textTransform: "uppercase" as const, whiteSpace: "nowrap" as const }}>{label}</span>
+                </div>
+                {i < 3 && (
+                  <motion.div
+                    animate={{ background: i < step ? GOLD : "rgba(255,255,255,0.08)" }}
+                    transition={{ duration: 0.4 }}
+                    style={{ width: 44, height: 1, margin: "0 6px", marginBottom: 18 }} />
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
       {/* ── Step content ── */}
-      <div className="relative z-10 flex-1 flex flex-col overflow-hidden mt-3 px-4">
+      <div className="relative z-10 flex-1 flex flex-col overflow-y-auto mt-3 px-4" style={{ paddingBottom: 80 }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
@@ -5056,33 +5068,198 @@ export default function MasterBlender() {
               </h2>
             </div>
 
-            {/* ── Step 0: Leaf ── */}
+            {/* ── Step 0: Leaf Selection — Cinematic 60/40 Split ── */}
             {step === 0 && (
-              <div className="flex flex-col flex-1 gap-3 overflow-y-auto no-scrollbar">
-                {/* Reference: Beneath the Wrapper anatomy + Bunching Protocol */}
-                <div className="flex gap-2 flex-shrink-0">
-                  <div className="flex-1 rounded-xl overflow-hidden relative" style={{ height: 120, border: `1px solid ${GOLD}18` }}>
-                    <img src={imgBeneathWrapper} alt="Beneath the Wrapper" className="w-full h-full object-cover object-center" style={{ filter: "brightness(0.52)" }} />
-                    <div className="absolute inset-0 flex items-end p-2" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
-                      <span style={{ color: `${GOLD}90`, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" }}>Leaf Anatomy</span>
-                    </div>
+              <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 8, minHeight: 0 }}>
+                {/* Spec subtext */}
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, lineHeight: 1.65,
+                  color: "rgba(240,232,212,0.52)", margin: 0 }}>
+                  The filler leaf shapes body, strength, burn speed, and overall character.
+                  Each leaf contributes distinct flavor notes — select the foundation that matches your desired experience.
+                </p>
+
+                {/* 60 / 40 horizontal split */}
+                <div style={{ display: "flex", gap: 12, flex: 1, minHeight: 0 }}>
+
+                  {/* LEFT 60%: 3 leaf selection cards side-by-side */}
+                  <div style={{ flex: "0 0 59%", display: "flex", gap: 8, alignItems: "stretch" }}>
+                    {([
+                      { id: "seco",   label: "Seco",
+                        body: "Light Body \u00b7 Smooth Burn",
+                        flavors: ["Cream","Cedar","Toasted Almond"],
+                        exp: "Balanced and approachable with a cooler burn and softer finish.",
+                        bestFor: "Relaxed evenings and smoother whiskey pairings.",
+                        indicator: "BEGINNER", ic: "#8BC34A", c: "#c8a06a",
+                        leafImg: "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=600&q=80" },
+                      { id: "viso",   label: "Viso",
+                        body: "Medium Body \u00b7 Aromatic Balance",
+                        flavors: ["Earth","Cocoa","Spice"],
+                        exp: "Adds complexity and layered aroma while maintaining smooth balance.",
+                        bestFor: "Classic lovers wanting fuller flavor without overpowering strength.",
+                        indicator: "INTERMEDIATE", ic: GOLD, c: "#b88a28",
+                        leafImg: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80" },
+                      { id: "ligero", label: "Ligero",
+                        body: "Full Body \u00b7 Slow Burn",
+                        flavors: ["Pepper","Espresso","Dark Chocolate"],
+                        exp: "The strongest leaf delivering bold intensity and rich smoke density.",
+                        bestFor: "Experienced smokers and stronger bourbon pairings.",
+                        indicator: "EXPERT", ic: "#ef4444", c: "#9b3a1a",
+                        leafImg: "https://images.unsplash.com/photo-1533779183510-8738c1c4bab0?auto=format&fit=crop&w=600&q=80" },
+                    ] as { id: string; label: string; body: string; flavors: string[]; exp: string;
+                              bestFor: string; indicator: string; ic: string; c: string; leafImg: string }[]).map((spec) => {
+                      const leaf = LEAVES.find(l => l.id === spec.id);
+                      if (!leaf) return null;
+                      const isSel = sel.leaf?.id === spec.id;
+                      return (
+                        <motion.div
+                          key={spec.id}
+                          whileTap={{ scale: 0.96, y: 2 }}
+                          onTouchStart={() => playClick()}
+                          onClick={e => select("leaf", leaf, e as unknown as React.MouseEvent)}
+                          style={{
+                            flex: 1, borderRadius: 14, cursor: "pointer",
+                            border: isSel ? `1.5px solid ${spec.c}BB` : "1px solid rgba(255,255,255,0.08)",
+                            background: isSel
+                              ? `linear-gradient(160deg,${spec.c}14 0%,${spec.c}07 100%)`
+                              : "rgba(255,255,255,0.025)",
+                            backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
+                            boxShadow: isSel ? `0 0 28px ${spec.c}44,inset 0 0 20px ${spec.c}0C` : "none",
+                            padding: "14px 11px", display: "flex",
+                            flexDirection: "column" as const, gap: 7,
+                            transition: "border 0.25s,box-shadow 0.25s",
+                          }}
+                        >
+                          {/* Header */}
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 4 }}>
+                            <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.2rem",
+                              color: isSel ? spec.c : "rgba(240,232,212,0.90)", fontWeight: 300 }}>{spec.label}</span>
+                            <span style={{ background: `${spec.ic}16`, border: `1px solid ${spec.ic}38`,
+                              color: spec.ic, fontSize: 7, letterSpacing: "0.18em",
+                              padding: "3px 7px", borderRadius: 20, whiteSpace: "nowrap" as const,
+                              flexShrink: 0 }}>{spec.indicator}</span>
+                          </div>
+                          {/* Body descriptor */}
+                          <p style={{ color: "rgba(240,232,212,0.58)", fontSize: 9, letterSpacing: "0.14em",
+                            textTransform: "uppercase" as const, margin: 0 }}>{spec.body}</p>
+                          {/* Flavor pills */}
+                          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 3 }}>
+                            {spec.flavors.map(f => (
+                              <span key={f} style={{ background: `${spec.c}10`, border: `1px solid ${spec.c}28`,
+                                color: "rgba(240,232,212,0.58)", fontSize: 8, letterSpacing: "0.10em",
+                                padding: "3px 6px", borderRadius: 12 }}>{f}</span>
+                            ))}
+                          </div>
+                          {/* Experience */}
+                          <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 11, lineHeight: 1.55, margin: 0 }}>
+                            {spec.exp}
+                          </p>
+                          {/* Best For */}
+                          <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 7, marginTop: "auto" }}>
+                            <p style={{ color: `${spec.c}80`, fontSize: 8, letterSpacing: "0.14em",
+                              textTransform: "uppercase" as const, margin: "0 0 3px" }}>BEST FOR</p>
+                            <p style={{ color: "rgba(240,232,212,0.44)", fontSize: 10, lineHeight: 1.50, margin: 0 }}>
+                              {spec.bestFor}
+                            </p>
+                          </div>
+                          {/* Selection pulse */}
+                          {isSel && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                                borderTop: `1px solid ${spec.c}30`, paddingTop: 6 }}>
+                              <motion.div animate={{ scale: [1, 1.5, 1] }}
+                                transition={{ duration: 1.2, repeat: Infinity }}
+                                style={{ width: 5, height: 5, borderRadius: "50%", background: spec.c }} />
+                              <span style={{ color: spec.c, fontSize: 7, letterSpacing: "0.26em", fontWeight: 700 }}>SELECTED</span>
+                            </motion.div>
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </div>
-                  <div className="flex-1 rounded-xl overflow-hidden relative" style={{ height: 120, border: `1px solid ${GOLD}18` }}>
-                    <img src={imgBunching} alt="Stripping & Bunching Protocol" className="w-full h-full object-cover object-top" style={{ filter: "brightness(0.52)" }} />
-                    <div className="absolute inset-0 flex items-end p-2" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
-                      <span style={{ color: `${GOLD}90`, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" }}>Bunching Protocol</span>
-                    </div>
+
+                  {/* RIGHT 41%: anatomy diagram + selected leaf showcase */}
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column" as const, gap: 8, minHeight: 0 }}>
+                    {/* Anatomy diagram — shown when nothing selected */}
+                    {!sel.leaf && (
+                      <div style={{ flex: 1, borderRadius: 14,
+                        background: "rgba(255,255,255,0.015)", border: "1px solid rgba(212,175,55,0.09)",
+                        display: "flex", flexDirection: "column" as const,
+                        alignItems: "center", justifyContent: "center", padding: "18px 14px" }}>
+                        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 7, letterSpacing: "0.40em",
+                          color: "rgba(212,175,55,0.40)", textTransform: "uppercase" as const, margin: "0 0 14px" }}>
+                          CIGAR ANATOMY
+                        </p>
+                        <svg width="100%" viewBox="0 0 280 140" style={{ overflow: "visible", maxWidth: 260 }}>
+                          <ellipse cx="140" cy="70" rx="132" ry="56"
+                            fill="rgba(212,175,55,0.03)" stroke="rgba(212,175,55,0.42)" strokeWidth="1.5"/>
+                          <ellipse cx="140" cy="70" rx="110" ry="42"
+                            fill="rgba(180,130,50,0.03)" stroke="rgba(180,130,50,0.28)"
+                            strokeWidth="1" strokeDasharray="4 3"/>
+                          <ellipse cx="140" cy="70" rx="84" ry="28"
+                            fill="rgba(160,110,40,0.08)" stroke="rgba(160,110,40,0.26)" strokeWidth="1"/>
+                          <text x="244" y="18" fontFamily="Inter,sans-serif" fontSize="7.5"
+                            fill="rgba(212,175,55,0.72)" letterSpacing="1.8" textAnchor="middle">WRAPPER</text>
+                          <line x1="244" y1="23" x2="244" y2="35"
+                            stroke="rgba(212,175,55,0.30)" strokeWidth="0.8"/>
+                          <circle cx="244" cy="38" r="2.5" fill="rgba(212,175,55,0.58)"/>
+                          <text x="240" y="62" fontFamily="Inter,sans-serif" fontSize="7.5"
+                            fill="rgba(180,130,50,0.68)" letterSpacing="1.8" textAnchor="middle">BINDER</text>
+                          <line x1="224" y1="65" x2="208" y2="70"
+                            stroke="rgba(180,130,50,0.30)" strokeWidth="0.8"/>
+                          <circle cx="204" cy="70" r="2.2" fill="rgba(180,130,50,0.52)"/>
+                          <text x="140" y="104" fontFamily="Inter,sans-serif" fontSize="7.5"
+                            fill="rgba(212,175,55,0.80)" letterSpacing="1.5" textAnchor="middle">FILLER (YOU)</text>
+                          <line x1="140" y1="99" x2="140" y2="86"
+                            stroke="rgba(212,175,55,0.30)" strokeWidth="0.8"/>
+                          <circle cx="140" cy="70" r="3.5" fill="rgba(212,175,55,0.65)"/>
+                        </svg>
+                        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, lineHeight: 1.60,
+                          color: "rgba(240,232,212,0.35)", margin: "12px 0 0", textAlign: "center" as const }}>
+                          Select a filler leaf to see its profile
+                        </p>
+                      </div>
+                    )}
+                    {/* Selected leaf macro visual */}
+                    {sel.leaf && (() => {
+                      const leafImgMap: Record<string,string> = {
+                        seco:   "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=600&q=80",
+                        viso:   "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80",
+                        ligero: "https://images.unsplash.com/photo-1533779183510-8738c1c4bab0?auto=format&fit=crop&w=600&q=80",
+                      };
+                      return (
+                        <motion.div key={sel.leaf.id}
+                          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                          transition={{ duration: 0.4 }}
+                          style={{ flex: 1, borderRadius: 14, overflow: "hidden",
+                            position: "relative" as const,
+                            border: `1px solid ${sel.leaf.hue}55`, minHeight: 120 }}>
+                          <img src={leafImgMap[sel.leaf.id] ?? sel.leaf.img} alt={sel.leaf.label}
+                            style={{ width: "100%", height: "100%", objectFit: "cover",
+                              filter: "saturate(1.18) brightness(0.60)" }} />
+                          <div style={{ position: "absolute", inset: 0,
+                            background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 55%)" }} />
+                          <motion.div
+                            animate={{ boxShadow: [
+                              `inset 0 0 40px 14px ${sel.leaf.hue}18`,
+                              `inset 0 0 72px 28px ${sel.leaf.hue}32`,
+                              `inset 0 0 50px 18px ${sel.leaf.hue}20`,
+                            ]}}
+                            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                            style={{ position: "absolute", inset: 0, borderRadius: 14 }} />
+                          <div style={{ position: "absolute", bottom: 12, left: 14, right: 14 }}>
+                            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.35rem",
+                              color: "rgba(240,232,212,0.95)", fontWeight: 300, margin: "0 0 4px" }}>
+                              {sel.leaf.label}
+                            </p>
+                            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11,
+                              color: "rgba(240,232,212,0.58)", lineHeight: 1.55, margin: 0 }}>
+                              {sel.leaf.desc}
+                            </p>
+                          </div>
+                        </motion.div>
+                      );
+                    })()}
                   </div>
-                </div>
-                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar items-start content-start">
-                  {LEAVES.map(leaf => (
-                    <SelectionCard
-                      key={leaf.id}
-                      item={leaf}
-                      selected={sel.leaf?.id === leaf.id}
-                      onClick={e => select("leaf", leaf, e)}
-                    />
-                  ))}
                 </div>
               </div>
             )}
@@ -5263,9 +5440,14 @@ export default function MasterBlender() {
         </AnimatePresence>
       </div>
 
-      {/* ── Navigation strip ── */}
-      <div className="relative z-10 flex items-center justify-between px-5 py-4 flex-shrink-0"
-        style={{ borderTop: "1px solid rgba(212,175,55,0.10)" }}>
+      {/* ── Navigation strip — position:fixed z:999999, always touch-responsive ── */}
+      {gateway === "blending" && !reveal && (
+      <div style={{ position: "fixed", bottom: 26, left: 0, right: 0, zIndex: 999999,
+        pointerEvents: "auto", display: "flex", alignItems: "center",
+        justifyContent: "space-between", padding: "12px 20px",
+        background: "rgba(4,2,0,0.97)", backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderTop: "1px solid rgba(212,175,55,0.14)" }}>
         <motion.button
           onClick={prevStep}
           whileTap={{ scale: 0.92 }}
@@ -5278,7 +5460,7 @@ export default function MasterBlender() {
             cursor:     step === 0 ? "not-allowed" : "pointer",
           }}
         >
-          Back
+          BACK
         </motion.button>
 
         <div className="text-[9px] tracking-[0.22em] uppercase" style={{ color: `${GOLD}45` }}>
@@ -5294,14 +5476,14 @@ export default function MasterBlender() {
           style={{
             background: canAdvance ? `linear-gradient(135deg, ${GOLD}, #c8951a)` : "rgba(212,175,55,0.10)",
             color:      canAdvance ? "#0a0700" : "rgba(212,175,55,0.28)",
-            boxShadow:  canAdvance ? `0 4px 20px ${GOLD}44` : "none",
+            boxShadow:  canAdvance ? `0 0 28px ${GOLD}77, 0 4px 18px ${GOLD}55, inset 0 0 18px rgba(212,175,55,0.10)` : "none",
             cursor:     canAdvance ? "pointer" : "not-allowed",
             border:     "none",
           }}
         >
-          {step === 3 ? "REVEAL MATCH" : "CONTINUE"}
+          {step === 3 ? "CONFIRM BLEND" : "CONTINUE"}
         </motion.button>
-      </div>
+      </div>)}
 
       {/* Glassmorphic pairing ticker with live score delta micro-animations */}
       <div style={{
