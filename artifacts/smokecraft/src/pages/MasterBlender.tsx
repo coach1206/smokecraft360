@@ -347,7 +347,7 @@ function SmokeCanvas() {
   return (
     <canvas
       ref={canvasRef}
-      style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 2 }}
+      style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9996 }}
     />
   );
 }
@@ -749,8 +749,88 @@ const GW = {
 
 // ── Gateway: Intro ──────────────────────────────────────────────────────────
 // ── Cockpit Idle View — NOVEE OS craft portal ────────────────────────────────
+// ── Boot sequence — levels 0→1→2→3 before cockpit ─────────────────────────
+function BootSequence({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState<0|1|2|3>(0);
+  const GOLD = "#d4af37";
+  useEffect(() => {
+    const t0 = setTimeout(() => setPhase(1), 1350);
+    const t1 = setTimeout(() => setPhase(2), 2650);
+    const t2 = setTimeout(() => setPhase(3), 3750);
+    const t3 = setTimeout(() => onComplete(), 4500);
+    return () => { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <AnimatePresence>
+      {phase < 3 && (
+        <motion.div
+          key="boot-seq"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.75 }}
+          style={{ position: "fixed", inset: 0, background: "#000000", zIndex: 99999,
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+        >
+          <AnimatePresence mode="wait">
+            {phase === 0 && (
+              <motion.div key="l0" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.7 }} style={{ textAlign: "center" }}>
+                <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.2rem,2.8vw,2rem)", fontWeight: 300,
+                  color: "rgba(255,255,255,0.82)", letterSpacing: "0.22em", margin: 0, textTransform: "uppercase" as const }}>Profound Innovations LLC</p>
+                <motion.div animate={{ scaleX: [0, 1] }} transition={{ delay: 0.4, duration: 0.8 }}
+                  style={{ height: 1, width: 80, background: `linear-gradient(to right, transparent, ${GOLD}, transparent)`, margin: "18px auto 0" }} />
+              </motion.div>
+            )}
+            {phase === 1 && (
+              <motion.div key="l1" initial={{ x: "40%", opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: "-40%", opacity: 0 }}
+                transition={{ duration: 0.55, ease: [0.22,1,0.36,1] }} style={{ textAlign: "center" }}>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: "clamp(0.55rem,1.1vw,0.72rem)", letterSpacing: "0.5em",
+                  color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, margin: "0 0 12px" }}>Operating System Layer</p>
+                <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(3rem,6.5vw,5.5rem)", fontWeight: 300,
+                  color: "#ffffff", letterSpacing: "0.15em", margin: 0 }}>NOVEÈ OS</h1>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: "clamp(0.5rem,0.9vw,0.65rem)", letterSpacing: "0.3em",
+                  color: "rgba(255,255,255,0.22)", textTransform: "uppercase" as const, margin: "10px 0 0" }}>Luxury Experience Terminal — V4.2</p>
+              </motion.div>
+            )}
+            {phase === 2 && (
+              <motion.div key="l2" initial={{ scale: 0.87, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.52, ease: [0.22,1,0.36,1] }}
+                style={{ background: "linear-gradient(135deg, rgba(15,15,15,0.93) 0%, rgba(5,5,5,0.82) 100%)",
+                  backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)",
+                  border: "1px solid rgba(212,175,55,0.22)", borderRadius: 18,
+                  padding: "48px 64px", textAlign: "center",
+                  minWidth: "min(460px, 88vw)",
+                  boxShadow: "0 30px 80px rgba(0,0,0,0.95), 0 0 60px rgba(212,175,55,0.06)" }}>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.44em",
+                  color: "rgba(212,175,55,0.52)", textTransform: "uppercase" as const, margin: "0 0 14px" }}>Centralized Core</p>
+                <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(2.2rem,4.5vw,3.6rem)", fontWeight: 300,
+                  color: "#ffffff", letterSpacing: "0.12em", margin: "0 0 6px" }}>CraftHub</h2>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.18em",
+                  color: "rgba(255,255,255,0.28)", textTransform: "uppercase" as const, margin: "0 0 24px" }}>Operational Dashboard</p>
+                <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" as const }}>
+                  {["INVENTORY", "RESERVATIONS", "SESSIONS", "TELEMETRY"].map(s => (
+                    <span key={s} style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.2em",
+                      color: "rgba(212,175,55,0.48)", padding: "5px 10px",
+                      border: "1px solid rgba(212,175,55,0.16)", borderRadius: 3 }}>{s}</span>
+                  ))}
+                </div>
+                <motion.p animate={{ opacity: [0.28, 0.85, 0.28] }} transition={{ duration: 1.3, repeat: Infinity }}
+                  style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.3em",
+                    color: "rgba(212,175,55,0.42)", textTransform: "uppercase" as const, margin: "26px 0 0" }}
+                >INITIALIZING PORTFOLIO MATRIX…</motion.p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
   const [ambering, setAmbering] = useState(false);
+  const GOLD = "#d4af37";
   function playClick() {
     try {
       const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
@@ -764,14 +844,16 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
     } catch {}
   }
   const crafts: { id: string; label: string; sub: string; active: boolean; img: string }[] = [
-    { id: "smoke", label: "SmokeCraft",  sub: "The Craft of the Cigar",   active: true,  img: "/images/scenes/smokecraft-card.jpg" },
-    { id: "pour",  label: "PourCraft",   sub: "The Craft of the Pour",    active: false, img: "/images/scenes/pourcraft-card.jpg" },
-    { id: "wine",  label: "WineCraft",   sub: "The Craft of the Vine",    active: false, img: "/images/scenes/brewcraft-card.jpg" },
-    { id: "asset", label: "AssetCraft",  sub: "The Craft of the Moment",  active: false, img: "/images/scenes/vapecraft-card.jpg" },
+    { id: "smoke", label: "SMOKECRAFT 360", sub: "The Art of the Cigar",   active: true,  img: "/images/scenes/smokecraft-card.jpg" },
+    { id: "pour",  label: "POURCRAFT 360",  sub: "The Craft of the Pour",  active: false, img: "/images/scenes/pourcraft-card.jpg" },
+    { id: "beer",  label: "BEERCRAFT 360",  sub: "The Craft of the Brew",  active: false, img: "/images/scenes/brewcraft-card.jpg" },
+    { id: "wine",  label: "WINECRAFT 360",  sub: "The Craft of the Vine",  active: false, img: "/images/scenes/vapecraft-card.jpg" },
   ];
   return (
     <div
-      style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 65% 45% at 50% 56%, rgba(255,176,0,0.042) 0%, #000000 68%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+      style={{ position: "absolute", inset: 0,
+        background: "radial-gradient(ellipse 65% 45% at 50% 56%, rgba(255,176,0,0.042) 0%, #000000 68%)",
+        display: "flex", flexDirection: "column" as const }}
     >
       {/* 1.9s amber transitional pulse */}
       <AnimatePresence>
@@ -782,99 +864,87 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
             animate={{ opacity: [0, 1, 0.65, 0] }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.9, times: [0, 0.25, 0.65, 1], ease: "easeInOut" }}
-            style={{
-              position: "absolute", inset: 0, pointerEvents: "none", zIndex: 999,
-              background: "radial-gradient(circle at 50% 50%, rgba(255,176,0,0.30) 0%, rgba(212,175,55,0.12) 40%, rgba(0,0,0,0) 78%)",
-            }}
+            style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 999,
+              background: "radial-gradient(circle at 50% 50%, rgba(255,176,0,0.30) 0%, rgba(212,175,55,0.12) 40%, rgba(0,0,0,0) 78%)" }}
           />
         )}
       </AnimatePresence>
-      <button
-        onClick={() => window.location.assign("/novee/")}
-        style={{
-          position: "absolute", top: 24, left: 24,
-          background: "transparent",
-          border: "1px solid rgba(212,175,55,0.4)",
-          color: "rgba(212,175,55,0.75)",
-          padding: "10px 20px", borderRadius: 4,
-          fontSize: 11, fontWeight: 700,
-          letterSpacing: "0.24em", textTransform: "uppercase" as const,
-          cursor: "pointer", fontFamily: "'Inter',sans-serif",
-          zIndex: 9999999,
-        }}
-      >← NOVEE OS</button>
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.9 }}
-        style={{ textAlign: "center", marginBottom: 52 }}
-      >
-        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.42em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, margin: "0 0 10px" }}>NOVEE OS // CRAFT SELECT</p>
-        <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 300, color: "#ffffff", letterSpacing: "0.08em", margin: 0 }}>Choose Your Craft</h1>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.9 }}
-        style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 18, width: "min(640px, 90vw)" }}
-      >
-        {crafts.map((c, i) => (
-          <motion.button
-            key={c.id}
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.55 + i * 0.08, duration: 0.7 }}
-            whileHover={c.active ? { scale: 1.04, boxShadow: "0 0 56px rgba(212,175,55,0.32), 0 0 100px rgba(212,175,55,0.10)" } : {}}
-            whileTap={c.active ? { scale: 0.96 } : {}}
-            onTouchStart={() => c.active && !ambering && playClick()}
-            onClick={() => { if (c.active && !ambering) { playClick(); setAmbering(true); setTimeout(() => onSmokeCraft(), 1900); } }}
-            style={{
-              border: c.active ? "1px solid rgba(212,175,55,0.60)" : "1px solid rgba(255,255,255,0.07)",
-              borderRadius: 12,
-              padding: 0,
-              display: "flex", flexDirection: "column" as const, alignItems: "flex-start",
-              cursor: c.active ? "pointer" : "default",
-              textAlign: "left" as const,
-              boxShadow: c.active ? "0 0 32px rgba(212,175,55,0.18), inset 0 1px 0 rgba(255,255,255,0.06)" : "none",
-              minHeight: 160,
-              position: "relative" as const,
-              overflow: "hidden",
-              background: "transparent",
-            }}
-          >
-            {/* Background image */}
-            <img
-              src={c.img}
-              alt={c.label}
-              style={{
-                position: "absolute", inset: 0,
-                width: "100%", height: "100%",
-                objectFit: "cover",
-                opacity: c.active ? 0.72 : 0.28,
-                filter: c.active ? "saturate(1.1) brightness(0.8)" : "saturate(0.3) brightness(0.55)",
-              }}
-            />
-            {/* Gradient overlay */}
-            <div style={{
-              position: "absolute", inset: 0,
-              background: c.active
-                ? "linear-gradient(160deg, rgba(14,10,0,0.55) 0%, rgba(5,3,0,0.78) 100%)"
-                : "linear-gradient(160deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.82) 100%)",
-            }} />
-            {/* Content */}
-            <div style={{ position: "relative", zIndex: 1, padding: "28px 24px", width: "100%" }}>
-              <span style={{
-                position: "absolute", top: 12, right: 16,
-                fontSize: 8, fontWeight: 700, letterSpacing: "0.25em",
-                color: c.active ? "rgba(212,175,55,0.80)" : "rgba(255,255,255,0.30)",
-                fontFamily: "'Inter',sans-serif", textTransform: "uppercase" as const,
-              }}>{c.active ? "ACTIVE" : "COMING SOON"}</span>
-              <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.4rem,2.4vw,1.8rem)", fontWeight: 400, color: c.active ? "#d4af37" : "rgba(255,255,255,0.38)", margin: "0 0 6px", letterSpacing: "0.04em" }}>{c.label}</p>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, fontWeight: 400, color: c.active ? "rgba(255,252,245,0.62)" : "rgba(255,255,255,0.22)", margin: 0, letterSpacing: "0.14em", textTransform: "uppercase" as const }}>{c.sub}</p>
+
+      {/* Top bar */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, zIndex: 10000,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 22px",
+        background: "linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, transparent 100%)",
+        pointerEvents: "none" }}>
+        <button
+          onClick={() => window.location.assign("/novee/")}
+          style={{ pointerEvents: "all", background: "transparent",
+            border: "1px solid rgba(212,175,55,0.38)", color: "rgba(212,175,55,0.72)",
+            padding: "9px 18px", borderRadius: 4, fontSize: 10, fontWeight: 700,
+            letterSpacing: "0.24em", textTransform: "uppercase" as const,
+            cursor: "pointer", fontFamily: "'Inter',sans-serif" }}
+        >← NOVEE OS</button>
+        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.44em",
+          color: "rgba(212,175,55,0.38)", textTransform: "uppercase" as const, margin: 0 }}>CRAFT SELECT</p>
+      </div>
+
+      {/* 4 edge-to-edge landscape strips */}
+      {crafts.map((c, i) => (
+        <motion.button
+          key={c.id}
+          initial={{ opacity: 0, x: -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.18 + i * 0.1, duration: 0.85 }}
+          whileHover={c.active ? { backgroundColor: "rgba(212,175,55,0.04)" } : {}}
+          whileTap={c.active ? { scale: 0.995 } : {}}
+          onTouchStart={() => c.active && !ambering && playClick()}
+          onClick={() => { if (c.active && !ambering) { playClick(); setAmbering(true); setTimeout(() => onSmokeCraft(), 1900); } }}
+          style={{ flex: 1, position: "relative", border: "none", padding: 0,
+            cursor: c.active ? "pointer" : "default", display: "block",
+            overflow: "hidden", background: "transparent",
+            borderBottom: i < crafts.length - 1 ? "1px solid rgba(212,175,55,0.07)" : "none",
+            outline: "none" }}
+        >
+          {/* Background scene image */}
+          <img
+            src={c.img} alt={c.label}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover",
+              opacity: c.active ? 0.68 : 0.22,
+              filter: c.active ? "saturate(1.1) brightness(0.78)" : "saturate(0.25) brightness(0.45)" }}
+          />
+          {/* Glassmorphic dark overlay */}
+          <div style={{ position: "absolute", inset: 0,
+            background: c.active
+              ? "linear-gradient(90deg, rgba(5,3,0,0.85) 0%, rgba(14,10,0,0.48) 55%, rgba(5,3,0,0.20) 100%)"
+              : "linear-gradient(90deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0.30) 100%)" }} />
+          {/* Strip content — horizontal layout */}
+          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
+            padding: "0 56px", justifyContent: "space-between" }}>
+            <div>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, fontWeight: 700,
+                letterSpacing: "0.38em", textTransform: "uppercase" as const,
+                color: c.active ? "rgba(212,175,55,0.75)" : "rgba(255,255,255,0.22)",
+                margin: "0 0 8px" }}>{c.active ? "ACTIVE" : "COMING SOON"}</p>
+              <h2 style={{ fontFamily: "'Cormorant Garamond',serif",
+                fontSize: "clamp(1.6rem,3.2vw,2.6rem)", fontWeight: 400,
+                color: c.active ? GOLD : "rgba(255,255,255,0.30)",
+                margin: "0 0 6px", letterSpacing: "0.06em" }}>{c.label}</h2>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, fontWeight: 400,
+                color: c.active ? "rgba(255,252,245,0.58)" : "rgba(255,255,255,0.18)",
+                margin: 0, letterSpacing: "0.18em", textTransform: "uppercase" as const }}>{c.sub}</p>
             </div>
-          </motion.button>
-        ))}
-      </motion.div>
+            {c.active && (
+              <motion.span
+                animate={{ x: [0, 6, 0] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.4rem,2.8vw,2.2rem)",
+                  color: "rgba(212,175,55,0.50)", letterSpacing: "0.1em", display: "block" }}
+              >→</motion.span>
+            )}
+          </div>
+        </motion.button>
+      ))}
     </div>
   );
 }
@@ -941,6 +1011,45 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
           position: "absolute", inset: 0,
           background: "linear-gradient(to top, rgba(5,3,0,0.97) 0%, rgba(5,3,0,0.55) 45%, rgba(5,3,0,0.2) 100%)",
         }} />
+      </div>
+
+      {/* Burning cigar — anchored at bottom, tied to SmokeCanvas layer */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, display: "flex",
+        justifyContent: "center", alignItems: "flex-end", pointerEvents: "none", zIndex: 8, paddingBottom: 0 }}>
+        <div style={{ position: "relative", width: 340, height: 108 }}>
+          {/* Cigar body */}
+          <div style={{ position: "absolute", bottom: 10, left: 10, right: 52, height: 22,
+            borderRadius: "14px 3px 3px 14px",
+            background: "linear-gradient(to bottom, #8B4A32 0%, #4E2016 50%, #7A3D28 100%)",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,200,150,0.10)" }} />
+          {/* Wrapper band */}
+          <div style={{ position: "absolute", bottom: 7, left: 160, width: 4, height: 28,
+            background: "rgba(212,175,55,0.52)", borderRadius: 2 }} />
+          {/* Ember glow */}
+          <motion.div
+            animate={{ boxShadow: [
+              "0 0 12px 5px rgba(255,90,0,0.42), 0 0 26px 10px rgba(255,60,0,0.20)",
+              "0 0 22px 10px rgba(255,120,0,0.62), 0 0 50px 20px rgba(255,80,0,0.32)",
+              "0 0 15px 6px rgba(255,95,0,0.48), 0 0 34px 13px rgba(255,70,0,0.26)"
+            ] }}
+            transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
+            style={{ position: "absolute", bottom: 11, right: 40, width: 22, height: 20,
+              borderRadius: "2px 8px 8px 2px",
+              background: "radial-gradient(ellipse at 58% 50%, #FF8500, #FF3800 38%, #1E0600 80%)" }}
+          />
+          {/* Ash tip */}
+          <div style={{ position: "absolute", bottom: 12, right: 28, width: 14, height: 18,
+            borderRadius: "0 8px 8px 0", background: "rgba(215,205,192,0.72)" }} />
+          {/* Rising smoke wisps */}
+          {[0, 1, 2].map(wi => (
+            <motion.div key={wi}
+              animate={{ y: [-8, -60 - wi*10], x: [0, (wi-1)*12], opacity: [0.52, 0], scale: [0.55, 1.5] }}
+              transition={{ duration: 1.9 + wi*0.5, repeat: Infinity, delay: wi*0.65, ease: "easeOut" }}
+              style={{ position: "absolute", bottom: 32, right: 44 + wi*4, width: 12, height: 12,
+                borderRadius: "50%", background: "rgba(180,160,130,0.45)", filter: "blur(4px)" }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Content */}
@@ -4289,6 +4398,7 @@ export default function MasterBlender() {
   const { guestProfile, evolveMastery } = useGuestProfile();
 
   // ── Gateway state ────────────────────────────────────────────────────────
+  const [bootDone, setBootDone] = useState(false);
   const [gateway,        setGateway]        = useState<GatewayPhase>("cockpit");
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
   const [selectedSeed,   setSelectedSeed]   = useState<string | null>(null);
@@ -4489,6 +4599,9 @@ export default function MasterBlender() {
       className="fixed inset-0 flex flex-col overflow-hidden"
       style={{ background: "#000000", fontFamily: "'Inter',sans-serif" }}
     >
+      {/* ── Boot sequence — plays once on mount ── */}
+      {!bootDone && <BootSequence onComplete={() => setBootDone(true)} />}
+
       {/* ── Cockpit — solid top-layer portal, rendered independently ── */}
       {gateway === "cockpit" && (
         <div style={{ position: "fixed", inset: 0, background: "#000000", zIndex: 99998, display: "flex", flexDirection: "column" }}>
