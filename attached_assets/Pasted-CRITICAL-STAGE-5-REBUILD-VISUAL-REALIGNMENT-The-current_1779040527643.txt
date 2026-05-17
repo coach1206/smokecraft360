@@ -1,0 +1,35 @@
+CRITICAL STAGE 5 REBUILD & VISUAL REALIGNMENT: The current Stage 5 screen is a broken website-style mess with vertical stacking, tiny text boxes, and bleeding margins. You must completely strip out the layout constraints in MasterBlender.tsx and RitualStep.tsx for this stage and rebuild it as an elite, widescreen landscape tablet cockpit console. Absolutely remove all enterprise jargon, 'protocol' banners, roadmap terminology, and floating labels. 
+
+Rebuild the layout to match this exact side-by-side hierarchical specification:
+
+1. TOP CINEMATIC NAVIGATION & PROGRESSION BAR:
+   - Permanently remove the disconnected 'synergy circle' UI. Replace it with a clean, horizontal cinematic progress indicator at the top of the glass viewport tracking the real journey:
+     Filler Leaf → Wrapper → Shape & Size → Cut → Pairing
+   - Include a fixed gold-bordered 'BACK' button at 'position: fixed; z-index: 999999; pointer-events: auto;' ensuring flawless touch responsiveness with zero layer blocking.
+
+2. SECTION 1: HEADER & CINEMATIC ANCHOR
+   - Title Header: "Choose Your Filler Leaf"
+   - Subtext: "The filler leaf shapes the body, strength, burn speed, and overall character of your cigar. Each tobacco leaf contributes different flavor notes and smoking behavior. Select the foundation that best matches your desired experience."
+   - Visual: Pull the HTML5 SmokeCanvas up to z-index 9996 with subtle drifting ember particles. Anchor an ultra-realistic premium cigar burning continuously at the absolute bottom boundary of the display glass.
+
+3. THE WORKSPACE: LANDSCAPE SIDE-BY-SIDE SPLIT GRID
+   Completely eliminate vertical stacking. Force the screen into two mathematically balanced, edge-to-edge horizontal panels:
+
+   A. LEFT COMPONENT: INDUSTRIAL SELECTION CARDS & PRIMING MATRIX (60% Width)
+      - Render 3 massive, clean, luxury glassmorphic selection cards aligned perfectly side-by-side with equal spacing and absolute boundary constraints so text never bleeds:
+        * CARD 1: SECO (Light Body • Smooth Burn | Flavor: Cream, Cedar, Toasted Almond | Experience: Balanced and approachable with a cooler burn and softer finish. | Best For: Relaxed evenings and smoother whiskey pairings. | Indicator: Beginner)
+        * CARD 2: VISO (Medium Body • Aromatic Balance | Flavor: Earth, Cocoa, Spice | Experience: Adds complexity and layered aroma while maintaining smooth balance. | Best For: Classic cigar lovers wanting fuller flavor without overpowering strength. | Indicator: Intermediate)
+        * CARD 3: LIGERO (Full Body • Slow Burn | Flavor: Pepper, Espresso, Dark Chocolate | Experience: The strongest leaf in the blend delivering bold intensity and rich smoke density. | Best For: Experienced smokers and stronger bourbon pairings. | Indicator: Expert)
+      - Interactive Priming Matrix Integration: Each card must feature a custom tactile adjustment dial or premium range slider directly embedded within it. When a guest touches a card, it must compress downward (100ms haptic illusion: scale-96, translate-y-[2px]) and fire a playClick() audio pulse, letting them dynamically mix the leaf percentages.
+      - De-Clutter Accordions: Tuck the technical "Bunching Protocol" and "Leaf Anatomy" data frameworks inside smooth, collapsible disclosure accordions neatly anchored at the bottom of the left panel to preserve visual breathing room.
+
+   B. RIGHT COMPONENT: HIGH-FIDELITY LIVE LEAF & SOMMELIER DISPLAY (40% Width)
+      - Build a dedicated visual viewport window. Absolutely do not display generic retail boxes or store text lists here. 
+      - As the user adjusts the sliders on the left, this panel must dynamically cross-reference the active blend ratio to highlight and scale ultra-realistic macro graphics of raw tobacco leaves (showing accurate vein structures and oil saturation levels).
+      - Synchronously display a real product photo of a premium cigar currently in stock at the venue's humidor tracking tables that mirrors that choice profile, alongside the ideal lounge bar spirit drink currently on promotion to drive instant tableside upselling.
+
+4. CONTINUOUS ALLOCATION VALIDATION & FIXED ACTION BUTTON:
+   - Enforce via the state engine that the collective inputs of the Volado, Seco, and Ligero matrix sliders must total exactly 100% to validate the blend.
+   - The 'CONFIRM BLEND' action button must remain fixed in the lower right footer, completely clear of overlapping content. It must remain disabled and dark until the 100% balance is struck, then ignite with a soft, warm gold neon outer glow drop shadow.
+
+Execute this total industrial luxury design, side-by-side orientation, and matrix logic sweep now. Ensure 'tsc --noEmit' passes completely clean with exit code 0.

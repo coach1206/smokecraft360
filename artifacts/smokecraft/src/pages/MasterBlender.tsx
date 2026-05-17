@@ -4567,6 +4567,11 @@ export default function MasterBlender() {
   const [primingVolado,   setPrimingVolado]   = useState(30);
   const [primingSecoViso, setPrimingSecoViso] = useState(50);
   const [primingLigero,   setPrimingLigero]   = useState(20);
+  // Blending chamber Step-0 allocation sliders (must sum to 100)
+  const [blendSeco,    setBlendSeco]    = useState(34);
+  const [blendViso,    setBlendViso]    = useState(33);
+  const [blendLigero,  setBlendLigero]  = useState(33);
+  const [accordionOpen, setAccordionOpen] = useState<string | null>(null);
 
   // Scoring state
   const scoreFrozenRef             = useRef(false);
@@ -4739,7 +4744,10 @@ export default function MasterBlender() {
   }
 
   const stepKeys: (keyof Sel)[] = ["leaf","wrapper","vitola","cut"];
-  const canAdvance = !!sel[stepKeys[step]];
+  const blendTotal = blendSeco + blendViso + blendLigero;
+  const canAdvance = step === 0
+    ? !!sel.leaf && blendTotal === 100
+    : !!sel[stepKeys[step]];
 
   const STEP_LABELS = ["FILLER LEAF", "WRAPPER", "VITOLA & SMOKE", "THE CUT"];
   const STEP_TITLES = [
@@ -5081,8 +5089,10 @@ export default function MasterBlender() {
                 {/* 60 / 40 horizontal split */}
                 <div style={{ display: "flex", gap: 12, flex: 1, minHeight: 0 }}>
 
-                  {/* LEFT 60%: 3 leaf selection cards side-by-side */}
-                  <div style={{ flex: "0 0 59%", display: "flex", gap: 8, alignItems: "stretch" }}>
+                  {/* LEFT 60%: column — cards row + blend meter + accordions */}
+                  <div style={{ flex: "0 0 59%", display: "flex", flexDirection: "column" as const, gap: 8 }}>
+                    {/* Cards row */}
+                    <div style={{ display: "flex", gap: 8, alignItems: "stretch", flex: 1, minHeight: 0 }}>
                     {([
                       { id: "seco",   label: "Seco",
                         body: "Light Body \u00b7 Smooth Burn",
@@ -5161,6 +5171,34 @@ export default function MasterBlender() {
                               {spec.bestFor}
                             </p>
                           </div>
+                          {/* ── Blend allocation slider ── */}
+                          <div
+                            onClick={e => e.stopPropagation()}
+                            onTouchStart={e => e.stopPropagation()}
+                            style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 7 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between",
+                              alignItems: "center", marginBottom: 4 }}>
+                              <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 7,
+                                letterSpacing: "0.22em", textTransform: "uppercase" as const,
+                                color: "rgba(240,232,212,0.38)" }}>BLEND RATIO</span>
+                              <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 12,
+                                fontWeight: 700, fontVariantNumeric: "tabular-nums",
+                                color: spec.ic }}>
+                                {spec.id === "seco" ? blendSeco : spec.id === "viso" ? blendViso : blendLigero}%
+                              </span>
+                            </div>
+                            <input
+                              type="range" min={0} max={100} step={1}
+                              value={spec.id === "seco" ? blendSeco : spec.id === "viso" ? blendViso : blendLigero}
+                              onChange={e => {
+                                const v = Number(e.target.value);
+                                if (spec.id === "seco") setBlendSeco(v);
+                                else if (spec.id === "viso") setBlendViso(v);
+                                else setBlendLigero(v);
+                              }}
+                              style={{ width: "100%", accentColor: spec.ic, cursor: "pointer" }}
+                            />
+                          </div>
                           {/* Selection pulse */}
                           {isSel && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -5175,7 +5213,69 @@ export default function MasterBlender() {
                         </motion.div>
                       );
                     })}
-                  </div>
+                    </div>{/* end cards row */}
+
+                    {/* ── Blend total allocation meter ── */}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "7px 12px", borderRadius: 10, flexShrink: 0,
+                      background: blendTotal === 100 ? "rgba(74,222,128,0.05)" : "rgba(239,68,68,0.05)",
+                      border: `1px solid ${blendTotal === 100 ? "rgba(74,222,128,0.20)" : "rgba(239,68,68,0.18)"}` }}>
+                      <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 7.5,
+                        letterSpacing: "0.24em", textTransform: "uppercase" as const,
+                        color: "rgba(240,232,212,0.45)" }}>ALLOCATION TOTAL</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 14, fontWeight: 700,
+                          fontVariantNumeric: "tabular-nums",
+                          color: blendTotal === 100 ? "#4ade80" : "#ef4444" }}>
+                          {blendTotal}%
+                        </span>
+                        <span style={{ fontSize: 7, letterSpacing: "0.22em", textTransform: "uppercase" as const,
+                          color: blendTotal === 100 ? "#4ade80" : "rgba(239,68,68,0.65)" }}>
+                          {blendTotal === 100 ? "✓ BALANCED" : blendTotal > 100 ? "▲ OVER" : "▼ UNDER"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* ── Collapsible accordions ── */}
+                    {([
+                      { id: "anatomy",  label: "Leaf Anatomy",
+                        content: "The filler bundle is composed of 2\u20134 leaves folded in a \u2018booking\u2019 or accordion pattern to create draw channels. This determines body strength and burn consistency. Volado (low-nicotine) is always included for reliable combustion integrity." },
+                      { id: "bunching", label: "Bunching Protocol",
+                        content: "Master bunchers select leaves by tactile feel \u2014 assessing elasticity, moisture, and vein thickness. The bunch is formed using the \u2018pil\u00f3n\u2019 technique: leaves are arranged around a central spine, rolled into a cylinder, then wrapped by the binder leaf before pressing." },
+                    ] as { id: string; label: string; content: string }[]).map(acc => (
+                      <div key={acc.id} style={{ borderRadius: 10, overflow: "hidden", flexShrink: 0,
+                        border: "1px solid rgba(212,175,55,0.10)",
+                        background: "rgba(255,255,255,0.015)" }}>
+                        <button
+                          onClick={e => { e.stopPropagation(); setAccordionOpen(o => o === acc.id ? null : acc.id); playClick(); }}
+                          style={{ width: "100%", display: "flex", justifyContent: "space-between",
+                            alignItems: "center", padding: "9px 12px",
+                            background: "none", border: "none", cursor: "pointer" }}>
+                          <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.22em",
+                            textTransform: "uppercase" as const, color: `${GOLD}80` }}>{acc.label}</span>
+                          <motion.span animate={{ rotate: accordionOpen === acc.id ? 180 : 0 }}
+                            transition={{ duration: 0.22 }}
+                            style={{ display: "inline-block", color: `${GOLD}60`, fontSize: 10,
+                              lineHeight: 1 }}>▾</motion.span>
+                        </button>
+                        <AnimatePresence>
+                          {accordionOpen === acc.id && (
+                            <motion.div key={acc.id}
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.25, ease: "easeInOut" }}
+                              style={{ overflow: "hidden" }}>
+                              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, lineHeight: 1.65,
+                                color: "rgba(240,232,212,0.52)", margin: 0, padding: "0 12px 10px" }}>
+                                {acc.content}
+                              </p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ))}
+                  </div>{/* end left panel */}
 
                   {/* RIGHT 41%: anatomy diagram + selected leaf showcase */}
                   <div style={{ flex: 1, display: "flex", flexDirection: "column" as const, gap: 8, minHeight: 0 }}>
@@ -5254,6 +5354,57 @@ export default function MasterBlender() {
                             <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11,
                               color: "rgba(240,232,212,0.58)", lineHeight: 1.55, margin: 0 }}>
                               {sel.leaf.desc}
+                            </p>
+                          </div>
+                        </motion.div>
+                      );
+                    })()}
+
+                    {/* ── Featured Humidor & Spirit Pairing ── */}
+                    {sel.leaf && (() => {
+                      const HUM: Record<string, { cigar: string; ring: string; vitola: string; spirit: string; note: string }> = {
+                        seco:   { cigar: "Cohiba Siglo I",                ring: "40", vitola: "Petit Corona",
+                                  spirit: "Macallan 12 Sherry Oak",       note: "Highland Single Malt — light smoke and dried-fruit complement" },
+                        viso:   { cigar: "Arturo Fuente Hemingway",       ring: "52", vitola: "Figurado",
+                                  spirit: "Woodford Reserve Bourbon",     note: "Kentucky Straight — cocoa and vanilla finish harmony" },
+                        ligero: { cigar: "Padr\u00f3n 1926 Serie No. 1",  ring: "54", vitola: "Figurado",
+                                  spirit: "Balvenie PortWood 21",         note: "Port-cask Scotch \u2014 dark chocolate and dried-plum synergy" },
+                      };
+                      const m = HUM[sel.leaf.id];
+                      if (!m) return null;
+                      return (
+                        <motion.div key={`hum-${sel.leaf.id}`}
+                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.28 }}
+                          style={{ borderRadius: 12, padding: "12px 14px", flexShrink: 0,
+                            background: "rgba(212,175,55,0.045)",
+                            border: `1px solid ${GOLD}1C`,
+                            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+                          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 7, letterSpacing: "0.38em",
+                            textTransform: "uppercase" as const, color: `${GOLD}50`, margin: "0 0 7px" }}>
+                            FROM THE HUMIDOR
+                          </p>
+                          <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.1rem",
+                            color: "rgba(240,232,212,0.92)", fontWeight: 300, margin: "0 0 2px" }}>
+                            {m.cigar}
+                          </p>
+                          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 8,
+                            color: "rgba(240,232,212,0.38)", margin: "0 0 10px",
+                            letterSpacing: "0.10em", textTransform: "uppercase" as const }}>
+                            Ring {m.ring} · {m.vitola}
+                          </p>
+                          <div style={{ borderTop: "1px solid rgba(212,175,55,0.08)", paddingTop: 8 }}>
+                            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 7, letterSpacing: "0.32em",
+                              textTransform: "uppercase" as const, color: `${GOLD}45`, margin: "0 0 4px" }}>
+                              SPIRIT PAIRING
+                            </p>
+                            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1rem",
+                              color: "rgba(240,232,212,0.85)", fontWeight: 300, margin: "0 0 3px" }}>
+                              {m.spirit}
+                            </p>
+                            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9,
+                              color: "rgba(240,232,212,0.38)", lineHeight: 1.55, margin: 0 }}>
+                              {m.note}
                             </p>
                           </div>
                         </motion.div>
