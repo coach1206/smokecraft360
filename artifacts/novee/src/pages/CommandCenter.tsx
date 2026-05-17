@@ -104,42 +104,45 @@ function riskColor(level: string) {
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-function ScoreRing({ value, label, size = 80, color = "#D48B00" }: {
+function ScoreRing({ value, label, size = 80, color = "#C4610A" }: {
   value: number; label: string; size?: number; color?: string;
 }) {
   const r    = (size - 12) / 2;
   const circ = 2 * Math.PI * r;
   return (
-    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
       <svg width={size} height={size}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(212,139,0,.15)" strokeWidth={6}/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(196,97,10,0.12)" strokeWidth={6}/>
         <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={6}
           strokeDasharray={circ} strokeDashoffset={circ * (1 - Math.max(0, Math.min(value, 1)))}
-          strokeLinecap="round" transform={`rotate(-90 ${size/2} ${size/2})`}/>
+          strokeLinecap="round" transform={`rotate(-90 ${size/2} ${size/2})`}
+          style={{ filter:`drop-shadow(0 0 4px ${color}88)` }}/>
         <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle"
-          fill="#1A1A1B" fontFamily="Cormorant Garamond, serif" fontSize={size * 0.22} fontWeight={600}>
+          fill="#F5EDD8" fontFamily="Cormorant Garamond, serif" fontSize={size * 0.22} fontWeight={700}>
           {Math.round(value * 100)}
         </text>
       </svg>
-      <span style={{ fontSize:11, color:"#6B5E4E", fontFamily:"Cormorant Garamond, serif", letterSpacing:"0.05em", textAlign:"center" }}>
+      <span style={{ fontSize:10, color:"rgba(196,97,10,0.7)", fontFamily:"'Cormorant Garamond', serif", letterSpacing:"0.1em", textAlign:"center", fontWeight:700 }}>
         {label.toUpperCase()}
       </span>
     </div>
   );
 }
 
-function MeterBar({ label, value, color = "#D48B00" }: { label: string; value: number; color?: string }) {
+function MeterBar({ label, value, color = "#C4610A" }: { label: string; value: number; color?: string }) {
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#6B5E4E" }}>
-        <span>{label}</span>
-        <span style={{ color:"#1A1A1B", fontWeight:600 }}>{Math.round(value * 100)}%</span>
+    <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11 }}>
+        <span style={{ color:"rgba(245,237,216,0.55)", letterSpacing:"0.06em" }}>{label}</span>
+        <span style={{ color:"#C4610A", fontWeight:700 }}>{Math.round(value * 100)}%</span>
       </div>
-      <div style={{ height:6, background:"rgba(212,139,0,.12)", borderRadius:3, overflow:"hidden" }}>
+      <div style={{ height:5, background:"rgba(196,97,10,0.10)", borderRadius:3, overflow:"hidden" }}>
         <motion.div
           animate={{ width: `${value * 100}%` }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          style={{ height:"100%", background:color, borderRadius:3 }}
+          style={{ height:"100%", borderRadius:3,
+            background:`linear-gradient(90deg, ${color}, rgba(212,175,55,0.8))`,
+            boxShadow:`0 0 6px ${color}66` }}
         />
       </div>
     </div>
@@ -150,18 +153,14 @@ function Panel({ title, badge, children, accent = false }: {
   title: string; badge?: string; children: React.ReactNode; accent?: boolean;
 }) {
   return (
-    <div style={{
-      background: accent ? "rgba(212,139,0,.06)" : "#EFEBE0",
-      border: `1px solid ${accent ? "rgba(212,139,0,.35)" : "rgba(26,26,27,.08)"}`,
-      borderRadius: 12, padding: "18px 20px", display:"flex", flexDirection:"column", gap:14,
-    }}>
+    <div className={accent ? "novee-glass-ember" : "novee-glass"}
+      style={{ borderRadius: 12, padding: "18px 20px", display:"flex", flexDirection:"column", gap:14 }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-        <span style={{ fontSize:11, fontWeight:700, letterSpacing:"0.1em", color:"#6B5E4E", fontFamily:"Cormorant Garamond, serif" }}>
+        <span style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(196,97,10,0.8)", fontFamily:"'Cormorant Garamond', serif" }}>
           {title.toUpperCase()}
         </span>
         {badge && (
-          <span style={{ fontSize:10, background:"rgba(212,139,0,.18)", color:"#7A5000",
-            borderRadius:20, padding:"2px 8px", fontWeight:700, letterSpacing:"0.05em" }}>
+          <span className="novee-badge-amber">
             {badge}
           </span>
         )}
@@ -176,20 +175,21 @@ function EventFeed({ events }: { events: OrchestrationEvent[] }) {
     <div style={{ display:"flex", flexDirection:"column", gap:6, maxHeight:200, overflowY:"auto" }}>
       <AnimatePresence initial={false}>
         {events.length === 0 && (
-          <span style={{ fontSize:12, color:"#9A8A7A", textAlign:"center", padding:"20px 0" }}>
+          <span style={{ fontSize:12, color:"rgba(245,237,216,0.3)", textAlign:"center", padding:"20px 0", letterSpacing:"0.06em" }}>
             Waiting for orchestration events…
           </span>
         )}
         {events.slice(0, 10).map((ev, i) => (
           <motion.div key={i} initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }}
             exit={{ opacity:0 }} transition={{ duration:0.25 }}
-            style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"8px 10px",
-              background:"rgba(212,139,0,.06)", borderRadius:8, fontSize:11 }}>
-            <span style={{ color:"#D48B00", fontSize:16, lineHeight:1 }}>◆</span>
+            style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"10px 12px",
+              background:"rgba(196,97,10,0.07)", border:"1px solid rgba(196,97,10,0.12)",
+              borderRadius:8, fontSize:11 }}>
+            <span style={{ color:"#C4610A", fontSize:14, lineHeight:1, marginTop:1 }}>◆</span>
             <div style={{ flex:1 }}>
-              <div style={{ fontWeight:600, color:"#1A1A1B" }}>{ev.event ?? ev.trigger ?? "event"}</div>
+              <div style={{ fontWeight:600, color:"#F5EDD8", letterSpacing:"0.04em" }}>{ev.event ?? ev.trigger ?? "event"}</div>
               {ev.confidence !== undefined && (
-                <div style={{ color:"#6B5E4E" }}>
+                <div style={{ color:"rgba(245,237,216,0.4)", marginTop:2 }}>
                   confidence {Math.round((ev.confidence ?? 0) * 100)}%
                   {ev.actions && ` · ${ev.actions.length} action(s)`}
                 </div>
@@ -379,45 +379,42 @@ export default function CommandCenter() {
   }, []);
 
   return (
-    <div style={{ minHeight:"100vh", background:"#F5F2ED", fontFamily:"'Cormorant Garamond', serif", padding:"0 0 60px" }}>
+    <div style={{ minHeight:"100vh", background:"#0D0D0E", fontFamily:"'Inter', sans-serif", padding:"0 0 60px", color:"#F5EDD8" }}>
       {/* Header */}
-      <div style={{ background:"#1A1A1B", padding:"20px 28px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+      <header className="novee-bezel novee-glow-top" style={{ padding:"0 28px", height:64, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700, letterSpacing:"0.12em", color:"#F5F2ED" }}>COMMAND CENTER</div>
-          <div style={{ fontSize:12, color:"rgba(245,242,237,.5)", marginTop:2 }}>EEIS / E.A.T — Autonomous Hospitality Intelligence</div>
+          <div style={{ fontSize:14, fontWeight:800, letterSpacing:"0.22em", color:"#F5EDD8", fontFamily:"'Cormorant Garamond', serif" }}>COMMAND CENTER</div>
+          <div style={{ fontSize:10, color:"rgba(196,97,10,0.55)", marginTop:1, letterSpacing:"0.18em" }}>EEIS · E.A.T — AUTONOMOUS HOSPITALITY INTELLIGENCE</div>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
           <motion.div animate={{ scale: connected ? [1,1.2,1] : 1 }} transition={{ repeat:Infinity, duration:2 }}
-            style={{ width:10, height:10, borderRadius:"50%", background: connected ? "#4CAF50" : "#ef5350" }}/>
-          <span style={{ fontSize:12, color: connected ? "#4CAF50" : "#ef5350", fontWeight:700 }}>
+            style={{ width:9, height:9, borderRadius:"50%", background: connected ? "#4ade80" : "#ef5350",
+              boxShadow: connected ? "0 0 8px rgba(74,222,128,0.6)" : "0 0 8px rgba(239,83,80,0.5)" }}/>
+          <span style={{ fontSize:11, color: connected ? "#4ade80" : "#ef5350", fontWeight:700, letterSpacing:"0.12em" }}>
             {connected ? "LIVE" : "OFFLINE"}
           </span>
         </div>
-      </div>
+      </header>
 
       <div style={{ padding:"20px 28px 0", display:"flex", gap:12, alignItems:"center" }}>
         <input ref={inputRef} defaultValue={DEMO_VENUE}
-          style={{ flex:1, height:40, padding:"0 14px", borderRadius:8, border:"1.5px solid rgba(26,26,27,.15)",
-            background:"#fff", fontSize:13, fontFamily:"inherit", outline:"none", color:"#1A1A1B" }}
+          style={{ flex:1, height:48, padding:"0 16px", borderRadius:8,
+            border:"1px solid rgba(196,97,10,0.22)", background:"rgba(22,22,23,0.8)",
+            backdropFilter:"blur(12px)", fontSize:13, outline:"none",
+            color:"#F5EDD8", fontFamily:"'Inter', sans-serif" }}
           placeholder="Venue ID"
           onKeyDown={(e) => e.key === "Enter" && handleConnect()}
         />
-        <button onClick={handleConnect}
-          style={{ height:40, padding:"0 22px", background:"#D48B00", color:"#fff", border:"none",
-            borderRadius:8, fontWeight:700, fontSize:13, cursor:"pointer", letterSpacing:"0.05em",
-            fontFamily:"inherit" }}>
-          Connect
+        <button onClick={handleConnect} className="novee-btn-primary">
+          CONNECT
         </button>
       </div>
 
       {/* Tabs */}
-      <div style={{ display:"flex", gap:4, padding:"16px 28px 0", borderBottom:"1.5px solid rgba(26,26,27,.08)" }}>
+      <div style={{ display:"flex", gap:2, padding:"16px 28px 0", borderBottom:"1px solid rgba(196,97,10,0.15)", overflowX:"auto" }}>
         {CC_VALID_TABS.map(t => (
           <button key={t} onClick={() => setTab(t)}
-            style={{ padding:"8px 18px", background: tab===t ? "#D48B00" : "transparent",
-              color: tab===t ? "#fff" : "#6B5E4E", border:"none", borderRadius:"8px 8px 0 0",
-              cursor:"pointer", fontSize:12, fontWeight:700, letterSpacing:"0.07em",
-              fontFamily:"inherit", textTransform:"uppercase" }}>
+            className={`novee-tab${tab===t ? " active" : ""}`}>
             {t}
           </button>
         ))}

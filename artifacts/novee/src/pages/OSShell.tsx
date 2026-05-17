@@ -237,12 +237,8 @@ export default function OSShell() {
           {/* E.A.T. Engine quick-link */}
           <button
             onClick={() => { window.dispatchEvent(new CustomEvent("eat:enter")); navigate("/eat-engine"); }}
-            style={{
-              background: "rgba(196,97,10,0.08)", border: "1px solid rgba(196,97,10,0.2)",
-              borderRadius: 6, padding: "6px 12px",
-              color: "#C4610A", fontSize: 10, fontWeight: 600, letterSpacing: "0.15em",
-              cursor: "pointer",
-            }}
+            className="novee-btn-ghost"
+            style={{ fontSize: 10, padding: "0 14px", minHeight: 40, letterSpacing: "0.18em" }}
           >
             E.A.T. ENGINE
           </button>
@@ -278,25 +274,26 @@ export default function OSShell() {
             <button
               key={tile.id}
               onClick={() => handleTileClick(tile.id)}
-              className="novee-module-card"
+              className={tile.id === "eat" ? "novee-module-card novee-glass-ember" : "novee-module-card novee-card"}
               style={{
-                borderRadius: 12, padding: "24px 20px",
+                borderRadius: 14, padding: "28px 22px",
                 textAlign: "left", cursor: "pointer",
-                display: "flex", flexDirection: "column", gap: 12,
-                background: tile.id === "eat" ? "rgba(196,97,10,0.06)" : undefined,
+                display: "flex", flexDirection: "column", gap: 14,
+                minHeight: 120,
               }}
             >
-              <div style={{ fontSize: 22, color: "#C4610A", lineHeight: 1 }}>{tile.icon}</div>
+              <div style={{ fontSize: 26, color: "#C4610A", lineHeight: 1,
+                filter: tile.id === "eat" ? "drop-shadow(0 0 8px rgba(196,97,10,0.5))" : undefined }}>{tile.icon}</div>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: "#F5EDD8" }}>
+                <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.20em", color: "#F5EDD8", fontFamily: "'Cormorant Garamond', serif" }}>
                   {tile.label}
                 </div>
-                <div style={{ fontSize: 11, color: "rgba(245,237,216,0.4)", marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: "rgba(245,237,216,0.45)", marginTop: 5, letterSpacing: "0.04em" }}>
                   {tile.sub}
                 </div>
               </div>
               {tile.id === "craft" && (
-                <div style={{ fontSize: 10, color: "rgba(196,97,10,0.7)", letterSpacing: "0.1em" }}>
+                <div style={{ fontSize: 10, color: "#C4610A", letterSpacing: "0.12em", fontWeight: 700 }}>
                   {modules.filter(m => m.status === "active").length} active →
                 </div>
               )}

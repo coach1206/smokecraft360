@@ -92,97 +92,278 @@
 /* ── Utility classes ──────────────────────────────────────────────────────── */
 @layer utilities {
 
-  /* Obsidian glass surface */
+  /* ── Glass surfaces ───────────────────────────────────────────────────── */
+
+  /* Obsidian glass — primary dark surface */
   .novee-glass {
-    background: rgba(24, 24, 25, 0.85);
-    border: 1px solid rgba(196, 97, 10, 0.15);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(20, 20, 21, 0.82);
+    border: 1px solid rgba(196, 97, 10, 0.18);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
   }
 
-  /* Ember gold gradient surface */
+  /* Ember gold glass — elevated accent surface (E.A.T. primary) */
   .novee-glass-ember {
-    background: linear-gradient(135deg, rgba(196, 97, 10, 0.12) 0%, rgba(24, 24, 25, 0.9) 100%);
-    border: 1px solid rgba(196, 97, 10, 0.28);
-    backdrop-filter: blur(16px);
+    background: linear-gradient(135deg, rgba(196, 97, 10, 0.16) 0%, rgba(22, 18, 14, 0.92) 60%, rgba(18, 18, 19, 0.90) 100%);
+    border: 1px solid rgba(196, 97, 10, 0.40);
+    backdrop-filter: blur(20px) saturate(1.5);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    box-shadow:
+      0 4px 32px rgba(196,97,10,0.14),
+      0 1px 0 rgba(196,97,10,0.12) inset,
+      0 -1px 0 rgba(0,0,0,0.35) inset;
   }
 
-  /* Chrome bezel */
+  /* Deep card — slightly raised obsidian panel */
+  .novee-card {
+    background: linear-gradient(145deg, rgba(32, 32, 33, 0.90) 0%, rgba(20, 20, 21, 0.85) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px;
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    box-shadow:
+      0 4px 24px rgba(0,0,0,0.45),
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 -1px 0 rgba(0,0,0,0.3) inset;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.15s ease;
+  }
+  .novee-card:hover {
+    border-color: rgba(196, 97, 10, 0.38);
+    box-shadow:
+      0 8px 40px rgba(196,97,10,0.14),
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 -1px 0 rgba(0,0,0,0.3) inset;
+    transform: translateY(-2px);
+  }
+  .novee-card:active {
+    transform: translateY(0) scale(0.975);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+
+  /* ── Chrome bezel ─────────────────────────────────────────────────────── */
   .novee-bezel {
-    background: linear-gradient(180deg, #1E1E1F 0%, #141415 100%);
-    border-bottom: 1px solid rgba(196, 97, 10, 0.2);
+    background: linear-gradient(180deg, rgba(28,28,29,0.97) 0%, rgba(18,18,19,0.97) 100%);
+    border-bottom: 1px solid rgba(196, 97, 10, 0.22);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 1px 0 rgba(196,97,10,0.08), 0 4px 16px rgba(0,0,0,0.4);
   }
 
-  /* Amber glow effect */
+  /* ── Glow effects ─────────────────────────────────────────────────────── */
   .novee-glow {
-    box-shadow: 0 0 24px rgba(196, 97, 10, 0.25), 0 0 60px rgba(196, 97, 10, 0.08);
+    box-shadow: 0 0 24px rgba(196, 97, 10, 0.28), 0 0 60px rgba(196, 97, 10, 0.10);
+  }
+  .novee-glow-strong {
+    box-shadow: 0 0 40px rgba(196, 97, 10, 0.45), 0 0 80px rgba(196, 97, 10, 0.18);
   }
 
   /* Top ambient glow stripe */
+  .novee-glow-top {
+    position: relative;
+  }
   .novee-glow-top::before {
     content: "";
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60%;
+    width: 70%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(196, 97, 10, 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgba(196, 97, 10, 0.7), transparent);
   }
 
-  /* Mode badge */
+  /* ── Mode badges ──────────────────────────────────────────────────────── */
   .novee-sovereign {
-    background: linear-gradient(135deg, rgba(196, 97, 10, 0.2), rgba(212, 175, 55, 0.1));
-    border: 1px solid rgba(196, 97, 10, 0.4);
+    background: linear-gradient(135deg, rgba(196,97,10,0.22), rgba(212,175,55,0.10));
+    border: 1px solid rgba(196, 97, 10, 0.45);
     color: #C4610A;
+    box-shadow: 0 0 12px rgba(196,97,10,0.15);
   }
   .novee-essential {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #9ca3af;
   }
 
-  /* Module card */
+  /* ── Tile / module cards ──────────────────────────────────────────────── */
   .novee-module-card {
-    background: rgba(24, 24, 25, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
   }
   .novee-module-card:hover {
-    border-color: rgba(196, 97, 10, 0.35);
-    box-shadow: 0 4px 24px rgba(196, 97, 10, 0.12);
+    transform: translateY(-3px);
+  }
+  .novee-module-card:active {
+    transform: translateY(0) scale(0.972);
   }
   .novee-module-card.active {
-    border-color: rgba(196, 97, 10, 0.55);
-    box-shadow: 0 0 32px rgba(196, 97, 10, 0.18);
+    border-color: rgba(196, 97, 10, 0.60);
+    box-shadow: 0 0 36px rgba(196,97,10,0.20);
   }
 
-  /* Scan line animation */
+  /* ── Tab bar ──────────────────────────────────────────────────────────── */
+  .novee-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgba(196, 97, 10, 0.45);
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    min-height: 48px;
+    padding: 0 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  .novee-tab:hover {
+    color: #C4610A;
+    background: rgba(196,97,10,0.05);
+  }
+  .novee-tab.active {
+    color: #C4610A;
+    border-bottom-color: #C4610A;
+    background: rgba(196,97,10,0.07);
+  }
+
+  /* ── Buttons ──────────────────────────────────────────────────────────── */
+  .novee-btn-primary {
+    background: linear-gradient(135deg, #C4610A 0%, #9A4D08 100%);
+    color: #F5EDD8;
+    border: 1px solid rgba(196,97,10,0.5);
+    border-radius: 8px;
+    padding: 0 22px;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+    min-height: 48px;
+    box-shadow: 0 2px 12px rgba(196,97,10,0.22), inset 0 1px 0 rgba(255,255,255,0.12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+  }
+  .novee-btn-primary:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(196,97,10,0.35);
+  }
+  .novee-btn-primary:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 1px 6px rgba(196,97,10,0.18);
+  }
+
+  .novee-btn-ghost {
+    background: rgba(196,97,10,0.06);
+    border: 1px solid rgba(196, 97, 10, 0.28);
+    color: #C4610A;
+    border-radius: 8px;
+    padding: 0 22px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+  }
+  .novee-btn-ghost:hover {
+    background: rgba(196, 97, 10, 0.12);
+    border-color: rgba(196, 97, 10, 0.55);
+    box-shadow: 0 0 16px rgba(196,97,10,0.10);
+    transform: translateY(-1px);
+  }
+  .novee-btn-ghost:active {
+    transform: scale(0.97);
+  }
+
+  .novee-btn-icon {
+    background: rgba(196,97,10,0.08);
+    border: 1px solid rgba(196,97,10,0.22);
+    color: #C4610A;
+    border-radius: 8px;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+  }
+  .novee-btn-icon:hover {
+    background: rgba(196,97,10,0.16);
+    box-shadow: 0 0 12px rgba(196,97,10,0.18);
+  }
+  .novee-btn-icon:active { transform: scale(0.94); }
+
+  /* ── Status badges ────────────────────────────────────────────────────── */
+  .novee-badge-active   {
+    background: rgba(34,197,94,0.12); color: #4ade80;
+    border: 1px solid rgba(34,197,94,0.28); border-radius: 100px;
+    padding: 3px 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  }
+  .novee-badge-inactive {
+    background: rgba(156,163,175,0.08); color: #9ca3af;
+    border: 1px solid rgba(156,163,175,0.18); border-radius: 100px;
+    padding: 3px 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  }
+  .novee-badge-amber {
+    background: rgba(196,97,10,0.14); color: #C4610A;
+    border: 1px solid rgba(196,97,10,0.32); border-radius: 100px;
+    padding: 3px 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  }
+
+  /* ── Divider ──────────────────────────────────────────────────────────── */
+  .novee-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(196,97,10,0.25), transparent);
+    border: none;
+    margin: 0;
+  }
+
+  /* ── Scrollbar ────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(196, 97, 10, 0.28); border-radius: 2px; }
+
+  /* ── Animations ───────────────────────────────────────────────────────── */
   @keyframes novee-scan {
     0%   { transform: translateY(-100%); opacity: 0; }
     10%  { opacity: 1; }
     90%  { opacity: 1; }
     100% { transform: translateY(100vh); opacity: 0; }
   }
-
   @keyframes novee-pulse {
     0%, 100% { opacity: 0.6; }
     50%       { opacity: 1; }
   }
-
   @keyframes novee-flicker {
     0%, 98%, 100% { opacity: 1; }
     99% { opacity: 0.7; }
   }
-
   @keyframes novee-ember-breathe {
-    0%, 100% { box-shadow: 0 0 16px rgba(196,97,10,0.2); }
-    50%       { box-shadow: 0 0 32px rgba(196,97,10,0.45); }
+    0%, 100% { box-shadow: 0 0 16px rgba(196,97,10,0.18); }
+    50%       { box-shadow: 0 0 36px rgba(196,97,10,0.48); }
   }
-
   @keyframes novee-spin {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
+  }
+  @keyframes novee-shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
   }
 
   .animate-novee-spin    { animation: novee-spin 3s linear infinite; }
@@ -190,73 +371,7 @@
   .animate-novee-flicker { animation: novee-flicker 8s ease-in-out infinite; }
   .animate-novee-ember   { animation: novee-ember-breathe 3s ease-in-out infinite; }
 
-  /* EAT tab bar */
-  .novee-tab {
-    background: transparent;
-    border-bottom: 2px solid transparent;
-    color: rgba(196, 97, 10, 0.5);
-    transition: all 0.2s ease;
-    min-height: 40px;
-    padding: 0 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    font-weight: 500;
-  }
-  .novee-tab.active,
-  .novee-tab:hover {
-    color: #C4610A;
-    border-bottom-color: #C4610A;
-  }
-
-  /* Primary button */
-  .novee-btn-primary {
-    background: linear-gradient(135deg, #C4610A, #A0500D);
-    color: #0D0D0E;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 20px;
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    transition: opacity 0.15s ease, transform 0.1s ease;
-    min-height: 40px;
-  }
-  .novee-btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-  .novee-btn-primary:active { transform: translateY(0); }
-
-  /* Ghost button */
-  .novee-btn-ghost {
-    background: transparent;
-    border: 1px solid rgba(196, 97, 10, 0.3);
-    color: #C4610A;
-    border-radius: 6px;
-    padding: 10px 20px;
-    font-weight: 500;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    min-height: 40px;
-  }
-  .novee-btn-ghost:hover {
-    background: rgba(196, 97, 10, 0.08);
-    border-color: rgba(196, 97, 10, 0.6);
-  }
-
-  /* Status badge */
-  .novee-badge-active   { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); border-radius: 100px; padding: 2px 10px; font-size: 11px; }
-  .novee-badge-inactive { background: rgba(156,163,175,0.1); color: #9ca3af; border: 1px solid rgba(156,163,175,0.2); border-radius: 100px; padding: 2px 10px; font-size: 11px; }
-
-  /* Thin scrollbar */
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(196, 97, 10, 0.3); border-radius: 2px; }
-
-  /* Live-feed activity dot */
+  /* ── Live-feed activity dot ───────────────────────────────────────────── */
   @keyframes eat-live-pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.35; transform: scale(0.65); }
