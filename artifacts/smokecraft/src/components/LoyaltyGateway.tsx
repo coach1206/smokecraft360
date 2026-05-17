@@ -268,6 +268,35 @@ export default function LoyaltyGateway({ onNewGuest, onStartSession }: Props) {
         zIndex:         10,
       }}
     >
+      {/* Back to NOVEE OS */}
+      <button
+        onTouchStart={() => playGatewayClick()}
+        onClick={() => window.location.assign("/novee/")}
+        style={{
+          position:      "absolute",
+          top:           "max(16px, env(safe-area-inset-top, 16px))",
+          left:          "max(16px, env(safe-area-inset-left, 16px))",
+          background:    "transparent",
+          border:        "none",
+          color:         `${GOLD}70`,
+          fontSize:      10,
+          letterSpacing: "0.28em",
+          textTransform: "uppercase" as const,
+          cursor:        "pointer",
+          padding:       "10px 12px",
+          display:       "flex",
+          alignItems:    "center",
+          gap:           6,
+          minHeight:     44,
+          minWidth:      44,
+        }}
+      >
+        <svg width={12} height={12} viewBox="0 0 12 12" fill="none">
+          <path d="M8 1.5L3 6l5 4.5" stroke={`${GOLD}70`} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        NOVEE OS
+      </button>
+
       {/* Ambient gold glow */}
       <div style={{
         position:         "absolute",

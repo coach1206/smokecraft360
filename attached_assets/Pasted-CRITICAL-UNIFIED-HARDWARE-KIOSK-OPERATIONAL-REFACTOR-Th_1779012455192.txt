@@ -1,0 +1,36 @@
+CRITICAL UNIFIED HARDWARE KIOSK & OPERATIONAL REFACTOR: The system requires a comprehensive visual, structural, and transport-layer alignment. We are completely replacing all flat corporate templates and layout-bleeding stubs with an ultra-premium, 15-minute glassmorphic touchscreen masterclass. This session must fix the Stage 5 tobacco anatomy error, repair the dead navigation buttons, activate live POS/Humidor database tracking, and implement the nightly competitive leaderboard.
+
+Refactor MasterBlender.tsx, RitualStep.tsx, usePosIntegration.ts, and your database schema migrations immediately to enforce this exact hardware and hospitality specification:
+
+1. REBUILD STAGE 5 AS "THE PRIMING MATRIX" (REPAIR TOBACCO ANATOMY):
+   - Header Copy: Title must read exactly "The Priming Matrix". Sub-header text: "A master blend balances all three vertical primings of the tobacco plant to control burn, aroma, and raw power."
+   - Interaction Overhaul: Completely delete the flat three-button choice array that forces a single-option select between Seco, Viso, and Ligero. Replace it with an interactive, tactile percentage ratio balancer (e.g., three synchronized glassmorphic range sliders or connected adjustment dials) that lets the user mix the core blend:
+     * Volado (Bottom Tiers): Explicitly label that this priming regulates burn chemistry and combustion stability.
+     * Seco / Viso (Middle Tiers): Explicitly label that this priming dictates the aromatic flavor bloom.
+     * Ligero (Top Tiers): Explicitly label that this priming delivers raw nicotine strength, body, and heavy oil density.
+   - Core Logic Validation: Enforce that the collective inputs of these three primings must total exactly 100% before the user is permitted to unlock the "CONTINUE" navigation action.
+
+2. FIX UI OVERLAPPING, DE-CLUTTER & RE-ENGINEER ENGAGEMENT:
+   - Clean up the layout clutter immediately. Ensure that panels, borders, and the "Live Humidor" overlay components do not clip or bleed over each other on a tablet-scale interface.
+   - Turn the static "Bunching Protocol" and "Leaf Anatomy" cards into high-engagement, dynamic disclosure elements. Tuck them cleanly beneath the main matrix as collapsible drawers. When tapped, they must expand smoothly using a 100ms haptic-style transition to reveal their respective technical infographics, preventing text overload while maintaining deep craft education.
+
+3. REPAIR BACK BUTTON TOUCH LATENCY & TIMEOUT OVERLAYS:
+   - Fix the BACK button interaction layer bug immediately. Apply 'pointer-events: auto; position: relative; z-index: 999999;' directly to the navigation row container to ensure it sits on top of all transparent layouts and flawlessly intercepts touch inputs.
+   - Ensure the session timeout modal overlay sits securely at layer depth z-index 999999 with pointer-events auto. If a modal interaction lock encounters zero user input on a lounge kiosk, trigger a 5-second auto-dismiss failsafe to automatically restore regular session usability.
+
+4. ATTACH THE LIVE VENUE POS, HUMIDOR INVENTORY & AUTOMATED SPIRIT PAIRING:
+   - Connect the real-time interaction loops straight to the venue's physical POS, humidor inventory tracking tables, and bar management ledgers:
+     * As the user shifts the Volado/Seco/Ligero percentages, the 'Lounge Sommelier' engine must query the humidor stock in real-time. Dynamically display a real-world premium cigar currently in stock at the venue that mirrors this exact priming ratio balance (e.g., high-Ligero maps to a Padrón 1926; high-Seco maps to an Arturo Fuente Opus X, etc.) accompanied by an authentic product image.
+     * Hardcode an automated premium sensory matrix for the bar items: Dominican profiles auto-suggest Aged Highland Single Malt Scotch or VSOP Cognac; Nicaraguan profiles auto-suggest Barrel-Proof Bourbon or Single-Barrel Añejo Rum; Ecuadorian profiles auto-suggest Japanese Whiskey or Refined Armagnac.
+     * Synchronously log the active session state, terminal identifier, and custom flavor preferences to the management CommandCenter panel so floor humidors and bartenders see active guest builds in real-time.
+
+5. IMPLEMENT THE 15-MINUTE PACED movements & LEADERTICKER:
+   - Structure the 14+ wizard steps into 3 distinct high-engagement movements with clear educational barriers that prevent passive rapid click-throughs:
+     * Movement I (Minutes 0–5): Origin, Heritage Seed Lines (Corojo/Criollo), and Soil Terroir (Potassium vs. Clay).
+     * Movement II (Minutes 5–10): The Priming Matrix, Harvest Tiers, Curing Barns, Fermentation Bulks, and the Rolling Bench.
+     * Movement III (Minutes 10–15): Vitola Gauge Science, Precision Cut Profiles (Straight/V-Cut/Punch), and Live Bar Spirit Harmonies.
+   - Point State Reducer: Award +5 XP for perfect mentor-seed-soil matches, and drop a red -2 PTS penalty chip for conflicting inputs. Wire adjustments directly to the Web Audio API playClick() bandpass noise burst.
+   - Nightly Leaderboard Panel: On final submission, freeze the data (`scoreFrozenRef.current = true`). Execute a live server aggregation query against the supply_verification_ledger table to calculate the real-time average score of all entries logged on the current date, displaying the user's final score directly alongside the 'Nightly Lounge Average' and their community placement tier.
+
+6. MIDNIGHT OBSIDIAN PALETTE & SENSORY TOUCH DESIGN:
+   - Permanently DELETE the following terms from all files: 'Sovereign Ritual', 'Phase 1', 'Phase 2', 'Legacy Assets', 'Precision Ritual', 'Commission Bespoke Physical Assets', 'Sovereign Roadmap', and 'baseline architecture'.
