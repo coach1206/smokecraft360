@@ -1,0 +1,39 @@
+CRITICAL SYSTEM DIAGNOSTIC ANALYSIS & GAP REPORT: You are forbidden from modifying or generating any feature code, components, or layout structures during this pass. Your sole objective is to run a deep architectural scan on the existing files (including App.tsx, MasterBlender.tsx, RitualStep.tsx, usePosIntegration.ts, and any layout/routing files) and generate a comprehensive, itemized Gap Analysis Report. 
+
+You must evaluate the codebase against the following strict, multi-pillar enterprise infrastructure specifications and explicitly report what layout logic, database hooks, tracking parameters, or state constraints are currently missing, broken, or lazy:
+
+1. LANDSCAPE DASHBOARD GRID SYMMETRY VALIDATION
+   - Is vertical menu/module stacking strictly prevented?
+   - Does SmokeCraft 360 occupy a full-width horizontal top deck (100% width)?
+   - Are PourCraft 360, BeerCraft 360, and WineCraft 360 aligned side-by-side cleanly directly beneath it in equal landscape columns?
+   - Do all interactive elements have hardware tactility triggers (scale-96 compression + translate-y-[2px] + 3400Hz mechanical audio click burst via Web Audio API)?
+   - Are there any flat, text-only web layout placeholders violating the dark atmospheric visual motion mandate (smoke, fluid waves, bubbles, wine legs)?
+
+2. ENTRY-GATE LOCATION PROXIMITY & INTRO MARKETING HOOKS
+   - Is there an up-front 5-mile geo-proximity opt-in prompt integrated immediately upon selecting a craft module from the main grid?
+   - Is this opt-in/opt-out choice bound to the mandatory user mobile phone number?
+   - Is the backend marketing outreach ledger structured to track a 5-mile perimeter radius around the venue coordinates to handle manual or automated slow-day SMS broadcasts?
+
+3. GOLDEN BOX INTRO & DEMOGRAPHIC ONBOARDING GATES
+   - Does "The Art of the Cigar" gateway screen hold completely static on user entry with zero automatic timeout bypasses?
+   - Are the Golden Box scoring disclosures (+5 XP accuracy / -2 PTS mentor violations) and the table spend-to-points tier multipliers ($50, $100, $200+) explicitly wired into the entry interface?
+   - Does the input form fully capture Name, Phone, Email, Age Range, Gender (M/F), State, and City before unlocking progression?
+
+4. FRICTIONLESS RETURNING GUEST RE-HYDRATION PATHS
+   - Is there a dedicated "Returning Masterclass Guest" login toggle that captures ONLY Last Name and the Last 4 Digits of the Phone Number?
+   - Does the backend ledger verify this specific 2-step handshake, pull their complete JSON profile state, and leap the user directly to their saved phase checkpoint?
+
+5. HARD 3-VISIT CUSTOMER LIFECYCLE & SUMMARY GATES
+   - Is user progression programmatically partitioned across 3 separate table visits across all four crafts?
+   - Does Visit 1 strictly terminate immediately following the Foundation Sourcing Challenge (Soil Terroir), completely blocking entry to subsequent phases?
+   - Is the Milestone Summary Gate wired to animate their running score face-to-face against the venue's live Nightly Lounge Average benchmark?
+   - Are the real-time POS humidor inventory queries and tableside beverage/food up-sell recommendation overlays active at this freeze checkpoint?
+
+6. OPERATIONAL OVERRIDES, SECURITY GEOFENCING, & REORDER CORE
+   - Is the hidden Staff PIN touch zone active, and does it flip the screen vertically to reveal the side-by-side E.A.T. Management Command Dashboard?
+   - Is the interactive Drag-and-Drop Floor Map Configurator and Seating Arranger present within the Asset (A) panel?
+   - Is the 15-minute operational hardware timeout active with a 3-minute idle dim and a 60-second glass warning sequence?
+   - Is the automated background geofencing perimeter monitor active to cut off staff notifications, clear PIN caches, and trigger a blackout lockdown if the terminal leaves the authorized coordinates?
+   - Is the cross-fragmented inventory syncing core actively tracking back-bar fluid ounces, humidor units, and kitchen stock lines to trigger automated B2B distributor reorder sheets when thresholds drop?
+
+Output your findings as a clean, highly technical list showing exactly what exists and what is missing or broken. Do not refactor any code yet.
