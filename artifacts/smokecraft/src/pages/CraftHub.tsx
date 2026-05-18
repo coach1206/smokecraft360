@@ -888,13 +888,14 @@ function CraftHubInner() {
 
   return (
     <div style={{
-      height:    "100dvh",
-      width:     "100vw",
-      background: C.bg,
-      color:     C.text,
-      fontFamily: "var(--app-font-sans, system-ui, sans-serif)",
-      overflow:  "hidden",
-      position:  "relative",
+      display:         "block",
+      position:        "relative",
+      width:           "100vw",
+      height:          "100vh",
+      overflow:        "hidden",
+      backgroundColor: "#05070b",
+      color:           C.text,
+      fontFamily:      "var(--app-font-sans, system-ui, sans-serif)",
     }}>
 
       {/* ── Ambient background radial glow ── */}
@@ -926,7 +927,7 @@ function CraftHubInner() {
         top:            0,
         left:           0,
         right:          0,
-        zIndex:         20,
+        zIndex:         10,
         display:        "flex",
         alignItems:     "center",
         padding:        "10px 24px",
@@ -934,12 +935,14 @@ function CraftHubInner() {
         background:     "rgba(8,6,4,0.82)",
         backdropFilter: "blur(16px)",
         gap:            16,
+        pointerEvents:  "none",
       }}>
         {/* Left — returning guest or identity badge */}
         <motion.div
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
+          style={{ pointerEvents: "auto" }}
         >
           {guestProfile ? (
             <SovereignLogoutBadge guestProfile={guestProfile} accent={C.gold} />
@@ -1007,7 +1010,7 @@ function CraftHubInner() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          style={{ display: "flex", alignItems: "center", gap: 10 }}
+          style={{ display: "flex", alignItems: "center", gap: 10, pointerEvents: "auto" }}
         >
           <AudioWaveToggle />
           <button
@@ -1061,7 +1064,7 @@ function CraftHubInner() {
       </header>
 
       {/* ── AI intelligence status bar — floating strip below header ── */}
-      <div style={{ position: "absolute", top: 56, left: 0, right: 0, zIndex: 19, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", top: 56, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
         <IntelStatusBar />
       </div>
 
@@ -1070,10 +1073,11 @@ function CraftHubInner() {
         style={{
           position:      "absolute",
           inset:         0,
+          width:         "100%",
+          height:        "100%",
           display:       "flex",
           flexDirection: "column",
-          zIndex:        10,
-          overflow:      "hidden",
+          zIndex:        1,
         }}
       >
         {/* Top deck: SmokeCraft 360 — full horizontal width, 55% of full viewport */}
@@ -1116,7 +1120,7 @@ function CraftHubInner() {
       </div>
 
       {/* ── Partner LogoAnchors — floating above footer ── */}
-      <div style={{ position: "absolute", bottom: 50, left: 0, right: 0, zIndex: 20, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", bottom: 50, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
         <div style={{ display: "flex" }}>
           <div style={{ flex: 1 }}>
             <LogoAnchor partner="DayOne360" variant="bar" />
@@ -1133,7 +1137,7 @@ function CraftHubInner() {
         bottom:         0,
         left:           0,
         right:          0,
-        zIndex:         20,
+        zIndex:         10,
         padding:        "8px 28px",
         borderTop:      `1px solid ${C.border}`,
         display:        "flex",
@@ -1141,6 +1145,7 @@ function CraftHubInner() {
         gap:            20,
         background:     "rgba(8,6,4,0.82)",
         backdropFilter: "blur(16px)",
+        pointerEvents:  "none",
       }}>
         {CRAFT_MODULES.map(mod => (
           <div key={mod.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -1154,10 +1159,10 @@ function CraftHubInner() {
             </span>
           </div>
         ))}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10, pointerEvents: "auto" }}>
           <div
             onClick={handleStaffTap}
-            style={{ fontSize: 9, color: C.dim, letterSpacing: "0.12em", cursor: "default", userSelect: "none" }}
+            style={{ fontSize: 9, color: C.dim, letterSpacing: "0.12em", cursor: "default", userSelect: "none", pointerEvents: "auto" }}
           >
             OPERATIONAL · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </div>
