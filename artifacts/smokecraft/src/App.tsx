@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
-import { Router, Route, Switch, Redirect, useLocation } from 'wouter';
+import { Router, Route, Switch, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
 import TitanCraftDeck from '@/pages/TitanCraftDeck';
 const LivingPortal = lazy(() => import('@/pages/LivingPortal'));
@@ -977,9 +977,16 @@ function BrandPartnerFirewall() {
   return null;
 }
 
+/** Redirects root / to /craft-hub using wouter's navigate */
+function RootRedirect() {
+  const [, navigate] = useLocation();
+  useEffect(() => { navigate("/craft-hub", { replace: true }); }, [navigate]);
+  return null;
+}
+
 /* ══════════════════════════════════════════════════════════════
    ROOT APP — wouter router
-   All sub-pages lazy-loaded; / → Sovereign Boot Flow
+   All sub-pages lazy-loaded; / → CraftHub
 ══════════════════════════════════════════════════════════════ */
 export default function App() {
   const venueId  = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_venue_id')  ?? '00000000-0000-0000-0000-000000000000') : '00000000-0000-0000-0000-000000000000';
@@ -1297,7 +1304,7 @@ export default function App() {
           </Route>
           {/* ── Root redirects to CraftHub (side-by-side columns) ── */}
           <Route path="/">
-            <Redirect to="/craft-hub" />
+            <RootRedirect />
           </Route>
 
           {/* ── Default: Sovereign Gate — all entry flows begin here ── */}
