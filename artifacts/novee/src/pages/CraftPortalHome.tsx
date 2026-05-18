@@ -65,7 +65,7 @@ function CardBackground({ craft, offset }: { craft: CraftKey; offset: number }) 
         animate={{ opacity: 0.72, scale: 1 }}
         exit={{ opacity: 0, scale: 0.97 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
-        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 1, pointerEvents: "none" }}
+        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", zIndex: 1, pointerEvents: "none" }}
       />
     </AnimatePresence>
   );

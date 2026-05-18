@@ -268,7 +268,7 @@ function LiquidTileBg({ craftId, color }: { craftId: string; color: string }) {
               left:               "-7%",
               backgroundImage:    `url(${pool[idx]})`,
               backgroundSize:     "cover",
-              backgroundPosition: "center",
+              backgroundPosition: "center 30%",
             }}
           />
         </motion.div>
@@ -352,7 +352,7 @@ function CraftCard({
               position: "absolute", top: "-5%", left: "-5%",
               backgroundImage:    `url(${pool[sceneIdx]})`,
               backgroundSize:     "cover",
-              backgroundPosition: "center",
+              backgroundPosition: "center 30%",
             }}
           />
         </motion.div>
