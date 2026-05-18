@@ -1,92 +1,79 @@
-import React, { useState, createContext, useContext } from 'react';
-import MasterBlender from './MasterBlender';
-import SmokeCraftQR from './SmokeCraftQR';
+import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Suspense, lazy } from "react";
+import { EATTransitionOverlay } from "@/components/EATTransitionOverlay";
 
-const AppStateContext = createContext<any>(null);
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: 1, staleTime: 30_000 },
+  },
+});
 
-export function useAppState() {
-  const context = useContext(AppStateContext);
-  if (!context) {
-    return {
-      profile: { name: 'JC', running_score: 92 },
-      currentView: 'cockpit',
-      setCurrentView: () => {},
-      playClick: () => {}
-    };
-  }
-  return context;
-}
+const CraftPortalHome   = lazy(() => import("@/pages/CraftPortalHome"));
+const SmokeCraftGateway = lazy(() => import("@/pages/SmokeCraftGateway"));
+const CraftComingSoon   = lazy(() => import("@/pages/CraftComingSoon"));
+const OSShell           = lazy(() => import("@/pages/OSShell"));
+const EATDashboard      = lazy(() => import("@/pages/EATDashboard"));
+const CommandCenter     = lazy(() => import("@/pages/CommandCenter"));
+const SlugRedirect      = lazy(() => import("@/pages/SlugRedirect"));
 
-export default function App() {
-  const [currentView, setCurrentView] = useState<'welcome' | 'cockpit'>('cockpit');
-  const [profile, setProfile] = useState({
-    name: 'JC',
-    ageRange: '',
-    preferences: '',
-    running_score: 92
-  });
-
-  const playClick = () => {
-    try {
-      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav');
-      audio.volume = 0.15;
-      audio.play();
-    } catch (e) {}
-  };
-
+function PageLoader() {
   return (
-    <AppStateContext.Provider value={{ profile, setProfile, currentView, setCurrentView, playClick }}>
-      <div style={{
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: '#05070b',
-        padding: '24px',
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          width: '100%',
-          height: '100%',
-          maxWidth: '1600px',
-          backgroundColor: '#0a0c10',
-          border: '1px solid #1a1a1a',
-          borderRadius: '16px',
-          padding: '24px',
-          boxSizing: 'border-box'
-        }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1.8fr 1.2fr',
-            gap: '24px',
-            width: '100%',
-            height: '100%',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{
-              backgroundColor: 'rgba(5, 7, 11, 0.6)',
-              border: '1px solid #1e293b',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              height: '100%'
-            }}>
-              <MasterBlender />
-            </div>
-            <div style={{
-              backgroundColor: 'rgba(5, 7, 11, 0.6)',
-              border: '1px solid #1e293b',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              height: '100%'
-            }}>
-              <SmokeCraftQR />
-            </div>
-          </div>
-        </div>
-      </div>
-    </AppStateContext.Provider>
+    <div style={{ position: "fixed", inset: 0, background: "#070605", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="16" stroke="rgba(196,97,10,0.18)" strokeWidth="2" fill="none" />
+        <circle cx="20" cy="20" r="16" stroke="#C4610A" strokeWidth="2" fill="none"
+          strokeDasharray="40 60" strokeLinecap="round"
+          style={{ animation: "spin 1s linear infinite", transformOrigin: "20px 20px" }} />
+      </svg>
+      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    </div>
   );
 }
+
+function Router() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Switch>
+        {/* Default entry: immediate cinematic launch into the blending chamber */}
+        <Route path="/"                  component={SmokeCraftGateway} />
+        <Route path="/smokecraft"        component={SmokeCraftGateway} />
+        {/* Craft collection preserved for multi-craft navigation */}
+        <Route path="/craft-collection"  component={CraftPortalHome} />
+        <Route path="/pourcraft"     component={() => <CraftComingSoon craft="pourcraft" />} />
+        <Route path="/beercraft"     component={() => <CraftComingSoon craft="beercraft" />} />
+        <Route path="/winecraft"     component={() => <CraftComingSoon craft="winecraft" />} />
+
+        <Route path="/sovereign"     component={OSShell} />
+        <Route path="/admin"         component={OSShell} />
+        <Route path="/ops"           component={OSShell} />
+        <Route path="/eat-engine"    component={EATDashboard} />
+        <Route path="/kernel"        component={EATDashboard} />
+        <Route path="/eeie"          component={EATDashboard} />
+
+        {/* Autonomous Intelligence Command Center */}
+        <Route path="/command-center" component={CommandCenter} />
+        <Route path="/intelligence"   component={CommandCenter} />
+        <Route path="/eeis"           component={CommandCenter} />
+
+        {/* Slug resolver — handles current and historical module slugs with redirect */}
+        <Route path="/modules/:slug"  component={SlugRedirect} />
+
+        <Route component={() => <Redirect to="/" />} />
+      </Switch>
+    </Suspense>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <EATTransitionOverlay />
+        <Router />
+      </WouterRouter>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
