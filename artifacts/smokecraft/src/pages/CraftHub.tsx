@@ -218,6 +218,12 @@ const TILE_BG: Record<string, string[]> = {
     "/images/scenes/social.jpg",
     "/images/scenes/bold.jpg",
   ],
+  wine: [
+    "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1583394293214-7b3e6c9eba4b?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1567696153798-9111f9cd3d0d?auto=format&fit=crop&w=800&q=80",
+  ],
 };
 
 const KB_MOVES = [
@@ -313,13 +319,14 @@ function CraftCard({
     <div
       style={{
         position:     "relative",
+        height:       "100%",
         minHeight:    0,
-        borderRadius: 16,
+        borderRadius: 0,
         overflow:     "hidden",
         cursor:       "pointer",
-        border:       "1px solid rgba(255,255,255,0.07)",
+        border:       "none",
         background:   "#0a0807",
-        transform:    pressed ? "scale(0.985)" : "scale(1)",
+        transform:    pressed ? "scale(0.99)" : "scale(1)",
         transition:   "transform 0.12s ease",
       }}
       onPointerDown={() => { setPressed(true); playTactile(); }}
@@ -863,7 +870,7 @@ function CraftHubInner() {
             ⬡ Sovereign Gate
           </button>
           <button
-            onClick={() => navigate("/operations")}
+            onClick={() => navigate("/pin-login")}
             style={{
               background: "rgba(212,139,0,0.12)",
               border: "1px solid rgba(212,139,0,0.4)",
@@ -880,7 +887,7 @@ function CraftHubInner() {
               whiteSpace: "nowrap",
             }}
           >
-            Staff Login
+            Staff E.A.T.
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <Sparkles size={14} color={C.goldDim} />
@@ -896,110 +903,44 @@ function CraftHubInner() {
         <IntelStatusBar />
       </div>
 
-      {/* ── Main content: hero row + 2×2 craft grid ── */}
+      {/* ── 4 full-height craft columns ── */}
       <div
         style={{
           position:      "absolute",
-          top:           100,
-          bottom:        44,
-          left:          16,
-          right:         16,
+          top:           96,
+          bottom:        36,
+          left:          0,
+          right:         0,
           display:       "flex",
-          flexDirection: "column",
-          gap:           10,
+          flexDirection: "row",
           zIndex:        1,
         }}
       >
-        {/* Hero row: title/tagline left · mood selector right */}
-        <div style={{
-          display:        "flex",
-          alignItems:     "center",
-          justifyContent: "space-between",
-          flexShrink:     0,
-          padding:        "2px 4px 8px",
-        }}>
-          <div>
-            <h1 style={{
-              margin:        0,
-              fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
-              fontSize:      "clamp(20px, 2.4vw, 30px)",
-              fontWeight:    700,
-              color:         C.text,
-              letterSpacing: "0.01em",
-              lineHeight:    1.1,
-            }}>
-              Adaptive Hospitality{" "}
-              <span style={{ color: C.gold }}>Intelligence.</span>
-            </h1>
-            <p style={{
-              margin:        "4px 0 0",
-              fontSize:      11,
-              color:         C.muted,
-              letterSpacing: "0.02em",
-            }}>
-              Select an experience — the AI engine refines in real time.
-            </p>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-            <span style={{
-              fontSize:      9,
-              color:         C.dim,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              marginRight:   4,
-            }}>MOOD</span>
-            {MOOD_OPTIONS.map(m => (
-              <motion.button
-                key={m.id}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setMood(m.id)}
-                style={{
-                  display:       "flex",
-                  alignItems:    "center",
-                  gap:            5,
-                  background:    mood === m.id ? "rgba(212,139,0,0.12)" : "rgba(255,255,255,0.04)",
-                  border:        mood === m.id ? `1.5px solid ${C.gold}` : "1px solid rgba(255,255,255,0.12)",
-                  borderRadius:  20,
-                  padding:       "6px 13px",
-                  cursor:        "pointer",
-                  fontSize:      11,
-                  color:         mood === m.id ? C.gold : C.muted,
-                  letterSpacing: "0.04em",
-                  fontFamily:    "inherit",
-                  whiteSpace:    "nowrap",
-                }}
-              >
-                <span>{m.icon}</span>
-                <span>{m.label}</span>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        {/* 2×2 craft grid */}
-        <div style={{
-          flex:                1,
-          minHeight:           0,
-          display:             "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows:    "1fr 1fr",
-          gap:                 12,
-        }}>
-          {CRAFT_MODULES.map(mod => (
+        {CRAFT_MODULES.map((mod, i) => (
+          <div
+            key={mod.id}
+            style={{
+              flex:        "0 0 25%",
+              position:    "relative",
+              minHeight:   0,
+              borderRight: i < CRAFT_MODULES.length - 1
+                ? "1px solid rgba(255,255,255,0.05)"
+                : "none",
+            }}
+          >
             <CraftCard
-              key={mod.id}
               mod={mod}
               onTrigger={() => {
                 ExperienceFlowEngine.startCraft(mod.id);
                 setPortal({ route: mod.route, color: mod.color });
               }}
             />
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
-      {/* ── Partner LogoAnchors — floating above footer ── */}
-      <div style={{ position: "absolute", bottom: 50, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
+      {/* ── Partner LogoAnchors — float just above ticker ── */}
+      <div style={{ position: "absolute", bottom: 36, left: 0, right: 0, zIndex: 11, pointerEvents: "none" }}>
         <div style={{ display: "flex" }}>
           <div style={{ flex: 1 }}>
             <LogoAnchor partner="DayOne360" variant="bar" />
@@ -1010,84 +951,6 @@ function CraftHubInner() {
         </div>
       </div>
 
-      {/* ── Operational status footer — floating bottom strip ── */}
-      <footer style={{
-        position:       "absolute",
-        bottom:         0,
-        left:           0,
-        right:          0,
-        zIndex:         10,
-        padding:        "8px 28px",
-        borderTop:      `1px solid ${C.border}`,
-        display:        "flex",
-        alignItems:     "center",
-        gap:            20,
-        background:     "rgba(8,6,4,0.82)",
-        backdropFilter: "blur(16px)",
-        pointerEvents:  "none",
-      }}>
-        {CRAFT_MODULES.map(mod => (
-          <div key={mod.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <motion.div
-              style={{ width: 5, height: 5, borderRadius: "50%", background: mod.color }}
-              animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: CRAFT_MODULES.indexOf(mod) * 0.6 }}
-            />
-            <span style={{ fontSize: 9, color: C.dim, letterSpacing: "0.18em", textTransform: "uppercase" }}>
-              {mod.id}
-            </span>
-          </div>
-        ))}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10, pointerEvents: "auto" }}>
-          <div
-            onClick={handleStaffTap}
-            style={{ fontSize: 9, color: C.dim, letterSpacing: "0.12em", cursor: "default", userSelect: "none", pointerEvents: "auto" }}
-          >
-            OPERATIONAL · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          </div>
-          <button
-            onClick={() => navigate("/gate")}
-            style={{
-              background: "linear-gradient(135deg, rgba(212,175,55,0.22) 0%, rgba(212,175,55,0.08) 100%)",
-              border: "1.5px solid rgba(212,175,55,0.7)",
-              borderRadius: 8,
-              cursor: "pointer",
-              fontSize: 11,
-              fontWeight: 800,
-              color: "#D4AF37",
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              padding: "8px 16px",
-              fontFamily: "inherit",
-              minWidth: 80,
-              minHeight: 36,
-              boxShadow: "0 0 12px rgba(212,175,55,0.2)",
-            }}
-          >
-            ⬡ Gate
-          </button>
-          <button
-            onClick={() => navigate("/operations")}
-            style={{
-              background: "rgba(212,139,0,0.12)",
-              border: "1px solid rgba(212,139,0,0.35)",
-              borderRadius: 8,
-              cursor: "pointer",
-              fontSize: 11,
-              fontWeight: 700,
-              color: C.gold,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              padding: "8px 16px",
-              fontFamily: "inherit",
-              minWidth: 80,
-              minHeight: 36,
-            }}
-          >
-            Staff ›
-          </button>
-        </div>
-      </footer>
 
       {/* ── Fast Return Modal ── */}
       <AnimatePresence>

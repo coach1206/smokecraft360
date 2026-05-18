@@ -730,7 +730,7 @@ export default function TitanEATHub() {
   }, [pushLedger]);
 
   /* ── Navigation ── */
-  const doExit = useCallback((dest = "/sovereign-dashboard") => {
+  const doExit = useCallback((dest = "/craft-hub") => {
     SovereignMemory.save(window.location.pathname);
     setRippling(true);
     setTimeout(() => navigate(dest), 720);
@@ -826,9 +826,21 @@ export default function TitanEATHub() {
       </AnimatePresence>
 
       {/* ── Nav Node ── */}
-      <motion.div className="nav-node" whileTap={{ scale: 0.94 }} onClick={() => doExit()}>
-        <ChevronLeft size={15} color={C.cobaltHi} />
-        <span>ESC // RETURN</span>
+      <motion.div
+        className="nav-node"
+        whileTap={{ scale: 0.94 }}
+        onClick={() => doExit()}
+        style={{
+          position:  "absolute",
+          top:       24,
+          left:      24,
+          zIndex:    100,
+          border:    "1px solid rgba(212,139,0,0.40)",
+          color:     "#D48B00",
+        }}
+      >
+        <ChevronLeft size={15} color="#D48B00" />
+        <span style={{ color: "#D48B00" }}>← CRAFT HUB</span>
       </motion.div>
 
       {/* ── Command Rail ── */}

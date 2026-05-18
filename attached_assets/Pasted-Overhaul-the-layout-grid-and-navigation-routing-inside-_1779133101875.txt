@@ -1,0 +1,14 @@
+Overhaul the layout grid and navigation routing inside CraftHub.tsx to perfectly combine the full-bleed side-by-side kiosk layout with the Staff E.A.T. system. Do not change any state variables or break core logic—strictly update the presentation container components:
+
+1. FORCE 4 DISTINCT ROTATING VISUALS: Ensure SmokeCraft, PourCraft, BeerCraft, and WineCraft each render their own completely unique, separate cinematic background imagery assets. Unblock and verify that the internal background-image rotation arrays or interval timers inside each individual craft blade are fully active and running freely so the pictures cycle dynamically within their respective screen slots.
+
+2. INJECT THE BOTTOM TICKER TAPE: Add the absolute-positioned ticket ticker bar running edge-to-edge along the very bottom of the screen. Style it as a marquee banner with a height of ~32px, a dark translucent obsidian background, amber/gold typography tracking system data, and set it to: position: "absolute", bottom: 0, left: 0, width: "100vw", zIndex: 50.
+
+3. FIX STAFF E.A.T. PORTAL NAVIGATION: 
+   - Locate the entry button action or login form submission handler that handles entering the system. Force its click action to set the view state directly to render the Staff E.A.T. (Environment, Asset, Transaction) system interface layout, rather than looping back to the welcome screen.
+   - Locate the welcome gateview wrapper container and inject a clean back button or escape trigger styled with a subtle amber border and clear font ('position: absolute; top: 24px; left: 24px; zIndex: 100;'). Wire its onClick event to set the active view state back to the 'cockpit' layout so it can exit instantly.
+   - Ensure the Staff E.A.T. system dashboard is completely unblocked and renders full-bleed inside the master container when active, working cleanly hand-in-hand with any partner logos.
+
+4. PROTECT WORKING ELEMENTS: Ensure all 4 vertical columns stretch 100% full-height from the top of the screen down to meet the top edge of the ticket ticker, filling the page grid evenly (25% width each) with zero margins or layout padding. Keep all working styles, custom branding elements, and vector QR components completely safe and functional.
+
+Verify that all tags, brackets, and conditional layout components balance flawlessly so the build remains 100% stable.
