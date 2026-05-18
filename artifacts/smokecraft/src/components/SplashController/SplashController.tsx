@@ -22,6 +22,11 @@ export function hasSeenSplash(): boolean {
   try { return window.sessionStorage.getItem(SESSION_KEY) === "1"; } catch { return false; }
 }
 
+function hasSkipParam(): boolean {
+  if (typeof window === "undefined") return false;
+  try { return new URLSearchParams(window.location.search).get("skip_splash") === "1"; } catch { return false; }
+}
+
 // ── Timing constants (ms) ────────────────────────────────────────────────────
 const S1_FADE   = 1500;   // Profound: linear fade-in
 const S1_HOLD   = 3500;   // Profound: static hold after fade completes
@@ -52,7 +57,7 @@ export interface SplashControllerProps {
 }
 
 export function SplashController({ onFinish }: SplashControllerProps = {}) {
-  const [visible,    setVisible]    = useState(() => !hasSeenSplash());
+  const [visible,    setVisible]    = useState(() => !hasSeenSplash() && !hasSkipParam());
   const [stage,      setStage]      = useState<Stage>("profound");
   const [dismissing, setDismissing] = useState(false);
 

@@ -40,12 +40,17 @@ export function hasSeenBootIntro(): boolean {
   try { return window.sessionStorage.getItem(SESSION_KEY) === "1"; } catch { return false; }
 }
 
+function hasSkipParam(): boolean {
+  if (typeof window === "undefined") return false;
+  try { return new URLSearchParams(window.location.search).get("skip_splash") === "1"; } catch { return false; }
+}
+
 export interface BootIntroProps {
   onFinish?: () => void;
 }
 
 export function BootIntro({ onFinish }: BootIntroProps = {}) {
-  const [visible, setVisible]         = useState(() => !hasSeenBootIntro());
+  const [visible, setVisible]         = useState(() => !hasSeenBootIntro() && !hasSkipParam());
   const [fading, setFading]           = useState(false);
   const [showLogo, setShowLogo]       = useState(false);
   const [showPowered, setShowPowered] = useState(false);
