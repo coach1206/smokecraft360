@@ -1,0 +1,65 @@
+TypeScript
+export const playGlobalMechanicalClick = () => {
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    // HARDCODED PRECISE 3400HZ MECHANICAL SOUND WAVE
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(3400, ctx.currentTime);
+    
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  } catch (e) {
+    console.error("Audio context blocked by hardware layer", e);
+  }
+};
+Step 3: Swap out the Dead Placeholder Images
+Scroll down to the template variables or image arrays inside your render blocks where it discusses your milestone products. Locate the text fields reading "Davidoff Nicaragua" or "Japanese Whisky". Rip out those text blocks and replace them with high-fidelity, explicit visual assets pulled straight from the inventory table:
+
+TypeScript
+// MANDATORY LUXURY PRODUCT IMAGE REFERENCES FOR TABLESIDE UP-SELLING
+export const LUXURY_ASSET_Humidor = {
+  OPUS_X: "https://images.unsplash.com/photo-1606105963278-ca051fb663f2?auto=format&fit=crop&w=600&q=80", // Premium Textured Cigar
+  PADRON_1926: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80", // Dark Maduro Leaf Calibration
+  YAMAZAKI_12: "https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=600&q=80"  // Amber Bar Spirit Refraction
+};
+Step 4: Fix Your Tablet Aspect Ratio Wrapper
+Open App.tsx or your main entry file. To stop your layout fields from breaking and shrinking on physical tablet glass, wrap your root render component inside this exact fixed-aspect scale viewbox:
+
+TypeScript
+import React, { useEffect, useState } from 'react';
+
+export const NoveeOsViewportWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      // FORCES FIXED LANDSCAPE VIEWBOX PHRASE MATCHING 16:9 TABLET METRICS
+      const targetWidth = 1920;
+      const currentWidth = window.innerWidth;
+      setScale(currentWidth / targetWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className="w-screen h-screen flex items-center justify-center bg-black overflow-hidden">
+      <div 
+        style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}
+        className="w-[1920px] h-[1080px] min-w-[1920px] min-h-[1080px] relative transition-transform duration-100 ease-out"
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
