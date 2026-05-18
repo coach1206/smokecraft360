@@ -1137,42 +1137,42 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.8 }}
           style={{
-            background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.04) 100%)",
-            border: "1px solid rgba(212,175,55,0.22)",
-            borderRadius: 10,
-            padding: "18px 22px",
+            background: "linear-gradient(135deg, rgba(212,175,55,0.10) 0%, rgba(212,175,55,0.05) 100%)",
+            border: "1px solid rgba(212,175,55,0.28)",
+            borderRadius: 12,
+            padding: "22px 26px",
             marginBottom: 18,
             width: "100%",
           }}
         >
-          <p style={{ margin: "0 0 10px", fontSize: 9, letterSpacing: "0.28em", color: "rgba(212,175,55,0.65)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>
+          <p style={{ margin: "0 0 14px", fontSize: 13, letterSpacing: "0.28em", color: "rgba(212,175,55,0.80)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace", fontWeight: 700 }}>
             ❖ The Golden Box — Scoring Rules
           </p>
-          <div style={{ display: "flex", flexDirection: "column" as const, gap: 7 }}>
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
             {[
               { icon: "+5 XP", text: "Component chemistry match — flavors align with blend formula" },
               { icon: "−2 PTS", text: "Mentor regional contradiction — out-of-profile leaf selection" },
             ].map(r => (
-              <div key={r.icon} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, fontWeight: 700,
-                  color: r.icon.startsWith("+") ? "#4ade80" : "#f87171", minWidth: 48 }}>{r.icon}</span>
-                <span style={{ fontSize: 10, color: "rgba(245,235,215,0.60)", lineHeight: 1.4 }}>{r.text}</span>
+              <div key={r.icon} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 16, fontWeight: 700,
+                  color: r.icon.startsWith("+") ? "#4ade80" : "#f87171", minWidth: 64 }}>{r.icon}</span>
+                <span style={{ fontSize: 15, color: "rgba(245,235,215,0.72)", lineHeight: 1.5 }}>{r.text}</span>
               </div>
             ))}
           </div>
-          <div style={{ margin: "12px 0 0", borderTop: "1px solid rgba(212,175,55,0.14)", paddingTop: 10 }}>
-            <p style={{ margin: "0 0 8px", fontSize: 9, letterSpacing: "0.22em", color: "rgba(212,175,55,0.50)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>
+          <div style={{ margin: "16px 0 0", borderTop: "1px solid rgba(212,175,55,0.18)", paddingTop: 14 }}>
+            <p style={{ margin: "0 0 10px", fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.65)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace", fontWeight: 700 }}>
               Table Spend Multipliers
             </p>
             {[
-              { range: "$50 – $99.99",   xp: "+10 XP",             badge: null },
-              { range: "$100 – $199.99",  xp: "+25 XP",             badge: null },
-              { range: "$200+",               xp: "+60 XP",             badge: "Elite Vault Badge" },
+              { range: "$50 – $99.99",    xp: "+10 XP", badge: null },
+              { range: "$100 – $199.99",  xp: "+25 XP", badge: null },
+              { range: "$200+",           xp: "+60 XP", badge: "Elite Vault Badge" },
             ].map(t => (
-              <div key={t.range} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
-                <span style={{ fontSize: 10, color: "rgba(245,235,215,0.50)", minWidth: 110 }}>{t.range}</span>
-                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, fontWeight: 700, color: "#D4AF37" }}>{t.xp}</span>
-                {t.badge && <span style={{ fontSize: 9, background: "rgba(212,175,55,0.18)", border: "1px solid rgba(212,175,55,0.35)", borderRadius: 4, padding: "2px 7px", color: "#D4AF37", letterSpacing: "0.12em" }}>{t.badge}</span>}
+              <div key={t.range} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <span style={{ fontSize: 16, color: "rgba(245,235,215,0.65)", minWidth: 130, fontFamily: "'Cormorant Garamond',serif" }}>{t.range}</span>
+                <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 16, fontWeight: 700, color: "#D4AF37" }}>{t.xp}</span>
+                {t.badge && <span style={{ fontSize: 12, background: "rgba(212,175,55,0.18)", border: "1px solid rgba(212,175,55,0.40)", borderRadius: 5, padding: "3px 10px", color: "#D4AF37", letterSpacing: "0.12em", fontWeight: 700 }}>{t.badge}</span>}
               </div>
             ))}
           </div>
@@ -1535,6 +1535,230 @@ function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: ()
 }
 
 // ── Gateway: Mentor Selection ───────────────────────────────────────────────
+// ── Mentor Chat Panel ──────────────────────────────────────────────────────
+type ChatMsg = { role: "mentor" | "guest"; text: string };
+
+const MENTOR_RESPONSES: Record<string, string[]> = {
+  flavor:    ["Flavor is not decoration — it is architecture. Every note must earn its presence in the blend.","The top note seduces. The mid-note reveals character. The finish is the truth."],
+  strength:  ["Strength without balance is aggression. We seek power tempered by precision.","A bold cigar speaks loudly. A great cigar knows when to be silent."],
+  wrapper:   ["The wrapper is the first handshake. It should communicate what the blend intends to deliver.","Choose the wrapper as you would choose a first impression — it carries everything."],
+  leaf:      ["Every leaf holds a memory of its soil. Listen to that memory when you blend.","The leaf tells the story. The blender only edits."],
+  terroir:   ["Terroir is not a word — it is a philosophy. The land speaks through the tobacco.","No two soils produce the same soul. This is why region defines destiny in our craft."],
+  blend:     ["Blending is dialogue between leaves. You are simply the translator.","A masterful blend hides its complexity behind effortless elegance."],
+  default:   ["Patience. The blend will reveal itself when you stop forcing the answer.","Trust your instincts — but first, educate them.","In this craft, the question itself is part of the answer."],
+};
+
+function getMentorReply(mentor: typeof MENTORS[0], question: string): string {
+  const q = question.toLowerCase();
+  const keys: (keyof typeof MENTOR_RESPONSES)[] = ["flavor","strength","wrapper","leaf","terroir","blend"];
+  for (const k of keys) {
+    if (q.includes(k)) {
+      const pool = MENTOR_RESPONSES[k]!;
+      return pool[Math.floor(Math.random() * pool.length)]!;
+    }
+  }
+  // region-specific fallback
+  if (q.includes(mentor.origin.toLowerCase().split(",")[0]?.toLowerCase() ?? "")) {
+    return `In ${mentor.origin}, we have a saying: the land never lies. Let that guide your selection.`;
+  }
+  const pool = MENTOR_RESPONSES.default!;
+  return `${pool[Math.floor(Math.random() * pool.length)]} — ${mentor.name}`;
+}
+
+function MentorChatPanel({ mentor }: { mentor: typeof MENTORS[0] }) {
+  const GOLD = "#d4af37";
+  const [messages, setMessages] = useState<ChatMsg[]>([
+    { role: "mentor", text: mentor.guidance },
+  ]);
+  const [input,    setInput]    = useState("");
+  const [typing,   setTyping]   = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Reset when mentor changes
+  useEffect(() => {
+    setMessages([{ role: "mentor", text: mentor.guidance }]);
+    setInput("");
+  }, [mentor.id]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, typing]);
+
+  function handleSend() {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    setMessages(prev => [...prev, { role: "guest", text: trimmed }]);
+    setInput("");
+    setTyping(true);
+    const delay = 900 + Math.random() * 700;
+    setTimeout(() => {
+      const reply = getMentorReply(mentor, trimmed);
+      setMessages(prev => [...prev, { role: "mentor", text: reply }]);
+      setTyping(false);
+    }, delay);
+  }
+
+  function handleKey(e: React.KeyboardEvent) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 6 }}
+      transition={{ duration: 0.55, ease: "easeOut" }}
+      style={{
+        background: "linear-gradient(160deg, rgba(18,14,8,0.82) 0%, rgba(8,6,3,0.72) 100%)",
+        border: `1px solid rgba(212,175,55,0.30)`,
+        borderRadius: 14,
+        backdropFilter: "blur(40px)",
+        WebkitBackdropFilter: "blur(40px)",
+        boxShadow: "0 8px 48px rgba(0,0,0,0.70), inset 0 1px 0 rgba(212,175,55,0.12)",
+        padding: "20px 22px 16px",
+        marginBottom: 24,
+        display: "flex",
+        flexDirection: "column" as const,
+        gap: 0,
+      }}
+    >
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <img
+          src={mentor.portrait}
+          alt={mentor.name}
+          style={{
+            width: 38, height: 38, borderRadius: "50%",
+            objectFit: "cover", objectPosition: "top center",
+            border: `1.5px solid ${GOLD}55`,
+            filter: "brightness(0.8) saturate(0.9)",
+          }}
+        />
+        <div>
+          <p style={{ margin: 0, fontFamily: "'Cormorant Garamond',serif", fontSize: 17, color: "#fffcf5", fontWeight: 500, lineHeight: 1.1 }}>
+            {mentor.name}
+          </p>
+          <p style={{ margin: 0, fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.26em", color: `${GOLD}88`, textTransform: "uppercase" as const }}>
+            {mentor.style}
+          </p>
+        </div>
+        <span style={{ marginLeft: "auto", fontSize: 20 }}>{mentor.flag}</span>
+      </div>
+
+      {/* Message thread */}
+      <div
+        ref={scrollRef}
+        style={{
+          display: "flex", flexDirection: "column" as const, gap: 10,
+          maxHeight: 220, overflowY: "auto" as const,
+          paddingRight: 4, marginBottom: 14,
+          scrollbarWidth: "thin" as const,
+        }}
+      >
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              justifyContent: msg.role === "guest" ? "flex-end" : "flex-start",
+            }}
+          >
+            <div style={{
+              maxWidth: "82%",
+              padding: "10px 14px",
+              borderRadius: msg.role === "guest" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
+              background: msg.role === "guest"
+                ? "linear-gradient(135deg, rgba(212,175,55,0.22) 0%, rgba(180,140,40,0.14) 100%)"
+                : "rgba(255,255,255,0.06)",
+              border: msg.role === "guest"
+                ? "1px solid rgba(212,175,55,0.35)"
+                : "1px solid rgba(255,255,255,0.08)",
+              fontSize: 13,
+              lineHeight: 1.6,
+              color: msg.role === "guest" ? "#fffcf5" : "rgba(225,218,205,0.88)",
+              fontFamily: msg.role === "mentor"
+                ? "'Cormorant Garamond',serif"
+                : "'Inter',sans-serif",
+              fontStyle: msg.role === "mentor" ? "italic" : "normal",
+            }}>
+              {msg.text}
+            </div>
+          </div>
+        ))}
+        {typing && (
+          <div style={{ display: "flex", justifyContent: "flex-start" }}>
+            <div style={{
+              padding: "10px 16px",
+              borderRadius: "14px 14px 14px 4px",
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              display: "flex", gap: 5, alignItems: "center",
+            }}>
+              {[0,1,2].map(i => (
+                <motion.span
+                  key={i}
+                  animate={{ opacity: [0.3,1,0.3], y: [0,-3,0] }}
+                  transition={{ duration: 0.8, delay: i * 0.18, repeat: Infinity }}
+                  style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, display: "block" }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Input row */}
+      <div style={{ display: "flex", gap: 8 }}>
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={handleKey}
+          placeholder={`Ask ${mentor.name.split(" ")[0]} about flavor, strength, wrapper…`}
+          style={{
+            flex: 1,
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(212,175,55,0.28)",
+            borderRadius: 8,
+            padding: "10px 14px",
+            fontSize: 13,
+            color: "#fffcf5",
+            fontFamily: "'Inter',sans-serif",
+            outline: "none",
+            caretColor: GOLD,
+          }}
+        />
+        <motion.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          onClick={handleSend}
+          disabled={!input.trim() || typing}
+          style={{
+            background: input.trim() && !typing
+              ? `linear-gradient(135deg,${GOLD}22,rgba(212,175,55,0.10))`
+              : "rgba(255,255,255,0.04)",
+            border: `1px solid ${input.trim() && !typing ? `${GOLD}55` : "rgba(255,255,255,0.12)"}`,
+            borderRadius: 8,
+            padding: "10px 18px",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+            color: input.trim() && !typing ? GOLD : "rgba(255,255,255,0.25)",
+            cursor: input.trim() && !typing ? "pointer" : "not-allowed",
+            fontFamily: "'Inter',sans-serif",
+            textTransform: "uppercase" as const,
+            transition: "all 0.2s",
+          }}
+        >
+          ASK
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Gateway: Mentor Selection ───────────────────────────────────────────────
 function GatewayMentor({
   selected, onSelect, onNext, onBack,
 }: {
@@ -1668,6 +1892,16 @@ function GatewayMentor({
             </motion.div>
           ))}
         </div>
+
+        {/* ── Mentor Chat — glassmorphic dialogue panel ── */}
+        <AnimatePresence mode="wait">
+          {selected && (() => {
+            const activeMentor = MENTORS.find(m => m.id === selected);
+            return activeMentor
+              ? <MentorChatPanel key={selected} mentor={activeMentor} />
+              : null;
+          })()}
+        </AnimatePresence>
 
         <div className="flex justify-between gap-4">
           <button style={GW.btn(true)} onClick={onBack}>Back</button>

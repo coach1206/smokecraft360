@@ -43,6 +43,8 @@ import { KernelModeProvider }         from '@/contexts/KernelModeContext';
 import { SovereignRoute }             from '@/components/SovereignRoute';
 import InactivityGuard               from '@/components/InactivityGuard';
 import { PresentationProvider }      from '@/contexts/PresentationContext';
+import TabletViewport                from '@/components/TabletViewport';
+import GlobalSmokeCanvas             from '@/components/GlobalSmokeCanvas';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -181,6 +183,8 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                         <TrifectaProvider>
                                         <HapticProvider>
                                         <PresentationProvider>
+                                          <TabletViewport />
+                                          <GlobalSmokeCanvas />
                                           <UniversalTouchAnchors />
                                           <UniversalBackButton />
                                           {children}

@@ -95,23 +95,71 @@ interface GuestProfileContextValue {
 const GuestProfileContext = createContext<GuestProfileContextValue | null>(null);
 
 const STORAGE_KEY = "smokecraft_guest";
+const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-function loadFromStorage(): { profile: GuestProfile; mentor: Mentor; isReturning: boolean } | null {
+interface StoredSession {
+  profile:     GuestProfile;
+  mentor:      Mentor;
+  isReturning: boolean;
+  savedAt:     number;
+  phaseCheckpoint?: string;
+}
+
+function loadFromStorage(): StoredSession | null {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    const parsed: StoredSession = JSON.parse(raw);
+    if (Date.now() - (parsed.savedAt ?? 0) > SESSION_TTL_MS) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return parsed;
   } catch {
     return null;
   }
 }
 
-function saveToStorage(profile: GuestProfile, mentor: Mentor, isReturning: boolean) {
+function saveToStorage(
+  profile: GuestProfile,
+  mentor: Mentor,
+  isReturning: boolean,
+  phaseCheckpoint?: string,
+) {
   try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ profile, mentor, isReturning }));
+    const session: StoredSession = {
+      profile,
+      mentor,
+      isReturning,
+      savedAt: Date.now(),
+      phaseCheckpoint,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
   } catch {
-    // sessionStorage unavailable — kiosk will re-enroll next load
+    // localStorage unavailable — kiosk will re-enroll next load
   }
+}
+
+export function getStoredPhaseCheckpoint(): string | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed: StoredSession = JSON.parse(raw);
+    return parsed.phaseCheckpoint ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredPhaseCheckpoint(checkpoint: string): void {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed: StoredSession = JSON.parse(raw);
+    parsed.phaseCheckpoint = checkpoint;
+    parsed.savedAt = Date.now();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+  } catch { /* silent */ }
 }
 
 // ── Provider ──────────────────────────────────────────────────────────────────
@@ -163,9 +211,7 @@ export function GuestProfileProvider({ children }: { children: ReactNode }) {
     setGuestProfile(null);
     setMentor(null);
     setIsReturning(false);
-    sessionStorage.removeItem(STORAGE_KEY);
-    // Also purge all NOVEE OS session keys so no mentor/craft/EEIS
-    // data leaks between guests or after System Purge
+    localStorage.removeItem(STORAGE_KEY);
     sessionStorage.removeItem("axiom_eeis_journey");
     sessionStorage.removeItem("axiom_experience_level");
     sessionStorage.removeItem("axiom_craft_build");

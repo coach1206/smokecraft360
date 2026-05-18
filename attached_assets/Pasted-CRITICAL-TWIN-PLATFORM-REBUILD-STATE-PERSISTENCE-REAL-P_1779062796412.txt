@@ -1,0 +1,29 @@
+CRITICAL TWIN-PLATFORM REBUILD, STATE PERSISTENCE, & REAL-PRODUCT IMAGE COUPLING MANDATE: You are failing the core operational flow. Stop treating NOVEE OS and SmokeCraft 360 as separate applications. They must function as a single ecosystem with identical styling, scaling, and state re-hydration. Execute these exact mechanical repairs on this pass.
+
+1. FIX THE TICKER MARQUEE & TEXT TYPOGRAPHY (SCREENSHOT 1):
+   - Immediately upscale the 'The Golden Box' rules and table spend multipliers ($50/$100/$200+) ticker tape text at the bottom boundary layer. Change its font tracking and size properties to 'text-lg font-semibold tracking-wider text-amber-500/90'. It must be bold, oversized, and scannable on tablet glass hardware.
+
+2. FIX THE GUEST PROFILE STORAGE & PERSISTENCE FLAW (SCREENSHOT 3):
+   - You are explicitly forbidden from erasing guest profiles on screen changes. Elevate Name, Full Phone, Email, Age Range, M/F, State, and City inputs into a root-level React Context layer backed by useLocalStorage.
+   - Wire the 2-step retrieval handshake: If a returning user enters their Last Name and the Last 4 Digits of their phone number, query this local profile model and leap them straight to their saved 'phase_checkpoint' component, bypass the registration views completely.
+
+3. REPAIR THE DEAD MENTOR SCREENS & WIRE THE ACTIVE CHAT (SCREENSHOTS 2 & 5):
+   - Replace the solid black backgrounds on the Master Mentor Council and Philosophy stages. Force a deep-slate background layer running our active baseline HTML5 SmokeCanvas globally, sending organic smoke mist and floating amber embers drifting up behind all active panels.
+   - Slide a fully interactive, glassmorphic chat input text box side-by-side directly next to the selected mentor's portrait asset viewport. The mentor must prompt the user, and the input field must process user queries and output context-aware, expert mentor dialogue responses.
+
+4. ENABLE THE PRIMING MATRIX SLIDERS & LEAF IMAGERY (SCREENSHOTS 6, 8, & 11):
+   - The Volado, Seco, and Ligero range inputs in the 'Choose Your Leaf' drawer are non-functional blocks. Recode their onChange event handlers to bind directly to the state variables. The slider handles must move fluidly on direct touch contact.
+   - Enforce the 100% logic rule: The inputs must total exactly 100% to enable the soft gold neon outer glow drop shadow on the 'CONFIRM BLEND' footer action button.
+   - Render a dedicated 'Live Leaf Texture Matrix' showcase viewport on the right side. When a slider moves, dynamically update high-fidelity macro graphics of raw tobacco leaves showing precise vein density and oil saturation.
+
+5. SWAP GENERIC LABELS FOR REAL HUMIDOR & BAR INV IMAGES (SCREENSHOT 9):
+   - Completely eliminate text placeholders like 'Pairs with Japanese Whisky' or 'Davidoff Nicaragua'. 
+   - Integrate an active lookup into the venue inventory schema to display high-fidelity graphic assets and authentic promotional labels of actual premium items on sale at your counter (e.g., displaying an image asset of an Arturo Fuente Opus X PerfecXion paired inline with a 2oz tableside pour of Yamazaki 12-Year Single Malt).
+   - Ring Gauge Calibration: Build an interactive, 3D cylindrical geometric model that dynamically scales, changes thickness, and animates cross-sectional airflow vector lines as the user adjusts diameter targets.
+
+6. FIXED HARDWARE ASPECT CONTAINER & SECURE HANDOFFS:
+   - Root Viewport Scale: Wrap the global shell framework in a fixed aspect-ratio viewing box container. Force a landscape 16:9 / 16:10 presentation across both laptop windows and local tablet glass with absolute center alignment, scaling text blocks uniformly so components never warp or bleed off the screen.
+   - Back Button Route Integrity: Fix the navigation history stack array so clicking the gold-bordered 'BACK' button pops the active index backward exactly 1 step at a time inside the visiting tracking container, preserving all states and form values perfectly.
+   - E.A.T. PIN Flip: Tapping the hidden corner touch zone must execute a vertical flip animation to mask the user loop and present the Environment, Asset (with the drag-and-drop floor map arranger), and Transaction management command panels.
+
+Apply all logic rules, global audio click bursts (3400Hz), and visual modifications across both NOVEE OS and SmokeCraft 360 simultaneously on this refactor pass.
