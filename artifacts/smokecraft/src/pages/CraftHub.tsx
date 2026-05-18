@@ -149,41 +149,41 @@ const AI_NODES = [
 function IntelStatusBar() {
   return (
     <div style={{
-      display:       "flex",
-      alignItems:    "center",
-      gap:           28,
-      padding:       "10px 28px",
-      borderTop:     `1px solid ${C.border}`,
-      borderBottom:  `1px solid ${C.border}`,
-      background:    "rgba(26,26,27,0.05)",
+      display:        "flex",
+      alignItems:     "center",
+      gap:            24,
+      padding:        "12px 28px",
+      borderTop:      `1px solid ${C.border}`,
+      borderBottom:   `1px solid ${C.border}`,
+      background:     "rgba(26,26,27,0.08)",
       backdropFilter: "blur(10px)",
-      overflowX:     "auto",
-      flexShrink:    0,
+      overflowX:      "auto",
+      flexShrink:     0,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
-        <Cpu size={12} color={C.goldDim} />
-        <span style={{ fontSize: 9, letterSpacing: "0.22em", color: C.dim, textTransform: "uppercase" }}>
+        <Cpu size={14} color={C.goldDim} />
+        <span style={{ fontSize: 12, letterSpacing: "0.18em", color: C.dim, textTransform: "uppercase", fontWeight: 600 }}>
           NOVEE Intelligence
         </span>
       </div>
       {AI_NODES.map(n => (
-        <div key={n.label} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+        <div key={n.label} style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
           <motion.div
-            style={{ width: 5, height: 5, borderRadius: "50%", background: n.color }}
+            style={{ width: 8, height: 8, borderRadius: "50%", background: n.color }}
             animate={{ opacity: [1, 0.35, 1], scale: [1, 1.4, 1] }}
             transition={{ duration: 2.4 + Math.random(), repeat: Infinity, ease: "easeInOut" }}
           />
-          <span style={{ fontSize: 8.5, color: C.dim, letterSpacing: "0.14em", textTransform: "uppercase" }}>
+          <span style={{ fontSize: 12, color: C.dim, letterSpacing: "0.12em", textTransform: "uppercase" }}>
             {n.label}
           </span>
-          <span style={{ fontSize: 8.5, color: n.color, letterSpacing: "0.1em", fontWeight: 700 }}>
+          <span style={{ fontSize: 12, color: n.color, letterSpacing: "0.08em", fontWeight: 700 }}>
             {n.state}
           </span>
         </div>
       ))}
-      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-        <Activity size={11} color={C.goldDim} />
-        <span style={{ fontSize: 8.5, color: C.dim, letterSpacing: "0.12em" }}>
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
+        <Activity size={13} color={C.goldDim} />
+        <span style={{ fontSize: 12, color: C.dim, letterSpacing: "0.10em" }}>
           {CRAFT_MODULES.reduce((s, m) => s + m.scenes.length, 0)} curated scenes
         </span>
       </div>
@@ -313,16 +313,19 @@ function CraftCard({
   return (
     <div
       style={{
-        position:     "relative",
-        height:       "100%",
-        minHeight:    0,
-        borderRadius: 0,
-        overflow:     "hidden",
-        cursor:       "pointer",
-        border:       "none",
-        background:   "#0a0807",
-        transform:    pressed ? "scale(0.99)" : "scale(1)",
-        transition:   "transform 0.12s ease",
+        position:                   "relative",
+        height:                     "100%",
+        minHeight:                  0,
+        borderRadius:               0,
+        overflow:                   "hidden",
+        cursor:                     "pointer",
+        border:                     "none",
+        background:                 "#0a0807",
+        transform:                  pressed ? "scale(0.99)" : "scale(1)",
+        transition:                 "transform 0.12s ease",
+        touchAction:                "manipulation",
+        userSelect:                 "none",
+        WebkitTapHighlightColor:    "transparent",
       }}
       onPointerDown={() => { setPressed(true); playTactile(); }}
       onPointerUp={() => { setPressed(false); onTrigger(); }}
@@ -799,7 +802,7 @@ function CraftHubInner() {
           )}
         </motion.div>
 
-        {/* Brand identity — center */}
+        {/* Brand identity — center (compact so nav buttons have room) */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
           <motion.div
             initial={{ opacity: 0, y: -8 }}
@@ -807,92 +810,75 @@ function CraftHubInner() {
             transition={{ duration: 0.7, ease: "easeOut" }}
             style={{
               fontFamily:    "var(--app-font-serif, Georgia, serif)",
-              fontSize:      "clamp(17px, 2.4vw, 22px)",
-              fontWeight:    800,
-              color:         C.text,
-              letterSpacing: "0.22em",
+              fontSize:      "clamp(11px, 1.4vw, 14px)",
+              fontWeight:    700,
+              color:         C.muted,
+              letterSpacing: "0.26em",
               textTransform: "uppercase",
               lineHeight:    1,
             }}
           >
             NOVEE OS
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            style={{
-              fontSize:      9,
-              color:         C.goldDim,
-              letterSpacing: "0.28em",
-              textTransform: "uppercase",
-              marginTop:     3,
-            }}
-          >
-            Powered by NOVEE Intelligence
-          </motion.div>
         </div>
 
-        {/* Right — audio toggle + staff button + module count */}
+        {/* Right — nav buttons */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          style={{ display: "flex", alignItems: "center", gap: 10, pointerEvents: "auto" }}
+          style={{ display: "flex", alignItems: "center", gap: 12, pointerEvents: "auto" }}
         >
           <AudioWaveToggle />
           <button
             onClick={() => navigate("/gate")}
             style={{
-              background: "rgba(212,175,55,0.08)",
-              border: "1px solid rgba(212,175,55,0.55)",
-              borderRadius: 8,
-              cursor: "pointer",
-              fontSize: 11,
-              fontWeight: 700,
-              color: "#D4AF37",
-              letterSpacing: "0.14em",
+              background:    "rgba(212,175,55,0.10)",
+              border:        "1px solid rgba(212,175,55,0.65)",
+              borderRadius:  10,
+              cursor:        "pointer",
+              fontSize:      14,
+              fontWeight:    800,
+              color:         "#D4AF37",
+              letterSpacing: "0.12em",
               textTransform: "uppercase",
-              padding: "8px 18px",
-              fontFamily: "inherit",
-              minHeight: 36,
-              whiteSpace: "nowrap",
-              boxShadow: "0 0 12px rgba(212,175,55,0.15)",
+              padding:       "11px 22px",
+              fontFamily:    "inherit",
+              minHeight:     48,
+              whiteSpace:    "nowrap",
+              boxShadow:     "0 0 18px rgba(212,175,55,0.22)",
+              touchAction:   "manipulation",
             }}
           >
-            ⬡ Sovereign Gate
+            ⬡ SOVEREIGN GATE
           </button>
           <button
             onClick={() => navigate("/pin-login")}
             style={{
-              background: "rgba(212,139,0,0.12)",
-              border: "1px solid rgba(212,139,0,0.4)",
-              borderRadius: 8,
-              cursor: "pointer",
-              fontSize: 11,
-              fontWeight: 700,
-              color: C.gold,
+              background:    "rgba(212,139,0,0.14)",
+              border:        "1px solid rgba(212,139,0,0.55)",
+              borderRadius:  10,
+              cursor:        "pointer",
+              fontSize:      14,
+              fontWeight:    800,
+              color:         C.gold,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              padding: "8px 18px",
-              fontFamily: "inherit",
-              minHeight: 36,
-              whiteSpace: "nowrap",
+              padding:       "11px 22px",
+              fontFamily:    "inherit",
+              minHeight:     48,
+              whiteSpace:    "nowrap",
+              boxShadow:     "0 0 14px rgba(212,139,0,0.18)",
+              touchAction:   "manipulation",
             }}
           >
-            Staff E.A.T.
+            WAITER TAB
           </button>
-          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-            <Sparkles size={14} color={C.goldDim} />
-            <span style={{ fontSize: 10, color: C.dim, letterSpacing: "0.14em" }}>
-              {CRAFT_MODULES.length} craft modules
-            </span>
-          </div>
         </motion.div>
       </header>
 
       {/* ── AI intelligence status bar — floating strip below header ── */}
-      <div style={{ position: "absolute", top: 56, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", top: 70, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
         <IntelStatusBar />
       </div>
 
@@ -900,7 +886,7 @@ function CraftHubInner() {
       <div
         style={{
           position:      "absolute",
-          top:           80,
+          top:           118,
           bottom:        52,
           left:          0,
           right:         0,
