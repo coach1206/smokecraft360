@@ -458,7 +458,18 @@ interface BladePortalProps {
 }
 
 function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTrigger }: BladePortalProps) {
-  const [pressed, setPressed] = useState(false);
+  const [pressed,    setPressed]    = useState(false);
+  const [screenIdx,  setScreenIdx]  = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Cycle between screen 0 (ambient blade) and screen 1 (TactileCard) every 8s.
+  // Pause while the blade is actively hovered so the user always sees expanded content.
+  useEffect(() => {
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+    if (active) return;
+    intervalRef.current = setInterval(() => setScreenIdx(s => (s + 1) % 2), 8000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [active]);
 
   return (
     <div
@@ -492,6 +503,27 @@ function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTr
           transparent 100%)`,
         pointerEvents: "none",
       }} />
+
+      {/* ── Screen 1: TactileCard — cycles in every 8s when blade is idle ── */}
+      <AnimatePresence>
+        {screenIdx === 1 && !active && (
+          <motion.div
+            key="tactile-card"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            style={{ position: "absolute", inset: 0, zIndex: 6 }}
+          >
+            <TactileCard
+              title={mod.title}
+              tagline={mod.tagline}
+              badge={mod.badge}
+              onTrigger={onTrigger}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Collapsed label — vertical craft ID ── */}
       <AnimatePresence>
