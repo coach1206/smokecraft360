@@ -281,368 +281,166 @@ function LiquidTileBg({ craftId, color }: { craftId: string; color: string }) {
   );
 }
 
-// ── TactileCard — touch-first craft portal interaction ────────────────────────
+// ── Mood options ──────────────────────────────────────────────────────────────
 
-function TactileCard({
-  title,
-  tagline,
-  badge,
+const MOOD_OPTIONS = [
+  { id: "chill",   label: "Chill Mode",   icon: "☀️" },
+  { id: "deep",    label: "Deep Session", icon: "🌙" },
+  { id: "premium", label: "Premium",      icon: "✦"  },
+  { id: "social",  label: "Social",       icon: "🎭" },
+];
+
+// ── CraftCard — full-bleed 2×2 grid card with scene rotation ─────────────────
+
+function CraftCard({
+  mod,
   onTrigger,
 }: {
-  title:     string;
-  tagline:   string;
-  badge:     string;
+  mod:       { id: string; title: string; tagline: string; badge: string; route: string; color: string };
   onTrigger: () => void;
 }) {
-  function press(el: HTMLDivElement) {
-    el.style.transform   = "scale(0.96)";
-    el.style.borderColor = "rgba(212,139,0,0.80)";
-    el.style.boxShadow   = "0 0 32px rgba(212,139,0,0.18)";
-  }
-  function release(el: HTMLDivElement) {
-    el.style.transform   = "scale(1)";
-    el.style.borderColor = "rgba(212,139,0,0.20)";
-    el.style.boxShadow   = "none";
-  }
+  const [pressed,  setPressed]  = useState(false);
+  const pool      = TILE_BG[mod.id] ?? TILE_BG.smoke;
+  const [sceneIdx, setSceneIdx] = useState(0);
+  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => setSceneIdx(i => (i + 1) % pool.length), 5000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [pool.length]);
 
   return (
     <div
       style={{
-        position:               "absolute",
-        inset:                  0,
-        zIndex:                 5,
-        borderRadius:           22,
-        border:                 "1px solid rgba(212,139,0,0.20)",
-        background:             "rgba(0,0,0,0.40)",
-        backdropFilter:         "blur(12px)",
-        WebkitBackdropFilter:   "blur(12px)",
-        transition:             "transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease",
-        display:                "flex",
-        flexDirection:          "column",
-        justifyContent:         "flex-end",
-        padding:                "0 24px 28px",
-        cursor:                 "pointer",
-        touchAction:            "manipulation",
-        WebkitTapHighlightColor: "transparent",
+        position:     "relative",
+        minHeight:    0,
+        borderRadius: 16,
+        overflow:     "hidden",
+        cursor:       "pointer",
+        border:       "1px solid rgba(255,255,255,0.07)",
+        background:   "#0a0807",
+        transform:    pressed ? "scale(0.985)" : "scale(1)",
+        transition:   "transform 0.12s ease",
       }}
-      onPointerDown={e => press(e.currentTarget)}
-      onPointerUp={e   => { release(e.currentTarget); onTrigger(); }}
-      onPointerLeave={e => release(e.currentTarget)}
-      onPointerCancel={e => release(e.currentTarget)}
+      onPointerDown={() => { setPressed(true); playTactile(); }}
+      onPointerUp={() => { setPressed(false); onTrigger(); }}
+      onPointerLeave={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
     >
-      {/* Craft badge */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.72 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.28, ease: [0.34, 1.56, 0.64, 1] }}
-        style={{
-          fontSize:     9,
-          color:        C.goldDim,
-          letterSpacing: "0.18em",
-          fontFamily:   "'Space Mono', monospace",
-          marginBottom: 8,
-          textTransform: "uppercase",
-        }}
-      >
-        {badge}
-      </motion.div>
-
-      {/* Title */}
-      <h2 style={{
-        margin:        0,
-        fontFamily:    "var(--app-font-serif, Georgia, serif)",
-        fontSize:      "clamp(14px, 2.4vw, 22px)",
-        fontWeight:    700,
-        color:         C.gold,
-        letterSpacing: "0.3em",
-        textTransform: "uppercase",
-        lineHeight:    1.15,
-      }}>
-        {title}
-      </h2>
-
-      {/* Ritual cue */}
-      <p style={{
-        margin:        "7px 0 0",
-        fontSize:      9,
-        color:         C.muted,
-        letterSpacing: "0.22em",
-        textTransform: "uppercase",
-        fontFamily:    "'Space Mono', monospace",
-      }}>
-        INITIALIZE RITUAL
-      </p>
-
-      {/* Tagline */}
-      <p style={{
-        margin:      "5px 0 0",
-        fontSize:    10,
-        color:       C.dim,
-        lineHeight:  1.5,
-        letterSpacing: "0.03em",
-      }}>
-        {tagline}
-      </p>
-    </div>
-  );
-}
-
-// ── Glass shimmer — activates on the focused blade ───────────────────────────
-
-function GlassShimmer({ active, color }: { active: boolean; color: string }) {
-  if (!active) return null;
-  return (
-    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 3 }}>
-      <motion.div
-        initial={{ x: "-120%", opacity: 0 }}
-        animate={{ x: "130%", opacity: [0, 0.28, 0] }}
-        transition={{ duration: 1.6, ease: "easeInOut" }}
-        style={{
-          position: "absolute",
-          top: 0, bottom: 0,
-          width: "45%",
-          background: `linear-gradient(105deg, transparent 0%, ${color}1a 50%, transparent 100%)`,
-          transform: "skewX(-14deg)",
-        }}
-      />
-      {Array.from({ length: 10 }, (_, i) => (
+      {/* Cinematic background — scene rotation every 5s */}
+      <AnimatePresence mode="popLayout">
         <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: [0, 0.65, 0], y: -90 }}
-          transition={{ duration: 1.6 + i * 0.25, delay: i * 0.08, ease: "easeOut" }}
-          style={{
-            position: "absolute",
-            left: `${12 + i * 8}%`,
-            bottom: `${18 + (i % 4) * 12}%`,
-            width: 1.5 + (i % 3),
-            height: 1.5 + (i % 3),
-            borderRadius: "50%",
-            background: color,
-            filter: "blur(0.5px)",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+          key={sceneIdx}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.1, ease: "easeInOut" }}
+          style={{ position: "absolute", inset: 0, zIndex: 0 }}
+        >
+          <motion.div
+            animate={{ scale: [1.04, 1.10], x: ["0%", "-2%"], y: ["0%", "-2%"] }}
+            transition={{ duration: 6, ease: "linear" }}
+            style={{
+              width: "110%", height: "110%",
+              position: "absolute", top: "-5%", left: "-5%",
+              backgroundImage:    `url(${pool[sceneIdx]})`,
+              backgroundSize:     "cover",
+              backgroundPosition: "center",
+            }}
+          />
+        </motion.div>
+      </AnimatePresence>
 
-// ── Amber reflection overlay ──────────────────────────────────────────────────
-
-function AmberReflection({ active, color }: { active: boolean; color: string }) {
-  return (
-    <motion.div
-      animate={{ opacity: active ? 1 : 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      style={{
+      {/* Craft-color tinted gradient overlay */}
+      <div style={{
         position:      "absolute",
         inset:         0,
         zIndex:        2,
-        background:    `radial-gradient(ellipse 80% 60% at 50% 80%, ${color}14 0%, transparent 70%)`,
-        pointerEvents: "none",
-      }}
-    />
-  );
-}
-
-// ── Single vertical blade portal ─────────────────────────────────────────────
-
-interface BladePortalProps {
-  mod:          { id: string; title: string; tagline: string; badge: string; route: string; color: string };
-  active:       boolean;
-  index:        number;
-  total:        number;
-  onActivate:   () => void;
-  onDeactivate: () => void;
-  onTrigger:    () => void;
-}
-
-function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTrigger }: BladePortalProps) {
-  const [pressed,    setPressed]    = useState(false);
-  const [screenIdx,  setScreenIdx]  = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Cycle between screen 0 (ambient blade) and screen 1 (TactileCard) every 5s.
-  // Runs unconditionally — hover expanded content sits at zIndex 7, above TactileCard at 6.
-  useEffect(() => {
-    intervalRef.current = setInterval(() => setScreenIdx(s => (s + 1) % 2), 5000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, []);
-
-  return (
-    <div
-      style={{
-        position:   "relative",
-        flex:        active ? 3.5 : 1,
-        minWidth:    active ? 0 : 44,
-        transition:  "flex 0.55s cubic-bezier(0.23, 1, 0.32, 1), min-width 0.55s cubic-bezier(0.23, 1, 0.32, 1)",
-        overflow:    "hidden",
-        cursor:      "pointer",
-        borderRight: index < total - 1 ? "1px solid rgba(212,139,0,0.10)" : "none",
-        background:  pressed ? `${mod.color}09` : "transparent",
-      }}
-      onPointerEnter={() => onActivate()}
-      onPointerLeave={() => { onDeactivate(); setPressed(false); }}
-      onPointerDown={() => { setPressed(true); playTactile(); }}
-      onPointerUp={() => { if (pressed) { setPressed(false); onTrigger(); } }}
-      onPointerCancel={() => setPressed(false)}
-    >
-      <LiquidTileBg craftId={mod.id} color={mod.color} />
-      <AmberReflection active={active} color={mod.color} />
-      <GlassShimmer active={active} color={mod.color} />
-
-      {/* Bottom gradient vignette */}
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 4,
-        background: `linear-gradient(0deg,
-          rgba(0,0,0,0.92) 0%,
-          rgba(0,0,0,0.55) 35%,
-          rgba(0,0,0,0.12) 60%,
-          transparent 100%)`,
+        background:    `linear-gradient(160deg, ${mod.color}18 0%, transparent 40%, rgba(0,0,0,0.80) 100%)`,
         pointerEvents: "none",
       }} />
 
-      {/* ── Screen 1: TactileCard — cycles in every 5s, always active ── */}
-      <AnimatePresence>
-        {screenIdx === 1 && (
-          <motion.div
-            key="tactile-card"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-            style={{ position: "absolute", inset: 0, zIndex: 6 }}
-          >
-            <TactileCard
-              title={mod.title}
-              tagline={mod.tagline}
-              badge={mod.badge}
-              onTrigger={onTrigger}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Top-left: craft badge chip */}
+      <div style={{
+        position:              "absolute",
+        top:                   14,
+        left:                  14,
+        zIndex:                5,
+        display:               "flex",
+        alignItems:            "center",
+        background:            "rgba(0,0,0,0.70)",
+        backdropFilter:        "blur(10px)",
+        WebkitBackdropFilter:  "blur(10px)",
+        borderRadius:          20,
+        padding:               "4px 11px",
+        border:                `1px solid ${mod.color}44`,
+      }}>
+        <span style={{
+          fontSize:      9,
+          color:         mod.color,
+          fontWeight:    700,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase",
+          fontFamily:    "'Space Mono', monospace",
+        }}>
+          {mod.badge}
+        </span>
+      </div>
 
-      {/* ── Collapsed label — vertical craft ID ── */}
-      <AnimatePresence>
-        {!active && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+      {/* Top-right: scene rotation dot indicators */}
+      <div style={{
+        position:  "absolute",
+        top:       16,
+        right:     14,
+        zIndex:    5,
+        display:   "flex",
+        gap:       4,
+        alignItems: "center",
+      }}>
+        {pool.map((_, i) => (
+          <div
+            key={i}
             style={{
-              position:       "absolute",
-              inset:          0,
-              zIndex:         6,
-              display:        "flex",
-              alignItems:     "center",
-              justifyContent: "center",
-              pointerEvents:  "none",
+              width:      i === sceneIdx ? 16 : 5,
+              height:     5,
+              borderRadius: 3,
+              background: i === sceneIdx ? mod.color : "rgba(255,255,255,0.28)",
+              transition: "width 0.35s ease, background 0.35s ease",
             }}
-          >
-            <div style={{
-              writingMode:    "vertical-rl",
-              textOrientation: "mixed",
-              transform:      "rotate(180deg)",
-              fontSize:       8,
-              letterSpacing:  "0.28em",
-              color:          `${mod.color}cc`,
-              textTransform:  "uppercase",
-              fontFamily:     "'Space Mono', monospace",
-              fontWeight:     700,
-            }}>
-              {mod.id}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          />
+        ))}
+      </div>
 
-      {/* ── Expanded content — visible when blade is active ── */}
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              position:  "absolute",
-              bottom: 0, left: 0, right: 0,
-              zIndex:    7,
-              padding:   "0 20px 30px",
-            }}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.72 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.28, delay: 0.06, ease: [0.34, 1.56, 0.64, 1] }}
-              style={{
-                fontSize:      8,
-                color:         mod.color,
-                letterSpacing: "0.26em",
-                textTransform: "uppercase",
-                fontFamily:    "'Space Mono', monospace",
-                marginBottom:  8,
-              }}
-            >
-              {mod.badge}
-            </motion.div>
-            <h2 style={{
-              margin:        0,
-              fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
-              fontSize:      "clamp(16px, 2.2vw, 26px)",
-              fontWeight:    800,
-              color:         C.gold,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              lineHeight:    1.1,
-              marginBottom:  6,
-            }}>
-              {mod.title}
-            </h2>
-            <p style={{
-              margin:        0,
-              fontSize:      9.5,
-              color:         C.muted,
-              letterSpacing: "0.04em",
-              lineHeight:    1.55,
-              marginBottom:  18,
-            }}>
-              {mod.tagline}
-            </p>
+      {/* Bottom: craft title + tagline */}
+      <div style={{ position: "absolute", bottom: 18, left: 18, right: 18, zIndex: 5 }}>
+        <h3 style={{
+          margin:        0,
+          fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
+          fontSize:      "clamp(15px, 2vw, 22px)",
+          fontWeight:    700,
+          color:         C.gold,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase",
+          lineHeight:    1.1,
+        }}>
+          {mod.title}
+        </h3>
+        <p style={{
+          margin:        "5px 0 0",
+          fontSize:      10,
+          color:         C.muted,
+          letterSpacing: "0.03em",
+          lineHeight:    1.4,
+        }}>
+          {mod.tagline}
+        </p>
+      </div>
 
-            {/* Ritual CTA badge */}
-            <motion.div
-              animate={{ opacity: [0.6, 1, 0.6], boxShadow: [`0 0 0px ${mod.color}00`, `0 0 18px ${mod.color}44`, `0 0 0px ${mod.color}00`] }}
-              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-              style={{
-                display:       "inline-flex",
-                alignItems:    "center",
-                gap:           7,
-                padding:       "7px 14px",
-                background:    `${mod.color}12`,
-                border:        `1px solid ${mod.color}50`,
-                borderRadius:  8,
-                fontSize:      8,
-                fontWeight:    700,
-                color:         mod.color,
-                letterSpacing: "0.20em",
-                textTransform: "uppercase",
-                fontFamily:    "'Space Mono', monospace",
-              }}
-            >
-              ◈ INITIALIZE RITUAL
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Breathing glow ring on border */}
       <GlowRing color={mod.color} />
     </div>
   );
 }
+
 
 // ── Craft portal glow ring ────────────────────────────────────────────────────
 
@@ -864,7 +662,7 @@ function CraftHubInner() {
   const { guestProfile } = useGuestProfile();
   const [showReturn,   setShowReturn]  = useState(false);
   const [portal,       setPortal]      = useState<{ route: string; color: string } | null>(null);
-  const [activeBlade,  setActiveBlade] = useState<string | null>(null);
+  const [mood,         setMood]        = useState("deep");
 
   // ── Kiosk Lock — disables context menu, F-keys, Ctrl shortcuts, back-nav ────
   useKioskLock(true);
@@ -1098,51 +896,99 @@ function CraftHubInner() {
         <IntelStatusBar />
       </div>
 
-      {/* ── Landscape Cockpit Grid — full-bleed kiosk, absolute inset, zero chrome ── */}
+      {/* ── Main content: hero row + 2×2 craft grid ── */}
       <div
         style={{
           position:      "absolute",
-          inset:         0,
-          width:         "100%",
-          height:        "100%",
+          top:           100,
+          bottom:        44,
+          left:          16,
+          right:         16,
           display:       "flex",
-          flexDirection: "row",
-          gap:           "24px",
-          padding:       "24px",
-          boxSizing:     "border-box",
+          flexDirection: "column",
+          gap:           10,
           zIndex:        1,
         }}
       >
-        {/* Left blade: SmokeCraft 360 — 55% of full viewport width */}
-        <div style={{ flex: "0 0 55%", display: "flex", borderRight: "1px solid rgba(212,139,0,0.12)" }}>
-          {CRAFT_MODULES.slice(0, 1).map((mod) => (
-            <BladePortal
-              key={mod.id}
-              mod={mod}
-              active={activeBlade === mod.id}
-              index={0}
-              total={1}
-              onActivate={() => setActiveBlade(mod.id)}
-              onDeactivate={() => setActiveBlade(null)}
-              onTrigger={() => {
-                ExperienceFlowEngine.startCraft(mod.id);
-                setPortal({ route: mod.route, color: mod.color });
-              }}
-            />
-          ))}
+        {/* Hero row: title/tagline left · mood selector right */}
+        <div style={{
+          display:        "flex",
+          alignItems:     "center",
+          justifyContent: "space-between",
+          flexShrink:     0,
+          padding:        "2px 4px 8px",
+        }}>
+          <div>
+            <h1 style={{
+              margin:        0,
+              fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
+              fontSize:      "clamp(20px, 2.4vw, 30px)",
+              fontWeight:    700,
+              color:         C.text,
+              letterSpacing: "0.01em",
+              lineHeight:    1.1,
+            }}>
+              Adaptive Hospitality{" "}
+              <span style={{ color: C.gold }}>Intelligence.</span>
+            </h1>
+            <p style={{
+              margin:        "4px 0 0",
+              fontSize:      11,
+              color:         C.muted,
+              letterSpacing: "0.02em",
+            }}>
+              Select an experience — the AI engine refines in real time.
+            </p>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+            <span style={{
+              fontSize:      9,
+              color:         C.dim,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              marginRight:   4,
+            }}>MOOD</span>
+            {MOOD_OPTIONS.map(m => (
+              <motion.button
+                key={m.id}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setMood(m.id)}
+                style={{
+                  display:       "flex",
+                  alignItems:    "center",
+                  gap:            5,
+                  background:    mood === m.id ? "rgba(212,139,0,0.12)" : "rgba(255,255,255,0.04)",
+                  border:        mood === m.id ? `1.5px solid ${C.gold}` : "1px solid rgba(255,255,255,0.12)",
+                  borderRadius:  20,
+                  padding:       "6px 13px",
+                  cursor:        "pointer",
+                  fontSize:      11,
+                  color:         mood === m.id ? C.gold : C.muted,
+                  letterSpacing: "0.04em",
+                  fontFamily:    "inherit",
+                  whiteSpace:    "nowrap",
+                }}
+              >
+                <span>{m.icon}</span>
+                <span>{m.label}</span>
+              </motion.button>
+            ))}
+          </div>
         </div>
 
-        {/* Right panel: PourCraft · BeerCraft · WineCraft — equal thirds, side-by-side */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "row", height: "100%", overflow: "hidden" }}>
-          {CRAFT_MODULES.slice(1).map((mod, i) => (
-            <BladePortal
+        {/* 2×2 craft grid */}
+        <div style={{
+          flex:                1,
+          minHeight:           0,
+          display:             "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gridTemplateRows:    "1fr 1fr",
+          gap:                 12,
+        }}>
+          {CRAFT_MODULES.map(mod => (
+            <CraftCard
               key={mod.id}
               mod={mod}
-              active={activeBlade === mod.id}
-              index={i}
-              total={CRAFT_MODULES.length - 1}
-              onActivate={() => setActiveBlade(mod.id)}
-              onDeactivate={() => setActiveBlade(null)}
               onTrigger={() => {
                 ExperienceFlowEngine.startCraft(mod.id);
                 setPortal({ route: mod.route, color: mod.color });
