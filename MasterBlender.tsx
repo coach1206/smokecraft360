@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAppState } from './App';
 
 const PREMIUM_PAIRINGS = [
   {
@@ -20,11 +21,17 @@ const PREMIUM_PAIRINGS = [
 ];
 
 export default function MasterBlender() {
+  const { profile, setCurrentView, playClick } = useAppState();
   const [ringGauge, setRingGauge] = useState(50);
   const [selectedLeaf, setSelectedLeaf] = useState('Ligero');
   const [activePairing, setActivePairing] = useState('yamazaki');
 
   const visualRadius = 35 + (ringGauge - 30) * 0.8;
+
+  const handleReset = () => {
+    playClick();
+    setCurrentView('welcome'); // Loops back to the initial start screen cleanly
+  };
 
   return (
     <div className="w-full h-full flex flex-col justify-between p-4 bg-black/40 text-neutral-100 font-sans">
@@ -35,9 +42,17 @@ export default function MasterBlender() {
           <h1 className="text-3xl font-light tracking-widest text-amber-500 uppercase">SMOKECRAFT 360</h1>
           <p className="text-xs tracking-widest text-neutral-400 mt-1 uppercase">Environmental Adaptation Engine</p>
         </div>
-        <span className="text-xs font-mono text-amber-500/80 bg-amber-950/30 border border-amber-500/20 px-4 py-1 rounded-full uppercase tracking-widest">
-          CraftHub Module v3.0
-        </span>
+        <div className="text-right flex items-center gap-4">
+          <div className="text-xs font-mono bg-neutral-950 border border-neutral-800 px-3 py-1.5 rounded text-neutral-400">
+            ACTIVE SESSION: <span className="text-amber-400 font-bold">{profile.name || 'UNAUTHENTICATED'}</span>
+          </div>
+          <button 
+            onClick={handleReset}
+            className="text-xs font-mono text-amber-500/80 bg-amber-950/30 border border-amber-500/20 px-4 py-1.5 rounded-full uppercase tracking-widest hover:bg-amber-500 hover:text-black transition-all"
+          >
+            Reset Ritual
+          </button>
+        </div>
       </div>
 
       {/* Main Interactive Workspace Grid */}
@@ -48,12 +63,12 @@ export default function MasterBlender() {
 
           {/* Leaf Selector */}
           <div className="space-y-3">
-            <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono">1. Select Leaf Morphology</label>
+            <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono">1. Leaf Morphology Profile</label>
             <div className="grid grid-cols-3 gap-4">
               {['Volado', 'Seco', 'Ligero'].map((leaf) => (
                 <button
                   key={leaf}
-                  onClick={() => setSelectedLeaf(leaf)}
+                  onClick={() => { playClick(); setSelectedLeaf(leaf); }}
                   className={`py-4 rounded-lg border text-sm font-medium tracking-wider transition-all uppercase ${
                     selectedLeaf === leaf 
                       ? 'bg-gradient-to-b from-amber-950/50 to-neutral-900 border-amber-500 text-amber-400 shadow-lg' 
@@ -71,7 +86,7 @@ export default function MasterBlender() {
 
           {/* Interactive Responsive Ring Gauge Visualizer */}
           <div className="space-y-4 pt-4 border-t border-neutral-800/60">
-            <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono">2. Vitola Dimension Sliders</label>
+            <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono">2. Vitola Dimension Calibration</label>
 
             <div className="flex flex-col items-center bg-neutral-950/60 border border-neutral-800 rounded-xl p-6">
               <div className="w-44 h-44 flex items-center justify-center relative mb-4">
@@ -111,13 +126,13 @@ export default function MasterBlender() {
         {/* Right Side: High-End Visual Pairings Panel */}
         <div className="col-span-5 bg-neutral-900/40 border border-neutral-800 rounded-xl p-6 flex flex-col justify-between">
           <div className="space-y-4">
-            <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono block">3. Luxury Spirits Pairing</label>
+            <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono block">3. Luxury Spirits Pairing Matrix</label>
 
             <div className="flex gap-4 border-b border-neutral-800 pb-3">
               {PREMIUM_PAIRINGS.map((p) => (
                 <button
                   key={p.id}
-                  onClick={() => setActivePairing(p.id)}
+                  onClick={() => { playClick(); setActivePairing(p.id); }}
                   className={`text-xs uppercase font-mono tracking-wider pb-1 transition-all ${
                     activePairing === p.id 
                       ? 'text-amber-500 border-b-2 border-amber-500 font-bold' 
@@ -125,7 +140,7 @@ export default function MasterBlender() {
                   }`}
                 >
                   {p.type}
-                  </button>
+                </button>
               ))}
             </div>
 
@@ -148,12 +163,12 @@ export default function MasterBlender() {
             ))}
           </div>
 
-          {/* Metric Status Readout Blocks (Fixed font size issue) */}
+          {/* Metric Status Readout Blocks */}
           <div className="pt-4 border-t border-neutral-800/60 mt-4">
             <div className="bg-neutral-950/80 border border-neutral-800 rounded-lg p-4 flex justify-between items-center">
               <div>
                 <span className="text-[10px] uppercase font-mono tracking-widest text-neutral-500 block">Current Target Score</span>
-                <span className="text-2xl font-bold text-neutral-100 font-mono tracking-tight">180 <span className="text-sm font-light text-neutral-400">PTS</span></span>
+                <span className="text-2xl font-bold text-neutral-100 font-mono tracking-tight">{profile.running_score} <span className="text-sm font-light text-neutral-400">PTS</span></span>
               </div>
               <div className="text-right">
                 <span className="text-[10px] uppercase font-mono tracking-widest text-neutral-500 block">E.A.T. Profile Status</span>
