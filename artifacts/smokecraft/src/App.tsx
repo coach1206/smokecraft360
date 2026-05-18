@@ -995,8 +995,7 @@ export default function App() {
     <Router>
       <BrandPartnerFirewall />
       <GuestAmbientLayer />
-      {/* ── Cinematic 4-stage brand intro — fixed overlay, session-gated ── */}
-      <SplashController />
+
       <Suspense fallback={<PageLoader />}>
         <Switch>
           {/* ── Enterprise / AI (standalone — no full provider stack needed) ── */}
