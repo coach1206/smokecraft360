@@ -888,14 +888,13 @@ function CraftHubInner() {
 
   return (
     <div style={{
-      height:        "100dvh",
-      background:    C.bg,
-      color:         C.text,
-      fontFamily:    "var(--app-font-sans, system-ui, sans-serif)",
-      display:       "flex",
-      flexDirection: "column",
-      overflow:      "hidden",
-      position:      "relative",
+      height:    "100dvh",
+      width:     "100vw",
+      background: C.bg,
+      color:     C.text,
+      fontFamily: "var(--app-font-sans, system-ui, sans-serif)",
+      overflow:  "hidden",
+      position:  "relative",
     }}>
 
       {/* ── Ambient background radial glow ── */}
@@ -921,17 +920,19 @@ function CraftHubInner() {
       {/* ── Floating particles ── */}
       <AmbientParticles />
 
-      {/* ── Top OS header ── */}
+      {/* ── Top OS header — floating overlay, zero layout cost ── */}
       <header style={{
-        position:       "relative",
-        zIndex:         10,
+        position:       "absolute",
+        top:            0,
+        left:           0,
+        right:          0,
+        zIndex:         20,
         display:        "flex",
         alignItems:     "center",
-        padding:        "14px 24px",
+        padding:        "10px 24px",
         borderBottom:   `1px solid ${C.border}`,
-        background:     "rgba(8,6,4,0.85)",
+        background:     "rgba(8,6,4,0.82)",
         backdropFilter: "blur(16px)",
-        flexShrink:     0,
         gap:            16,
       }}>
         {/* Left — returning guest or identity badge */}
@@ -1059,25 +1060,24 @@ function CraftHubInner() {
         </motion.div>
       </header>
 
-      {/* ── AI intelligence status bar ── */}
-      <div style={{ position: "relative", zIndex: 10 }}>
+      {/* ── AI intelligence status bar — floating strip below header ── */}
+      <div style={{ position: "absolute", top: 56, left: 0, right: 0, zIndex: 19, pointerEvents: "none" }}>
         <IntelStatusBar />
       </div>
 
-      {/* ── Landscape Cockpit Grid: SmokeCraft top + 3-craft bottom row ── */}
+      {/* ── Landscape Cockpit Grid — full-bleed kiosk, absolute inset, zero chrome ── */}
       <div
         style={{
-          flex:          1,
+          position:      "absolute",
+          inset:         0,
           display:       "flex",
           flexDirection: "column",
-          position:      "relative",
           zIndex:        10,
           overflow:      "hidden",
-          minHeight:     0,
         }}
       >
-        {/* Top deck: SmokeCraft 360 — full horizontal width */}
-        <div style={{ flex: "0 0 46%", display: "flex", borderBottom: "1px solid rgba(212,139,0,0.12)" }}>
+        {/* Top deck: SmokeCraft 360 — full horizontal width, 55% of full viewport */}
+        <div style={{ flex: "0 0 55%", display: "flex", borderBottom: "1px solid rgba(212,139,0,0.12)" }}>
           {CRAFT_MODULES.slice(0, 1).map((mod) => (
             <BladePortal
               key={mod.id}
@@ -1115,8 +1115,8 @@ function CraftHubInner() {
         </div>
       </div>
 
-      {/* ── Partner LogoAnchors — DayOne360 & WifeX ── */}
-      <div style={{ position: "relative", zIndex: 10, flexShrink: 0 }}>
+      {/* ── Partner LogoAnchors — floating above footer ── */}
+      <div style={{ position: "absolute", bottom: 50, left: 0, right: 0, zIndex: 20, pointerEvents: "none" }}>
         <div style={{ display: "flex" }}>
           <div style={{ flex: 1 }}>
             <LogoAnchor partner="DayOne360" variant="bar" />
@@ -1127,18 +1127,20 @@ function CraftHubInner() {
         </div>
       </div>
 
-      {/* ── Operational status footer ── */}
+      {/* ── Operational status footer — floating bottom strip ── */}
       <footer style={{
-        position:       "relative",
-        zIndex:         10,
-        padding:        "10px 28px",
+        position:       "absolute",
+        bottom:         0,
+        left:           0,
+        right:          0,
+        zIndex:         20,
+        padding:        "8px 28px",
         borderTop:      `1px solid ${C.border}`,
         display:        "flex",
         alignItems:     "center",
         gap:            20,
-        flexShrink:     0,
-        background:     "rgba(245,242,237,0.90)",
-        backdropFilter: "blur(12px)",
+        background:     "rgba(8,6,4,0.82)",
+        backdropFilter: "blur(16px)",
       }}>
         {CRAFT_MODULES.map(mod => (
           <div key={mod.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
