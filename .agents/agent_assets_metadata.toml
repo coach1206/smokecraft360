@@ -540,6 +540,78 @@ uri = "file://artifacts/smokecraft-mobile/assets/images/novee-boot-logo.png"
 type = "image"
 title = "novee os boot logo"
 
+[[generated]]
+id = "9mZDcYu3k1HcAHIgb5OJi"
+uri = "file://artifacts/smokecraft/public/images/craft/smoke-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "UZNNuu2YthpVszScBXrG2"
+uri = "file://artifacts/smokecraft/public/images/craft/smoke-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "yMlFVIriFrc_fFMhGTxEd"
+uri = "file://artifacts/smokecraft/public/images/craft/smoke-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "cxxxj5744Q12W89AW5LGJ"
+uri = "file://artifacts/smokecraft/public/images/craft/pour-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "qGuYss1IWd8vqo1CPB4pT"
+uri = "file://artifacts/smokecraft/public/images/craft/pour-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Aax1FjfpWVwDb5dYkryPj"
+uri = "file://artifacts/smokecraft/public/images/craft/pour-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "_ZIkZB7AArfy6Ya3breVQ"
+uri = "file://artifacts/smokecraft/public/images/craft/brew-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "qfnLs-1sMDEshMoc_5E0A"
+uri = "file://artifacts/smokecraft/public/images/craft/brew-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "1qm6UHpmI0jzKvwJUuV2Z"
+uri = "file://artifacts/smokecraft/public/images/craft/brew-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ogzyETBmO1M-HNXnWJxkl"
+uri = "file://artifacts/smokecraft/public/images/craft/wine-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3i96sLwaghGNCJe4BDL6f"
+uri = "file://artifacts/smokecraft/public/images/craft/wine-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "uqNf_7zMatyrTWk9f_pQL"
+uri = "file://artifacts/smokecraft/public/images/craft/wine-3.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "bcXlJZbThuFGk9x0tlMdt"
 uri = "file://.local/AXIOM_OS_OPERATIONS_MANUAL_SOURCE.md"

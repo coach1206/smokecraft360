@@ -195,34 +195,29 @@ function IntelStatusBar() {
 
 const TILE_BG: Record<string, string[]> = {
   smoke: [
-    "https://mrgscigars.com/wp-content/uploads/2024/07/home-smoking-lounge-9-1024x683.jpg",
-    "https://thumbs.dreamstime.com/b/sophisticated-evening-premium-cigar-premium-hand-rolled-cigar-smolders-gently-its-aromatic-smoke-curling-dimly-415463699.jpg",
-    "https://thumbs.dreamstime.com/b/luxury-still-life-cognac-cigar-bottle-dark-background-close-up-shot-copyspace-48749844.jpg",
-    "https://mrgscigars.com/wp-content/uploads/2024/07/home-smoking-lounge-6-1024x683.jpg",
+    "/images/craft/smoke-1.png",
+    "/images/craft/smoke-2.png",
+    "/images/craft/smoke-3.png",
   ],
   pour: [
-    "https://media.gettyimages.com/id/1358320126/photo/whisky-pour-from-a-bottle-into-a-cut-glass-tumbler.jpg?s=612x612&w=0&k=20&c=O9CWcIlyk8KjU_zcSkXoEAQKbhZ3Ddnzp1OdP9jkais=",
-    "https://media.gettyimages.com/id/1320844782/photo/pouring-glass-of-whiskey-male-hand-holding-bottle-with-luxury-alcohol.jpg?s=612x612&w=0&k=20&c=xojimuMRTIrDE1iycgf1Gu_8dta_-hNQ4wsbEsxoTuI=",
-    "https://media.gettyimages.com/id/1358320148/photo/whisky-pour-from-a-bottle-into-a-cut-glass-tumbler.jpg?s=612x612&w=0&k=20&c=DbylwuG_vKQCvXNr90C8Kq3i1b9dKDhXaybYxVa5e_s=",
-    "https://media.gettyimages.com/id/1592550978/photo/a-glass-of-whiskey-on-black-background.jpg?s=612x612&w=0&k=20&c=ITRfCfgaiv4GrYjcQ5z0IEeUL-Q-UbN65Axk0OuCC6o=",
+    "/images/craft/pour-1.png",
+    "/images/craft/pour-2.png",
+    "/images/craft/pour-3.png",
   ],
   brew: [
-    "https://thumbs.dreamstime.com/b/glass-dark-beer-craft-foam-wooden-bar-counter-pub-blurred-background-glass-dark-beer-craft-foam-wooden-bar-170514304.jpg",
-    "https://thumbs.dreamstime.com/b/dark-beer-pouring-glass-black-background-close-up-fullhd-dark-beer-pouring-glass-black-background-close-up-129065260.jpg",
-    "https://thumbs.dreamstime.com/b/glass-cold-craft-light-beer-dark-background-glass-cold-craft-light-beer-dark-background-122055020.jpg",
-    "https://thumbs.dreamstime.com/b/glass-beer-dark-background-20013894.jpg",
+    "/images/craft/brew-1.png",
+    "/images/craft/brew-2.png",
+    "/images/craft/brew-3.png",
   ],
   vape: [
-    "https://images.pexels.com/photos/3761509/pexels-photo-3761509.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/3761510/pexels-photo-3761510.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/3761511/pexels-photo-3761511.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/3761516/pexels-photo-3761516.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "/images/craft/pour-1.png",
+    "/images/craft/pour-2.png",
+    "/images/craft/pour-3.png",
   ],
   wine: [
-    "https://images.pexels.com/photos/3937673/pexels-photo-3937673.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/2912108/pexels-photo-2912108.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/1407846/pexels-photo-1407846.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/434311/pexels-photo-434311.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "/images/craft/wine-1.png",
+    "/images/craft/wine-2.png",
+    "/images/craft/wine-3.png",
   ],
 };
 
@@ -905,8 +900,8 @@ function CraftHubInner() {
       <div
         style={{
           position:      "absolute",
-          top:           96,
-          bottom:        36,
+          top:           80,
+          bottom:        52,
           left:          0,
           right:         0,
           display:       "flex",

@@ -69,7 +69,7 @@ function BrandAvatar({ brandName, logoUrl }: { brandName: string; logoUrl?: stri
       <img
         src={logoUrl}
         alt={brandName}
-        style={{ width: 20, height: 20, borderRadius: 4, objectFit: "contain", flexShrink: 0 }}
+        style={{ width: 30, height: 30, borderRadius: 5, objectFit: "contain", flexShrink: 0 }}
         onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
       />
     );
@@ -77,9 +77,9 @@ function BrandAvatar({ brandName, logoUrl }: { brandName: string; logoUrl?: stri
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", justifyContent: "center",
-      width: 20, height: 20, borderRadius: 4, flexShrink: 0,
+      width: 30, height: 30, borderRadius: 5, flexShrink: 0,
       background: "rgba(212,139,0,0.15)", border: "1px solid rgba(212,139,0,0.30)",
-      fontSize: "0.48rem", fontWeight: 800, color: "#D48B00", letterSpacing: "0.02em",
+      fontSize: "0.65rem", fontWeight: 800, color: "#D48B00", letterSpacing: "0.02em",
     }}>
       {initials}
     </span>
@@ -117,7 +117,7 @@ function TickerItemEl({
 
       {/* Brand name */}
       <span style={{
-        fontSize: "0.61rem", fontWeight: 700, letterSpacing: "0.09em",
+        fontSize: "0.95rem", fontWeight: 700, letterSpacing: "0.09em",
         textTransform: "uppercase",
         color: isPrestige ? "#E8A020" : "#D48B00",
         textShadow: isPrestige ? "0 0 12px rgba(212,139,0,0.55)" : "none",
@@ -128,7 +128,7 @@ function TickerItemEl({
 
       {/* Promo text */}
       <span style={{
-        fontSize: "0.61rem", color: "rgba(240,232,212,0.72)",
+        fontSize: "0.92rem", color: "rgba(240,232,212,0.82)",
         whiteSpace: "nowrap",
       }}>
         {item.promoText}
@@ -138,10 +138,10 @@ function TickerItemEl({
       {isPrestige && (
         <span style={{
           display: "inline-flex", alignItems: "center",
-          padding: "1px 7px", borderRadius: 4,
+          padding: "2px 9px", borderRadius: 4,
           background: "rgba(212,139,0,0.16)",
           border: "1px solid rgba(212,139,0,0.38)",
-          fontSize: "0.49rem", fontWeight: 800,
+          fontSize: "0.75rem", fontWeight: 800,
           letterSpacing: "0.10em", color: "#D48B00",
           textTransform: "uppercase", flexShrink: 0,
         }}>
@@ -150,7 +150,7 @@ function TickerItemEl({
       )}
 
       {/* Separator */}
-      <span style={{ color: "rgba(212,139,0,0.28)", fontSize: "0.55rem", flexShrink: 0 }}>
+      <span style={{ color: "rgba(212,139,0,0.28)", fontSize: "0.85rem", flexShrink: 0 }}>
         {"\u00A0◆\u00A0"}
       </span>
     </span>
@@ -204,7 +204,7 @@ export default function TickerTape({ craftType, venueId, region, position = "bot
         className={className}
         style={{
           position: "fixed", [position]: 0, left: 0, right: 0,
-          height: 36,
+          height: 52,
           background: "#1A1A1B",
           borderTop:    position === "bottom" ? "1px solid rgba(212,139,0,0.16)" : "none",
           borderBottom: position === "top"    ? "1px solid rgba(212,139,0,0.16)" : "none",
