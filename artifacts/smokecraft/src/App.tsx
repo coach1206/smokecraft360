@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
-import { Router, Route, Switch, useLocation } from 'wouter';
+import { Router, Route, Switch, Redirect, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
 import TitanCraftDeck from '@/pages/TitanCraftDeck';
 const LivingPortal = lazy(() => import('@/pages/LivingPortal'));
@@ -1295,9 +1295,9 @@ export default function App() {
           <Route path="/home">
             <SubPageProviders><Home /></SubPageProviders>
           </Route>
-          {/* ── Default: live blending workspace mounts immediately ── */}
+          {/* ── Root redirects to CraftHub (side-by-side columns) ── */}
           <Route path="/">
-            <SubPageProviders><MasterBlender /></SubPageProviders>
+            <Redirect to="/craft-hub" />
           </Route>
 
           {/* ── Default: Sovereign Gate — all entry flows begin here ── */}

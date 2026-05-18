@@ -17,15 +17,16 @@ import { createPortal }        from "react-dom";
 import { useLocation }         from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
-const HOME         = "/";
-const PORTAL_PATHS = new Set(["/craft-hub"]);
+const HOME         = "/craft-hub";
+// Pages where the back button is hidden (they ARE home)
+const HIDE_PATHS   = new Set(["/craft-hub", "/"]);
 
-function getLabel(path: string): string {
-  return PORTAL_PATHS.has(path) ? "← PORTAL" : "← BACK";
+function getLabel(_path: string): string {
+  return "← BACK";
 }
 
-function getTarget(path: string): string | null {
-  return PORTAL_PATHS.has(path) ? HOME : null;
+function getTarget(_path: string): string | null {
+  return HOME;
 }
 
 function BackPill({ location, navigate }: { location: string; navigate: (to: string) => void }) {
@@ -40,7 +41,7 @@ function BackPill({ location, navigate }: { location: string; navigate: (to: str
 
   return (
     <AnimatePresence>
-      {location !== HOME && (
+      {!HIDE_PATHS.has(location) && (
         <motion.button
           key="universal-back"
           initial={{ opacity: 0, x: -14, scale: 0.88 }}
