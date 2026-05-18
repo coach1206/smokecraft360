@@ -17,7 +17,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Lock, Loader } from "lucide-react";
+import { Shield, Lock, Loader, ArrowLeft } from "lucide-react";
 import "@/styles/Sovereign.css";
 
 // ── Design tokens ─────────────────────────────────────────────
@@ -333,6 +333,31 @@ export default function SovereignGate() {
 
       {/* Scan line */}
       <div className="scan-line" />
+
+      {/* Back to CraftHub */}
+      <motion.button
+        onClick={() => navigate("/craft-hub")}
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.94 }}
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.3, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        style={{
+          position: "fixed", top: 18, left: 18,
+          display: "flex", alignItems: "center", gap: 8,
+          background: "rgba(212,175,55,0.08)",
+          border: "1px solid rgba(212,175,55,0.30)",
+          backdropFilter: "blur(12px)",
+          borderRadius: 12, padding: "11px 18px",
+          color: C.muted, fontSize: 14, fontWeight: 600,
+          cursor: "pointer", zIndex: 50,
+          touchAction: "manipulation",
+          fontFamily: C.mono,
+        }}
+      >
+        <ArrowLeft size={16} color={C.gold} />
+        <span style={{ color: C.gold }}>CraftHub</span>
+      </motion.button>
 
       {/* Particles */}
       {particles.map(p => (

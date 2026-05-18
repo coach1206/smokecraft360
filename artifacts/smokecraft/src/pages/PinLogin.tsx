@@ -458,7 +458,7 @@ export default function PinLogin() {
 
       {/* Back button */}
       <motion.button
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/craft-hub")}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.94 }}
         initial={{ opacity: 0, x: -10 }}
@@ -466,18 +466,19 @@ export default function PinLogin() {
         transition={{ delay: 0.3, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position: "absolute", top: 18, left: 18,
-          display: "flex", alignItems: "center", gap: 7,
+          display: "flex", alignItems: "center", gap: 8,
           background: "rgba(247,243,234,0.55)",
           border: `1px solid ${GOLD_FAINT}`,
           backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-          borderRadius: 12, padding: "9px 15px",
-          color: INK_MID, fontSize: 12, fontWeight: 500,
+          borderRadius: 12, padding: "11px 18px",
+          color: INK_MID, fontSize: 14, fontWeight: 600,
           cursor: "pointer", zIndex: 20,
+          touchAction: "manipulation",
           boxShadow: "0 2px 10px rgba(0,0,0,0.14), 0 1px 0 rgba(255,255,255,0.5) inset",
         }}
       >
-        <ArrowLeft size={13} />
-        Back
+        <ArrowLeft size={16} />
+        CraftHub
       </motion.button>
 
       {/* PIN panel */}
