@@ -1,0 +1,88 @@
+Execute a comprehensive structural, architectural, and visual refactor of the entire repository to transform the application into a high-end, landscape-optimized tablet console. You must eliminate all vertical web-template stacking, placeholder stubs, generic text columns, and disconnected components. Enforce absolute type safety across the application so that 'tsc --noEmit' passes with exit code 0.
+
+Implement the exact state engine, view layouts, asset mappings, and chronological flow defined below:
+
+=========================================
+1. THE SOVEREIGN INITIALIZATION & PORTFOLIO GRID STRUCTURE
+=========================================
+- LEVEL 0 (Power Up / Idle Loop):
+  * Canvas: Absolute solid black (#000000).
+  * UI: Centralized premium corporate management signature displaying exactly: "Profound Innovations LLC".
+- LEVEL 1 (The OS Layer):
+  * Transition: A smooth 1.2-second horizontal slide animation triggered automatically.
+  * UI: Reveals the high-end "NOVEÈ OS" platform terminal frame.
+- LEVEL 2 (The Central Core):
+  * UI: Instantly initializes the core centralized data dashboard frame titled "CraftHub".
+- LEVEL 3 (The Cockpit Portfolio Grid):
+  * Layout: Eliminate all vertical column behavior. Rebuild into an edge-to-edge landscape viewport touchscreen grid mapping 4 brand pillars:
+    a. SMOKECRAFT 360 (Top Section): Positioned prominently at the absolute top of the layout, spanning the full horizontal width of the screen workspace.
+    b. POURCRAFT 360, BEERCRAFT 360, WINECRAFT 360 (Bottom Row): Grouped side-by-side neatly directly beneath SmokeCraft 360 to anchor the interface.
+- SENSORY DISSOLVE:
+  * Interaction: Tapping 'SMOKECRAFT 360' fires a playClick() 3400Hz audio burst and runs a 1.9s sensory transition.
+  * Effect: The portfolio grid completely dissolves, replacing the screen with the cinematic gateway titled exactly: "The Art of the Cigar".
+- AMBIENT GRAPHIC ANCHOR:
+  * Render a highly realistic premium cigar burning continuously at the absolute bottom boundary of the display window with animated ash embers. 
+  * Stack the HTML5 SmokeCanvas at z-index 9996 so organic smoke mist drifts uniformly up behind your control panels.
+- THE CLEAN EXPERIENTIAL FORK:
+  * The cinematic intro screen features two oversized touchscreen targets overlaid on the smoke canvas—strictly prohibiting cold login fields for new guests:
+    * Target A (Oversized Primary Gold Action Block): "BEGIN JOURNEY" -> Instantly drops a new user directly into Step 2 of the masterclass without onboarding barriers.
+    * Target B (Secondary Inline Text Link): "RETURNING MASTERCLASS GUEST" -> Slides up a smooth, glassmorphic profile drawer to capture phone/last-name inputs only when pressed.
+
+=========================================
+2. MANDATORY CONTEXTUAL NARRATIVE SEQUENCE (STEPS 2 - 6)
+=========================================
+Every step below must enforce a landscape-optimized side-by-side split layout to guide the guest chronologically before unlocking leaf selection:
+
+- STEP 2: THE COMPREHENSIVE OVERVIEW PANEL
+  * Left Panel: Title: "The Blueprint of Craftsmanship" | Text: "You are not just blending leaves; you are capturing time, soil, and tradition. Before your master cigar can be rolled on the bench, it begins in the earth. A single cigar is composed of three distinct layers: the wrapper that delivers the immediate aroma, the binder that holds structural integrity, and the internal filler leaf core that dictates power, burn speed, and flavor. To create a masterpiece, you must first align with a Guide, select your genetic seed line, and analyze the mineral terroir of the soil."
+  * Right Panel: High-fidelity, atmospheric wide-angle cinematic shot of a misty sunrise over a historic premium tobacco plantation.
+
+- STEP 3: SELECT YOUR MASTER MENTOR
+  * UI: Completely remove all generic retail, merchandise, or watch placeholders. Render 3 massive glassmorphic card columns configured with their respective national flags:
+    1. Don Manuel (Dominican Republic 🇩🇴)
+       Image URL: https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=600&q=80
+    2. Alejandro (Nicaragua 🇳🇮)
+       Image URL: https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=600&q=80
+    3. Doña Rosa (Ecuador 🇪🇨)
+       Image URL: https://images.unsplash.com/photo-1511113202302-ef60000a6e87?auto=format&fit=crop&w=600&q=80
+  * Audio Logic: Include ElevenLabs toggle tracking with upper-right 'MUTE / VOICE OFF' targets.
+
+- STEP 4: MENTOR PHILOSOPHY CONFIRMATION
+  * Left Panel: Selected Mentor slides up to deliver their core philosophy: "My lineage teaches that a true cigar must build slowly. Before we balance our filler matrix, we must choose our seed lines carefully. Let us step into the nursery vaults to select our genetic lineage."
+  * Right Panel: Interactive graphic mapping the mentor's signature blend parameters.
+
+- STEP 5: HERITAGE SEED BIOLOGY & GENETICS
+  * Left Panel: Title: "Select Your Heritage Seed Lineage" | Interactive touch targets to select between: Criollo (Classic earthy baseline), Corojo (Spicy, robust oils), or Connecticut Shade (Creamy, smooth wrapper anatomy).
+  * Right Panel: Ultra-realistic macro imagery showing raw genetic tobacco seed strands resting against premium agricultural beds.
+
+- STEP 6: TERROIR & POTASSIUM SOIL CHEMISTRY
+  * Left Panel: Title: "The Terroir Foundation" | Text: "Tobacco absorbs its character directly from the earth's mineral density. Volcanic soil rich in natural Potassium regulates the chemical burn rate, ensuring your cigar combusts evenly and cleanly, preventing a bitter tunnel burn. Clay-heavy soil structures deliver deep, dense iron notes, shifting raw strength to the palate."
+  * Interaction Engine: Guest must select their soil composition layer. If the selected soil texture directly conflicts with their chosen Mentor's regional philosophy, trigger a dynamic Master Mentor Intervention overlay, flashing a red penalty chip and deducting points (-2 PTS) from the live score.
+  * Right Panel: Macro cross-section photograph capturing rich, mineral-veined volcanic loam catching low amber ambient lighting.
+
+=========================================
+3. STEP 7 FIX: CHOOSE YOUR FILLER LEAF CONSOLE & PRIMING MATRIX
+=========================================
+- TOP PROGRESSION BAR:
+  * Action: Permanently remove the disconnected 'synergy circle' UI. 
+  * UI: Replace with a clean, horizontal cinematic progress indicator at the absolute top of the glass viewport tracking: Filler Leaf → Wrapper → Shape & Size → Cut → Pairing.
+- HEADER BLOCK:
+  * Header Title: Must read exactly "Choose Your Filler Leaf".
+  * Header Subtext: Must state exactly: "The filler leaf shapes the body, strength, burn speed, and overall character of your cigar. Each tobacco leaf contributes different flavor notes and smoking behavior. Select the foundation that best matches your desired experience."
+- VISUAL SPACING & SPLIT-GRID LAYOUT:
+  * Layout: Split screen cleanly into a 60% Width Left Control Drawer and a 40% Width Right Visual Drawer.
+  * Left Control Drawer (60%): Luxury glassmorphic dashboard containing 3 large touch-friendly cards aligned perfectly side-by-side with equal horizontal spacing:
+    * CARD 1: SECO (Light Body • Smooth Burn | Flavor: Cream, Cedar, Toasted Almond | Experience: Balanced and approachable with a cooler burn and softer finish. | Best For: Relaxed evenings and smoother whiskey pairings. | Indicator: Beginner)
+    * CARD 2: VISO (Medium Body • Aromatic Balance | Flavor: Earth, Cocoa, Spice | Experience: Adds complexity and layered aroma while maintaining smooth balance. | Best For: Classic cigar lovers wanting fuller flavor without overpowering strength. | Indicator: Intermediate)
+    * CARD 3: LIGERO (Full Body • Slow Burn | Flavor: Pepper, Espresso, Dark Chocolate | Experience: The strongest leaf in the blend delivering bold intensity and rich smoke density. | Best For: Experienced smokers and stronger bourbon pairings. | Indicator: Expert)
+  * Multi-Range Integration: Each card features an integrated tactile slider dial. Adjusting a slider alters the percentage mix (Volado, Seco, Ligero), triggers a 100ms hardware tactility animation (scale-96, translate-y-[2px]), and fires a playClick() audio pulse.
+  * Accordion Lockout: Hide auxiliary descriptions ("Bunching Protocol", "Leaf Anatomy") inside smooth, collapsible disclosure accordions anchored neatly at the bottom of the left panel.
+  * Right Visual Drawer (40%): A dedicated 'Live Leaf Texture Matrix' showcase panel. As sliders move, dynamically update high-fidelity macro graphics of raw tobacco leaves showing precise vein density and oil saturation. Synchronously display a real product photo of a premium cigar in the venue's physical humidor (e.g., Padrón 1926 or Fuente Opus X) and parallel drink pairings available at the bar counter to accelerate immediate tableside upselling.
+  * Matrix Validation: Enforce via the state engine that collective slider inputs must total exactly 100% before the fixed 'CONFIRM BLEND' action button in the lower right footer ignites with a warm gold neon outer glow drop shadow and unlocks.
+
+=========================================
+4. HARDWARE NAVIGATION SECURITY LAYER
+=========================================
+- UI: Force the gold-bordered 'BACK' button container row to absolute top-layer precedence using styling: 'position: fixed; z-index: 999999; pointer-events: auto;'. This guarantees flawless touch responsiveness on physical tablet glass hardware, ensuring transparent parent layout elements cannot intercept touch input events.
+
+Refactor App.tsx, MasterBlender.tsx, RitualStep.tsx, and core layout wrappers to build this architecture perfectly. Let it compile completely clean.

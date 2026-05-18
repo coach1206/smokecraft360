@@ -23,28 +23,29 @@ import { LicenseProvider }           from '@/contexts/LicenseContext';
 import { HandoffProvider }           from '@/contexts/HandoffContext';
 import { AudioProvider }            from '@/contexts/AudioContext';
 import { ExperienceProvider }       from '@/contexts/ExperienceContext';
-import EeisOverlay                  from '@/components/EeisOverlay';
-import StealthHandoff               from '@/components/StealthHandoff';
-import { SovereignOverrideHub }    from '@/components/SovereignOverrideHub';
 import { SuperAdminProvider }       from '@/contexts/SuperAdminContext';
-import { GhostEntryTrigger }        from '@/components/GhostEntryTrigger';
-import SuperAdminOverlay            from '@/components/SuperAdminOverlay';
 import { HapticProvider }              from '@/contexts/HapticContext';
 import { UniversalTouchAnchors }      from '@/components/UniversalTouchAnchors';
 import { UniversalBackButton }        from '@/components/UniversalBackButton';
 import { UnifiedCognitiveProvider }   from '@/contexts/UnifiedCognitiveContext';
 import { RouteTransitionOverlay }     from '@/components/RouteTransitionOverlay';
 import { TrifectaProvider }           from '@/contexts/TrifectaContext';
-import { SovereignInsightCube }       from '@/components/SovereignInsightCube';
 import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
-import PhantomHUD                     from '@/components/PhantomHUD';
-import { SplashController }           from '@/components/SplashController';
 import { KernelModeProvider }         from '@/contexts/KernelModeContext';
 import { SovereignRoute }             from '@/components/SovereignRoute';
-import InactivityGuard               from '@/components/InactivityGuard';
 import { PresentationProvider }      from '@/contexts/PresentationContext';
 import TabletViewport                from '@/components/TabletViewport';
 import GlobalSmokeCanvas             from '@/components/GlobalSmokeCanvas';
+
+/* ── Lazy-loaded overlays (removed from critical path) ────── */
+const EeisOverlay          = lazy(() => import('@/components/EeisOverlay'));
+const SuperAdminOverlay    = lazy(() => import('@/components/SuperAdminOverlay'));
+const StealthHandoff       = lazy(() => import('@/components/StealthHandoff'));
+const PhantomHUD           = lazy(() => import('@/components/PhantomHUD'));
+const InactivityGuard      = lazy(() => import('@/components/InactivityGuard'));
+const GhostEntryTrigger    = lazy(() => import('@/components/GhostEntryTrigger').then(m => ({ default: m.GhostEntryTrigger })));
+const SovereignInsightCube = lazy(() => import('@/components/SovereignInsightCube').then(m => ({ default: m.SovereignInsightCube })));
+const SovereignOverrideHub = lazy(() => import('@/components/SovereignOverrideHub').then(m => ({ default: m.SovereignOverrideHub })));
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -189,14 +190,16 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <UniversalBackButton />
                                           {children}
                                           <RouteTransitionOverlay />
-                                          <InactivityGuard />
-                                          <EeisOverlay />
-                                          <GhostEntryTrigger />
-                                          <SuperAdminOverlay />
-                                          <SovereignOverrideHub />
-                                          <SovereignInsightCube />
-                                          <SovereignSocketBridge />
-                                          <StealthHandoff />
+                                          <Suspense fallback={null}>
+                                            <InactivityGuard />
+                                            <EeisOverlay />
+                                            <GhostEntryTrigger />
+                                            <SuperAdminOverlay />
+                                            <SovereignOverrideHub />
+                                            <SovereignInsightCube />
+                                            <SovereignSocketBridge />
+                                            <StealthHandoff />
+                                          </Suspense>
                                         </PresentationProvider>
                                         </HapticProvider>
                                         </TrifectaProvider>
@@ -977,12 +980,6 @@ function BrandPartnerFirewall() {
   return null;
 }
 
-/** Redirects root / to /craft-hub using wouter's navigate */
-function RootRedirect() {
-  const [, navigate] = useLocation();
-  useEffect(() => { navigate("/craft-hub", { replace: true }); }, [navigate]);
-  return null;
-}
 
 /* ══════════════════════════════════════════════════════════════
    ROOT APP — wouter router
@@ -1301,7 +1298,7 @@ export default function App() {
           <Route path="/home">
             <SubPageProviders><Home /></SubPageProviders>
           </Route>
-          {/* ── Root redirects to CraftHub (side-by-side columns) ── */}
+          {/* ── Root: redirect straight to CraftHub ── */}
           <Route path="/">
             <RootRedirect />
           </Route>
@@ -1313,12 +1310,18 @@ export default function App() {
         </Switch>
       </Suspense>
       {/* Phantom HUD — additive fixed overlay, zero interruption */}
-      <PhantomHUD />
+      <Suspense fallback={null}><PhantomHUD /></Suspense>
     </Router>
   );
 }
 
 /* ── HELPERS ── */
+function RootRedirect() {
+  const [, navigate] = useLocation();
+  useEffect(() => { navigate('/craft-hub', { replace: true }); }, []);
+  return null;
+}
+
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
 
 function fullBleed(bg: string): React.CSSProperties {
