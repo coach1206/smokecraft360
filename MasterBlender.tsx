@@ -30,7 +30,7 @@ export default function MasterBlender() {
 
   const handleReset = () => {
     playClick();
-    setCurrentView('welcome'); // Loops back to the initial start screen cleanly
+    setCurrentView('welcome');
   };
 
   return (
