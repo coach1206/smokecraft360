@@ -1076,12 +1076,15 @@ function CraftHubInner() {
           width:         "100%",
           height:        "100%",
           display:       "flex",
-          flexDirection: "column",
+          flexDirection: "row",
+          gap:           "24px",
+          padding:       "24px",
+          boxSizing:     "border-box",
           zIndex:        1,
         }}
       >
-        {/* Top deck: SmokeCraft 360 — full horizontal width, 55% of full viewport */}
-        <div style={{ flex: "0 0 55%", display: "flex", borderBottom: "1px solid rgba(212,139,0,0.12)" }}>
+        {/* Left blade: SmokeCraft 360 — 55% of full viewport width */}
+        <div style={{ flex: "0 0 55%", display: "flex", borderRight: "1px solid rgba(212,139,0,0.12)" }}>
           {CRAFT_MODULES.slice(0, 1).map((mod) => (
             <BladePortal
               key={mod.id}
@@ -1099,8 +1102,8 @@ function CraftHubInner() {
           ))}
         </div>
 
-        {/* Bottom row: PourCraft · BeerCraft · WineCraft — equal thirds */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden" }}>
+        {/* Right panel: PourCraft · BeerCraft · WineCraft — equal thirds, side-by-side */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "row", height: "100%", overflow: "hidden" }}>
           {CRAFT_MODULES.slice(1).map((mod, i) => (
             <BladePortal
               key={mod.id}
