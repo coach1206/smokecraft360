@@ -659,6 +659,123 @@ function FastReturnModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ── HTML5 SmokeCanvas — drifting smoke particles, z-9996 ─────────────────────
+function SmokeCanvas() {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    function resize() { canvas!.width = canvas!.offsetWidth; canvas!.height = canvas!.offsetHeight; }
+    resize();
+    window.addEventListener("resize", resize);
+    type Particle = { x: number; y: number; r: number; opacity: number; vx: number; vy: number };
+    const W = () => canvas!.width || 1280;
+    const H = () => canvas!.height || 900;
+    const particles: Particle[] = Array.from({ length: 52 }, () => ({
+      x: Math.random() * W(), y: Math.random() * H(),
+      r: 30 + Math.random() * 70, opacity: 0.012 + Math.random() * 0.032,
+      vx: (Math.random() - 0.5) * 0.22, vy: -0.38 - Math.random() * 0.65,
+    }));
+    let rafId: number;
+    function draw() {
+      ctx!.clearRect(0, 0, W(), H());
+      for (const p of particles) {
+        const g = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+        g.addColorStop(0, `rgba(232,224,208,${p.opacity})`);
+        g.addColorStop(1, "rgba(232,224,208,0)");
+        ctx!.fillStyle = g; ctx!.beginPath(); ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx!.fill();
+        p.x += p.vx; p.y += p.vy; p.r += 0.22; p.opacity -= 0.00022;
+        if (p.y < -p.r || p.opacity <= 0) {
+          p.x = Math.random() * W(); p.y = H() + 30;
+          p.r = 22 + Math.random() * 48; p.opacity = 0.018 + Math.random() * 0.028;
+        }
+      }
+      rafId = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => { cancelAnimationFrame(rafId); window.removeEventListener("resize", resize); };
+  }, []);
+  return <canvas ref={ref} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 9996, pointerEvents: "none" }} />;
+}
+
+// ── Ambient burning cigar at absolute bottom ──────────────────────────────────
+function AmbientCigar() {
+  return (
+    <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", zIndex: 9997, pointerEvents: "none" }}>
+      <div style={{ position: "relative", width: 200, height: 22 }}>
+        <div style={{ position: "absolute", left: 20, top: 7, width: 155, height: 8, background: "linear-gradient(90deg,#3d1a08 0%,#6b3a1a 28%,#8b5e30 58%,#c8a06a 100%)", borderRadius: "2px 0 0 2px" }} />
+        <div style={{ position: "absolute", right: 0, top: 5, width: 26, height: 12, background: "linear-gradient(90deg,#c8a06a,#e8c88a)", borderRadius: "0 8px 8px 0" }} />
+        <div style={{ position: "absolute", left: 4, top: 6, width: 20, height: 10, background: "linear-gradient(90deg,transparent,#bab6b0,#e0ddd8)", borderRadius: "2px 0 0 2px", opacity: 0.9 }} />
+        <motion.div
+          animate={{ opacity: [0.55, 1, 0.5, 0.9, 0.55], scale: [1, 1.25, 0.88, 1.1, 1] }}
+          transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: "absolute", left: -4, top: 2, width: 16, height: 16, borderRadius: "50%", background: "radial-gradient(circle,#ff6a00 0%,#ff4500 42%,transparent 80%)", boxShadow: "0 0 14px 5px rgba(255,100,0,0.55)" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── Art of the Cigar overlay — fires on SMOKECRAFT 360 tap ───────────────────
+function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => void; onBegin: () => void; onReturning: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.85 }}
+      style={{ position: "fixed", inset: 0, zIndex: 9995, background: "#000000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+    >
+      <SmokeCanvas />
+      <AmbientCigar />
+
+      <div style={{ position: "relative", zIndex: 9998, textAlign: "center", maxWidth: 500, padding: "0 32px" }}>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.9 }}
+          style={{ fontSize: 8, letterSpacing: "0.52em", textTransform: "uppercase", color: "rgba(212,175,55,0.48)", marginBottom: 18, fontFamily: "inherit" }}
+        >
+          NOVEE OS · SmokeCraft 360
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+          style={{ fontFamily: "var(--app-font-serif,'Cormorant Garamond',Georgia,serif)", fontSize: "clamp(2rem,5vw,4rem)", fontWeight: 300, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F0E8D4", margin: "0 0 44px", lineHeight: 1.1 }}
+        >
+          The Art of the Cigar
+        </motion.h1>
+
+        {/* BEGIN JOURNEY — oversized primary gold action block */}
+        <motion.button
+          initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.8 }}
+          whileTap={{ scale: 0.97, y: 2 }}
+          onClick={onBegin}
+          style={{ display: "block", width: "100%", padding: "22px 40px", marginBottom: 18, background: "linear-gradient(135deg,rgba(212,175,55,0.22) 0%,rgba(212,139,0,0.14) 100%)", border: "1.5px solid rgba(212,175,55,0.65)", borderRadius: 12, cursor: "pointer", fontSize: 15, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: "inherit", boxShadow: "0 0 32px rgba(212,175,55,0.22),0 4px 16px rgba(0,0,0,0.4)", minHeight: 72, touchAction: "manipulation" }}
+        >
+          BEGIN JOURNEY
+        </motion.button>
+
+        {/* RETURNING MASTERCLASS GUEST */}
+        <motion.button
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.8 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={onReturning}
+          style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 0", fontSize: 10, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(240,232,212,0.38)", fontFamily: "inherit", textDecoration: "underline", textDecorationColor: "rgba(212,175,55,0.18)", touchAction: "manipulation" }}
+        >
+          Returning Masterclass Guest
+        </motion.button>
+      </div>
+
+      <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
+        onClick={onClose}
+        style={{ position: "absolute", top: 20, left: 20, background: "none", border: "none", color: "rgba(255,255,255,0.18)", cursor: "pointer", fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", padding: "8px 12px", zIndex: 9999 }}
+      >
+        ← Back
+      </motion.button>
+    </motion.div>
+  );
+}
+
 // ── Main hub page ─────────────────────────────────────────────────────────────
 
 function CraftHubInner() {
@@ -667,6 +784,7 @@ function CraftHubInner() {
   const { guestProfile } = useGuestProfile();
   const [showReturn,   setShowReturn]  = useState(false);
   const [portal,       setPortal]      = useState<{ route: string; color: string } | null>(null);
+  const [artOfCigar,   setArtOfCigar]  = useState(false);
   const [mood,         setMood]        = useState("deep");
 
   // ── Kiosk Lock — disables context menu, F-keys, Ctrl shortcuts, back-nav ────
@@ -888,7 +1006,7 @@ function CraftHubInner() {
         <IntelStatusBar />
       </div>
 
-      {/* ── 4 full-height craft columns ── */}
+      {/* ── Level 3: SMOKECRAFT 360 full top + 3 portals bottom row ── */}
       <div
         style={{
           position:      "absolute",
@@ -897,34 +1015,43 @@ function CraftHubInner() {
           left:          0,
           right:         0,
           display:       "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           zIndex:        1,
         }}
       >
-        {CRAFT_MODULES.map((mod, i) => (
-          <div
-            key={mod.id}
-            style={{
-              flex:           "0 0 25%",
-              height:         "100%",
-              display:        "flex",
-              flexDirection:  "column",
-              position:       "relative",
-              overflow:       "hidden",
-              borderRight:    i < CRAFT_MODULES.length - 1
-                ? "1px solid rgba(255,255,255,0.05)"
-                : "none",
+        {/* SMOKECRAFT 360 — full width (~55%) */}
+        <div style={{ flex: "0 0 55%", position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <CraftCard
+            mod={CRAFT_MODULES[0]!}
+            onTrigger={() => {
+              ExperienceFlowEngine.startCraft(CRAFT_MODULES[0]!.id);
+              setArtOfCigar(true);
             }}
-          >
-            <CraftCard
-              mod={mod}
-              onTrigger={() => {
-                ExperienceFlowEngine.startCraft(mod.id);
-                setPortal({ route: mod.route, color: mod.color });
+          />
+        </div>
+
+        {/* POURCRAFT · BEERCRAFT · WINECRAFT — bottom row (~45%) */}
+        <div style={{ flex: "0 0 45%", display: "flex", flexDirection: "row" }}>
+          {CRAFT_MODULES.slice(1).map((mod, i) => (
+            <div
+              key={mod.id}
+              style={{
+                flex:        "1 1 0",
+                position:    "relative",
+                overflow:    "hidden",
+                borderRight: i < CRAFT_MODULES.slice(1).length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
               }}
-            />
-          </div>
-        ))}
+            >
+              <CraftCard
+                mod={mod}
+                onTrigger={() => {
+                  ExperienceFlowEngine.startCraft(mod.id);
+                  setPortal({ route: mod.route, color: mod.color });
+                }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── Partner LogoAnchors — float just above ticker ── */}
@@ -943,6 +1070,17 @@ function CraftHubInner() {
       {/* ── Fast Return Modal ── */}
       <AnimatePresence>
         {showReturn && <FastReturnModal onClose={() => setShowReturn(false)} />}
+      </AnimatePresence>
+
+      {/* ── Art of the Cigar overlay — fires on SMOKECRAFT 360 tap ── */}
+      <AnimatePresence>
+        {artOfCigar && (
+          <ArtOfCigarOverlay
+            onClose={() => setArtOfCigar(false)}
+            onBegin={() => { setArtOfCigar(false); navigate("/master-blender"); }}
+            onReturning={() => { setArtOfCigar(false); setShowReturn(true); }}
+          />
+        )}
       </AnimatePresence>
 
       {/* ── Fixed Sovereign Gate FAB — always visible on all screen sizes ── */}
