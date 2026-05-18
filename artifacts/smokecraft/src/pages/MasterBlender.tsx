@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { AudioWaveToggle, useAudio } from "@/contexts/AudioContext";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { getStaffLine } from "@/lib/CraftVoiceRouter";
+import { LUXURY_ASSETS, saveNoveeGuest, matchNoveeGuest } from "@/lib/audio";
 
 // Velvet slide tone (Web Audio synth — no external file)
 function velvetSlide(): void {
@@ -124,8 +125,8 @@ const SENSORY_MATRIX: Record<string, {
     accent:      "#8B3A0F",
   },
   "Ecuador": {
-    cigar:       "Davidoff Nicaragua",
-    spirit:      "Japanese Whisky",
+    cigar:       "Arturo Fuente Opus X PerfecXion",
+    spirit:      "Yamazaki 12-Year Single Malt",
     spiritStyle: "Single Malt",
     foods:       ["Pan-Seared Duck Breast", "Artisanal Charcuterie"],
     descriptors: ["Creamy", "Aromatic", "Shade-grown"],
@@ -994,6 +995,15 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
 
   async function handleLookup() {
     if (!lastName.trim() || phoneLast4.trim().length !== 4) return;
+
+    // ── Local-first fast return ──────────────────────────────────────────
+    const localMatch = matchNoveeGuest(lastName.trim(), phoneLast4.trim());
+    if (localMatch) {
+      onStartSession(localMatch.running_score ?? 100);
+      return;
+    }
+
+    // ── API fallback ─────────────────────────────────────────────────────
     setLoading(true); setErrMsg(null);
     try {
       const res = await fetch("/api/auth/guest-return", {
@@ -1341,7 +1351,22 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
                 <motion.button
                   whileTap={{ scale: 0.96 }}
                   disabled={!demoComplete}
-                  onClick={() => { if (demoComplete) { setShowDemoForm(false); onEnterNew(); } }}
+                  onClick={() => {
+                    if (!demoComplete) return;
+                    saveNoveeGuest({
+                      name:             demoFullName.trim(),
+                      phone:            demoPhone.replace(/\D/g, ""),
+                      email:            demoEmail.trim(),
+                      ageRange:         demoAge,
+                      gender:           demoGender,
+                      state:            demoState,
+                      city:             demoCity.trim(),
+                      phase_checkpoint: "gateway",
+                      running_score:    100,
+                    });
+                    setShowDemoForm(false);
+                    onEnterNew();
+                  }}
                   style={{
                     flex: 1, ...GW.btn(), minHeight: 54, fontSize: "clamp(11px,1.5vw,13px)",
                     letterSpacing: "0.28em",
@@ -3646,27 +3671,29 @@ function GatewayPrimingMatrix({ onNext, onBack, onPrimingChange }: {
                   <motion.span key={p.pct} initial={{ scale: 1.2 }} animate={{ scale: 1 }}
                     style={{ color: p.color, fontSize: 20, fontWeight: 800 }}>{p.pct}%</motion.span>
                 </div>
-                <div style={{ position: "relative", height: 34, display: "flex", alignItems: "center" }}>
-                  <div style={{ position: "absolute", left: 0, right: 0, height: 6,
-                    background: "rgba(255,255,255,0.07)", borderRadius: 3 }} />
-                  <div style={{ position: "absolute", left: 0, width: `${p.pct}%`, height: 6,
+                <div style={{ position: "relative", height: 52, display: "flex", alignItems: "center" }}>
+                  <div style={{ position: "absolute", left: 0, right: 0, height: 7,
+                    background: "rgba(255,255,255,0.09)", borderRadius: 4 }} />
+                  <div style={{ position: "absolute", left: 0, width: `${p.pct}%`, height: 7,
                     background: `linear-gradient(90deg, ${p.color}60, ${p.color})`,
-                    borderRadius: 3, transition: "width 0.08s",
-                    boxShadow: `0 0 10px ${p.color}40` }} />
+                    borderRadius: 4, transition: "width 0.08s",
+                    boxShadow: `0 0 12px ${p.color}50` }} />
                   <input type="range" min={0} max={100} value={p.pct}
                     disabled={p.id === "ligero"}
                     onChange={e => p.set(Number(e.target.value))}
-                    style={{ position: "absolute", left: 0, right: 0, width: "100%",
-                      height: 34, opacity: 0,
+                    style={{
+                      position: "absolute", left: 0, right: 0, width: "100%",
+                      height: 52, opacity: 0, zIndex: 3,
                       cursor: p.id === "ligero" ? "not-allowed" : "pointer",
-                      margin: 0, padding: 0 }} />
-                  <motion.div animate={{ left: `calc(${p.pct}% - 10px)` }}
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    style={{ position: "absolute", width: 20, height: 20, borderRadius: "50%",
-                      background: p.id === "ligero" ? "#333" : p.color,
-                      border: `2px solid ${p.id === "ligero" ? "#444" : p.color}`,
-                      boxShadow: p.id === "ligero" ? "none" : `0 0 12px ${p.color}60`,
-                      pointerEvents: "none", top: "50%", transform: "translateY(-50%)" }} />
+                      margin: 0, padding: 0, touchAction: "none",
+                    }} />
+                  <motion.div animate={{ left: `calc(${p.pct}% - 13px)` }}
+                    transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                    style={{ position: "absolute", width: 26, height: 26, borderRadius: "50%",
+                      background: p.id === "ligero" ? "#2a2a2a" : `radial-gradient(circle at 35% 35%, ${p.color}, ${p.color}99)`,
+                      border: `2.5px solid ${p.id === "ligero" ? "#444" : p.color}`,
+                      boxShadow: p.id === "ligero" ? "none" : `0 0 16px ${p.color}70, 0 2px 8px rgba(0,0,0,0.6)`,
+                      pointerEvents: "none", top: "50%", transform: "translateY(-50%)", zIndex: 2 }} />
                 </div>
                 <motion.button whileTap={{ scale: 0.98 }}
                   onClick={() => { p.setOpen(!p.open); playClick(); }}
@@ -3892,32 +3919,72 @@ function GatewayMovement1Gate({
           </div>
         </motion.div>
 
-        {/* Live humidor suggestion */}
+        {/* Live humidor suggestion — visual product cards */}
         {suggestion && (
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
             style={{
-              background: `${GOLD}06`, border: `1px solid ${GOLD}28`,
-              borderRadius: 12, padding: "18px 20px", marginBottom: 24,
+              background: `linear-gradient(135deg,${GOLD}08,rgba(0,0,0,0.50))`,
+              border: `1px solid ${GOLD}30`,
+              borderRadius: 14, padding: "18px 20px", marginBottom: 24,
+              backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             }}>
-            <p style={{ color: `${GOLD}80`, fontSize: 10, letterSpacing: "0.28em",
-              textTransform: "uppercase" as const, marginBottom: 10 }}>
-              🏛 Humidor Suggestion for {country}
+            <p style={{ color: `${GOLD}90`, fontSize: 10, letterSpacing: "0.32em",
+              textTransform: "uppercase" as const, marginBottom: 14,
+              fontFamily: "'Space Mono',monospace", fontWeight: 700 }}>
+              🏛 Tableside Recommendation · {country}
             </p>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" as const }}>
-              <div>
-                <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 11, letterSpacing: "0.14em",
-                  textTransform: "uppercase" as const, marginBottom: 3 }}>Cigar</p>
-                <p style={{ color: GOLD, fontSize: 16, fontWeight: 700, margin: 0 }}>{suggestion.cigar}</p>
+            <div style={{ display: "flex", gap: 14 }}>
+              {/* Cigar card */}
+              <div style={{ flex: 1, borderRadius: 10, overflow: "hidden",
+                border: `1px solid ${GOLD}22`,
+                background: "rgba(0,0,0,0.55)" }}>
+                <div style={{ position: "relative", height: 130 }}>
+                  <img
+                    src={suggestion.liveItems?.[0]?.image_url ?? LUXURY_ASSETS.OPUS_X}
+                    alt={suggestion.cigar}
+                    style={{ width: "100%", height: "100%", objectFit: "cover",
+                      filter: "brightness(0.78) saturate(1.15)" }}
+                  />
+                  <div style={{ position: "absolute", inset: 0,
+                    background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 55%)" }} />
+                  <div style={{ position: "absolute", bottom: 10, left: 12, right: 12 }}>
+                    <p style={{ color: `${GOLD}70`, fontSize: 9, letterSpacing: "0.26em",
+                      textTransform: "uppercase" as const, margin: "0 0 3px",
+                      fontFamily: "'Space Mono',monospace" }}>Premium Cigar</p>
+                    <p style={{ color: GOLD, fontSize: 13, fontWeight: 700, margin: 0,
+                      fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.25 }}>
+                      {suggestion.cigar}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 11, letterSpacing: "0.14em",
-                  textTransform: "uppercase" as const, marginBottom: 3 }}>Pairing Spirit</p>
-                <p style={{ color: "rgba(240,232,212,0.88)", fontSize: 15, fontWeight: 600, margin: 0 }}>
-                  {suggestion.spirit}
-                </p>
-                <p style={{ color: `${GOLD}60`, fontSize: 12, margin: 0 }}>{suggestion.spiritStyle}</p>
+              {/* Spirit card */}
+              <div style={{ flex: 1, borderRadius: 10, overflow: "hidden",
+                border: `1px solid ${GOLD}22`,
+                background: "rgba(0,0,0,0.55)" }}>
+                <div style={{ position: "relative", height: 130 }}>
+                  <img
+                    src={LUXURY_ASSETS.YAMAZAKI_12}
+                    alt={suggestion.spirit}
+                    style={{ width: "100%", height: "100%", objectFit: "cover",
+                      filter: "brightness(0.72) saturate(1.20)" }}
+                  />
+                  <div style={{ position: "absolute", inset: 0,
+                    background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 55%)" }} />
+                  <div style={{ position: "absolute", bottom: 10, left: 12, right: 12 }}>
+                    <p style={{ color: `${GOLD}70`, fontSize: 9, letterSpacing: "0.26em",
+                      textTransform: "uppercase" as const, margin: "0 0 3px",
+                      fontFamily: "'Space Mono',monospace" }}>Pairing Spirit</p>
+                    <p style={{ color: "rgba(255,252,245,0.92)", fontSize: 13, fontWeight: 700, margin: 0,
+                      fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.25 }}>
+                      {suggestion.spirit}
+                    </p>
+                    <p style={{ color: `${GOLD}60`, fontSize: 11, margin: "3px 0 0",
+                      fontFamily: "'Inter',sans-serif" }}>{suggestion.spiritStyle}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -6173,14 +6240,14 @@ export default function MasterBlender() {
       {/* Glassmorphic pairing ticker with live score delta micro-animations */}
       <div style={{
         position: "absolute", bottom: 0, left: 0, right: 0,
-        height: 26, background: "rgba(0,0,0,0.95)", borderTop: `1px solid ${GOLD}`,
+        height: 42, background: "rgba(0,0,0,0.95)", borderTop: `1px solid ${GOLD}`,
         display: "flex", alignItems: "center", overflow: "hidden",
         zIndex: 9998, pointerEvents: "none",
       }}>
         <motion.div
-          className="flex gap-12 whitespace-nowrap text-[8px] tracking-[0.25em] uppercase"
-          style={{ color: GOLD, fontWeight: 600 }}
-          animate={{ x: [0, -800] }}
+          className="flex gap-14 whitespace-nowrap text-base font-semibold tracking-wider uppercase"
+          style={{ color: `${GOLD}E6`, fontFamily: "'Space Mono',monospace" }}
+          animate={{ x: [0, -900] }}
           transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
         >
           {Array.from({ length: 6 }).flatMap(() => [

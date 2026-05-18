@@ -15,8 +15,8 @@
 
 import { useEffect } from "react";
 
-const DESIGN_W = 1280;
-const DESIGN_H = 800;
+const DESIGN_W = 1920;
+const DESIGN_H = 1080;
 const MIN_SCALE = 0.55;
 const MAX_SCALE = 1.25;
 
