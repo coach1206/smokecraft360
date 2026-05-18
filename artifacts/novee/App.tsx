@@ -58,33 +58,37 @@ export default function App() {
           padding: '24px',
           boxSizing: 'border-box'
         }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1.8fr 1.2fr',
-            gap: '24px',
-            width: '100%',
-            height: '100%',
-            boxSizing: 'border-box'
-          }}>
+          {currentView === 'welcome' ? (
+            <div />
+          ) : (
             <div style={{
-              backgroundColor: 'rgba(5, 7, 11, 0.6)',
-              border: '1px solid #1e293b',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              height: '100%'
+              display: 'grid',
+              gridTemplateColumns: '1.8fr 1.2fr',
+              gap: '24px',
+              width: '100%',
+              height: '100%',
+              boxSizing: 'border-box'
             }}>
-              <MasterBlender />
+              <div style={{
+                backgroundColor: 'rgba(5, 7, 11, 0.6)',
+                border: '1px solid #1e293b',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                height: '100%'
+              }}>
+                <MasterBlender />
+              </div>
+              <div style={{
+                backgroundColor: 'rgba(5, 7, 11, 0.6)',
+                border: '1px solid #1e293b',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                height: '100%'
+              }}>
+                <SmokeCraftQR />
+              </div>
             </div>
-            <div style={{
-              backgroundColor: 'rgba(5, 7, 11, 0.6)',
-              border: '1px solid #1e293b',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              height: '100%'
-            }}>
-              <SmokeCraftQR />
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </AppStateContext.Provider>
