@@ -1,84 +1,81 @@
-import React from 'react';
-import { useAppState } from './App';
+import React, { useState, createContext, useContext } from 'react';
+import GuestOnboarding from './GuestOnboarding';
+import MasterBlender from './MasterBlender';
+import SmokeCraftQR from './SmokeCraftQR';
 
-export default function GuestOnboarding() {
-  const { profile, setProfile, setCurrentView, playClick } = useAppState();
+interface AppProfile {
+  name: string;
+  ageRange: string;
+  preferences: string;
+  running_score: number;
+}
 
-  const handleInputChange = (field: string, value: string) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
-  };
+interface AppStateContextType {
+  profile: AppProfile;
+  setProfile: React.Dispatch<React.SetStateAction<AppProfile>>;
+  currentView: 'welcome' | 'cockpit';
+  setCurrentView: (view: 'welcome' | 'cockpit') => void;
+  playClick: () => void;
+}
 
-  const handleComplete = () => {
-    if (!profile.name.trim()) return alert('Please input identity authentication marker.');
-    playClick();
-    setCurrentView('cockpit'); // Routes immediately to Step 4: Leaf Morphology & Sliders
+const AppStateContext = createContext<AppStateContextType | undefined>(undefined);
+
+export function useAppState() {
+  const context = useContext(AppStateContext);
+  if (!context) throw new Error('useAppState must be used within an AppStateProvider');
+  return context;
+}
+
+export default function App() {
+  const [currentView, setCurrentView] = useState<'welcome' | 'cockpit'>('welcome');
+  const [profile, setProfile] = useState<AppProfile>({
+    name: '',
+    ageRange: '',
+    preferences: '',
+    running_score: 92
+  });
+
+  const playClick = () => {
+    try {
+      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav');
+      audio.volume = 0.15;
+      audio.play();
+    } catch (e) {
+      // Audio fallback
+    }
   };
 
   return (
-    <div className="max-w-2xl mx-auto h-full flex flex-col justify-center space-y-8 animate-fadeIn">
-      <div className="border-b border-neutral-800 pb-4 text-center">
-        <h2 className="text-3xl font-extralight tracking-widest text-amber-500 uppercase">IDENTITY CONFIGURATION</h2>
-        <p className="text-[10px] tracking-widest text-neutral-500 uppercase font-mono mt-1">Calibrating Environmental Analytics</p>
-      </div>
+    <AppStateContext.Provider value={{ profile, setProfile, currentView, setCurrentView, playClick }}>
+      <div className="w-screen h-screen bg-[#05070b] overflow-hidden p-6 flex flex-col justify-between">
 
-      <div className="bg-neutral-900/30 border border-neutral-800 rounded-xl p-8 space-y-6 backdrop-blur-md">
+        {/* Dynamic Desktop/Tablet Workspace Viewport */}
+        <div className="w-full h-full max-w-[1600px] mx-auto bg-[#0a0c10]/80 border border-neutral-900 rounded-2xl overflow-hidden shadow-2xl p-6 flex flex-col justify-between">
 
-        {/* Guest Name input field */}
-        <div className="space-y-2">
-          <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono font-medium">Guest Identity / Full Name</label>
-          <input 
-            type="text"
-            placeholder="Authenticate name string..."
-            value={profile.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
-            className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-4 text-base text-neutral-200 focus:outline-none focus:border-amber-500 transition-colors placeholder:text-neutral-700 font-mono"
-          />
-        </div>
+          {currentView === 'welcome' ? (
+            <div className="w-full h-full flex flex-col justify-center items-center">
+              <GuestOnboarding />
+            </div>
+          ) : (
+            /* FIXED GRID: This perfectly aligns MasterBlender and SmokeCraftQR side-by-side */
+            <div className="w-full h-full grid grid-cols-12 gap-6 items-stretch">
 
-        {/* Age Parameters Selection matrix */}
-        <div className="space-y-2">
-          <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono font-medium">Demographic Parameter Bracket</label>
-          <div className="grid grid-cols-3 gap-4">
-            {['21-29', '30-45', '46+'].map((age) => (
-              <button
-                key={age}
-                type="button"
-                onClick={() => handleInputChange('ageRange', age)}
-                className={`py-3 rounded-lg border text-sm font-mono tracking-wider transition-all ${
-                  profile.ageRange === age 
-                    ? 'bg-amber-950/40 border-amber-500 text-amber-400 font-bold shadow-md' 
-                    : 'bg-neutral-950 border-neutral-800 text-neutral-500 hover:border-neutral-700'
-                }`}
-              >
-                {age} YRS
-              </button>
-            ))}
-          </div>
-        </div>
+              {/* Left Side Cockpit Interface Panel (8 cols wide) */}
+              <div className="col-span-8 bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden">
+                <MasterBlender />
+              </div>
 
-        {/* Sensory Objectives Note entries */}
-        <div className="space-y-2">
-          <label className="text-xs uppercase tracking-widest text-neutral-400 font-mono font-medium">Sensory Objectives / System Notes</label>
-          <textarea 
-            rows={3}
-            placeholder="Log specific flavor constraints or sensory requirements..."
-            value={profile.preferences}
-            onChange={(e) => handleInputChange('preferences', e.target.value)}
-            className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-base text-neutral-200 focus:outline-none focus:border-amber-500 transition-colors placeholder:text-neutral-700 resize-none font-sans"
-          />
+              {/* Right Side Synchronized QR Device Portal (4 cols wide) */}
+              <div className="col-span-4 bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden">
+                <SmokeCraftQR />
+              </div>
+
+            </div>
+          )}
+
         </div>
 
       </div>
-
-      <div className="flex justify-between items-center bg-neutral-950 border border-neutral-800 rounded-lg p-4 text-[11px] font-mono">
-        <span className="text-neutral-500 uppercase tracking-widest">Session Encryption Stable</span>
-        <button 
-          onClick={handleComplete}
-          className="px-8 py-3 bg-amber-500 text-black font-bold tracking-widest uppercase rounded-sm hover:bg-amber-600 transition-all text-xs"
-        >
-          Initialize Blender Cockpit →
-        </button>
-      </div>
-    </div>
+    </AppStateContext.Provider>
   );
 }
