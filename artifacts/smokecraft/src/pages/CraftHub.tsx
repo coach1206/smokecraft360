@@ -462,14 +462,12 @@ function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTr
   const [screenIdx,  setScreenIdx]  = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Cycle between screen 0 (ambient blade) and screen 1 (TactileCard) every 8s.
-  // Pause while the blade is actively hovered so the user always sees expanded content.
+  // Cycle between screen 0 (ambient blade) and screen 1 (TactileCard) every 5s.
+  // Runs unconditionally — hover expanded content sits at zIndex 7, above TactileCard at 6.
   useEffect(() => {
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
-    if (active) return;
-    intervalRef.current = setInterval(() => setScreenIdx(s => (s + 1) % 2), 8000);
+    intervalRef.current = setInterval(() => setScreenIdx(s => (s + 1) % 2), 5000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [active]);
+  }, []);
 
   return (
     <div
@@ -504,9 +502,9 @@ function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTr
         pointerEvents: "none",
       }} />
 
-      {/* ── Screen 1: TactileCard — cycles in every 8s when blade is idle ── */}
+      {/* ── Screen 1: TactileCard — cycles in every 5s, always active ── */}
       <AnimatePresence>
-        {screenIdx === 1 && !active && (
+        {screenIdx === 1 && (
           <motion.div
             key="tactile-card"
             initial={{ opacity: 0 }}
