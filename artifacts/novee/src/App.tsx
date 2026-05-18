@@ -1,7 +1,7 @@
 import React, { useState, createContext, useContext } from 'react';
-import GuestOnboarding from './components/GuestOnboarding';
-import MasterBlender from './components/MasterBlender';
-import SmokeCraftQR from './components/SmokeCraftQR';
+import GuestOnboarding from './GuestOnboarding';
+import MasterBlender from './MasterBlender';
+import SmokeCraftQR from './SmokeCraftQR';
 
 const AppStateContext = createContext<any>(null);
 
@@ -19,6 +19,7 @@ export function useAppState() {
 }
 
 export default function App() {
+  // Hardcoded to 'cockpit' to skip the dashboard and load the screens immediately
   const [currentView, setCurrentView] = useState<'welcome' | 'cockpit'>('cockpit');
   const [profile, setProfile] = useState({
     name: 'JC',
@@ -46,7 +47,8 @@ export default function App() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        overflow: 'hidden'
       }}>
         <div style={{
           width: '100%',
@@ -61,17 +63,18 @@ export default function App() {
           {currentView === 'welcome' ? (
             <GuestOnboarding />
           ) : (
+            /* EXACT SIDE-BY-SIDE GRID SPLIT BYPASSING TAILWIND COMPILATION ISSUES */
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '2fr 1fr',
+              gridTemplateColumns: '1.8fr 1.2fr',
               gap: '24px',
               width: '100%',
               height: '100%',
               boxSizing: 'border-box'
             }}>
               <div style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                border: '1px solid #262626',
+                backgroundColor: 'rgba(5, 7, 11, 0.6)',
+                border: '1px solid #1e293b',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 height: '100%'
@@ -79,8 +82,8 @@ export default function App() {
                 <MasterBlender />
               </div>
               <div style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                border: '1px solid #262626',
+                backgroundColor: 'rgba(5, 7, 11, 0.6)',
+                border: '1px solid #1e293b',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 height: '100%'
