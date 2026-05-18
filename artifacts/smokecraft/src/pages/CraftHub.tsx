@@ -16,6 +16,8 @@ import { useLocation } from "wouter";
 import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { Sparkles, Cpu, Activity, RotateCcw, X } from "lucide-react";
+import craftHubLogo from "@assets/0E1669EB-2BD9-41AE-9549-BA48F6D0EFBB_1779139780515.png";
+import eatLogo from "@assets/C8BC12ED-E541-4EC4-A879-A25E40D9E908_1779139780515.png";
 import { AudioWaveToggle } from "@/contexts/AudioContext";
 import { PreferenceProvider }   from "@/contexts/PreferenceContext";
 import { UserProfileProvider }  from "@/contexts/UserProfileContext";
@@ -920,24 +922,21 @@ function CraftHubInner() {
           )}
         </motion.div>
 
-        {/* Brand identity — center (compact so nav buttons have room) */}
+        {/* Brand identity — center: Craft Hub logo */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <motion.div
+          <motion.img
+            src={craftHubLogo}
+            alt="Craft Hub"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
             style={{
-              fontFamily:    "var(--app-font-serif, Georgia, serif)",
-              fontSize:      "clamp(11px, 1.4vw, 14px)",
-              fontWeight:    700,
-              color:         C.muted,
-              letterSpacing: "0.26em",
-              textTransform: "uppercase",
-              lineHeight:    1,
+              height:      "clamp(36px, 4.5vh, 52px)",
+              width:       "auto",
+              objectFit:   "contain",
+              display:     "block",
             }}
-          >
-            NOVEE OS
-          </motion.div>
+          />
         </div>
 
         {/* Right — nav buttons (flexShrink:0 so they never get squeezed) */}
@@ -995,7 +994,11 @@ function CraftHubInner() {
               touchAction:   "manipulation",
             }}
           >
-            STAFF E.A.T.
+            <img
+              src={eatLogo}
+              alt="E.A.T. System"
+              style={{ height: 22, width: "auto", objectFit: "contain", display: "block" }}
+            />
           </button>
           <AudioWaveToggle />
         </motion.div>

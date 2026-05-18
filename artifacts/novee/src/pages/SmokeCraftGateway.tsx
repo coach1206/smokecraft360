@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+import profoundLogo from "@assets/IMG_5260_1779139731186.png";
+import noveeLogo from "@assets/0FA797BC-6150-4BEA-A16F-D8AEB447996E_1779139780514.png";
 
 type Phase = "level0" | "level1";
 
@@ -33,32 +35,16 @@ export default function SmokeCraftGateway() {
               background: "#000000",
             }}
           >
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            <motion.img
+              src={profoundLogo}
+              alt="Profound Innovation"
+              initial={{ opacity: 0, y: 12, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.2, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                fontFamily: "Georgia, 'Times New Roman', serif",
-                fontSize: "clamp(13px, 2.2vw, 20px)",
-                fontWeight: 400,
-                color: "rgba(255,255,255,0.90)",
-                letterSpacing: "0.34em",
-                textTransform: "uppercase",
-                margin: 0,
-                textAlign: "center",
-              }}
-            >
-              Profound Innovations LLC
-            </motion.p>
-            <motion.div
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ delay: 0.55, duration: 0.7, ease: "easeOut" }}
-              style={{
-                width: 100, height: 1,
-                background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.45), transparent)",
-                marginTop: 20,
-                transformOrigin: "center",
+                width: "clamp(180px, 26vw, 270px)",
+                height: "auto",
+                objectFit: "contain",
               }}
             />
           </motion.div>
@@ -107,26 +93,18 @@ export default function SmokeCraftGateway() {
                 boxShadow: "0 0 80px rgba(212,175,55,0.06), 0 40px 80px rgba(0,0,0,0.6)",
               }}
             >
-              <p style={{
-                fontSize: 8, letterSpacing: "0.52em",
-                textTransform: "uppercase",
-                color: "rgba(212,175,55,0.38)",
-                margin: "0 0 18px",
-              }}>
-                Profound Innovations
-              </p>
-              <h1 style={{
-                fontFamily: "Georgia, 'Cormorant Garamond', serif",
-                fontSize: "clamp(22px, 4vw, 44px)",
-                fontWeight: 300,
-                color: "#F0E8D4",
-                letterSpacing: "0.30em",
-                textTransform: "uppercase",
-                margin: "0 0 10px",
-                lineHeight: 1,
-              }}>
-                NOVEÈ OS
-              </h1>
+              <img
+                src={noveeLogo}
+                alt="NOVEE OS"
+                style={{
+                  width: "clamp(160px, 22vw, 240px)",
+                  height: "auto",
+                  objectFit: "contain",
+                  marginBottom: 24,
+                  display: "block",
+                  margin: "0 auto 24px",
+                }}
+              />
               <p style={{
                 fontSize: 9, letterSpacing: "0.26em",
                 textTransform: "uppercase",
