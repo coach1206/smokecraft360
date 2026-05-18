@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAppState } from './App';
+import { useAppState } from '../App';
 
 const GOLD = '#d4af37';
 

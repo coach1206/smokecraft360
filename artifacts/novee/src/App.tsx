@@ -3,7 +3,6 @@ import GuestOnboarding from './components/GuestOnboarding';
 import MasterBlender from './components/MasterBlender';
 import SmokeCraftQR from './components/SmokeCraftQR';
 
-// Creating the context state safely
 const AppStateContext = createContext<any>(null);
 
 export function useAppState() {
@@ -49,7 +48,6 @@ export default function App() {
         justifyContent: 'center',
         alignItems: 'center'
       }}>
-
         <div style={{
           width: '100%',
           height: '100%',
@@ -60,11 +58,9 @@ export default function App() {
           padding: '24px',
           boxSizing: 'border-box'
         }}>
-
           {currentView === 'welcome' ? (
             <GuestOnboarding />
           ) : (
-            /* SIDE-BY-SIDE INTERFACE HOUSING MATRIX */
             <div style={{
               display: 'grid',
               gridTemplateColumns: '2fr 1fr',
@@ -73,8 +69,6 @@ export default function App() {
               height: '100%',
               boxSizing: 'border-box'
             }}>
-
-              {/* Left Column: Interactive Cockpit Console */}
               <div style={{
                 backgroundColor: 'rgba(0, 0, 0, 0.4)',
                 border: '1px solid #262626',
@@ -84,8 +78,6 @@ export default function App() {
               }}>
                 <MasterBlender />
               </div>
-
-              {/* Right Column: QR Portal Sync Display */}
               <div style={{
                 backgroundColor: 'rgba(0, 0, 0, 0.4)',
                 border: '1px solid #262626',
@@ -95,10 +87,8 @@ export default function App() {
               }}>
                 <SmokeCraftQR />
               </div>
-
             </div>
           )}
-
         </div>
       </div>
     </AppStateContext.Provider>

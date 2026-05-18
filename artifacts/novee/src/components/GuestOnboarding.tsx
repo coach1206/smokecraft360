@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAppState } from './App';
+import { useAppState } from '../App';
 
 const GOLD = '#d4af37';
 const steps = [
@@ -19,7 +19,7 @@ export default function GuestOnboarding() {
   function handleNext() {
     if (!value.trim()) return;
     playClick();
-    setProfile(prev => ({ ...prev, [current.key]: value.trim() }));
+    setProfile((prev: Record<string, unknown>) => ({ ...prev, [current.key]: value.trim() }));
     if (step < steps.length - 1) {
       setStep(s => s + 1);
       setValue('');
