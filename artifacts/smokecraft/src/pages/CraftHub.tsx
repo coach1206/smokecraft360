@@ -195,34 +195,34 @@ function IntelStatusBar() {
 
 const TILE_BG: Record<string, string[]> = {
   smoke: [
-    "/images/scenes/smokecraft-card.jpg",
-    "/images/scenes/bold.jpg",
-    "/images/scenes/craft-hub.jpg",
-    "/images/scenes/reflective.jpg",
+    "https://images.unsplash.com/photo-1585659722983-3a675dabf23d?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1549611016-3a70d82b5040?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1603487742131-4160ec999306?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1596633607370-dd3c8f56a73e?auto=format&fit=crop&w=1200&q=85",
   ],
   pour: [
-    "/images/scenes/pourcraft-card.jpg",
-    "/images/scenes/relaxed.jpg",
-    "/images/scenes/social.jpg",
-    "/images/scenes/reflective.jpg",
+    "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1574070284190-3726a2a75e52?auto=format&fit=crop&w=1200&q=85",
   ],
   brew: [
-    "/images/scenes/brewcraft-card.jpg",
-    "/images/scenes/social.jpg",
-    "/images/scenes/bold.jpg",
-    "/images/scenes/craft-hub.jpg",
+    "https://images.unsplash.com/photo-1436076863939-06870fe779c2?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1559526324-593bc073d938?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1567696911010-7a6e35bfb7e6?auto=format&fit=crop&w=1200&q=85",
   ],
   vape: [
-    "/images/scenes/vapecraft-card.jpg",
-    "/images/scenes/reflective.jpg",
-    "/images/scenes/social.jpg",
-    "/images/scenes/bold.jpg",
+    "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1571942676516-bcab84649e44?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=85",
   ],
   wine: [
-    "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1583394293214-7b3e6c9eba4b?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1567696153798-9111f9cd3d0d?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1583394293214-7b3e6c9eba4b?auto=format&fit=crop&w=1200&q=85",
+    "https://images.unsplash.com/photo-1567696153798-9111f9cd3d0d?auto=format&fit=crop&w=1200&q=85",
   ],
 };
 
@@ -723,10 +723,8 @@ function CraftHubInner() {
 
   return (
     <div style={{
-      display:         "block",
-      position:        "relative",
-      width:           "100vw",
-      height:          "100vh",
+      position:        "fixed",
+      inset:           0,
       overflow:        "hidden",
       backgroundColor: "#05070b",
       color:           C.text,
