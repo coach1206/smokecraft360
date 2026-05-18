@@ -920,10 +920,13 @@ function CraftHubInner() {
           <div
             key={mod.id}
             style={{
-              flex:        "0 0 25%",
-              position:    "relative",
-              minHeight:   0,
-              borderRight: i < CRAFT_MODULES.length - 1
+              flex:           "0 0 25%",
+              height:         "100%",
+              display:        "flex",
+              flexDirection:  "column",
+              position:       "relative",
+              overflow:       "hidden",
+              borderRight:    i < CRAFT_MODULES.length - 1
                 ? "1px solid rgba(255,255,255,0.05)"
                 : "none",
             }}
