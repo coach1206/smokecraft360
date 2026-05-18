@@ -27,9 +27,9 @@ export function useAppState() {
 }
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'welcome' | 'cockpit'>('welcome');
+  const [currentView, setCurrentView] = useState<'welcome' | 'cockpit'>('cockpit'); // Forced to cockpit to check layout instantly
   const [profile, setProfile] = useState<AppProfile>({
-    name: '',
+    name: 'JC',
     ageRange: '',
     preferences: '',
     running_score: 92
@@ -40,33 +40,67 @@ export default function App() {
       const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav');
       audio.volume = 0.15;
       audio.play();
-    } catch (e) {
-      // Audio fallback
-    }
+    } catch (e) {}
   };
 
   return (
     <AppStateContext.Provider value={{ profile, setProfile, currentView, setCurrentView, playClick }}>
-      <div className="w-screen h-screen bg-[#05070b] overflow-hidden p-6 flex flex-col justify-between">
+      <div style={{
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: '#05070b',
+        padding: '24px',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
 
-        {/* Dynamic Desktop/Tablet Workspace Viewport */}
-        <div className="w-full h-full max-w-[1600px] mx-auto bg-[#0a0c10]/80 border border-neutral-900 rounded-2xl overflow-hidden shadow-2xl p-6 flex flex-col justify-between">
+        {/* Main Canvas Container Container */}
+        <div style={{
+          width: '100%',
+          height: '100%',
+          maxWidth: '1600px',
+          backgroundColor: '#0a0c10',
+          border: '1px solid #1a1a1a',
+          borderRadius: '16px',
+          padding: '24px',
+          boxSizing: 'border-box'
+        }}>
 
           {currentView === 'welcome' ? (
-            <div className="w-full h-full flex flex-col justify-center items-center">
-              <GuestOnboarding />
-            </div>
+            <GuestOnboarding />
           ) : (
-            /* FIXED GRID: This perfectly aligns MasterBlender and SmokeCraftQR side-by-side */
-            <div className="w-full h-full grid grid-cols-12 gap-6 items-stretch">
+            /* HARDCODED INLINE CSS GRID FOR FORCED SIDE-BY-SIDE PLACEMENT */
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '2fr 1fr',
+              gap: '24px',
+              width: '100%',
+              height: '100%',
+              boxSizing: 'border-box'
+            }}>
 
-              {/* Left Side Cockpit Interface Panel (8 cols wide) */}
-              <div className="col-span-8 bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden">
+              {/* Left Column: Interactive Cockpit Console */}
+              <div style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                border: '1px solid #262626',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                height: '100%'
+              }}>
                 <MasterBlender />
               </div>
 
-              {/* Right Side Synchronized QR Device Portal (4 cols wide) */}
-              <div className="col-span-4 bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden">
+              {/* Right Column: QR Portal Sync Display */}
+              <div style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                border: '1px solid #262626',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                height: '100%'
+              }}>
                 <SmokeCraftQR />
               </div>
 
@@ -74,7 +108,6 @@ export default function App() {
           )}
 
         </div>
-
       </div>
     </AppStateContext.Provider>
   );
