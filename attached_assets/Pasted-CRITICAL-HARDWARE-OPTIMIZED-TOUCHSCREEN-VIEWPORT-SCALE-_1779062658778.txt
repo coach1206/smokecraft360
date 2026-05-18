@@ -1,0 +1,22 @@
+CRITICAL HARDWARE-OPTIMIZED TOUCHSCREEN VIEWPORT SCALE & ECOSYSTEM UNIFICATION OVERRIDE: The layout is completely broken on physical tablet glass. The agent is using standard vertical web constraints, causing fonts to shrink, text to bleed, and state cache elements to misalign between desktop views and local tablet windows. You must immediately refactor App.tsx, MasterBlender.tsx, and your root layout index configurations to inject a unified viewport scaling matrix across both NOVEE OS and SmokeCraft 360 simultaneously. Verify 'tsc --noEmit' passes perfectly.
+
+1. DEPLOY THE IMMUTABLE LANDSCAPE FIXED-ASPECT VIEWBOX CONTAINER:
+   - Root Layout Scaling: Wrap the entire global application component inside a fixed aspect-ratio scaling container framework (optimized for landscape 16:9 / 16:10 tablet viewport standards). 
+   - Ensure that regardless of the physical screen resolution or device window bounds, the root wrapper uses dynamic viewport dimensions (e.g., width: '100vw', height: '56.25vw' or '62.5vw' max-height / max-width bounds) combined with an absolute-centered 'flex items-center justify-center bg-black overflow-hidden' container structure.
+   - Scale Matrix Adjustments: Use a JavaScript resize listener or hardware layout hook that dynamically computes scale values based on viewport dimensions ('transform: scale(calculatedRatio)') to guarantee typography elements, obsidian tiles, and graphics scale identically across web windows and local tablet glass with zero text bleeding or clipped slider components.
+
+2. LOCK DUAL-PLATFORM MEMORY CONTINUITY & REENTRY RETRIEVAL:
+   - Shared State Engine: Elevate all onboarding metrics (Name, Full Mobile Phone, Email, Age Range, M/F, State, City) into a shared global state provider backed by a robust useLocalStorage hook. You are strictly forbidden from wiping this context when stepping across phase boundaries.
+   - Cross-Platform 2-Step Handshake: Ensure that when a returning user logs back in using just their Last Name and Last 4 Digits of their Phone Number, the central data bridge instantly parses the database row, re-hydrates both the NOVEE OS telemetry wrappers and SmokeCraft 360 active variables, and leaps them straight to their saved 'phase_checkpoint' layout marker.
+
+3. UNIFIED COCKPIT GRID ORIENTATION & GLOBAL TACTILITY PHYSICS:
+   - Eliminate Column Stacking: Eradicate all instances of 'flexDirection: "column"' properties on main landing decks inside CraftHub.tsx. Force an unyielding side-by-side cockpit landscape view: SmokeCraft 360 must command the top horizontal half at 100% width, with PourCraft 360, BeerCraft 360, and WineCraft 360 grouped side-by-side cleanly directly beneath it in mathematically equal column sizes.
+   - Hardware Touch Physics: Wrap both platforms inside an identical haptic and acoustic context. Every interactive tile, choice card, slider handle, and toggle must execute a 100ms micro-compression (scale-96 combined with a vertical offset of translate-y-[2px]) on direct glass contact, synchronized perfectly with an acoustic 3400Hz mechanical click burst via the Web Audio API.
+
+4. PURGE ALL DEAD DARK SPACES & SCALE FOOTER TYPOGRAPHY (SCREENSHOTS 2 & 5):
+   - Every stage across the entire ecosystem must reject pure black backgrounds or plain text cards. Enforce a deep-slate background gradient running our active baseline HTML5 SmokeCanvas globally across both platforms, sending organic smoke mist and floating low-heat animated amber embers drifting up across your panels.
+   - Text Scale Correction: Increase the bottom footer typography tracking 'The Golden Box' scoring rules and table spend multipliers ($50, $100, $200+) to a massive, highly visible, scannable 'text-lg font-medium tracking-wide text-amber-500/90' layer that scales uniformly with the tablet viewport container.
+
+5. RESTORE THE ACTIVE LEAF SLIDERS & POS REVENUE CHECKPOINTS (SCREENSHOTS 6, 8, & 9):
+   - Interactive Mentor Chat Dashboard: Slide a premium, fully functional glassmorphic text chat interface side-by-side directly next to the selected mentor's portrait module. The guide must explicitly prompt the user, and the chat box input field must generate context-aware, expert mentor dialogue responses to guest queries.
+   - Functional Priming Sliders: On the 'Choose Your Leaf' stage, render a dedicated 'Live Leaf Texture Matrix' showcase panel displaying high-fidelity macro
