@@ -58,7 +58,7 @@ const KioskViewportScaler: React.FC<{ children: React.ReactNode }> = ({ children
 // ==========================================
 // 3. UNIFIED LANDSCAPE COCKPIT MASTER DESIGN
 // ==========================================
-const CraftHubCockpit: React.FC = () => {
+const UnifiedCraftHubCockpit: React.FC = () => {
   const context = useContext(AppStateContext); if (!context) return null;
   return (
     <>
@@ -123,57 +123,4 @@ const GuestOnboardingForm: React.FC = () => {
 
         <div className="w-full flex gap-6 px-10">
           <button onPointerDown={() => { context.playClick(); context.setCurrentView('cockpit'); }} className="flex-1 h-[54px] border border-neutral-700 bg-neutral-900/40 text-xs font-bold tracking-widest uppercase rounded text-neutral-300">◀ BACK TO MASTER PORTFOLIO</button>
-          <button onPointerDown={() => { context.playClick(); if (context.profile.name && context.profile.phone) { context.setCurrentView('smokecraft_experience'); } else { alert('Required fields missing.'); } }} className="flex-1 h-[54px] bg-amber-500 text-black text-xs font-bold tracking-widest uppercase rounded shadow-lg">CONFIRM PROFILE & BEGIN JOURNEY ▶</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ==========================================
-// 5. JOURNEY CONNECTOR FLOW FOR SMOKECRAFT
-// ==========================================
-const StandardActiveFlowStub: React.FC<{ name: string }> = ({ name }) => {
-  const context = useContext(AppStateContext); if (!context) return null;
-
-  if (name.includes("smokecraft")) {
-    return (
-      <div className="w-full h-full relative">
-        <MasterBlender />
-        <button 
-          onPointerDown={() => { context.playClick(); context.setCurrentView('cockpit'); }} 
-          className="absolute top-6 left-6 h-[42px] px-6 border border-amber-500/30 bg-black/80 text-amber-500 text-xs tracking-widest font-bold uppercase rounded z-50 font-mono"
-        >
-          ◀ RETURN TO COCKPIT
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full h-full flex flex-col items-center justify-center box-border">
-      <h2 className="text-3xl font-serif text-white uppercase tracking-wider">{name} VIEW</h2>
-      <button onPointerDown={() => { context.playClick(); context.setCurrentView('cockpit'); }} className="h-[42px] px-6 border border-amber-500/30 text-amber-500 text-xs tracking-widest font-bold uppercase rounded mt-6 font-mono">◀ RETURN</button>
-    </div>
-  );
-};
-
-// ==========================================
-// MAIN EXPORT ENTRY
-// ==========================================
-export default function App() {
-  return (
-    <AppStateProvider>
-      <KioskViewportScaler>
-        <AppStateContext.Consumer>
-          {context => {
-            if (!context) return null;
-            if (context.currentView === 'cockpit') return <CraftHubCockpit />;
-            if (context.currentView === 'smokecraft_onboarding') return <GuestOnboardingForm />;
-            return <StandardActiveFlowStub name={context.currentView} />;
-          }}
-        </AppStateContext.Consumer>
-      </KioskViewportScaler>
-    </AppStateProvider>
-  );
-}
+          <button onPointerDown={() => { context.playClick(); if (
