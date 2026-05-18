@@ -822,14 +822,19 @@ function CraftHubInner() {
           </motion.div>
         </div>
 
-        {/* Right — nav buttons */}
+        {/* Right — nav buttons (flexShrink:0 so they never get squeezed) */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          style={{ display: "flex", alignItems: "center", gap: 12, pointerEvents: "auto" }}
+          style={{
+            display:    "flex",
+            alignItems: "center",
+            gap:        10,
+            flexShrink: 0,
+            pointerEvents: "auto",
+          }}
         >
-          <AudioWaveToggle />
           <button
             onClick={() => navigate("/gate")}
             style={{
@@ -837,12 +842,12 @@ function CraftHubInner() {
               border:        "1px solid rgba(212,175,55,0.65)",
               borderRadius:  10,
               cursor:        "pointer",
-              fontSize:      14,
+              fontSize:      13,
               fontWeight:    800,
               color:         "#D4AF37",
-              letterSpacing: "0.12em",
+              letterSpacing: "0.10em",
               textTransform: "uppercase",
-              padding:       "11px 22px",
+              padding:       "11px 16px",
               fontFamily:    "inherit",
               minHeight:     48,
               whiteSpace:    "nowrap",
@@ -859,12 +864,12 @@ function CraftHubInner() {
               border:        "1px solid rgba(212,139,0,0.55)",
               borderRadius:  10,
               cursor:        "pointer",
-              fontSize:      14,
+              fontSize:      13,
               fontWeight:    800,
               color:         C.gold,
-              letterSpacing: "0.12em",
+              letterSpacing: "0.10em",
               textTransform: "uppercase",
-              padding:       "11px 22px",
+              padding:       "11px 16px",
               fontFamily:    "inherit",
               minHeight:     48,
               whiteSpace:    "nowrap",
@@ -872,8 +877,9 @@ function CraftHubInner() {
               touchAction:   "manipulation",
             }}
           >
-            WAITER TAB
+            STAFF E.A.T.
           </button>
+          <AudioWaveToggle />
         </motion.div>
       </header>
 
