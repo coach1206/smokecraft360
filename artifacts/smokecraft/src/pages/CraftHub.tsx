@@ -463,152 +463,141 @@ function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTr
   return (
     <div
       style={{
-        position:   "relative",
-        flex:        active ? 3.5 : 1,
-        minWidth:    active ? 0 : 44,
-        transition:  "flex 0.55s cubic-bezier(0.23, 1, 0.32, 1), min-width 0.55s cubic-bezier(0.23, 1, 0.32, 1)",
-        overflow:    "hidden",
-        cursor:      "pointer",
-        borderRight: index < total - 1 ? "1px solid rgba(212,139,0,0.10)" : "none",
-        background:  pressed ? `${mod.color}09` : "transparent",
+        position:         "relative",
+        flex:             1,
+        overflow:         "hidden",
+        cursor:           "pointer",
+        userSelect:       "none",
+        WebkitUserSelect: "none" as const,
+        borderRight:      index < total - 1 ? "1px solid rgba(212,139,0,0.12)" : "none",
+        transition:       "background 0.12s",
+        background:       pressed ? `${mod.color}22` : "transparent",
       }}
-      onPointerEnter={() => onActivate()}
-      onPointerLeave={() => { onDeactivate(); setPressed(false); }}
-      onPointerDown={() => { setPressed(true); playTactile(); }}
-      onPointerUp={() => { if (pressed) { setPressed(false); onTrigger(); } }}
-      onPointerCancel={() => setPressed(false)}
+      onPointerDown={() => { setPressed(true); playTactile(); onActivate(); }}
+      onPointerUp={() => { if (pressed) { setPressed(false); onDeactivate(); onTrigger(); } }}
+      onPointerCancel={() => { setPressed(false); onDeactivate(); }}
     >
       <LiquidTileBg craftId={mod.id} color={mod.color} />
-      <AmberReflection active={active} color={mod.color} />
+      <AmberReflection active={true} color={mod.color} />
       <GlassShimmer active={active} color={mod.color} />
 
-      {/* Bottom gradient vignette */}
+      {/* Deep vignette — text always legible */}
       <div style={{
-        position: "absolute", inset: 0, zIndex: 4,
-        background: `linear-gradient(0deg,
-          rgba(0,0,0,0.92) 0%,
-          rgba(0,0,0,0.55) 35%,
-          rgba(0,0,0,0.12) 60%,
+        position:      "absolute",
+        inset:         0,
+        zIndex:        4,
+        background:    `linear-gradient(0deg,
+          rgba(0,0,0,0.97) 0%,
+          rgba(0,0,0,0.72) 28%,
+          rgba(0,0,0,0.22) 55%,
           transparent 100%)`,
         pointerEvents: "none",
       }} />
 
-      {/* ── Collapsed label — vertical craft ID ── */}
+      {/* Press ripple */}
       <AnimatePresence>
-        {!active && (
+        {pressed && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
+            key="ripple"
+            initial={{ opacity: 0.32 }}
+            animate={{ opacity: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.40 }}
             style={{
-              position:       "absolute",
-              inset:          0,
-              zIndex:         6,
-              display:        "flex",
-              alignItems:     "center",
-              justifyContent: "center",
-              pointerEvents:  "none",
+              position:      "absolute",
+              inset:         0,
+              zIndex:        9,
+              background:    `${mod.color}30`,
+              pointerEvents: "none",
             }}
-          >
-            <div style={{
-              writingMode:    "vertical-rl",
-              textOrientation: "mixed",
-              transform:      "rotate(180deg)",
-              fontSize:       8,
-              letterSpacing:  "0.28em",
-              color:          `${mod.color}cc`,
-              textTransform:  "uppercase",
-              fontFamily:     "'Space Mono', monospace",
-              fontWeight:     700,
-            }}>
-              {mod.id}
-            </div>
-          </motion.div>
+          />
         )}
       </AnimatePresence>
 
-      {/* ── Expanded content — visible when blade is active ── */}
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              position:  "absolute",
-              bottom: 0, left: 0, right: 0,
-              zIndex:    7,
-              padding:   "0 20px 30px",
-            }}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.72 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.28, delay: 0.06, ease: [0.34, 1.56, 0.64, 1] }}
-              style={{
-                fontSize:      8,
-                color:         mod.color,
-                letterSpacing: "0.26em",
-                textTransform: "uppercase",
-                fontFamily:    "'Space Mono', monospace",
-                marginBottom:  8,
-              }}
-            >
-              {mod.badge}
-            </motion.div>
-            <h2 style={{
-              margin:        0,
-              fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
-              fontSize:      "clamp(16px, 2.2vw, 26px)",
-              fontWeight:    800,
-              color:         C.gold,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              lineHeight:    1.1,
-              marginBottom:  6,
-            }}>
-              {mod.title}
-            </h2>
-            <p style={{
-              margin:        0,
-              fontSize:      9.5,
-              color:         C.muted,
-              letterSpacing: "0.04em",
-              lineHeight:    1.55,
-              marginBottom:  18,
-            }}>
-              {mod.tagline}
-            </p>
+      {/* ── Always-visible kiosk content ── */}
+      <div style={{
+        position: "absolute",
+        bottom:   0,
+        left:     0,
+        right:    0,
+        zIndex:   7,
+        padding:  "0 26px 30px",
+      }}>
+        {/* Badge */}
+        <div style={{
+          fontSize:      11,
+          color:         mod.color,
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          fontFamily:    "'Space Mono', monospace",
+          fontWeight:    700,
+          marginBottom:  10,
+          opacity:       0.85,
+        }}>
+          {mod.badge}
+        </div>
 
-            {/* Ritual CTA badge */}
-            <motion.div
-              animate={{ opacity: [0.6, 1, 0.6], boxShadow: [`0 0 0px ${mod.color}00`, `0 0 18px ${mod.color}44`, `0 0 0px ${mod.color}00`] }}
-              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-              style={{
-                display:       "inline-flex",
-                alignItems:    "center",
-                gap:           7,
-                padding:       "7px 14px",
-                background:    `${mod.color}12`,
-                border:        `1px solid ${mod.color}50`,
-                borderRadius:  8,
-                fontSize:      8,
-                fontWeight:    700,
-                color:         mod.color,
-                letterSpacing: "0.20em",
-                textTransform: "uppercase",
-                fontFamily:    "'Space Mono', monospace",
-              }}
-            >
-              ◈ INITIALIZE RITUAL
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* Craft name — large, always visible */}
+        <h2 style={{
+          margin:        0,
+          fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
+          fontSize:      "clamp(24px, 3.6vw, 58px)",
+          fontWeight:    800,
+          color:         "#F5EED4",
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          lineHeight:    1.0,
+          marginBottom:  8,
+        }}>
+          {mod.title}
+        </h2>
 
-      {/* Breathing glow ring on border */}
+        {/* Tagline */}
+        <p style={{
+          margin:        0,
+          fontSize:      "clamp(10px, 1.1vw, 13px)",
+          color:         "rgba(245,235,215,0.52)",
+          letterSpacing: "0.05em",
+          lineHeight:    1.5,
+          marginBottom:  20,
+        }}>
+          {mod.tagline}
+        </p>
+
+        {/* TAP TO ENTER — 64 px minimum touch target, always visible */}
+        <motion.div
+          animate={{
+            opacity:   [0.72, 1, 0.72],
+            boxShadow: [
+              `0 0 0px ${mod.color}00`,
+              `0 0 28px ${mod.color}55`,
+              `0 0 0px ${mod.color}00`,
+            ],
+          }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            display:        "inline-flex",
+            alignItems:     "center",
+            justifyContent: "center",
+            gap:            10,
+            padding:        "18px 32px",
+            minHeight:      64,
+            background:     `${mod.color}20`,
+            border:         `1.5px solid ${mod.color}72`,
+            borderRadius:   14,
+            fontSize:       "clamp(10px, 1.1vw, 13px)",
+            fontWeight:     700,
+            color:          mod.color,
+            letterSpacing:  "0.24em",
+            textTransform:  "uppercase",
+            fontFamily:     "'Space Mono', monospace",
+            whiteSpace:     "nowrap",
+          }}
+        >
+          ◈ TAP TO ENTER
+        </motion.div>
+      </div>
+
       <GlowRing color={mod.color} />
     </div>
   );
@@ -927,12 +916,13 @@ function CraftHubInner() {
         zIndex:         10,
         display:        "flex",
         alignItems:     "center",
-        padding:        "14px 24px",
+        padding:        "7px 20px",
         borderBottom:   `1px solid ${C.border}`,
-        background:     "rgba(8,6,4,0.85)",
-        backdropFilter: "blur(16px)",
+        background:     "rgba(8,6,4,0.92)",
+        backdropFilter: "blur(20px)",
         flexShrink:     0,
-        gap:            16,
+        gap:            14,
+        minHeight:      48,
       }}>
         {/* Left — returning guest or identity badge */}
         <motion.div
@@ -970,34 +960,20 @@ function CraftHubInner() {
         {/* Brand identity — center */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
             style={{
               fontFamily:    "var(--app-font-serif, Georgia, serif)",
-              fontSize:      "clamp(17px, 2.4vw, 22px)",
+              fontSize:      "clamp(13px, 1.6vw, 16px)",
               fontWeight:    800,
               color:         C.text,
-              letterSpacing: "0.22em",
+              letterSpacing: "0.26em",
               textTransform: "uppercase",
               lineHeight:    1,
             }}
           >
             NOVEE OS
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            style={{
-              fontSize:      9,
-              color:         C.goldDim,
-              letterSpacing: "0.28em",
-              textTransform: "uppercase",
-              marginTop:     3,
-            }}
-          >
-            Powered by NOVEE Intelligence
           </motion.div>
         </div>
 
