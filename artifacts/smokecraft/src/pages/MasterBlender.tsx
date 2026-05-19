@@ -3633,30 +3633,66 @@ function GatewayRollingBench({ onNext, onBack }: { onNext: () => void; onBack: (
 }
 
 // ── Movement III · Screen 1: Vitola Science & Draw Physics ──────────────
-function GatewayVitolaScience({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
-  const [readyToAdvance, setReadyToAdvance] = useState(false);
+function GatewayVitolaScience({
+  onNext,
+  onBack,
+  onVitolaSelect,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+  onVitolaSelect?: (v: string) => void;
+}) {
+  const [selectedVitola, setSelectedVitola] = useState<string | null>(null);
   const [selectedCut,    setSelectedCut]    = useState<string | null>(null);
-
-  const CUTS = [
-    { id: "straight", label: "Straight Cut", icon: "|—|", color: "#8BC34A",
-      best: "Robusto · Corona · Churchill",
-      draw: "Full open draw. Maximum smoke volume. Preserves full flavor surface area of the cap. Best for ring gauges 46–54." },
-    { id: "vcut",     label: "V-Cut (Wedge)", icon: "V",      color: GOLD,
-      best: "Torpedo · Figurado · Perfecto",
-      draw: "Concentrated draw channel. Intensifies flavor. Best for tapered shapes 52–56 RG. Reduces loose tobacco debris." },
-    { id: "punch",    label: "Punch Cut",     icon: "●", color: "#E8741A",
-      best: "Gordo · Presidente · Gigante",
-      draw: "Smallest aperture. Coolest, smoothest draw. Best for large ring gauges 58+. Preserves maximum wrapper leaf integrity." },
-  ];
+  const [flashCut,       setFlashCut]       = useState<string | null>(null);
+  const [readyToAdvance, setReadyToAdvance] = useState(false);
 
   const VITOLAS = [
-    { name: "Robusto",      ring: 50, length: "5”",    profile: "The universal standard. Perfect balance of smoke time (45 min) and flavor development." },
-    { name: "Churchill",    ring: 47, length: "7”",    profile: "Extended journey (90 min). Full flavor evolution from light cedar to rich earth across three thirds." },
-    { name: "Torpedo",      ring: 52, length: "6.25”", profile: "Tapered head concentrates draw. Complex aromatic layers. Artisan construction required." },
-    { name: "Gordo",        ring: 60, length: "6”",    profile: "Widest common gauge. Maximum smoke volume. Cooler burn temperature. Punchy draw physics." },
-    { name: "Lancero",      ring: 38, length: "7.5”",  profile: "Thinnest premium gauge. Precision rolling. Wrapper leaf dominates flavor at 70%+." },
-    { name: "Petit Corona", ring: 42, length: "4.5”",  profile: "30-minute smoke. Condensed intensity. High filler-to-wrapper ratio. Ideal introduction." },
+    { name: "Robusto",      ring: 50, length: "5\"",    profile: "The universal standard. 45-min journey, perfect flavor development arc.",                           img: "photo-1558618666-fcd25c85cd64" },
+    { name: "Churchill",    ring: 47, length: "7\"",    profile: "90-min extended masterwork. Cedar through rich earth across three distinct thirds.",               img: "photo-1531771686035-25f47595c87a" },
+    { name: "Torpedo",      ring: 52, length: "6.25\"", profile: "Tapered head concentrates draw. Complex aromatic layers. Artisan construction required.",          img: "photo-1574091879823-ecf4a2cc10e7" },
+    { name: "Gordo",        ring: 60, length: "6\"",    profile: "Maximum smoke volume. Cooler burn temperature. Punchy draw physics. Oils coat the palate.",        img: "photo-1508962914676-134849a727f0" },
+    { name: "Lancero",      ring: 38, length: "7.5\"",  profile: "Thinnest premium gauge. Precision rolling. Wrapper leaf dominates flavor at 70%+.",               img: "photo-1585032226651-759b368d7246" },
+    { name: "Petit Corona", ring: 42, length: "4.5\"",  profile: "30-minute condensed intensity. High filler-to-wrapper ratio. Ideal first-flight introduction.",   img: "photo-1512069772995-ec65ed45435d" },
   ];
+
+  const CUT_ASSETS = [
+    {
+      id: "straight", label: "Straight Cut", subtitle: "Guillotine", color: "#8BC34A",
+      img: "photo-1558618666-fcd25c85cd64",
+      draw: "Full open draw. Maximum smoke volume. Preserves full cap flavor surface area. Best for RG 46\u201354.",
+      best: "Robusto \u00b7 Corona \u00b7 Churchill",
+    },
+    {
+      id: "vcut", label: "V-Cut", subtitle: "Wedge", color: GOLD,
+      img: "photo-1531771686035-25f47595c87a",
+      draw: "Concentrated draw channel. Intensifies flavor depth. Reduces loose debris. Best for tapered shapes RG 52\u201356.",
+      best: "Torpedo \u00b7 Figurado \u00b7 Perfecto",
+    },
+    {
+      id: "punch", label: "Punch Cut", subtitle: "Bullet Blade", color: "#E8741A",
+      img: "photo-1574091879823-ecf4a2cc10e7",
+      draw: "Smallest aperture. Coolest, smoothest draw. Preserves maximum wrapper leaf integrity. Best for RG 58+.",
+      best: "Gordo \u00b7 Presidente \u00b7 Gigante",
+    },
+  ];
+
+  const activeVitola = VITOLAS.find(v => v.name === selectedVitola);
+
+  function pickVitola(name: string) {
+    setSelectedVitola(name);
+    playClick();
+    onVitolaSelect?.(name);
+    if (selectedCut) setReadyToAdvance(true);
+  }
+
+  function pickCut(id: string) {
+    setSelectedCut(id);
+    playClick();
+    setFlashCut(id);
+    setTimeout(() => setFlashCut(null), 360);
+    if (selectedVitola) setReadyToAdvance(true);
+  }
 
   return (
     <motion.div key="gw-vitola-sci"
@@ -3664,87 +3700,237 @@ function GatewayVitolaScience({ onNext, onBack }: { onNext: () => void; onBack: 
       exit={{ opacity: 0, x: -40 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       style={GW.bg}>
-      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
-        <img
-          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
-          alt="" className="w-full h-full object-cover"
-          style={{ filter: "brightness(0.10) saturate(0.15) sepia(0.20)" }} />
-        <div style={{ position: "absolute", inset: 0,
-          background: "radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.08) 0%, rgba(0,0,0,0.92) 100%)" }} />
-      </div>
-      <div style={GW.chamber} className="overflow-y-auto">
-        <MovementBadge movement="III" />
-        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
-          textTransform: "uppercase" as const, marginBottom: 10 }}>
-          Draw Physics · Ring Gauge Science
-        </p>
-        <h2 style={GW.title}>Vitola Science &amp; Precision Cuts</h2>
-        <p style={{ color: "rgba(240,232,212,0.70)", fontSize: 17, lineHeight: 1.65, marginBottom: 22 }}>
-          Ring gauge is measured in <strong style={{ color: GOLD }}>64ths of an inch</strong>.
-          A 50 RG cigar = 50/64” diameter. Gauge directly governs draw resistance, smoke volume,
-          burn temperature, and grip balance. Your cut choice creates the aperture that determines
-          every draw from first light to final third.
-        </p>
 
-        <div style={{ display: "flex", flexDirection: "column" as const, gap: 11, marginBottom: 24 }}>
-          {VITOLAS.map((v, i) => (
-            <motion.div key={v.name}
-              initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.08 }}
-              style={{ display: "flex", alignItems: "center", gap: 14,
-                background: "rgba(255,255,255,0.025)", border: `1px solid ${GOLD}18`,
-                borderRadius: 8, padding: "13px 18px" }}>
-              <div style={{ flexShrink: 0, textAlign: "center" as const, minWidth: 44 }}>
-                <div style={{ color: GOLD, fontSize: 20, fontWeight: 700 }}>{v.ring}</div>
-                <div style={{ color: `${GOLD}50`, fontSize: 11, letterSpacing: "0.12em" }}>RG</div>
-              </div>
-              <div style={{ width: 1, height: 38, background: `${GOLD}18`, flexShrink: 0 }} />
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 3 }}>
-                  <span style={{ color: "rgba(240,232,212,0.90)", fontSize: 16, fontWeight: 700 }}>{v.name}</span>
-                  <span style={{ color: `${GOLD}58`, fontSize: 14 }}>{v.length}</span>
-                </div>
-                <p style={{ color: "rgba(240,232,212,0.58)", fontSize: 14, lineHeight: 1.5, margin: 0 }}>{v.profile}</p>
-              </div>
-            </motion.div>
-          ))}
+      {/* Ambient backdrop */}
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1400&q=70"
+          alt="" className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.08) saturate(0.12) sepia(0.30)" }} />
+        <div style={{ position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at 50% 30%, rgba(212,175,55,0.10) 0%, rgba(0,0,0,0.93) 100%)" }} />
+      </div>
+
+      <div style={{ ...GW.chamber, maxWidth: 900 }} className="overflow-y-auto">
+        <MovementBadge movement="III" />
+
+        {/* ── Section 1 Header ── */}
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+          style={{ marginBottom: 14 }}>
+          <p style={{ color: `${GOLD}80`, fontSize: 10, letterSpacing: "0.38em",
+            textTransform: "uppercase" as const, marginBottom: 4 }}>
+            Ring Gauge Science \u00b7 Draw Physics
+          </p>
+          <h2 style={{ ...GW.title, borderBottom: "none", marginBottom: 6 }}>
+            Vitola Science &amp; Precision Sizing
+          </h2>
+          <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 14, lineHeight: 1.6, marginBottom: 0 }}>
+            Ring gauge is measured in <strong style={{ color: GOLD }}>64ths of an inch</strong>.
+            A 50 RG cigar = 50\u002F64\u201d diameter. Gauge governs draw resistance, smoke volume, burn temperature, and grip balance.
+          </p>
+        </motion.div>
+
+        {/* ── Split Viewport: Vitola Selector + Cinematic Image Panel ── */}
+        <div style={{ display: "flex", gap: 16, marginBottom: 22, alignItems: "stretch", minHeight: 340 }}>
+
+          {/* Left 50%: Vitola Cards */}
+          <div style={{ flex: "0 0 50%", display: "flex", flexDirection: "column" as const, gap: 8, overflowY: "auto" }}>
+            {VITOLAS.map((v, i) => {
+              const isSel = selectedVitola === v.name;
+              return (
+                <motion.div key={v.name}
+                  initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25 + i * 0.06 }}
+                  whileHover={{ x: 3 }}
+                  onClick={() => pickVitola(v.name)}
+                  style={{
+                    background: isSel ? `${GOLD}0F` : "rgba(255,255,255,0.025)",
+                    border: `1.5px solid ${isSel ? GOLD : GOLD + "22"}`,
+                    borderRadius: 10, padding: "11px 15px", cursor: "pointer",
+                    boxShadow: isSel ? `0 0 28px ${GOLD}18, inset 0 0 12px ${GOLD}08` : "none",
+                    transition: "border-color 0.2s, box-shadow 0.2s",
+                  }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+                    <div style={{ flexShrink: 0, textAlign: "center" as const, minWidth: 36 }}>
+                      <div style={{ color: isSel ? GOLD : `${GOLD}60`, fontSize: 21, fontWeight: 800, lineHeight: 1 }}>{v.ring}</div>
+                      <div style={{ color: `${GOLD}40`, fontSize: 10, letterSpacing: "0.12em" }}>RG</div>
+                    </div>
+                    <div style={{ width: 1, height: 30, background: `${GOLD}18`, flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+                        <span style={{ color: isSel ? GOLD : "rgba(245,235,215,0.88)",
+                          fontSize: 15, fontWeight: 800, letterSpacing: "0.03em" }}>{v.name}</span>
+                        <span style={{ color: `${GOLD}55`, fontSize: 12 }}>{v.length}</span>
+                      </div>
+                      <p style={{ color: "rgba(240,232,212,0.55)", fontSize: 12, lineHeight: 1.45, margin: 0 }}>{v.profile}</p>
+                    </div>
+                    {isSel && (
+                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                        style={{ color: GOLD, fontSize: 16, flexShrink: 0 }}>&#10022;</motion.div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Right 50%: Cinematic Display Drawer */}
+          <div style={{ flex: 1, position: "relative" as const, overflow: "hidden",
+            background: "rgba(0,0,0,0.55)", border: `1px solid ${GOLD}18`, borderRadius: 12, minHeight: 280 }}>
+            <AnimatePresence mode="wait">
+              {activeVitola ? (
+                <motion.div key={activeVitola.name}
+                  initial={{ opacity: 0, rotateY: 14, x: 32 }}
+                  animate={{ opacity: 1, rotateY: 0, x: 0 }}
+                  exit={{ opacity: 0, rotateY: -14, x: -32 }}
+                  transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ position: "absolute", inset: 0 }}>
+                  <img
+                    src={`https://images.unsplash.com/${activeVitola.img}?auto=format&fit=crop&w=640&q=82`}
+                    alt={activeVitola.name}
+                    className="w-full h-full object-cover"
+                    style={{ filter: "brightness(0.60) saturate(1.08)" }}
+                  />
+                  <div style={{ position: "absolute", inset: 0,
+                    background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.08) 55%, transparent 100%)" }} />
+                  <div style={{ position: "absolute", bottom: 18, left: 18, right: 18 }}>
+                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
+                      <p style={{ color: GOLD, fontSize: 24, fontWeight: 800, margin: "0 0 2px",
+                        fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.05em" }}>
+                        {activeVitola.name}
+                      </p>
+                      <p style={{ color: `${GOLD}70`, fontSize: 12, margin: "0 0 6px" }}>
+                        {activeVitola.ring} RG \u00b7 {activeVitola.length}
+                      </p>
+                      <div style={{ width: 36, height: 2, background: GOLD, borderRadius: 1, marginBottom: 8 }} />
+                      <p style={{ color: "rgba(245,235,215,0.78)", fontSize: 13, lineHeight: 1.55, margin: 0 }}>
+                        {activeVitola.profile}
+                      </p>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div key="placeholder"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" as const,
+                    alignItems: "center", justifyContent: "center", padding: 24 }}>
+                  <motion.div
+                    animate={{ opacity: [0.3, 0.7, 0.3] }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ fontSize: 42, marginBottom: 12 }}>&#x1F6AC;</motion.div>
+                  <p style={{ color: `${GOLD}40`, fontSize: 13, textAlign: "center" as const,
+                    letterSpacing: "0.14em", textTransform: "uppercase" as const }}>
+                    Select a vitola to reveal<br/>the cinematic display
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
-        <p style={{ color: `${GOLD}78`, fontSize: 15, fontWeight: 700, letterSpacing: "0.12em",
-          textTransform: "uppercase" as const, marginBottom: 14 }}>
-          Select Your Cut Profile — Carries into Your Blend
-        </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
-          {CUTS.map(c => {
+        {/* Mentor Insight Ribbon */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.72 }}
+          style={{ background: `${GOLD}07`, border: `1px solid ${GOLD}28`,
+            borderLeft: `3px solid ${GOLD}`, borderRadius: 8,
+            padding: "13px 18px", marginBottom: 26 }}>
+          <p style={{ color: `${GOLD}80`, fontSize: 10, letterSpacing: "0.28em",
+            textTransform: "uppercase" as const, margin: "0 0 5px" }}>Master Mentor \u00b7 Insight</p>
+          <p style={{ color: "rgba(240,232,212,0.78)", fontSize: 14, fontStyle: "italic", lineHeight: 1.65, margin: 0 }}>
+            &ldquo;The ring gauge dictates the air-to-leaf ratio. A thick Gordo delivers a cooler, high-volume smoke canvas,
+            while a thin Lancero burns hot, forcing the wrapper leaf to completely dominate your palate.
+            Choose the shape that matches your breath.&rdquo;
+          </p>
+        </motion.div>
+
+        {/* ── Section 2: Precision Cuts ── */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+          style={{ marginBottom: 14 }}>
+          <p style={{ color: `${GOLD}80`, fontSize: 10, letterSpacing: "0.38em",
+            textTransform: "uppercase" as const, marginBottom: 4 }}>
+            Cutting Console \u00b7 Tactile Selection
+          </p>
+          <h3 style={{ color: "rgba(245,235,215,0.92)", fontSize: 20, fontWeight: 700,
+            letterSpacing: "0.04em", margin: "0 0 5px", fontFamily: "'Cormorant Garamond',serif" }}>
+            Precision Cuts &mdash; Carry into Your Blend
+          </h3>
+          <p style={{ color: "rgba(240,232,212,0.55)", fontSize: 13, lineHeight: 1.55, marginBottom: 0 }}>
+            Your aperture choice determines every draw from first light to the final third.
+          </p>
+        </motion.div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 28 }}>
+          {CUT_ASSETS.map((c, i) => {
             const isSel = selectedCut === c.id;
+            const isFlash = flashCut === c.id;
             return (
               <motion.div key={c.id}
-                onClick={() => { setSelectedCut(c.id); playClick(); }}
-                whileTap={{ scale: 0.96 }} whileHover={{ scale: 1.02 }}
-                style={{
-                  background: isSel ? `${c.color}12` : "rgba(255,255,255,0.03)",
-                  border: `1.5px solid ${isSel ? c.color : c.color + "30"}`,
-                  borderRadius: 10, padding: "18px 14px", cursor: "pointer",
-                  textAlign: "center" as const,
-                  boxShadow: isSel ? `0 0 24px ${c.color}18` : "none",
+                initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.58 + i * 0.09 }}
+                onClick={() => pickCut(c.id)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                style={{ position: "relative" as const, cursor: "pointer", overflow: "hidden",
+                  background: isSel ? `${c.color}10` : "rgba(0,0,0,0.50)",
+                  border: `2px solid ${isSel ? c.color : c.color + "28"}`,
+                  borderRadius: 12,
+                  boxShadow: isSel ? `0 0 32px ${c.color}22` : "none",
                 }}>
-                <div style={{ fontSize: 26, marginBottom: 8, color: c.color }}>{c.icon}</div>
-                <p style={{ color: isSel ? c.color : "rgba(240,232,212,0.80)",
-                  fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{c.label}</p>
-                <p style={{ color: `${GOLD}62`, fontSize: 12, letterSpacing: "0.08em",
-                  marginBottom: 8, textTransform: "uppercase" as const }}>{c.best}</p>
-                <p style={{ color: "rgba(240,232,212,0.58)", fontSize: 14, lineHeight: 1.55, margin: 0 }}>{c.draw}</p>
-                {isSel && (
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
-                    style={{ marginTop: 10, color: c.color, fontSize: 15, fontWeight: 700 }}>
-                    ✓ Selected
-                  </motion.div>
-                )}
+                {/* Flash overlay */}
+                <AnimatePresence>
+                  {isFlash && (
+                    <motion.div key="flash"
+                      initial={{ opacity: 0.75 }} animate={{ opacity: 0 }} exit={{ opacity: 0 }}
+                      transition={{ duration: 0.38 }}
+                      style={{ position: "absolute", inset: 0, background: `${c.color}42`,
+                        zIndex: 10, pointerEvents: "none" }} />
+                  )}
+                </AnimatePresence>
+                {/* Image header */}
+                <div style={{ position: "relative" as const, height: 120, overflow: "hidden" }}>
+                  <img
+                    src={`https://images.unsplash.com/${c.img}?auto=format&fit=crop&w=400&q=75`}
+                    alt={c.label}
+                    className="w-full h-full object-cover"
+                    style={{ filter: `brightness(${isSel ? 0.70 : 0.40}) saturate(0.9)` }}
+                  />
+                  <div style={{ position: "absolute", inset: 0,
+                    background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 55%)" }} />
+                  {/* Amber wind-trace sweep when selected */}
+                  {isSel && (
+                    <motion.div
+                      animate={{ opacity: [0, 0.55, 0], x: ["-110%", "110%"] }}
+                      transition={{ duration: 1.0, repeat: Infinity, ease: "linear" }}
+                      style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                        background: `linear-gradient(90deg, transparent, ${GOLD}32, transparent)`,
+                        pointerEvents: "none" }} />
+                  )}
+                  <div style={{ position: "absolute", bottom: 10, left: 12 }}>
+                    <p style={{ color: c.color, fontSize: 17, fontWeight: 800, margin: 0, letterSpacing: "0.04em" }}>{c.label}</p>
+                    <p style={{ color: `${c.color}70`, fontSize: 10, margin: 0, letterSpacing: "0.14em",
+                      textTransform: "uppercase" as const }}>{c.subtitle}</p>
+                  </div>
+                </div>
+                {/* Body */}
+                <div style={{ padding: "11px 13px" }}>
+                  <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.14em",
+                    textTransform: "uppercase" as const, margin: "0 0 5px" }}>{c.best}</p>
+                  <p style={{ color: "rgba(240,232,212,0.70)", fontSize: 13, lineHeight: 1.52, margin: 0 }}>{c.draw}</p>
+                  {isSel && (
+                    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+                      style={{ marginTop: 9, padding: "4px 10px",
+                        background: `${c.color}15`, borderRadius: 4,
+                        color: c.color, fontSize: 11, fontWeight: 700,
+                        textAlign: "center" as const, letterSpacing: "0.14em" }}>
+                      &#10003; CUT LOCKED
+                    </motion.div>
+                  )}
+                </div>
               </motion.div>
             );
           })}
         </div>
 
+        {/* Bottom nav */}
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
           <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -3760,7 +3946,7 @@ function GatewayVitolaScience({ onNext, onBack }: { onNext: () => void; onBack: 
               whileTap={readyToAdvance ? { scale: 0.97 } : {}}
               onTouchStart={() => readyToAdvance && playClick()}
               onClick={() => readyToAdvance && onNext()}>
-              {readyToAdvance ? "★ Enter The Blending Chamber" : "Reading…"}
+              {readyToAdvance ? "&#9733; Enter The Masterclass Verdict" : "Reading\u2026"}
             </motion.button>
           </div>
         </div>
@@ -4513,6 +4699,9 @@ function GatewayMovement3Gate({
   onBack,
   xp,
   selectedTerroir,
+  selectedMentor,
+  selectedSeed,
+  selectedVitola,
   volado,
   secoViso,
   ligero,
@@ -4521,19 +4710,19 @@ function GatewayMovement3Gate({
   onBack: () => void;
   xp: number;
   selectedTerroir: string | null;
+  selectedMentor: string | null;
+  selectedSeed: string | null;
+  selectedVitola: string | null;
   volado: number;
   secoViso: number;
   ligero: number;
 }) {
-  const country = selectedTerroir ?? "Dominican Republic";
-  const [nightlyData, setNightlyData] = useState<{ avg: number; count: number } | null>(null);
-  const [suggestion, setSuggestion]   = useState<{ spirit: string; spiritStyle: string; descriptors: string[] } | null>(null);
+  const country   = selectedTerroir ?? "Dominican Republic";
+  const mentorObj = MENTORS.find(m => m.id === selectedMentor);
+  const tier      = getTier(xp);
+  const [suggestion, setSuggestion] = useState<{ spirit: string; spiritStyle: string; descriptors: string[] } | null>(null);
 
   useEffect(() => {
-    fetch("/api/master-blender/nightly-average")
-      .then(r => r.ok ? r.json() : null)
-      .then((d: { avg: number; count: number } | null) => { if (d) setNightlyData(d); })
-      .catch(() => {});
     fetch(`/api/master-blender/humidor-suggestions?country=${encodeURIComponent(country)}`)
       .then(r => r.ok ? r.json() : null)
       .then((d: { fallback: { spirit: string; spiritStyle: string; descriptors: string[] } } | null) => {
@@ -4543,125 +4732,182 @@ function GatewayMovement3Gate({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const nightlyAvg = nightlyData?.avg ?? 0;
-  const tierLabel  = nightlyAvg >= 90 ? "Master Blender" : nightlyAvg >= 70 ? "Senior Blend" : nightlyAvg >= 50 ? "Journeyman" : "Novice Aficionado";
-  const placement  = nightlyAvg > 0 ? (xp >= nightlyAvg ? "above" : "below") : null;
-
   return (
     <motion.div key="gw-gate-3"
       initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
       style={GW.bg}>
+
+      {/* Cinematic full-bleed photo background */}
       <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img
+          src="https://images.unsplash.com/photo-1574091879823-ecf4a2cc10e7?auto=format&fit=crop&w=1400&q=80"
+          alt=""
+          className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.16) saturate(0.75) sepia(0.22)" }}
+        />
         <div style={{ position: "absolute", inset: 0,
-          background: "radial-gradient(ellipse at 50% 20%, rgba(232,116,26,0.08) 0%, rgba(0,0,0,0.97) 100%)" }} />
+          background: "radial-gradient(ellipse at 50% 30%, rgba(212,175,55,0.14) 0%, rgba(0,0,0,0.94) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0,
+          backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,0.10) 0px, rgba(0,0,0,0.10) 1px, transparent 1px, transparent 3px)",
+          opacity: 0.40 }} />
       </div>
-      <div style={{ ...GW.chamber, maxWidth: 700 }} className="overflow-y-auto">
-        <motion.div
-          initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          style={{ textAlign: "center" as const, marginBottom: 28 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>🏆</div>
-          <p style={{ color: "#E8741A", fontSize: 11, letterSpacing: "0.38em",
-            textTransform: "uppercase" as const, marginBottom: 6 }}>
-            MOVEMENT III · ENTERING FINAL STAGE
-          </p>
-          <h2 style={{ ...GW.title, textAlign: "center" as const, borderBottom: "none", marginBottom: 4 }}>
-            The Masterclass Verdict
-          </h2>
-          <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 14 }}>
-            Your finalized blend is cross-referenced against tonight's lounge.
-          </p>
-        </motion.div>
 
-        {/* Score vs Nightly Average */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 22 }}>
-          <div style={{ background: `${GOLD}08`, border: `1px solid ${GOLD}30`,
-            borderRadius: 12, padding: "18px 20px", textAlign: "center" as const }}>
-            <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.24em",
-              textTransform: "uppercase" as const, marginBottom: 6 }}>Your Score</p>
-            <motion.div
-              initial={{ scale: 0.5 }} animate={{ scale: 1 }}
-              transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
-              style={{ color: GOLD, fontSize: 40, fontWeight: 800 }}>{xp}</motion.div>
-            <p style={{ color: "rgba(240,232,212,0.45)", fontSize: 12, margin: 0 }}>XP</p>
-          </div>
-          <div style={{ background: "rgba(232,116,26,0.05)", border: "1px solid rgba(232,116,26,0.25)",
-            borderRadius: 12, padding: "18px 20px", textAlign: "center" as const }}>
-            <p style={{ color: "rgba(232,116,26,0.65)", fontSize: 10, letterSpacing: "0.24em",
-              textTransform: "uppercase" as const, marginBottom: 6 }}>Nightly Avg</p>
-            <div style={{ color: "#E8741A", fontSize: 40, fontWeight: 800 }}>
-              {nightlyData ? Math.round(nightlyAvg) : "—"}
-            </div>
-            {nightlyData && (
-              <p style={{ color: "rgba(240,232,212,0.45)", fontSize: 12, margin: 0 }}>
-                {nightlyData.count} sessions · {tierLabel}
-              </p>
-            )}
-          </div>
-        </motion.div>
+      <div style={{ ...GW.chamber, maxWidth: 800 }} className="overflow-y-auto">
 
-        {placement && (
+        {/* ── Header ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.20 }}
+          style={{ textAlign: "center" as const, marginBottom: 22 }}>
           <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-            style={{
-              background: placement === "above" ? "rgba(139,195,74,0.08)" : "rgba(239,68,68,0.06)",
-              border: `1px solid ${placement === "above" ? "rgba(139,195,74,0.30)" : "rgba(239,68,68,0.25)"}`,
-              borderRadius: 10, padding: "12px 18px", marginBottom: 18, textAlign: "center" as const,
-            }}>
-            <p style={{ color: placement === "above" ? "#8BC34A" : "#f87171",
-              fontSize: 15, fontWeight: 700, margin: 0 }}>
-              {placement === "above"
-                ? `✓ You ranked above tonight's lounge average by ${xp - Math.round(nightlyAvg)} pts`
-                : `${Math.round(nightlyAvg) - xp} pts below tonight's lounge average — the Blending Chamber awaits`}
+            animate={{ opacity: [0.70, 1, 0.70] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+            style={{ display: "inline-block", background: "rgba(212,175,55,0.10)",
+              border: `1px solid ${GOLD}40`, borderRadius: 4,
+              padding: "5px 20px", marginBottom: 14 }}>
+            <p style={{ color: GOLD, fontSize: 10, letterSpacing: "0.44em",
+              textTransform: "uppercase" as const, margin: 0, fontWeight: 700 }}>
+              MOVEMENT III COMPLETE
             </p>
           </motion.div>
-        )}
+          <h2 style={{ fontFamily: "'Cormorant Garamond',serif",
+            color: "rgba(245,235,215,0.96)", fontSize: "clamp(17px,3.2vw,30px)",
+            fontWeight: 300, letterSpacing: "0.04em", margin: "0 0 6px", lineHeight: 1.25 }}>
+            SESSION 1 COMPLETE: THE SOVEREIGN MATRIX IS LOCKED
+          </h2>
+          <motion.div
+            initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            style={{ width: 80, height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`,
+              margin: "12px auto 0" }} />
+        </motion.div>
 
-        {/* Spirit pairing */}
+        {/* ── Central HUD: Score + Profile Badge ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 18 }}>
+
+          {/* Intelligence Score Widget */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.38, type: "spring", stiffness: 280 }}
+            style={{ background: `${GOLD}07`, border: `1px solid ${GOLD}35`,
+              borderRadius: 14, padding: "22px 20px", textAlign: "center" as const,
+              position: "relative" as const, overflow: "hidden" }}>
+            {/* Pulse ring */}
+            <motion.div
+              animate={{ scale: [1, 1.22, 1], opacity: [0.22, 0.04, 0.22] }}
+              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+              style={{ position: "absolute", top: "50%", left: "50%",
+                transform: "translate(-50%,-50%)",
+                width: "80%", paddingBottom: "80%",
+                borderRadius: "50%", border: `2px solid ${GOLD}`,
+                pointerEvents: "none" }}
+            />
+            <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.28em",
+              textTransform: "uppercase" as const, marginBottom: 8 }}>Intelligence Score</p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.55, type: "spring", stiffness: 350 }}
+              style={{ color: GOLD, fontSize: 54, fontWeight: 900, lineHeight: 1,
+                fontFamily: "'Cormorant Garamond',serif", marginBottom: 4 }}>
+              {xp}
+            </motion.div>
+            <p style={{ color: `${GOLD}55`, fontSize: 12, letterSpacing: "0.20em",
+              textTransform: "uppercase" as const, margin: "0 0 10px" }}>PTS</p>
+            <div style={{ display: "inline-block", background: tier.color + "18",
+              border: `1px solid ${tier.color}40`, borderRadius: 20, padding: "3px 14px" }}>
+              <p style={{ color: tier.color, fontSize: 11, fontWeight: 700,
+                letterSpacing: "0.16em", textTransform: "uppercase" as const, margin: 0 }}>
+                {tier.name}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Custom Profile Badge */}
+          <motion.div
+            initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.48 }}
+            style={{ background: "rgba(255,255,255,0.025)", border: `1px solid ${GOLD}22`,
+              borderRadius: 14, padding: "18px 18px" }}>
+            <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.28em",
+              textTransform: "uppercase" as const, margin: "0 0 12px" }}>Custom Profile Matrix</p>
+            {([
+              { label: "Mentor",     value: mentorObj ? `${mentorObj.flag} ${mentorObj.name}` : "\u2014", color: GOLD },
+              { label: "Seed Strain", value: selectedSeed === "corojo" ? "Corojo Premium" : selectedSeed === "criollo" ? "Criollo '98" : selectedSeed ?? "\u2014", color: "#a78bfa" },
+              { label: "Origin",     value: `${(COUNTRY_FLAGS as Record<string,string>)[country] ?? "\u{1F33F}"} ${country}`, color: "#8BC34A" },
+              { label: "Vitola",     value: selectedVitola ?? "\u2014", color: "#E8741A" },
+            ] as Array<{label:string;value:string;color:string}>).map((row, i) => (
+              <motion.div key={row.label}
+                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.62 + i * 0.08 }}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "7px 0",
+                  borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                <span style={{ color: "rgba(240,232,212,0.45)", fontSize: 11,
+                  letterSpacing: "0.14em", textTransform: "uppercase" as const }}>{row.label}</span>
+                <span style={{ color: row.color, fontSize: 14, fontWeight: 700 }}>{row.value}</span>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Spirit Pairing */}
         {suggestion && (
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            style={{ background: `${GOLD}06`, border: `1px solid ${GOLD}25`,
-              borderRadius: 12, padding: "18px 20px", marginBottom: 22 }}>
-            <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.28em",
-              textTransform: "uppercase" as const, marginBottom: 10 }}>
-              Definitive Spirit Pairing · {country}
+            transition={{ delay: 0.78 }}
+            style={{ background: `${GOLD}06`, border: `1px solid ${GOLD}22`,
+              borderRadius: 12, padding: "15px 20px", marginBottom: 18 }}>
+            <p style={{ color: `${GOLD}65`, fontSize: 10, letterSpacing: "0.28em",
+              textTransform: "uppercase" as const, margin: "0 0 7px" }}>
+              Definitive Spirit Pairing \u00b7 {country}
             </p>
-            <p style={{ color: GOLD, fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
-              {suggestion.spirit}
-            </p>
-            <p style={{ color: `${GOLD}60`, fontSize: 13, marginBottom: 10 }}>{suggestion.spiritStyle}</p>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
-              {suggestion.descriptors.map(d => (
-                <span key={d} style={{
-                  background: `${GOLD}10`, border: `1px solid ${GOLD}20`,
-                  borderRadius: 20, padding: "4px 12px", color: `${GOLD}78`,
-                  fontSize: 12, letterSpacing: "0.1em",
-                }}>{d}</span>
+            <p style={{ color: GOLD, fontSize: 18, fontWeight: 700, margin: "0 0 3px" }}>{suggestion.spirit}</p>
+            <p style={{ color: `${GOLD}60`, fontSize: 13, margin: "0 0 8px" }}>{suggestion.spiritStyle}</p>
+            <div style={{ display: "flex", gap: 7, flexWrap: "wrap" as const }}>
+              {suggestion.descriptors.map((d: string) => (
+                <span key={d} style={{ background: `${GOLD}10`, border: `1px solid ${GOLD}20`,
+                  borderRadius: 20, padding: "3px 10px", color: `${GOLD}75`, fontSize: 11 }}>{d}</span>
               ))}
             </div>
           </motion.div>
         )}
 
+        {/* ── Lockout Footer ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.92 }}
+          style={{ background: "rgba(0,0,0,0.72)", border: `1px solid ${GOLD}30`,
+            borderRadius: 14, padding: "18px 22px", marginBottom: 20,
+            boxShadow: `0 0 40px ${GOLD}10, inset 0 0 30px rgba(0,0,0,0.60)` }}>
+          <p style={{ color: GOLD, fontSize: 10, letterSpacing: "0.34em",
+            textTransform: "uppercase" as const, margin: "0 0 10px", fontWeight: 700 }}>
+            STATUS: MASTERCLASS PART 1 LOCKOUT ACTIVE
+          </p>
+          <p style={{ color: "rgba(240,232,212,0.74)", fontSize: 14, lineHeight: 1.72, margin: 0 }}>
+            Your custom tobacco blend matrix is officially resting inside the fermentation vault. In Session 2,
+            we take the floor. Get ready to step up to the wooden bench, calibrate your binding glue, slice the
+            wrapper anatomy, and manually roll your physical masterwork. Review your pairing notes above &mdash; your
+            mentor awaits you at the rolling bench next session.
+          </p>
+        </motion.div>
+
+        {/* ── Oversized Gold CTA ── */}
         <div style={{ display: "flex", gap: 12 }}>
           <button style={{ ...GW.btn(true), flex: "0 0 auto" }}
             onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <motion.button
-            style={{ ...GW.btn(), flex: 1,
-              background: "linear-gradient(135deg, #a05010, #7a3a0a)",
-              border: "1px solid rgba(232,116,26,0.60)" }}
-            whileHover={{ scale: 1.02 }}
+            style={{ ...GW.btn(), flex: 1, fontSize: 13, letterSpacing: "0.13em",
+              background: `linear-gradient(135deg, ${GOLD}CC, #9e7208)`,
+              border: `2px solid ${GOLD}`,
+              boxShadow: `0 0 30px ${GOLD}22`,
+              textShadow: "0 0 14px rgba(0,0,0,0.6)" }}
+            whileHover={{ scale: 1.02, boxShadow: `0 0 44px ${GOLD}38` }}
             whileTap={{ scale: 0.97 }}
             onTouchStart={() => playClick()}
             onClick={() => { playClick(); onNext(); }}>
-            ★ ENTER THE BLENDING CHAMBER
+            &#9733; ENTER THE BLENDING CHAMBER
           </motion.button>
         </div>
       </div>
@@ -5528,6 +5774,7 @@ export default function MasterBlender() {
   const [selectedSeed,   setSelectedSeed]   = useState<string | null>(null);
   const [selectedSoil,    setSelectedSoil]    = useState<string | null>(null);
   const [selectedTerroir, setSelectedTerroir] = useState<string | null>(null);
+  const [selectedVitola,  setSelectedVitola]  = useState<string | null>(null);
 
   const [step,   setStep]   = useState<0|1|2|3>(0);
   const [sel,    setSel]    = useState<Sel>({});
@@ -5877,6 +6124,7 @@ export default function MasterBlender() {
                   key="vitola_science"
                   onNext={() => setGateway("gate_movement_3")}
                   onBack={() => setGateway("gate_movement_2")}
+                  onVitolaSelect={(v) => setSelectedVitola(v)}
                 />
               )}
               {gateway === "gate_movement_3" && (
@@ -5886,6 +6134,9 @@ export default function MasterBlender() {
                   onBack={() => setGateway("vitola_science")}
                   xp={xp}
                   selectedTerroir={selectedTerroir}
+                  selectedMentor={selectedMentor}
+                  selectedSeed={selectedSeed}
+                  selectedVitola={selectedVitola}
                   volado={primingVolado}
                   secoViso={primingSecoViso}
                   ligero={primingLigero}

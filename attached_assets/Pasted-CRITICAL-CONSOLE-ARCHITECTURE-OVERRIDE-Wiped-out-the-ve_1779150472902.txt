@@ -1,0 +1,35 @@
+CRITICAL CONSOLE ARCHITECTURE OVERRIDE: Wiped out the vertical column transition page completely from the codebase; it is strictly forbidden. The top status banner containing the E.A.T. (Environment, Asset, Transaction) system protocol is microscopic, illegible, and overlapping on hardware viewport frames. Immediately refactor App.tsx, CraftHub.tsx, and the initialization layers to build a high-energy cinematic entry and a massively scaled, premium cockpit header bar. Verify 'tsc --noEmit' passes with exit code 0.
+
+=========================================
+1. LEVEL 0 & 1 HIGH-ENERGY CINEMATIC OPENING (REPLACE SCREEN 1 & DELETE SCREEN 2)
+=========================================
+- Cinematic Initializer:
+  * Remove the plain text and flat orange button from the idle entry. Initialize the canvas with a high-intensity, pulsing warm amber glow cutting through absolute black (#000000).
+  * Ambient Asset Layer: Layer the HTML5 SmokeCanvas globally at z-index 9996 with active drifting smoke trails. Underneath the central action block, render an ultra-realistic, continuously burning premium cigar showing shimmering animated ash embers.
+  * Direct Widescreen Navigation Fork: The introductory text must be rendered in clean, tracking-spaced gold typography. Frame two oversized touchscreen actions:
+    - Primary Action Block: "BEGIN MASTERCLASS JOURNEY" (Instantly fires playClick() 3400Hz audio and runs a 1.2s horizontal transition directly into the massive landscape CraftHub Dashboard).
+    - Secondary Inline Link: "RETURNING MASTERCLASS GUEST" (Slides up the glassmorphic profile drawer).
+  * ABSOLUTELY ELIMINATE the intermediary vertical text screen (Screen 2). Transitioning from the intro must land directly onto the full-width cockpit dashboard layout.
+
+=========================================
+2. THE RADICAL E.A.T. HEADER BAR RESCALE & TYPOGRAPHY OVERHAUL
+=========================================
+- Header Real Estate Expansion:
+  * Force the top status bar hosting the E.A.T. framework entry points to a minimum height of 72px. Apply a premium dark obsidian glass backdrop with a solid brushed-titanium lower border.
+  * Typography Scale: Increase the font size of the entire top system across the board by a minimum of 40%. Eliminate all microscopic subtext and overlapping layout boxes.
+- Three-Zone Spatial Grid Layout:
+  * Left Console Zone: Render the "NOVEÈ OS // CORE ENTERPRISE" signature in a bold, vibrant neon-amber hue, flanked by a live pulsing green indicator dot labeled "REVENUE ENGINE: ACTIVE".
+  * Central E.A.T. System Gateway Zone: Build three distinctive, heavily spaced interactive touchscreen badges with generous inner padding to prevent finger misclicks:
+    - [ E.N.V. ] -> Environment Adaptation Control
+    - [ A.S.S.E.T. ] -> Inventory Ledger & Vault Scan
+    - [ T.R.A.N.S.A.C.T. ] -> Table-Side Sommelier Up-Sell Entry
+  * Right Console Zone: Render "SOVEREIGN STATUS // ONLINE" in sharp monochromatic typography, fully isolated to the top-right corner to prevent layout collision on tablet glass.
+
+=========================================
+3. BRAND COCKPIT PORTFOLIO COHESION
+=========================================
+- Maintain the premium widescreen aspect ratios:
+  * SMOKECRAFT 360: Dominates the entire upper workspace section as the signature brand module, pulling deep high-fidelity visual context.
+  * POURCRAFT 360, BEERCRAFT 360, WINECRAFT 360: Aligned perfectly side-by-side in an unyielding row directly beneath the SmokeCraft block, keeping touch-friendly boundaries completely uniform.
+
+Execute this comprehensive entry re-architecture, completely delete the old transitional view state, and rescale the entire E.A.T. system layout system wide. Ensure compilation passes clean.
