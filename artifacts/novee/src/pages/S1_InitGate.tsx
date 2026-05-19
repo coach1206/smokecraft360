@@ -5,6 +5,7 @@ import { BackButton } from "@/components/BackButton";
 import { LeaderboardTicker } from "@/components/LeaderboardTicker";
 import { POSGateModal } from "@/components/POSGateModal";
 import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
+import { CigarHero } from "@/components/CigarHero";
 
 const GOLD = "#D4AF37";
 const PV = {
@@ -134,87 +135,111 @@ function LeafSVG({ s, scale = 1 }: { s: typeof SEEDS[0]; scale?: number }) {
 function LeftPanel({ eyebrow, headline, sub, accent = GOLD }: { eyebrow: string; headline: string; sub?: string; accent?: string }) {
   return (
     <div style={{
-      position:        "relative",
-      display:         "flex",
-      flexDirection:   "column",
-      justifyContent:  "flex-end",
-      padding:         "64px 56px",
-      overflow:        "hidden",
-      borderRight:     "1px solid rgba(212,175,55,0.14)",
+      position:       "relative",
+      display:        "flex",
+      flexDirection:  "column",
+      overflow:       "hidden",
+      borderRight:    "1px solid rgba(212,175,55,0.18)",
     }}>
-      {/* Layered lounge atmosphere */}
-      <div style={{ position: "absolute", inset: 0,
-        background: `
-          radial-gradient(ellipse 85% 55% at 30% 25%, rgba(212,140,30,0.14) 0%, transparent 55%),
-          radial-gradient(ellipse 60% 80% at 80% 70%, rgba(10,8,4,0.90) 0%, transparent 60%),
-          linear-gradient(160deg, #100B03 0%, #080501 45%, #0C0804 100%)
-        `,
-      }} />
-
-      {/* Brushed vertical grain */}
+      {/* ── Deep obsidian base ── */}
       <div style={{
-        position: "absolute", inset: 0, opacity: 0.04,
-        backgroundImage: "repeating-linear-gradient(180deg, transparent 0px, rgba(255,255,255,0.6) 1px, transparent 2px, transparent 14px)",
+        position: "absolute", inset: 0,
+        background: "linear-gradient(165deg, #110C04 0%, #070502 55%, #0A0703 100%)",
       }} />
 
-      {/* Gold top rim on left panel */}
+      {/* Brushed horizontal titanium grain */}
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 2,
-        background: `linear-gradient(90deg, ${accent}CC 0%, ${accent}44 100%)`,
-        boxShadow: `0 0 20px 3px ${accent}33`,
+        position: "absolute", inset: 0, opacity: 0.032,
+        backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, rgba(255,255,255,0.7) 1px, transparent 2px, transparent 12px)",
       }} />
 
-      {/* Ambient ember — top center */}
+      {/* Gold top-rim */}
       <div style={{
-        position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
-        width: "140%", height: "60%",
-        background: `radial-gradient(ellipse at 45% 10%, ${accent}14 0%, transparent 60%)`,
-        pointerEvents: "none",
+        position: "absolute", top: 0, left: 0, right: 0, height: 3,
+        background: `linear-gradient(90deg, ${accent}EE 0%, ${accent}66 70%, transparent 100%)`,
+        boxShadow: `0 0 28px 4px ${accent}30`,
+        zIndex: 5,
       }} />
 
-      {/* Smoke decoration */}
-      <svg style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "45%", opacity: 0.07, pointerEvents: "none" }}
-        viewBox="0 0 600 300" preserveAspectRatio="xMidYMax slice">
-        <defs>
-          <filter id="lpsmoke">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015 0.008" numOctaves="3" seed="5" result="nz" />
-            <feDisplacementMap in="SourceGraphic" in2="nz" scale="55" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-        {[80, 200, 340, 480, 570].map((x, i) => (
-          <ellipse key={i} cx={x} cy={280} rx={50 + i * 10} ry={180 + i * 15}
-            fill={`rgba(212,175,55,0.2)`} filter="url(#lpsmoke)" />
-        ))}
-      </svg>
-
-      {/* Content */}
-      <div style={{ position: "relative", zIndex: 2 }}>
+      {/* ── CIGAR HERO — upper 58% ── */}
+      <div style={{
+        position: "relative",
+        flex: "0 0 58%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        padding: "28px 32px 12px",
+      }}>
+        {/* Ember ambient light behind cigar — glows from the right */}
         <div style={{
-          fontSize: 10, letterSpacing: "0.54em", textTransform: "uppercase",
-          fontWeight: 800, color: `${accent}77`, marginBottom: 18,
+          position: "absolute",
+          top: "30%", right: "-5%",
+          width: "55%", height: "55%",
+          background: "radial-gradient(ellipse at 70% 50%, rgba(255,100,20,0.22) 0%, rgba(255,60,0,0.08) 40%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+        {/* Cool ambient counter-light from left */}
+        <div style={{
+          position: "absolute",
+          top: "20%", left: "-5%",
+          width: "40%", height: "60%",
+          background: "radial-gradient(ellipse at 20% 50%, rgba(212,175,55,0.10) 0%, transparent 65%)",
+          pointerEvents: "none",
+        }} />
+        {/* Surface reflection stripe */}
+        <div style={{
+          position: "absolute",
+          bottom: 0, left: 0, right: 0,
+          height: "25%",
+          background: "linear-gradient(0deg, rgba(212,175,55,0.06) 0%, transparent 100%)",
+          pointerEvents: "none",
+        }} />
+        <CigarHero wrapperTone="criollo" />
+      </div>
+
+      {/* ── Text block — lower 42% ── */}
+      <div style={{
+        position: "relative",
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        padding: "0 52px 52px",
+        zIndex: 2,
+      }}>
+        {/* Vignette above text */}
+        <div style={{
+          position: "absolute", top: "-60px", left: 0, right: 0, height: 80,
+          background: "linear-gradient(180deg, transparent, rgba(8,5,2,0.70))",
+          pointerEvents: "none",
+        }} />
+
+        <div style={{
+          fontSize: 10, letterSpacing: "0.56em", textTransform: "uppercase",
+          fontWeight: 800, color: `${accent}70`, marginBottom: 16,
           fontFamily: "'Inter', sans-serif",
         }}>
           {eyebrow}
         </div>
         <h1 style={{
           fontFamily:    "'Cormorant Garamond', Georgia, serif",
-          fontSize:      "clamp(48px, 5.5vw, 82px)",
+          fontSize:      "clamp(44px, 5vw, 76px)",
           fontWeight:    300,
           color:         "#F0E8D4",
-          margin:        "0 0 20px",
+          margin:        "0 0 18px",
           letterSpacing: "0.04em",
           lineHeight:    1.02,
-          textShadow:    `0 0 80px ${accent}22, 0 2px 40px rgba(0,0,0,0.80)`,
+          textShadow:    `0 0 60px ${accent}20, 0 2px 30px rgba(0,0,0,0.90)`,
         }}>
           {headline}
         </h1>
         {sub && (
-          <p style={{ fontSize: 18, color: "rgba(240,232,212,0.40)", lineHeight: 1.60, margin: 0, fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontSize: 17, color: "rgba(240,232,212,0.42)", lineHeight: 1.62, margin: 0, fontFamily: "'Inter', sans-serif" }}>
             {sub}
           </p>
         )}
-        {/* Gold rule */}
-        <div style={{ marginTop: 24, width: 80, height: 2, background: `linear-gradient(90deg, ${accent}, transparent)`, boxShadow: `0 0 12px ${accent}55` }} />
+        <div style={{ marginTop: 22, width: 72, height: 2, background: `linear-gradient(90deg, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}55` }} />
       </div>
     </div>
   );

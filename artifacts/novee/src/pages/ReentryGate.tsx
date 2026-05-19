@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGuest } from "@/context/GuestProfileContext";
 import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
+import { CigarHero } from "@/components/CigarHero";
 
 const GOLD = "#D4AF37";
 
@@ -41,71 +42,84 @@ export function ReentryGate() {
 
       {/* ════════════ LEFT — Full-bleed brand panel ════════════ */}
       <div style={{
-        position:       "relative",
-        display:        "flex",
-        flexDirection:  "column",
-        justifyContent: "flex-end",
-        padding:        "64px 72px",
-        overflow:       "hidden",
-        borderRight:    `1px solid rgba(212,175,55,0.18)`,
+        position:      "relative",
+        display:       "flex",
+        flexDirection: "column",
+        overflow:      "hidden",
+        borderRight:   `1px solid rgba(212,175,55,0.18)`,
       }}>
-        {/* Atmosphere layers */}
+        {/* Deep obsidian base */}
         <div style={{
           position: "absolute", inset: 0,
-          background: `
-            radial-gradient(ellipse 90% 60% at 30% 20%, rgba(212,140,30,0.16) 0%, transparent 55%),
-            radial-gradient(ellipse 70% 85% at 85% 75%, rgba(8,5,2,0.90) 0%, transparent 58%),
-            linear-gradient(165deg, #140E04 0%, #080501 50%, #0C0804 100%)
-          `,
+          background: "linear-gradient(165deg, #110C04 0%, #070502 55%, #0A0703 100%)",
         }} />
 
-        {/* Brushed vertical grain */}
+        {/* Brushed horizontal titanium grain */}
         <div style={{
-          position: "absolute", inset: 0, opacity: 0.038,
-          backgroundImage: "repeating-linear-gradient(180deg, transparent 0px, rgba(255,255,255,0.55) 1px, transparent 2px, transparent 16px)",
+          position: "absolute", inset: 0, opacity: 0.032,
+          backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, rgba(255,255,255,0.7) 1px, transparent 2px, transparent 14px)",
         }} />
-
-        {/* Smoke wisps SVG */}
-        <svg style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "55%", opacity: 0.09, pointerEvents: "none" }}
-          viewBox="0 0 700 380" preserveAspectRatio="xMidYMax slice">
-          <defs>
-            <filter id="rg_smoke">
-              <feTurbulence type="fractalNoise" baseFrequency="0.012 0.007" numOctaves="3" seed="3" result="nz" />
-              <feDisplacementMap in="SourceGraphic" in2="nz" scale="60" xChannelSelector="R" yChannelSelector="G" />
-            </filter>
-          </defs>
-          {[100, 220, 360, 500, 620].map((x, i) => (
-            <ellipse key={i} cx={x} cy={365} rx={55 + i * 12} ry={200 + i * 18}
-              fill="rgba(212,175,55,0.22)" filter="url(#rg_smoke)" />
-          ))}
-        </svg>
 
         {/* Gold top rim */}
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, height: 3,
-          background: `linear-gradient(90deg, ${GOLD}CC 0%, ${GOLD}55 100%)`,
-          boxShadow: `0 0 24px 4px rgba(212,175,55,0.30)`,
+          background: `linear-gradient(90deg, ${GOLD}EE 0%, ${GOLD}66 70%, transparent 100%)`,
+          boxShadow: `0 0 28px 4px rgba(212,175,55,0.28)`,
+          zIndex: 6,
         }} />
 
-        {/* Center ambient glow */}
+        {/* ── CIGAR HERO — upper 52% ── */}
         <div style={{
-          position: "absolute", top: "12%", left: "50%", transform: "translateX(-50%)",
-          width: "130%", height: "55%",
-          background: `radial-gradient(ellipse at 42% 18%, rgba(212,175,55,0.13) 0%, transparent 58%)`,
-          pointerEvents: "none",
-        }} />
+          position: "relative",
+          flex: "0 0 52%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+          padding: "32px 36px 8px",
+        }}>
+          {/* Ember ambient light from foot (right side) */}
+          <div style={{
+            position: "absolute",
+            top: "25%", right: "-4%",
+            width: "50%", height: "60%",
+            background: "radial-gradient(ellipse at 72% 50%, rgba(255,110,20,0.26) 0%, rgba(255,50,0,0.08) 45%, transparent 72%)",
+            pointerEvents: "none",
+          }} />
+          {/* Cool gold counter-light from left */}
+          <div style={{
+            position: "absolute",
+            top: "15%", left: "-4%",
+            width: "38%", height: "70%",
+            background: "radial-gradient(ellipse at 18% 50%, rgba(212,175,55,0.12) 0%, transparent 65%)",
+            pointerEvents: "none",
+          }} />
+          {/* Floor reflection fade */}
+          <div style={{
+            position: "absolute",
+            bottom: 0, left: 0, right: 0, height: "30%",
+            background: "linear-gradient(0deg, rgba(212,175,55,0.07) 0%, transparent 100%)",
+            pointerEvents: "none",
+          }} />
+          <CigarHero wrapperTone="corojo" />
+        </div>
 
-        {/* Decorative cigar silhouette */}
-        <svg style={{ position: "absolute", top: "32%", left: "50%", transform: "translateX(-50%) rotate(-18deg)", opacity: 0.05, pointerEvents: "none" }}
-          width="380" height="38" viewBox="0 0 380 38">
-          <rect x="8" y="14" width="364" height="10" rx="5" fill="#D4AF37" />
-          <ellipse cx="8" cy="19" rx="8" ry="9" fill="#8B4E18" />
-          <rect x="352" y="10" width="28" height="18" rx="3" fill="#C8A855" />
-          <rect x="370" y="12" width="10" height="14" rx="2" fill="#E8C870" />
-        </svg>
-
-        {/* Wordmark — anchored to bottom-left */}
-        <div style={{ position: "relative", zIndex: 2 }}>
+        {/* ── Wordmark — lower 48% ── */}
+        <div style={{
+          position: "relative",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          padding: "0 64px 56px",
+          zIndex: 2,
+        }}>
+          {/* Vignette bridge */}
+          <div style={{
+            position: "absolute", top: "-56px", left: 0, right: 0, height: 72,
+            background: "linear-gradient(180deg, transparent, rgba(7,5,2,0.72))",
+            pointerEvents: "none",
+          }} />
           <div style={{
             fontSize:      11,
             letterSpacing: "0.60em",
