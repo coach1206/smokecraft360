@@ -92,7 +92,10 @@ export function GuestProfileProvider({ children }: { children: React.ReactNode }
   const [profile, setProfile] = useState<GuestProfile>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return { ...DEFAULT_PROFILE, ...JSON.parse(raw) };
+      if (raw) {
+        // Always start at crafthub on fresh load — kiosk resets to hub every session
+        return { ...DEFAULT_PROFILE, ...JSON.parse(raw), phase: "crafthub" };
+      }
     } catch {}
     return DEFAULT_PROFILE;
   });
