@@ -1,22 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchVoiceAudio, type VoicePersona } from "@/services/api";
-
 /**
- * useVoice — minimal ElevenLabs TTS hook.
+ * useVoice — interface-compatible no-op stub.
  *
- *  Lifecycle:
- *   - speak(text)     → fetch audio blob, play via <Audio>
- *   - stop()          → halt playback + revoke blob URL
- *   - on unmount      → cleans up any in-flight URL/audio element
- *
- *  Failure surface: `error` is set to a stable code string
- *  ("voice_not_configured", "voice_upstream_failed", network, etc.) so
- *  the UI can decide whether to show a CTA or just stay silent.
- *
- *  Designed so the right-panel can call `speak()` opportunistically
- *  (e.g. after a recommendation lands) and silently degrade when the
- *  ElevenLabs connector isn't authorized yet.
+ * ElevenLabs TTS auto-play has been disabled. speak() returns immediately
+ * without network calls or audio playback. The hook interface is preserved
+ * so all existing call sites compile without changes.
  */
+import type { VoicePersona } from "@/services/api";
+
 export interface UseVoiceState {
   isSpeaking:  boolean;
   isLoading:   boolean;
@@ -25,62 +15,14 @@ export interface UseVoiceState {
   stop:        () => void;
 }
 
+const resolved = Promise.resolve();
+
 export function useVoice(): UseVoiceState {
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isLoading,  setIsLoading]  = useState(false);
-  const [error,      setError]      = useState<string | null>(null);
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const urlRef   = useRef<string | null>(null);
-
-  const cleanup = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
-      audioRef.current = null;
-    }
-    if (urlRef.current) {
-      URL.revokeObjectURL(urlRef.current);
-      urlRef.current = null;
-    }
-  }, []);
-
-  const stop = useCallback(() => {
-    cleanup();
-    setIsSpeaking(false);
-  }, [cleanup]);
-
-  const speak = useCallback(
-    async (text: string, persona: VoicePersona = "female") => {
-      if (!text.trim()) return;
-      cleanup();
-      setError(null);
-      setIsLoading(true);
-      try {
-        const blob = await fetchVoiceAudio({ text, persona });
-        const url  = URL.createObjectURL(blob);
-        urlRef.current = url;
-        const audio = new Audio(url);
-        audioRef.current = audio;
-        audio.onended = () => { setIsSpeaking(false); cleanup(); };
-        audio.onerror = () => {
-          setError("voice_playback_failed");
-          setIsSpeaking(false);
-          cleanup();
-        };
-        await audio.play();
-        setIsSpeaking(true);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "voice_failed");
-        setIsSpeaking(false);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [cleanup],
-  );
-
-  useEffect(() => () => cleanup(), [cleanup]);
-
-  return { isSpeaking, isLoading, error, speak, stop };
+  return {
+    isSpeaking: false,
+    isLoading:  false,
+    error:      null,
+    speak:      (_text, _persona) => resolved,
+    stop:       () => {},
+  };
 }

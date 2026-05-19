@@ -1,42 +1,31 @@
 /**
- * CraftVoiceRouter.ts — Per-craft mentor personality & TTS voice config.
+ * CraftVoiceRouter.ts — Per-craft mentor personality & content config.
  *
- * Each craft has a distinct personality archetype:
- *   smoke  → The Warm Tobacconist   (deliberate, earthy, authoritative)
- *   pour   → The Sommelier          (refined, precise, slightly formal)
- *   brew   → The Master Brewer      (enthusiastic, approachable, technical)
- *   vape   → The Vape Artisan       (cool, modern, exploratory)
- *
- * SpeechSynthesisUtterance params are applied before every speak() call.
- * Opening lines fire on craft entry; step lines fire on MasterBlender transitions.
+ * Each craft has a distinct personality archetype with curated narrative
+ * content used for on-screen text commentary and mentor descriptions.
+ * Audio/TTS playback has been fully removed from this module.
  */
 
 export type CraftType = "smoke" | "pour" | "brew" | "vape" | "wine";
 
 export interface CraftVoiceConfig {
-  persona:       string;
-  title:         string;
-  rate:          number;
-  pitch:         number;
-  volume:        number;
-  openingLines:  string[];
+  persona:        string;
+  title:          string;
+  openingLines:   string[];
   stepLines: {
-    leaf:       string;
-    wrapper:    string;
-    vitola:     string;
-    cut:        string;
-    reveal:     string;
+    leaf:    string;
+    wrapper: string;
+    vitola:  string;
+    cut:     string;
+    reveal:  string;
   };
-  educationLines:   string[];
-  evolutionLines:   string[];
+  educationLines:  string[];
+  evolutionLines:  string[];
 }
 
 const SMOKE_VOICE: CraftVoiceConfig = {
   persona:  "The Warm Tobacconist",
   title:    "Master Tobacconist",
-  rate:     0.78,
-  pitch:    0.72,
-  volume:   0.92,
   openingLines: [
     "Welcome. The leaf you choose tonight will tell us everything.",
     "Take your time. A great cigar is never chosen in haste.",
@@ -65,9 +54,6 @@ const SMOKE_VOICE: CraftVoiceConfig = {
 const POUR_VOICE: CraftVoiceConfig = {
   persona:  "The Sommelier",
   title:    "Master Sommelier",
-  rate:     0.82,
-  pitch:    0.85,
-  volume:   0.90,
   openingLines: [
     "Good evening. Every great spirit begins with a single, intentional pour.",
     "The barrel has been waiting. Now we find out what it kept.",
@@ -96,9 +82,6 @@ const POUR_VOICE: CraftVoiceConfig = {
 const BREW_VOICE: CraftVoiceConfig = {
   persona:  "The Master Brewer",
   title:    "Head Brewer",
-  rate:     0.88,
-  pitch:    0.90,
-  volume:   0.93,
   openingLines: [
     "Hey — glad you're here. Let's find your perfect pour.",
     "Craft beer is honest. What you taste is exactly what the brewer intended.",
@@ -127,9 +110,6 @@ const BREW_VOICE: CraftVoiceConfig = {
 const VAPE_VOICE: CraftVoiceConfig = {
   persona:  "The Futuristic Flavor Curator",
   title:    "Kinetic Vapor Architect",
-  rate:     0.90,
-  pitch:    1.08,
-  volume:   0.88,
   openingLines: [
     "Welcome to the Kinetic Vapor dimension. Your frequency is unique — let's isolate it.",
     "Reactive Haze, active profile. Every pull here is a precision event.",
@@ -165,15 +145,6 @@ export const CRAFT_VOICE_CONFIGS: Record<CraftType, CraftVoiceConfig> = {
 
 export function getCraftVoice(type: CraftType | string): CraftVoiceConfig {
   return CRAFT_VOICE_CONFIGS[type as CraftType] ?? SMOKE_VOICE;
-}
-
-export function applyVoiceToUtterance(
-  utterance: SpeechSynthesisUtterance,
-  config: CraftVoiceConfig,
-): void {
-  utterance.rate   = config.rate;
-  utterance.pitch  = config.pitch;
-  utterance.volume = config.volume;
 }
 
 export function getOpeningLine(type: CraftType | string, seed?: number): string {
