@@ -899,17 +899,28 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
           position: "absolute", inset: 0, zIndex: 1,
           backgroundImage: "url(/images/craft/smoke-1.png)",
           backgroundSize: "cover",
-          backgroundPosition: "center 30%",
-          filter: "saturate(0.85) contrast(1.05)",
+          backgroundPosition: "center 55%",
+          filter: "saturate(1.05) contrast(1.08) brightness(0.82)",
         }}
       />
 
-      {/* ── Layer 2: Cinematic gradient overlay (0.4 top → 0.85 bottom) ── */}
+      {/* ── Layer 2: Cinematic gradient overlay — light at top, moderate at bottom ── */}
       <div
         aria-hidden
         style={{
           position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-          background: "linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.85) 100%)",
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 45%, rgba(0,0,0,0.72) 100%)",
+        }}
+      />
+
+      {/* ── Edge vignette — adds cinematic depth without burying the photo ── */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+          background:
+            "radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.62) 100%)",
         }}
       />
 
@@ -920,9 +931,9 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
           position: "absolute",
           top: "50%", left: "50%",
           transform: "translate(-50%, -52%)",
-          width: "70vw", height: "50vh",
-          background: "radial-gradient(ellipse at center, rgba(212,175,55,0.11) 0%, transparent 68%)",
-          filter: "blur(80px)",
+          width: "80vw", height: "55vh",
+          background: "radial-gradient(ellipse at center, rgba(212,175,55,0.16) 0%, transparent 65%)",
+          filter: "blur(72px)",
           zIndex: 3, pointerEvents: "none",
         }}
       />
@@ -1051,17 +1062,28 @@ function CraftLandingOverlay({ genreKey, onClose, onBegin }: { genreKey: "pour" 
           position: "absolute", inset: 0, zIndex: 1,
           backgroundImage: `url(${cfg.bgImage})`,
           backgroundSize: "cover",
-          backgroundPosition: "center 30%",
-          filter: "saturate(0.88) contrast(1.04)",
+          backgroundPosition: "center 55%",
+          filter: "saturate(1.05) contrast(1.08) brightness(0.82)",
         }}
       />
 
-      {/* Layer 2: Cinematic gradient overlay */}
+      {/* Layer 2: Cinematic gradient overlay — light at top, moderate at bottom */}
       <div
         aria-hidden
         style={{
           position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-          background: "linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.85) 100%)",
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 45%, rgba(0,0,0,0.72) 100%)",
+        }}
+      />
+
+      {/* Edge vignette */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+          background:
+            "radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.62) 100%)",
         }}
       />
 
@@ -1072,9 +1094,9 @@ function CraftLandingOverlay({ genreKey, onClose, onBegin }: { genreKey: "pour" 
           position: "absolute",
           top: "50%", left: "50%",
           transform: "translate(-50%, -52%)",
-          width: "70vw", height: "50vh",
-          background: `radial-gradient(ellipse at center, ${cfg.accentRgba} 0%, transparent 68%)`,
-          filter: "blur(80px)",
+          width: "80vw", height: "55vh",
+          background: `radial-gradient(ellipse at center, ${cfg.accentRgba.replace("0.11)", "0.18)")} 0%, transparent 65%)`,
+          filter: "blur(72px)",
           zIndex: 3, pointerEvents: "none",
         }}
       />
