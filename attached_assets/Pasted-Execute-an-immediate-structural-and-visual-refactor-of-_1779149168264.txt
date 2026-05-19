@@ -1,0 +1,74 @@
+Execute an immediate structural and visual refactor of the Seed Biology, Terroir, Harvesting, Curing, and Pairing modules. The current layout is too heavy, static, and lacks interactive energy. Inject micro-animations, explicit user guidance, high-fidelity asset mapping, and persistent Mentor commentary. 
+
+Enforce a strict architectural split: conclude Session 1 with a high-end Pairing Match and Session Summary Overlay. Do not render the "Rolling on the Bench" phase—this must be locked out as the grand opening sequence for Session 2. Ensure 'tsc --noEmit' passes with exit code 0.
+
+Apply these exact visual, narrative, and motion mechanics:
+
+=========================================
+1. HERITAGE SEED BIOLOGY & GENETICS (DYNAMIC MOTION OVERHAUL)
+=========================================
+- Visual & Motion Architecture:
+  * Remove all static, heavy black blocks. Transition the canvas into an active, pulsing deep obsidian viewport. 
+  * Implement an active CSS glass-blur micro-shimmer (`@keyframes shimmer`) on seed cards. When a seed variety is selected, the chosen card must dynamically scale (`scale-105`), emit a radial gold neon border-glow, and trigger a hardware-style sliding motion transition (`translate-x-[12px]`) to actively rearrange the screen real estate.
+- AI/Realistic Visual Asset Continuity:
+  * Replace all generic vectors with absolute high-fidelity, ultra-realistic macro imagery matching the exact genetic strain:
+    - Criollo (Classic Earthy Baseline): Macro shot of raw, deeply veined heirloom seeds resting on dark, damp organic nutrient starter blocks.
+    - Corojo (Spicy, Robust Oils): High-contrast close-up of amber-tinged, oil-glistening seed pod clusters catching a warm light.
+    - Connecticut Shade (Creamy, Smooth Wrapper Anatomy): Ultra-clean, bright-macro shot of delicate, pale-golden seed strands sheltered inside a pristine white translucent nursery canopy.
+- On-Screen UI Guidance Text:
+  * Drop a sleek, glowing amber typography ribbon directly beneath the header title reading exactly: 
+    "CONSOLE ACTION REQUIRED: Touch a genetic seed lineage card to initialize vascular cloning. Your choice alters structural oil density and flavor baseline profile."
+
+=========================================
+2. TERROIR & POTASSIUM SOIL CHEMISTRY (ENERGY & PLACEMENT OVERHAUL)
+=========================================
+- Active Feedback & Selection Flow:
+  * When a user taps a soil composition tile, execute an energetic 3D tilt-shift matrix shift animation. 
+  * Instantly flash an on-screen target tracking overlay showing the chemical nutrient balance shift dynamically.
+- Mentor Guidance Integration:
+  * Display a persistent, floating glassmorphic dialogue ring featuring the selected Mentor's portrait. The Mentor must deliver real-time strategic commentary based on the user's choice:
+    - Don Manuel: "Listen to the soil, leaf master. If you match my sweet Dominican seeds with overly harsh volcanic loam, you will shock the roots. Balance the potassium to keep the burn slow and smooth."
+    - Alejandro: "Nicaragua is forged in fire! Do not be afraid of the dense, iron-rich volcanic soils. They demand high heat and give back raw, legendary power."
+    - Doña Rosa: "The delicate wrapper needs gentle earth. Choose a balanced, light clay structure or you will choke out the elegant wrapper notes before the leaf can even breathe."
+
+=========================================
+3. LEAF HARVESTING & PRIMING MATRIX (VISUAL REALISM & INSIGHTS)
+=========================================
+- High-Fidelity Asset Integration:
+  * The screen must utilize a split horizontal console array. Render stunningly realistic asset photography of exact tobacco leaves:
+    - Volado (Bottom Leaves): Bright green, wide, thin-veined leaves showing high elasticity.
+    - Seco (Middle Leaves): Rich, golden-brown mature leaves with a balanced, silky texture layer.
+    - Ligero (Top Leaves): Deep, dark, thick, sun-baked leaves coated heavily in glistening natural oils.
+- Masterclass Strategy Commentary:
+  * Display a permanent "Strategic Priming Console" readout pane at the base. Text must guide the user's internal thought process exactly:
+    "CRITICAL THINKING CHECKPOINT: Consider leaf canopy physics. Top leaves (Ligero) absorb direct sunlight, producing thick, heavy nicotine oils that delay burn rates but amplify power. Bottom leaves (Volado) combust effortlessly. Your blend matrix must seamlessly orchestrate these layers; a wrapper cannot save a suffocating internal core."
+
+=========================================
+4. THE CURING & FERMENTATION VAULT (CHOPPING BLOCK CHOICE LOGIC)
+=========================================
+- Interactive Decision Console:
+  * Provide the user with two distinct luxury selector targets:
+    - Option A: "Traditional Barn Air-Curing" (Slow, organic moisture evaporation over 45 days; locks in natural herbal sweetness and rich brown chlorophyll decay).
+    - Option B: "Controlled Thermal Fermentation" (Accelerated moisture and temperature monitoring; forces heavy starches to sweat out rapidly, intensifying dark espresso and heavy leather characteristics).
+- Mentor Strategic Insight:
+  * Include an audio-linked text box from the active Mentor guiding the choice:
+    "Choose wisely. Air-curing protects the subtle, delicate top notes of a milder blend, while deep fermentation strips away harsh impurities to let full-bodied wrappers shine without biting the palate."
+
+=========================================
+5. SESSION 1 GRAND FINALE: THE LUXURY PAIRING CONSOLE & HARDFACE SUMMARY
+=========================================
+- High-End Pairing Visuals:
+  * Render ultra-realistic, cinematic portrait photos of premium spirits and physical cigars placed side-by-side on an obsidian counter bar under warm amber lighting:
+    - Display a real, flawless Padrón 1926 or Arturo Fuente Fuente Opus X showing rich toothy wrapper leaf texture and a perfectly glowing white-ash foot.
+    - Position a crystal-cut tumbler filled with a dark, amber-colored single-malt scotch whiskey next to a premium bottle showing visible aging marks on the labeling.
+- Interactive Session 1 Closing Summary Overlay:
+  * Lock the interface from progressing any further. Display an oversized, full-screen matte-black dashboard overlay titled exactly: "SESSION 1: THE SOVEREIGN CORE MATRIX COMPLETE".
+  * Render a dynamic live scoreboard widget processing data in real time:
+    - "CURRENT INTELLIGENCE SCORE: [Insert Dynamic Score Tracking Matrix] PTS"
+    - "SEED LINEAGE MATCH: SUCCESSFUL"
+    - "TERROIR PROFILE: INTEGRATED"
+- Session Transition Blueprint Announcement:
+  * Flash a prominent, glowing gold footer banner reading exactly:
+    "STATUS: MASTERCLASS PART 1 LOCKOUT ACTIVE. Your custom tobacco blend matrix is officially resting inside the fermentation vault. In Session 2, we take the floor. Get ready to step up to the wooden bench, calibrate your binding glue, slice the wrapper anatomy, and manually roll your physical masterwork. Review your pairing notes above—your mentor awaits you at the rolling bench next session."
+
+Execute this entire visual animation injection, layout refactor, asset pipeline linkage, and Session 1 hard-stop sequence now. Let it compile completely clean.

@@ -1,0 +1,48 @@
+CRITICAL CONSOLE VISUAL OVERRIDE: The Vitola Science, Precision Cuts, and Masterclass Verdict screens are visually dead, text-heavy, and completely lack motion or high-fidelity imagery. This violates the luxury NOVEÈ OS console architecture. Immediately refactor MasterBlender.tsx, App.tsx, and all associated wizard steps. Eliminate all flat text columns and tiny fonts. Inject explicit motion, interactive energy, real/AI-realistic imagery, and continuous Mentor commentary. Ensure 'tsc --noEmit' passes with exit code 0.
+
+=========================================
+1. VITOLA SCIENCE & PRECISION SIZING (SHAPES & SIZES OVERHAUL)
+=========================================
+- Interactive Visual Grid:
+  * Completely remove the static vertical list. Replace it with an expansive, landscape-optimized side-by-side split viewport.
+  * Left Selection Panel (50% Width): Transform the vitola entries into large, touch-active glassmorphic cards. Scale down the font of technical metrics slightly but elevate the titles (Robusto, Churchill, Torpedo, Gordo, Lancero) into bold, glowing gold text.
+  * Right Cinematic Display Drawer (50% Width): When a user selects a Vitola card, trigger a smooth 300ms 3D rotation and sliding motion animation on this panel. 
+  * Image Mapping: Dynamically render stunning, ultra-realistic high-fidelity images matching the exact shape selected:
+    - Robusto: A thick, perfectly proportioned cigar with a flawless, silky wrapper sitting horizontally on an obsidian block.
+    - Churchill: An elongated, elegant masterwork showcasing micro-vein leaf textures and a regal gold band.
+    - Torpedo: A dramatic, sharp tapered-head point construction showing flawless geometric rolling.
+    - Gordo: A massive, heavy-gauge leaf powerhouse glistening with rich natural oils.
+    - Lancero: A sleek, long, ultra-thin luxury canvas featuring an immaculate pig-tail cap.
+- Mentor Insight Text Ribbon:
+  * Anchor a floating guidance quote from the active Mentor at the base:
+    "The ring gauge dictates the air-to-leaf ratio. A thick Gordo delivers a cooler, high-volume smoke canvas, while a thin Lancero burns hot, forcing the wrapper leaf to completely dominate your palate. Choose the shape that matches your breath."
+
+=========================================
+2. PRECISION CUTS MODULE (TACTILE INTERACTION & REAL VISUALS)
+=========================================
+- Tactile Motion & Asset Mapping:
+  * No cold text descriptions. Build an interactive cutting console layout.
+  * Provide three massive touchscreen action blocks, each mapping highly detailed, realistic images of a premium cigar's head *after* a precision cut has been executed, paired with the physical tool:
+    - The Straight Cut (Guillotine): Image of a razor-sharp double-blade guillotine creating a clean, absolute horizontal slice, exposing the perfectly bunched internal filler core.
+    - The V-Cut (Wedge): Image of a heavy titanium desktop cutter slicing a deep, precise wedge-shaped valley into the cap, designed to concentrate draw velocity.
+    - The Punch Cut: Image of a circular stainless steel bullet blade extracting a neat, clean cylindrical core from the center of the cap, leaving the shoulder fully intact.
+- Animated Touch Feedback:
+  * Tapping a cut profile triggers an active "slice" screen flash effect and a crisp mechanical sound pulse (`playClick()`). The chosen cut asset scales forward, highlighting the altered airflow physics with a glowing amber wind-trace overlay.
+
+=========================================
+3. THE MASTERCLASS VERDICT & THE PAIRING CONSOLE (SESSION 1 FINALE)
+=========================================
+- Visual Breakdown & Re-architecture:
+  * WIPE OUT the empty, mixed-information layout shown in the current screen. Rebuild the final stage as a glorious, unified celebration of the user's custom matrix.
+- High-End Pairing Match Asset Integration:
+  * Render an absolute masterpiece photo layer across the background console. Display an ultra-realistic, cinematic portrait of a physical, flawless premium cigar (e.g., Padrón 1926 or Fuente Opus X) showing rich toothy wrapper texture and a perfectly glowing white-ash foot, resting on an obsidian counter next to a crystal-cut tumbler of single-malt whiskey and its premium bottle.
+- Dynamic Scoreboard & Summary Dashboard:
+  * Build a clean, glowing, centralized HUD overlay. Eliminate clutter and clearly map the aggregated data fields:
+    * Title: "SESSION 1 COMPLETE: THE SOVEREIGN MATRIX IS LOCKED"
+    * Center Left Widget: Large, pulsing gold typography displaying: "INTELLIGENCE SCORE: [Insert Score Tracking] PTS"
+    * Center Right Widget: Custom profile badge mapping Selected Mentor + Genetic Seed Strain + Soil Composition + Chosen Vitola Shape.
+- Definitive Session Transition Blueprint:
+  * Remove all generic next buttons. Implement an oversized gold-neon action block centered at the absolute bottom of the display window reading exactly:
+    "STATUS: MASTERCLASS PART 1 LOCKOUT ACTIVE. Your custom tobacco blend matrix is officially resting inside the fermentation vault. In Session 2, we take the floor. Get ready to step up to the wooden bench, calibrate your binding glue, slice the wrapper anatomy, and manually roll your physical masterwork. Review your pairing notes above—your mentor awaits you at the rolling bench next session."
+
+Execute this comprehensive layout refactor, visual injection, asset linkage, and absolute Session 1 transition hard-stop now. Let it compile completely clean.

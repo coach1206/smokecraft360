@@ -242,7 +242,7 @@ const MENTORS = [
     tag: "THE MODERN SOVEREIGN",
     soilAffinity: "volcanic" as const,
     guidance: "The volcano demands conviction. In Esteli we do not deliberate — we commit. Every decision here must carry the weight of intention. Half-measures produce forgettable blends. Choose boldly, or return to the beginning.",
-    portrait: "https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=600&q=80",
+    portrait: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "botanist",
@@ -2373,8 +2373,27 @@ function GatewayMentorPhilosophy({
 }
 
 // ── Gateway: Terroir ────────────────────────────────────────────────────────────────
-function GatewayTerroir({ onNext, onBack, onCountrySelect }: {
+const TERROIR_MENTOR_LINES: Record<string, { mentorId: string; line: string }> = {
+  "Dominican Republic": {
+    mentorId: "tradition",
+    line: "Listen to the soil, leaf master. If you match my sweet Dominican seeds with overly harsh volcanic loam, you will shock the roots. Balance the potassium to keep the burn slow and smooth.",
+  },
+  "Nicaragua": {
+    mentorId: "sovereign",
+    line: "Nicaragua is forged in fire! Do not be afraid of the dense, iron-rich volcanic soils. They demand high heat and give back raw, legendary power.",
+  },
+  "Ecuador": {
+    mentorId: "botanist",
+    line: "The delicate wrapper needs gentle earth. Choose a balanced, light clay structure or you will choke out the elegant wrapper notes before the leaf can even breathe.",
+  },
+  "Cuba": {
+    mentorId: "sovereign",
+    line: "The Vuelta Abajo is sacred ground. Red laterite iron, centuries of tradition, and the Cuban sun conspire to produce the world's benchmark leaf. Choose with conviction.",
+  },
+};
+function GatewayTerroir({ onNext, onBack, onCountrySelect, selectedMentor }: {
   onNext: () => void; onBack: () => void; onCountrySelect?: (country: string) => void;
+  selectedMentor: string | null;
 }) {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const REGIONS = [
@@ -2409,6 +2428,12 @@ function GatewayTerroir({ onNext, onBack, onCountrySelect }: {
     { name: "Fire Cure", desc: "Open hardwood smoke. Deep penetration. Nicotiana rustica lineage." },
     { name: "Flue Cure", desc: "Indirect heat channels lock glucose. Bright, light body character." },
   ];
+  const activeMentor = MENTORS.find(m => m.id === selectedMentor);
+  const mentorLine   = selectedRegion ? TERROIR_MENTOR_LINES[selectedRegion] : null;
+  const commentaryMentor = mentorLine
+    ? MENTORS.find(m => m.id === mentorLine.mentorId) ?? activeMentor
+    : activeMentor;
+
   return (
     <motion.div
       key="gw-terroir"
@@ -2418,114 +2443,160 @@ function GatewayTerroir({ onNext, onBack, onCountrySelect }: {
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       style={GW.bg}
     >
-      {/* Macro tobacco leaf terrain backdrop */}
+      {/* Rich terrain backdrop */}
       <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
         <img
-          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=80"
           alt=""
           className="w-full h-full object-cover"
-          style={{ filter: "brightness(0.18) saturate(0.70)" }}
+          style={{ filter: "brightness(0.16) saturate(0.65) sepia(0.35)" }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.07) 0%, rgba(0,0,0,0.82) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 35%, rgba(212,175,55,0.08) 0%, rgba(0,0,0,0.88) 100%)" }} />
       </div>
 
       <div style={GW.chamber} className="overflow-y-auto">
-        <p style={{ ...GW.para, fontSize: 16, letterSpacing: "0.18em", color: `${GOLD}90`, textTransform: "uppercase" as const, marginBottom: 10 }}>
-          Tobacco Origins &middot; The Terroir Codex
+        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.22em", color: `${GOLD}90`, textTransform: "uppercase" as const, marginBottom: 8 }}>
+          Tobacco Origins · The Terroir Codex
         </p>
-        <h2 style={GW.title}>Tobacco Terroir &amp; Craft</h2>
-        <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 17, lineHeight: 1.6, marginBottom: 18, maxWidth: 520 }}>
-          Every great cigar starts with its homeland. Tap a region below to discover its soil, altitude, and curing secrets.
+        <h2 style={{ ...GW.title, marginBottom: 10 }}>Tobacco Terroir &amp; Craft</h2>
+        <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 16, lineHeight: 1.6, marginBottom: 18, maxWidth: 540 }}>
+          Every great cigar starts with its homeland. Tap a region to discover its soil chemistry, altitude, and curing profile — your choice is permanent.
         </p>
 
-        {/* Regional terroir grid — TAP TO SELECT */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 22 }}>
+        {/* Floating Mentor Dialogue Ring */}
+        <AnimatePresence mode="wait">
+          {commentaryMentor && (
+            <motion.div
+              key={selectedRegion ?? "mentor-ring"}
+              initial={{ opacity: 0, y: -12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.45 }}
+              style={{
+                display: "flex", alignItems: "flex-start", gap: 14,
+                background: "rgba(212,175,55,0.06)", backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: `1px solid ${GOLD}30`, borderRadius: 12,
+                padding: "14px 16px", marginBottom: 18,
+              }}
+            >
+              {/* Portrait ring */}
+              <div style={{ flexShrink: 0, position: "relative" as const }}>
+                <motion.div
+                  animate={{ boxShadow: [`0 0 0 2px ${GOLD}40`, `0 0 0 4px ${GOLD}70`, `0 0 0 2px ${GOLD}40`] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ width: 52, height: 52, borderRadius: "50%", overflow: "hidden" }}
+                >
+                  <img src={commentaryMentor.portrait} alt={commentaryMentor.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
+                </motion.div>
+                <div style={{ position: "absolute", bottom: 0, right: 0, width: 16, height: 16, borderRadius: "50%",
+                  background: "#1a1a1a", border: `1.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 8 }}>
+                  {commentaryMentor.flag}
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.20em", textTransform: "uppercase" as const, margin: "0 0 5px", fontWeight: 700 }}>
+                  {commentaryMentor.name} · {commentaryMentor.tag}
+                </p>
+                <p style={{ color: "rgba(240,232,212,0.82)", fontSize: 14, lineHeight: 1.65, margin: 0, fontStyle: "italic" }}>
+                  "{selectedRegion && mentorLine ? mentorLine.line : commentaryMentor.guidance}"
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Regional terroir grid — TAP TO SELECT with 3D tilt */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12, marginBottom: 22 }}>
           {REGIONS.map(t => {
             const isSelected = selectedRegion === t.region;
             return (
               <motion.div
                 key={t.region}
-                whileTap={{ scale: 0.97 }}
-                whileHover={{ scale: 1.02 }}
-                onClick={() => { setSelectedRegion(t.region); }}
+                whileHover={{ rotateX: 2, rotateY: -3, scale: 1.02, z: 20 }}
+                whileTap={{ scale: 0.97, rotateX: 0, rotateY: 0 }}
+                onClick={() => { setSelectedRegion(t.region); playClick(); }}
+                animate={{
+                  background: isSelected ? "rgba(212,175,55,0.14)" : "rgba(212,175,55,0.04)",
+                  borderColor: isSelected ? GOLD : `${GOLD}22`,
+                  boxShadow: isSelected ? `0 0 32px rgba(212,175,55,0.28), 0 8px 24px rgba(0,0,0,0.5)` : "0 4px 16px rgba(0,0,0,0.35)",
+                }}
                 style={{
-                  background: isSelected ? "rgba(212,175,55,0.13)" : "rgba(212,175,55,0.04)",
-                  border: isSelected ? `2px solid ${GOLD}` : `1px solid ${GOLD}22`,
+                  border: `2px solid`,
                   borderRadius: 10,
-                  padding: "20px 18px",
-                  backdropFilter: "blur(12px)",
+                  padding: "18px 16px",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
                   cursor: "pointer",
-                  boxShadow: isSelected ? `0 0 28px rgba(212,175,55,0.22)` : "none",
-                  transition: "box-shadow 0.3s",
+                  perspective: 800,
+                  transformStyle: "preserve-3d",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <span style={{ fontSize: 30, lineHeight: "1", flexShrink: 0 }}>{t.flag}</span>
-                  <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <span style={{ fontSize: 28, lineHeight: "1", flexShrink: 0 }}>{t.flag}</span>
+                  <div style={{ flex: 1 }}>
                     <span style={{
-                      color: GOLD, fontSize: 13, fontWeight: 700, letterSpacing: "0.06em",
-                      background: "rgba(212,175,55,0.15)", border: `1px solid ${GOLD}35`,
-                      borderRadius: 3, padding: "3px 8px", display: "inline-block", marginBottom: 4,
-                    }}>
-                      {t.abbr}
-                    </span>
-                    <div style={{ color: "rgba(245,235,215,0.90)", fontSize: 16, letterSpacing: "0.08em", fontWeight: 600, textTransform: "uppercase" as const }}>
+                      color: GOLD, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
+                      background: "rgba(212,175,55,0.14)", border: `1px solid ${GOLD}35`,
+                      borderRadius: 3, padding: "2px 7px", display: "inline-block", marginBottom: 3,
+                    }}>{t.abbr}</span>
+                    <div style={{ color: "rgba(245,235,215,0.90)", fontSize: 15, letterSpacing: "0.08em", fontWeight: 600, textTransform: "uppercase" as const }}>
                       {t.region}
                     </div>
                   </div>
                   {isSelected && (
-                    <motion.div
-                      initial={{ scale: 0 }} animate={{ scale: 1 }}
-                      style={{ marginLeft: "auto", color: GOLD, fontSize: 22, fontWeight: 700 }}
-                    >✓</motion.div>
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                      style={{ color: GOLD, fontSize: 20, fontWeight: 700 }}>✓</motion.div>
                   )}
                 </div>
-                {([ ["Soil", t.soil], ["Altitude", t.altitude], ["Cure", t.cure] ] as [string, string][]).map(([label, value]) => (
-                  <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 7 }}>
-                    <span style={{ color: `${GOLD}65`, fontSize: 14, letterSpacing: "0.12em", textTransform: "uppercase" as const, flexShrink: 0 }}>{label}</span>
-                    <span style={{ color: "rgba(240,232,212,0.80)", fontSize: 14, textAlign: "right" as const }}>{value}</span>
+                {([ ["Soil", t.soil], ["Alt.", t.altitude], ["Cure", t.cure] ] as [string, string][]).map(([label, value]) => (
+                  <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 6, marginBottom: 6 }}>
+                    <span style={{ color: `${GOLD}60`, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" as const, flexShrink: 0 }}>{label}</span>
+                    <span style={{ color: "rgba(240,232,212,0.78)", fontSize: 13, textAlign: "right" as const }}>{value}</span>
                   </div>
                 ))}
                 <motion.p
-                  animate={{ maxHeight: isSelected ? 200 : 60, opacity: isSelected ? 1 : 0.55 }}
+                  animate={{ maxHeight: isSelected ? 160 : 48, opacity: isSelected ? 1 : 0.50 }}
                   transition={{ duration: 0.35 }}
-                  style={{ color: isSelected ? "rgba(240,232,212,0.85)" : "rgba(240,232,212,0.50)", fontSize: isSelected ? 15 : 13, fontStyle: "italic", marginTop: 10, lineHeight: 1.6, overflow: "hidden" }}
-                >
-                  {t.note}
-                </motion.p>
+                  style={{ color: isSelected ? "rgba(240,232,212,0.85)" : "rgba(240,232,212,0.45)", fontSize: isSelected ? 14 : 12, fontStyle: "italic", marginTop: 8, lineHeight: 1.6, overflow: "hidden" }}
+                >{t.note}</motion.p>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Global curing traditions */}
-        <div style={{ background: "rgba(212,175,55,0.03)", border: `1px solid ${GOLD}15`, borderRadius: 8, padding: "14px 16px", marginBottom: 22 }}>
-          <p style={{ color: `${GOLD}85`, fontSize: 14, letterSpacing: "0.22em", textTransform: "uppercase" as const, marginBottom: 12 }}>
-            Global Curing Traditions
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 12 }}>
-            {CURES.map(c => (
-              <div key={c.name} style={{ flex: "1 1 160px" }}>
-                <span style={{ color: GOLD, fontSize: 17, fontWeight: 700, letterSpacing: "0.08em", display: "block", marginBottom: 5 }}>{c.name}</span>
-                <span style={{ color: "rgba(240,232,212,0.65)", fontSize: 15, lineHeight: 1.6 }}>{c.desc}</span>
+        {/* Nutrient chemical balance readout */}
+        <AnimatePresence>
+          {selectedRegion && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+              style={{ overflow: "hidden", background: "rgba(74,222,128,0.05)", border: "1px solid rgba(74,222,128,0.20)", borderRadius: 8, padding: "12px 16px", marginBottom: 18 }}
+            >
+              <p style={{ color: "#4ade80", fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase" as const, margin: "0 0 6px", fontWeight: 700 }}>
+                ✓ Terroir Chemical Matrix Locked — {selectedRegion}
+              </p>
+              <div style={{ display: "flex", gap: 20, flexWrap: "wrap" as const }}>
+                {[
+                  { label: "Potassium", value: selectedRegion === "Nicaragua" ? "HIGH" : "MODERATE" },
+                  { label: "pH Level",  value: selectedRegion === "Ecuador" ? "6.2 (Balanced)" : selectedRegion === "Cuba" ? "5.8 (Acidic)" : "6.8 (Alkaline)" },
+                  { label: "Nitrogen",  value: selectedRegion === "Dominican Republic" ? "LOW" : "ELEVATED" },
+                ].map(m => (
+                  <div key={m.label}>
+                    <span style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.16em", display: "block" }}>{m.label}</span>
+                    <span style={{ color: "rgba(240,232,212,0.80)", fontSize: 14, fontWeight: 700 }}>{m.value}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-          <button
-            style={GW.btn(true)}
-            onTouchStart={() => playClick()}
-            onClick={onBack}
-          >
-            Back
-          </button>
+          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <motion.button
-            style={{
-              ...GW.btn(!selectedRegion),
-              ...(selectedRegion ? {} : { opacity: 0.45, cursor: "not-allowed" }),
-            }}
+            style={{ ...GW.btn(!selectedRegion), ...(selectedRegion ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
             onTouchStart={() => selectedRegion && playClick()}
             whileHover={selectedRegion ? { scale: 1.03 } : {}}
             whileTap={selectedRegion ? { scale: 0.97, y: 2 } : {}}
@@ -2540,32 +2611,45 @@ function GatewayTerroir({ onNext, onBack, onCountrySelect }: {
 }
 
 // -- Gateway: Seed Biology & Priming (Stage 3b) ----------------------------
+const SEED_VARIETAL_IMAGES: Record<string, string> = {
+  "Criollo 98":        "https://images.unsplash.com/photo-1559181567-c3190ca9be23?auto=format&fit=crop&w=600&q=80",
+  "Corojo 99":         "https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=600&q=80",
+  "Habano 2000":       "https://images.unsplash.com/photo-1466781783364-36c955e42a7f?auto=format&fit=crop&w=600&q=80",
+  "Connecticut Shade": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+  "Broadleaf":         "https://images.unsplash.com/photo-1504113888839-1c8eb50233d3?auto=format&fit=crop&w=600&q=80",
+};
 function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
-  const [selectedLeaf, setSelectedLeaf] = useState<string | null>(null);
+  const [selectedLeaf,    setSelectedLeaf]    = useState<string | null>(null);
+  const [selectedVarietal, setSelectedVarietal] = useState<string | null>(null);
+
   const LEAVES = [
     {
-      id: "volado", pos: "Bottom \u2014 Volado", strength: 14,
-      profile: "Light body \u00b7 Combustion agent", color: "#8BC34A",
-      note: "Lowest nicotine density. Ensures even burn throughout the smoke. Mild cereal and hay notes. Every master blend needs at least 20% Volado filler for reliable combustion.",
+      id: "volado", pos: "Bottom — Volado", strength: 14,
+      profile: "Light body · Combustion agent", color: "#8BC34A",
+      img: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=700&q=80",
+      note: "Highest natural sugars — proximity to roots delivers peak soil nutrients and potassium. Ensures even combustion throughout. Every master blend needs at least 20% Volado for reliable burn physics.",
     },
     {
-      id: "seco", pos: "Mid \u2014 Seco", strength: 52,
-      profile: "Medium body \u00b7 Flavor bridge", color: GOLD,
-      note: "The architect\u2019s leaf. Primary flavor expression: cedar, leather, cocoa, or spice. Constitutes 40\u201360% of premium blends. Air-cured to preserve aromatic compounds.",
+      id: "seco", pos: "Mid — Seco", strength: 52,
+      profile: "Medium body · Flavor bridge", color: GOLD,
+      img: "https://images.unsplash.com/photo-1547753062-93041c1f9c3a?auto=format&fit=crop&w=700&q=80",
+      note: "The architect's leaf. Primary flavor expression: cedar, leather, cocoa, spice. Air-cured 45–60 days to lock aromatic oils. Constitutes 40–60% of all premium blends worldwide.",
     },
     {
-      id: "ligero", pos: "Crown \u2014 Ligero", strength: 94,
-      profile: "Full power \u00b7 Strength apex", color: "#E8741A",
-      note: "The sovereign leaf. Highest nicotine density \u2014 requires 18\u201324 months minimum aging. One Ligero filler transforms any blend to full-body. Deploy with measured precision.",
+      id: "ligero", pos: "Crown — Ligero", strength: 94,
+      profile: "Full power · Strength apex", color: "#E8741A",
+      img: "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=700&q=80",
+      note: "The sovereign leaf. Highest nicotine density — demands 18–24 months aging minimum. Top-canopy leaves absorb direct sunlight, producing thick oily alkaloids. One Ligero transforms any blend to full-body.",
     },
   ];
   const VARIETALS = [
-    { name: "Criollo 98",        origin: "Cuba",            body: "Full",  note: "The heritage benchmark" },
-    { name: "Corojo 99",         origin: "Cuba / Honduras", body: "Med+",  note: "Spice & red pepper finish" },
-    { name: "Habano 2000",       origin: "Nicaragua",       body: "Full",  note: "Earth, cocoa, volcanic mineral" },
-    { name: "Connecticut Shade", origin: "Ecuador / USA",   body: "Mild",  note: "Cream, cedar, subtle sweetness" },
-    { name: "Broadleaf",         origin: "Connecticut, USA",body: "Full+", note: "Dark wrapper gold standard" },
+    { name: "Criollo 98",        origin: "Cuba",            body: "Full",  note: "The heritage benchmark — earthy, smooth, balanced complexity." },
+    { name: "Corojo 99",         origin: "Cuba / Honduras", body: "Med+",  note: "Spicy, robust oils — classic red pepper finish with amber tones." },
+    { name: "Habano 2000",       origin: "Nicaragua",       body: "Full",  note: "Earth, cocoa, volcanic mineral — Alejandro's signature lineage." },
+    { name: "Connecticut Shade", origin: "Ecuador / USA",   body: "Mild",  note: "Cream, cedar, subtle sweetness — delicate pale nursery wrapper." },
+    { name: "Broadleaf",         origin: "Connecticut, USA",body: "Full+", note: "Dark wrapper gold standard — maximum fermentation depth." },
   ];
+
   return (
     <motion.div
       key="gw-seed-bio"
@@ -2575,106 +2659,194 @@ function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: ()
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       style={GW.bg}
     >
-      {/* Tobacco terrain backdrop - deeper burn for contrast with bars */}
+      <style>{`
+        @keyframes sbShimmer {
+          0%   { background-position: -200% center; }
+          100% { background-position:  200% center; }
+        }
+        .sb-shimmer-card {
+          background-size: 200% auto;
+          animation: sbShimmer 3.5s linear infinite;
+        }
+      `}</style>
+
+      {/* Active pulsing obsidian viewport */}
       <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
         <img
-          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1400&q=80"
           alt=""
           className="w-full h-full object-cover"
-          style={{ filter: "brightness(0.13) saturate(0.55)" }}
+          style={{ filter: "brightness(0.10) saturate(0.35) sepia(0.50)" }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 60%, rgba(255,176,0,0.06) 0%, rgba(0,0,0,0.88) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 30%, rgba(212,175,55,0.09) 0%, rgba(8,8,10,0.96) 100%)" }} />
+        {/* Ambient pulse rings */}
+        <motion.div
+          animate={{ scale: [1, 1.08, 1], opacity: [0.04, 0.09, 0.04] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.12) 0%, transparent 55%)", pointerEvents: "none" }}
+        />
       </div>
 
       <div style={GW.chamber} className="overflow-y-auto">
-        <p style={{ ...GW.para, fontSize: 16, letterSpacing: "0.18em", color: `${GOLD}90`, textTransform: "uppercase" as const, marginBottom: 10 }}>
-          Seed &amp; Leaf &middot; The Biology of Flavor
+        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.22em", color: `${GOLD}90`, textTransform: "uppercase" as const, marginBottom: 8 }}>
+          Seed &amp; Leaf · The Biology of Flavor
         </p>
-        <h2 style={GW.title}>Seed Biology &amp; Priming</h2>
-        <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 17, lineHeight: 1.6, marginBottom: 18 }}>
-          A cigar's soul lives in the leaf's position on the stalk. Tap each position to reveal its character.
-        </p>
+        <h2 style={{ ...GW.title, marginBottom: 10 }}>Seed Biology &amp; Priming</h2>
 
-        {/* Leaf position architecture */}
-        <p style={{ color: `${GOLD}80`, fontSize: 15, letterSpacing: "0.20em", textTransform: "uppercase" as const, marginBottom: 14 }}>
-          Leaf Position Architecture &mdash; Flavor Intensity Scale
+        {/* Console action guidance ribbon */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          style={{
+            background: `linear-gradient(90deg, ${GOLD}12, ${GOLD}06, ${GOLD}12)`,
+            border: `1px solid ${GOLD}40`,
+            borderRadius: 6, padding: "10px 18px", marginBottom: 22,
+            backgroundSize: "200% auto",
+          }}
+          className="sb-shimmer-card"
+        >
+          <p style={{ color: GOLD, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" as const, margin: 0, fontWeight: 700 }}>
+            Console Action Required:
+          </p>
+          <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 14, lineHeight: 1.55, margin: "4px 0 0" }}>
+            Touch a genetic seed lineage card to initialize vascular cloning. Your choice alters structural oil density and flavor baseline profile.
+          </p>
+        </motion.div>
+
+        {/* Leaf position architecture — horizontal split */}
+        <p style={{ color: `${GOLD}75`, fontSize: 12, letterSpacing: "0.22em", textTransform: "uppercase" as const, marginBottom: 12 }}>
+          Leaf Position Architecture — Flavor Intensity Scale
         </p>
-        <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 24 }}>
-          {LEAVES.map(leaf => {
+        <div style={{ display: "flex", flexDirection: "column" as const, gap: 12, marginBottom: 26 }}>
+          {LEAVES.map((leaf, i) => {
             const isOpen = selectedLeaf === leaf.id;
             return (
               <motion.div
                 key={leaf.id}
-                onClick={() => setSelectedLeaf(isOpen ? null : leaf.id)}
-                whileTap={{ scale: 0.98 }}
+                onClick={() => { setSelectedLeaf(isOpen ? null : leaf.id); playClick(); }}
+                whileTap={{ scale: 0.97 }}
+                animate={{
+                  x: isOpen ? 12 : 0,
+                  scale: isOpen ? 1.02 : 1,
+                  boxShadow: isOpen ? `0 0 32px ${leaf.color}35, 0 0 12px ${leaf.color}20` : "none",
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 24 }}
+                initial={{ opacity: 0, x: -20 }}
                 style={{
-                  background: isOpen ? "rgba(255,255,255,0.045)" : "rgba(255,255,255,0.025)",
-                  border: isOpen ? `1.5px solid ${leaf.color}55` : "1px solid rgba(212,175,55,0.15)",
-                  borderRadius: 10, padding: "18px 20px", cursor: "pointer",
-                  boxShadow: isOpen ? `0 0 24px ${leaf.color}18` : "none",
+                  background: isOpen ? `rgba(255,255,255,0.05)` : "rgba(255,255,255,0.025)",
+                  border: isOpen ? `2px solid ${leaf.color}80` : `1px solid ${leaf.color}25`,
+                  borderRadius: 10, overflow: "hidden", cursor: "pointer",
+                  display: "flex", gap: 0,
+                  animationDelay: `${i * 0.08}s`,
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap" as const, gap: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <span style={{ color: leaf.color, fontSize: 18, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const }}>{leaf.pos}</span>
-                    <span style={{ color: "rgba(240,232,212,0.55)", fontSize: 15 }}>{leaf.profile}</span>
-                  </div>
-                  <span style={{ color: leaf.color, fontSize: 20, fontWeight: 700 }}>{leaf.strength}%</span>
-                </div>
-                {/* Animated strength bar */}
-                <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3, marginBottom: 10, overflow: "hidden" }}>
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${leaf.strength}%` }}
-                    transition={{ delay: 0.35, duration: 1.0, ease: "easeOut" }}
-                    style={{ height: "100%", background: leaf.color, borderRadius: 3 }}
-                  />
-                </div>
-                <AnimatePresence>
+                {/* Leaf image strip */}
+                <div style={{ width: isOpen ? 110 : 64, flexShrink: 0, position: "relative", overflow: "hidden", transition: "width 0.4s ease" }}>
+                  <img src={leaf.img} alt={leaf.pos}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", filter: isOpen ? `brightness(0.75) saturate(1.3)` : "brightness(0.45) saturate(0.6)" }} />
+                  <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to right, transparent 40%, ${isOpen ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.7)"})` }} />
                   {isOpen && (
-                    <motion.p
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      style={{ color: "rgba(240,232,212,0.80)", fontSize: 16, lineHeight: 1.65, margin: 0, overflow: "hidden" }}
-                    >{leaf.note}</motion.p>
+                    <motion.div
+                      animate={{ boxShadow: [`inset 0 0 30px ${leaf.color}30`, `inset 0 0 60px ${leaf.color}55`, `inset 0 0 30px ${leaf.color}30`] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      style={{ position: "absolute", inset: 0 }}
+                    />
                   )}
-                </AnimatePresence>
-                {!isOpen && (
-                  <p style={{ color: "rgba(240,232,212,0.45)", fontSize: 15, lineHeight: 1.5, margin: 0 }}>Tap to reveal the full character of this leaf position.</p>
-                )}
+                </div>
+
+                {/* Content */}
+                <div style={{ flex: 1, padding: "16px 18px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap" as const, gap: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ color: leaf.color, fontSize: 16, fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase" as const }}>{leaf.pos}</span>
+                      <span style={{ color: "rgba(240,232,212,0.50)", fontSize: 13 }}>{leaf.profile}</span>
+                    </div>
+                    <span style={{ color: leaf.color, fontSize: 22, fontWeight: 800 }}>{leaf.strength}%</span>
+                  </div>
+                  <div style={{ height: 4, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: 10, overflow: "hidden" }}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${leaf.strength}%` }}
+                      transition={{ delay: 0.3 + i * 0.1, duration: 1.2, ease: "easeOut" }}
+                      style={{ height: "100%", background: `linear-gradient(90deg, ${leaf.color}70, ${leaf.color})`, borderRadius: 2, boxShadow: `0 0 8px ${leaf.color}60` }}
+                    />
+                  </div>
+                  <AnimatePresence>
+                    {isOpen ? (
+                      <motion.p
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        style={{ color: "rgba(240,232,212,0.82)", fontSize: 15, lineHeight: 1.65, margin: 0, overflow: "hidden" }}
+                      >{leaf.note}</motion.p>
+                    ) : (
+                      <p style={{ color: "rgba(240,232,212,0.38)", fontSize: 13, lineHeight: 1.5, margin: 0 }}>Tap to reveal the full character of this leaf position.</p>
+                    )}
+                  </AnimatePresence>
+                </div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Seed varietals */}
-        <div style={{ background: "rgba(212,175,55,0.03)", border: `1px solid ${GOLD}13`, borderRadius: 8, padding: "14px 16px", marginBottom: 22 }}>
-          <p style={{ color: `${GOLD}85`, fontSize: 14, letterSpacing: "0.20em", textTransform: "uppercase" as const, marginBottom: 12 }}>
-            Seed Varietals &amp; Heritage Lines
+        {/* Strategic Priming Console */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
+          style={{ background: "rgba(232,116,26,0.06)", border: "1px solid rgba(232,116,26,0.30)", borderRadius: 10, padding: "16px 20px", marginBottom: 22 }}
+        >
+          <p style={{ color: "#E8741A", fontSize: 11, letterSpacing: "0.26em", textTransform: "uppercase" as const, marginBottom: 8, fontWeight: 700 }}>
+            Critical Thinking Checkpoint
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 8 }}>
-            {VARIETALS.map(v => (
-              <div
+          <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 15, lineHeight: 1.65, margin: 0 }}>
+            Top leaves (Ligero) absorb direct sunlight, producing thick nicotine oils that delay burn rates but amplify power. Bottom leaves (Volado) combust effortlessly. Your blend matrix must orchestrate these layers — a wrapper cannot save a suffocating internal core.
+          </p>
+        </motion.div>
+
+        {/* Seed varietals with images */}
+        <p style={{ color: `${GOLD}75`, fontSize: 12, letterSpacing: "0.22em", textTransform: "uppercase" as const, marginBottom: 12 }}>
+          Seed Varietals &amp; Heritage Lines
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10, marginBottom: 24 }}>
+          {VARIETALS.map(v => {
+            const isSel = selectedVarietal === v.name;
+            return (
+              <motion.div
                 key={v.name}
-                style={{ flex: "1 1 150px", background: "rgba(255,255,255,0.02)", borderRadius: 6, padding: "10px 12px", border: `1px solid ${GOLD}0F` }}
+                onClick={() => { setSelectedVarietal(isSel ? null : v.name); playClick(); }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.96 }}
+                animate={{
+                  border: isSel ? `2px solid ${GOLD}90` : `1px solid ${GOLD}18`,
+                  boxShadow: isSel ? `0 0 22px ${GOLD}25, 0 0 8px ${GOLD}15` : "none",
+                }}
+                style={{ borderRadius: 8, overflow: "hidden", cursor: "pointer", position: "relative" as const, background: "rgba(0,0,0,0.55)" }}
               >
-                <span style={{ color: GOLD, fontSize: 16, fontWeight: 700, display: "block", marginBottom: 4 }}>{v.name}</span>
-                <span style={{ color: "rgba(240,232,212,0.55)", fontSize: 14, display: "block", marginBottom: 4 }}>{v.origin} &middot; {v.body} body</span>
-                <span style={{ color: "rgba(240,232,212,0.70)", fontSize: 14, fontStyle: "italic" }}>{v.note}</span>
-              </div>
-            ))}
-          </div>
+                <div style={{ height: 100, overflow: "hidden", position: "relative" }}>
+                  <img src={SEED_VARIETAL_IMAGES[v.name] ?? ""} alt={v.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", filter: isSel ? "brightness(0.75) saturate(1.2)" : "brightness(0.45) saturate(0.5)" }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 55%)" }} />
+                  {isSel && (
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                      style={{ position: "absolute", top: 6, right: 6, color: GOLD, fontSize: 14, fontWeight: 700,
+                        background: "rgba(0,0,0,0.75)", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      ✓
+                    </motion.div>
+                  )}
+                </div>
+                <div style={{ padding: "10px 12px" }}>
+                  <span style={{ color: isSel ? GOLD : "rgba(245,235,215,0.90)", fontSize: 14, fontWeight: 700, display: "block", marginBottom: 3, transition: "color 0.2s" }}>{v.name}</span>
+                  <span style={{ color: "rgba(240,232,212,0.45)", fontSize: 11, display: "block", marginBottom: 4 }}>{v.origin} · {v.body}</span>
+                  {isSel && (
+                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+                      style={{ color: "rgba(240,232,212,0.72)", fontSize: 12, lineHeight: 1.5, margin: 0, overflow: "hidden" }}>{v.note}</motion.p>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-          <button
-            style={GW.btn(true)}
-            onTouchStart={() => playClick()}
-            onClick={onBack}
-          >
-            Back
-          </button>
+          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <motion.button
             style={GW.btn()}
             onTouchStart={() => playClick()}
@@ -2682,7 +2854,7 @@ function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: ()
             whileTap={{ scale: 0.97, y: 2 }}
             onClick={onNext}
           >
-            Begin Cultivation &rarr;
+            Begin Cultivation →
           </motion.button>
         </div>
       </div>
@@ -2989,21 +3161,33 @@ function ReadTimer({ seconds, onReady }: { seconds: number; onReady: () => void 
 }
 
 // ── Movement II · Screen 1: Leaf Harvest & Primings ─────────────────────
+const HARVEST_LEAF_PHOTOS: Record<string, string> = {
+  volado: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=700&q=80",
+  seco:   "https://images.unsplash.com/photo-1560472355-109703aa3edc?auto=format&fit=crop&w=700&q=80",
+  viso:   "https://images.unsplash.com/photo-1547753062-93041c1f9c3a?auto=format&fit=crop&w=700&q=80",
+  ligero: "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=700&q=80",
+};
 function GatewayHarvest({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [readyToAdvance, setReadyToAdvance] = useState(false);
   const [quizAnswer,     setQuizAnswer]     = useState<string | null>(null);
   const [quizRevealed,   setQuizRevealed]   = useState(false);
+  const [activeLeaf,     setActiveLeaf]     = useState<string>("volado");
 
   const PRIMINGS = [
-    { id: "volado", pos: "1st Priming — Volado", color: "#8BC34A", pct: 14,
+    { id: "volado", pos: "1st Priming \u2014 Volado", color: "#8BC34A", pct: 14,
+      texture: "Bright green, wide, thin-veined \u2014 high elasticity, maximum soil sugars.",
       note: "Highest natural sugars. Bottom leaves absorb maximum soil potassium. Ensures even combustion throughout. The structural backbone every master blend requires." },
-    { id: "seco",   pos: "2nd Priming — Seco",   color: GOLD,       pct: 52,
-      note: "Primary flavor expression: cedar, leather, cocoa, spice. Air-cured 45–60 days to lock in aromatic oils. Constitutes 40–60% of premium blends worldwide." },
-    { id: "viso",   pos: "3rd Priming — Viso",   color: "#E8741A",  pct: 71,
+    { id: "seco",   pos: "2nd Priming \u2014 Seco",   color: "#d4af37",  pct: 52,
+      texture: "Rich golden-brown mature leaves with a balanced, silky texture.",
+      note: "Primary flavor expression: cedar, leather, cocoa, spice. Air-cured 45\u201360 days to lock in aromatic oils. Constitutes 40\u201360% of premium blends worldwide." },
+    { id: "viso",   pos: "3rd Priming \u2014 Viso",   color: "#E8741A",  pct: 71,
+      texture: "Deep amber, supple and oil-rich. Prized for pliability under the chaveta.",
       note: "Elevated oils create rich, supple texture. Medium-to-full body. Prized by master rollers for pliability during construction under the chaveta." },
-    { id: "ligero", pos: "4th Priming — Ligero", color: "#ef4444",  pct: 94,
-      note: "Maximum nicotine density. Demands 18–24 months minimum aging to mellow peak alkaloids. One Ligero filler transforms any blend to full-body intensity." },
+    { id: "ligero", pos: "4th Priming \u2014 Ligero", color: "#ef4444",  pct: 94,
+      texture: "Deep, dark, thick sun-baked leaves coated in glistening natural oils.",
+      note: "Maximum nicotine density. Demands 18\u201324 months minimum aging to mellow peak alkaloids. One Ligero filler transforms any blend to full-body intensity." },
   ];
+  const activeP = PRIMINGS.find(p => p.id === activeLeaf) ?? PRIMINGS[0];
 
   return (
     <motion.div key="gw-harvest"
@@ -3013,109 +3197,144 @@ function GatewayHarvest({ onNext, onBack }: { onNext: () => void; onBack: () => 
       style={GW.bg}>
       <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
         <img
-          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
+          src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1400&q=80"
           alt="" className="w-full h-full object-cover"
-          style={{ filter: "brightness(0.13) saturate(0.55) sepia(0.35)" }} />
+          style={{ filter: "brightness(0.10) saturate(0.40) sepia(0.45)" }} />
         <div style={{ position: "absolute", inset: 0,
-          background: "radial-gradient(ellipse at 50% 30%, rgba(232,116,26,0.09) 0%, rgba(0,0,0,0.90) 100%)" }} />
+          background: "radial-gradient(ellipse at 50% 30%, rgba(232,116,26,0.08) 0%, rgba(0,0,0,0.92) 100%)" }} />
       </div>
-      <div style={GW.chamber} className="overflow-y-auto">
-        <MovementBadge movement="II" />
-        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
-          textTransform: "uppercase" as const, marginBottom: 10 }}>
-          The Growing Season · Priming Science
-        </p>
-        <h2 style={GW.title}>Leaf Harvest &amp; Primings</h2>
-        <p style={{ color: "rgba(240,232,212,0.70)", fontSize: 17, lineHeight: 1.65, marginBottom: 22 }}>
-          A tobacco plant is harvested in <strong style={{ color: GOLD }}>4 timed stages called primings</strong>.
-          Each position on the stalk produces a leaf with distinct flavor intensity, combustion physics,
-          and nicotine density. Potassium levels dictate combustion — the higher the Volado ratio,
-          the more even the burn.
-        </p>
 
-        <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 26 }}>
-          {PRIMINGS.map((p, i) => (
-            <motion.div key={p.id}
-              initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.11 }}
-              style={{ background: "rgba(255,255,255,0.025)", border: `1px solid ${p.color}22`,
-                borderRadius: 10, padding: "16px 20px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-                marginBottom: 8, flexWrap: "wrap" as const, gap: 8 }}>
-                <span style={{ color: p.color, fontSize: 16, fontWeight: 700,
-                  letterSpacing: "0.10em", textTransform: "uppercase" as const }}>{p.pos}</span>
-                <span style={{ color: p.color, fontSize: 20, fontWeight: 700 }}>{p.pct}%</span>
-              </div>
-              <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3,
-                marginBottom: 10, overflow: "hidden" }}>
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${p.pct}%` }}
-                  transition={{ delay: 0.4 + i * 0.12, duration: 1.1, ease: "easeOut" }}
-                  style={{ height: "100%", background: p.color, borderRadius: 3 }} />
-              </div>
-              <p style={{ color: "rgba(240,232,212,0.68)", fontSize: 15, lineHeight: 1.6, margin: 0 }}>{p.note}</p>
-            </motion.div>
-          ))}
-        </div>
+      {/* Horizontal split */}
+      <div style={{ ...GW.chamber, maxWidth: 1040, display: "flex", flexDirection: "row" as const, gap: 22, padding: "24px 22px", alignItems: "stretch" }}>
+        {/* LEFT */}
+        <div style={{ flex: "0 0 56%", overflowY: "auto" as const, display: "flex", flexDirection: "column" as const }}>
+          <MovementBadge movement="II" />
+          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, letterSpacing: "0.22em", color: "#d4af3788", textTransform: "uppercase" as const, marginBottom: 8 }}>
+            The Growing Season \u00b7 Priming Science
+          </p>
+          <h2 style={{ ...GW.title, marginBottom: 10 }}>Leaf Harvest &amp; Primings</h2>
+          <p style={{ color: "rgba(240,232,212,0.72)", fontSize: 16, lineHeight: 1.65, marginBottom: 18 }}>
+            A tobacco plant is harvested in <strong style={{ color: "#d4af37" }}>4 timed stages called primings</strong>.
+            Each position on the stalk produces a leaf with distinct flavor intensity, combustion physics,
+            and nicotine density. Tap each tier to examine its leaf anatomy.
+          </p>
 
-        <div style={{ background: `${GOLD}06`, border: `1px solid ${GOLD}25`,
-          borderRadius: 10, padding: "20px 22px", marginBottom: 24 }}>
-          <p style={{ color: GOLD, fontSize: 16, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 14 }}>
-            Master Blender Challenge
-          </p>
-          <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 17, lineHeight: 1.6, marginBottom: 16 }}>
-            Which priming position produces the highest natural sugar content,
-            ensuring even combustion throughout the smoke?
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-            {PRIMINGS.map(p => {
-              const correct  = p.id === "volado";
-              const isSel    = quizAnswer === p.id;
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 10, marginBottom: 20 }}>
+            {PRIMINGS.map((p, i) => {
+              const isActive = activeLeaf === p.id;
               return (
-                <motion.button key={p.id} whileTap={{ scale: 0.97 }}
-                  onClick={() => { if (!quizRevealed) { setQuizAnswer(p.id); setQuizRevealed(true); playClick(); } }}
-                  style={{
-                    background: quizRevealed && isSel ? (correct ? "rgba(74,222,128,0.12)" : "rgba(239,68,68,0.10)") : isSel ? `${GOLD}12` : "rgba(255,255,255,0.04)",
-                    border: quizRevealed && isSel ? `1.5px solid ${correct ? "#4ade80" : "#ef4444"}` : isSel ? `1.5px solid ${GOLD}` : "1px solid rgba(212,175,55,0.18)",
-                    borderRadius: 8, padding: "14px 16px",
-                    cursor: quizRevealed ? "default" : "pointer",
-                    textAlign: "left" as const,
-                  }}>
-                  <span style={{
-                    color: isSel ? (quizRevealed ? (correct ? "#4ade80" : "#ef4444") : GOLD) : "rgba(240,232,212,0.75)",
-                    fontSize: 15, fontWeight: isSel ? 700 : 400
-                  }}>
-                    {p.pos.split(" — ")[1]}
-                  </span>
-                </motion.button>
+                <motion.div key={p.id}
+                  initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.09 }}
+                  onClick={() => { setActiveLeaf(p.id); playClick(); }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ background: isActive ? `${p.color}10` : "rgba(255,255,255,0.025)",
+                    border: `1.5px solid ${isActive ? p.color + "70" : p.color + "22"}`,
+                    borderRadius: 9, padding: "13px 15px", cursor: "pointer",
+                    boxShadow: isActive ? `0 0 20px ${p.color}20` : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <span style={{ color: isActive ? p.color : "rgba(240,232,212,0.70)", fontSize: 14, fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase" as const }}>{p.pos}</span>
+                    <span style={{ color: p.color, fontSize: 18, fontWeight: 800 }}>{p.pct}%</span>
+                  </div>
+                  <div style={{ height: 4, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: isActive ? 10 : 0, overflow: "hidden" }}>
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${p.pct}%` }}
+                      transition={{ delay: 0.3 + i * 0.10, duration: 1.2, ease: "easeOut" }}
+                      style={{ height: "100%", background: `linear-gradient(90deg, ${p.color}60, ${p.color})`, borderRadius: 2, boxShadow: `0 0 6px ${p.color}50` }} />
+                  </div>
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} style={{ overflow: "hidden" }}>
+                        <p style={{ color: `${p.color}90`, fontSize: 12, fontStyle: "italic", margin: "0 0 4px" }}>{p.texture}</p>
+                        <p style={{ color: "rgba(240,232,212,0.72)", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{p.note}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               );
             })}
           </div>
-          {quizRevealed && (
-            <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-              style={{ color: quizAnswer === "volado" ? "#4ade80" : "#f97316",
-                fontSize: 15, lineHeight: 1.6, margin: 0 }}>
-              {quizAnswer === "volado"
-                ? "✓ Correct. Volado’s elevated potassium and sugar content drive reliable combustion physics."
-                : "Volado (1st priming) carries the highest natural sugars — proximity to roots delivers peak soil nutrients and potassium, which govern burn consistency."}
-            </motion.p>
-          )}
+
+          {/* Quiz */}
+          <div style={{ background: "#d4af3706", border: "1px solid #d4af3722", borderRadius: 10, padding: "14px 16px", marginBottom: 16 }}>
+            <p style={{ color: "#d4af37", fontSize: 13, fontWeight: 700, letterSpacing: "0.10em", marginBottom: 10 }}>Master Blender Challenge</p>
+            <p style={{ color: "rgba(240,232,212,0.78)", fontSize: 15, lineHeight: 1.6, marginBottom: 12 }}>
+              Which priming produces the highest natural sugar content, ensuring even combustion?
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+              {PRIMINGS.map(p => {
+                const correct = p.id === "volado"; const isSel = quizAnswer === p.id;
+                return (
+                  <motion.button key={p.id} whileTap={{ scale: 0.97 }}
+                    onClick={() => { if (!quizRevealed) { setQuizAnswer(p.id); setQuizRevealed(true); playClick(); } }}
+                    style={{
+                      background: quizRevealed && isSel ? (correct ? "rgba(74,222,128,0.12)" : "rgba(239,68,68,0.10)") : isSel ? "#d4af3712" : "rgba(255,255,255,0.04)",
+                      border: quizRevealed && isSel ? `1.5px solid ${correct ? "#4ade80" : "#ef4444"}` : isSel ? "1.5px solid #d4af37" : "1px solid rgba(212,175,55,0.18)",
+                      borderRadius: 7, padding: "11px 13px", cursor: quizRevealed ? "default" : "pointer", textAlign: "left" as const,
+                    }}>
+                    <span style={{ color: isSel ? (quizRevealed ? (correct ? "#4ade80" : "#ef4444") : "#d4af37") : "rgba(240,232,212,0.75)", fontSize: 14, fontWeight: isSel ? 700 : 400 }}>
+                      {p.pos.split(" \u2014 ")[1]}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+            {quizRevealed && (
+              <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                style={{ color: quizAnswer === "volado" ? "#4ade80" : "#f97316", fontSize: 14, lineHeight: 1.6, margin: 0 }}>
+                {quizAnswer === "volado"
+                  ? "\u2713 Correct. Volado's elevated potassium and sugar content drive reliable combustion physics."
+                  : "Volado (1st priming) \u2014 proximity to roots delivers peak soil nutrients and potassium governing burn consistency."}
+              </motion.p>
+            )}
+          </div>
+
+          {/* Strategic Priming Console */}
+          <div style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.20)", borderRadius: 8, padding: "13px 15px", marginBottom: 16 }}>
+            <p style={{ color: "#d4af37", fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase" as const, marginBottom: 7, fontWeight: 700 }}>
+              Strategic Priming Console
+            </p>
+            <p style={{ color: "rgba(240,232,212,0.75)", fontSize: 14, lineHeight: 1.65, margin: 0 }}>
+              Top leaves (Ligero) absorb direct sunlight, producing thick heavy nicotine oils that delay burn rates but amplify power. Bottom leaves (Volado) combust effortlessly. Your blend matrix must orchestrate these layers \u2014 a wrapper cannot save a suffocating internal core.
+            </p>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", marginTop: "auto" }}>
+            <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <ReadTimer seconds={45} onReady={() => setReadyToAdvance(true)} />
+              <motion.button
+                style={{ ...GW.btn(!readyToAdvance), ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
+                whileHover={readyToAdvance ? { scale: 1.03 } : {}}
+                whileTap={readyToAdvance ? { scale: 0.97 } : {}}
+                onTouchStart={() => readyToAdvance && playClick()}
+                onClick={() => readyToAdvance && onNext()}>
+                {readyToAdvance ? "Curing Barn \u2192" : "Reading\u2026"}
+              </motion.button>
+            </div>
+          </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-          <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <ReadTimer seconds={45} onReady={() => setReadyToAdvance(true)} />
-            <motion.button
-              style={{ ...GW.btn(!readyToAdvance),
-                ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
-              whileHover={readyToAdvance ? { scale: 1.03 } : {}}
-              whileTap={readyToAdvance ? { scale: 0.97 } : {}}
-              onTouchStart={() => readyToAdvance && playClick()}
-              onClick={() => readyToAdvance && onNext()}>
-              {readyToAdvance ? "Curing Barn →" : "Reading…"}
-            </motion.button>
+        {/* RIGHT: Live leaf photo panel */}
+        <div style={{ flex: 1, borderRadius: 12, overflow: "hidden", minHeight: 280, position: "relative" as const, background: "rgba(0,0,0,0.50)", border: `1px solid ${activeP.color}20` }}>
+          <AnimatePresence mode="wait">
+            <motion.div key={activeLeaf}
+              initial={{ opacity: 0, scale: 1.06 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{ position: "absolute", inset: 0 }}>
+              <img src={HARVEST_LEAF_PHOTOS[activeLeaf] ?? ""} alt={activeP.pos}
+                style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.65) saturate(1.25)" }} />
+              <motion.div
+                animate={{ boxShadow: [`inset 0 0 60px ${activeP.color}20`, `inset 0 0 100px ${activeP.color}40`, `inset 0 0 60px ${activeP.color}20`] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                style={{ position: "absolute", inset: 0 }} />
+            </motion.div>
+          </AnimatePresence>
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 2,
+            background: "linear-gradient(to top, rgba(0,0,0,0.96) 0%, transparent 100%)",
+            padding: "48px 16px 18px" }}>
+            <p style={{ color: `${activeP.color}70`, fontSize: 9, letterSpacing: "0.32em", textTransform: "uppercase" as const, margin: "0 0 4px" }}>ACTIVE PRIMING</p>
+            <p style={{ fontFamily: "'Cormorant Garamond',serif", color: activeP.color, fontSize: "1.5rem", fontWeight: 300, margin: "0 0 4px" }}>{activeP.pos.split(" \u2014 ")[1]}</p>
+            <p style={{ color: "rgba(240,232,212,0.55)", fontSize: 12, margin: 0, fontStyle: "italic" }}>{activeP.texture}</p>
           </div>
         </div>
       </div>
@@ -3126,21 +3345,32 @@ function GatewayHarvest({ onNext, onBack }: { onNext: () => void; onBack: () => 
 // ── Movement II · Screen 2: Curing Barns & Fermentation ──────────────────
 function GatewayCuring({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [readyToAdvance, setReadyToAdvance] = useState(false);
-  const [activeTemp,     setActiveTemp]     = useState<70 | 90 | 110 | 130>(70);
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
 
-  type TempStep = { f: 70|90|110|130; label: string; desc: string; color: string };
-  const TEMPS: TempStep[] = [
-    { f: 70,  label: "70°F", color: "#8BC34A",
-      desc: "Pre-fermentation. Initial air-cure phase. Chlorophyll breaking down, leaf color shifting green → amber. Moisture content still high." },
-    { f: 90,  label: "90°F", color: GOLD,
-      desc: "Seco activation. Optimal for medium-body leaf. Volatile oils begin concentrating. Cedar and cocoa notes emerge from cellular breakdown." },
-    { f: 110, label: "110°F", color: "#E8741A",
-      desc: "Viso intensity reached. Rich, oily compounds form. Spice and leather complexity develops. Rotate the pilón now to equalize heat." },
-    { f: 130, label: "130°F", color: "#ef4444",
-      desc: "Ligero fullness unlocked. Maximum alkaloid transformation. Ammonia fully expelled. Dark chocolate and deep earth notes permanently sealed." },
+  const METHODS = [
+    {
+      id: "air",
+      title: "Traditional Barn Air-Curing",
+      subtitle: "45\u201390 days passive ventilation",
+      color: "#8BC34A",
+      img: "https://images.unsplash.com/photo-1559181567-c3190ca9be23?auto=format&fit=crop&w=700&q=80",
+      traits: ["Preserves natural sweetness", "Chlorophyll breakdown", "Cream & cedar notes emerge", "Ideal for Connecticut & Seco leaves"],
+      mentor: "The barn's patience is your greatest tool. Let the air do the work \u2014 force nothing. The leaf will release its chlorophyll when it is ready, not before.",
+      science: "Passive barn airflow reduces moisture from 85% to under 20% over 45\u201390 days. Natural enzymes break down starches into simple sugars, unlocking sweetness without heat distortion.",
+    },
+    {
+      id: "thermal",
+      title: "Controlled Thermal Fermentation",
+      subtitle: "Pilon stack \u00b7 100\u2013130\u00b0F internal heat",
+      color: "#E8741A",
+      img: "https://images.unsplash.com/photo-1547753062-93041c1f9c3a?auto=format&fit=crop&w=700&q=80",
+      traits: ["Ammonia fully expelled", "Alkaloid transformation", "Dark chocolate & earth locked in", "Essential for Maduro & Ligero"],
+      mentor: "The pilon is the volcano's cousin \u2014 controlled destruction creates rebirth. Stack with precision, rotate every 72 hours, and trust the heat to do what centuries of knowledge have proven.",
+      science: "Tightly compressed 3\u20134 ft leaf stacks generate 100\u2013130\u00b0F internally. Microbial fermentation expels harsh ammonia compounds, permanently transforming raw nicotine into complex, smooth alkaloids.",
+    },
   ];
 
-  const active = TEMPS.find(t => t.f === activeTemp) ?? TEMPS[0];
+  const activeMethod = METHODS.find(m => m.id === selectedMethod);
 
   return (
     <motion.div key="gw-curing"
@@ -3150,95 +3380,125 @@ function GatewayCuring({ onNext, onBack }: { onNext: () => void; onBack: () => v
       style={GW.bg}>
       <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
         <img
-          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          src="https://images.unsplash.com/photo-1541689592655-f5f52825a3b8?auto=format&fit=crop&w=1400&q=80"
           alt="" className="w-full h-full object-cover"
-          style={{ filter: "brightness(0.10) saturate(0.30) sepia(0.60)" }} />
+          style={{ filter: "brightness(0.10) saturate(0.30) sepia(0.55)" }} />
         <div style={{ position: "absolute", inset: 0,
           background: "radial-gradient(ellipse at 40% 60%, rgba(180,80,20,0.10) 0%, rgba(0,0,0,0.92) 100%)" }} />
       </div>
+
       <div style={GW.chamber} className="overflow-y-auto">
         <MovementBadge movement="II" />
-        <p style={{ ...GW.para, fontSize: 15, letterSpacing: "0.18em", color: `${GOLD}88`,
-          textTransform: "uppercase" as const, marginBottom: 10 }}>
-          The Curing Barn · Pilón Fermentation
+        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, letterSpacing: "0.22em", color: "#d4af3788", textTransform: "uppercase" as const, marginBottom: 8 }}>
+          The Curing Barn \u00b7 Fermentation Science
         </p>
-        <h2 style={GW.title}>Curing &amp; Fermentation Science</h2>
-        <p style={{ color: "rgba(240,232,212,0.70)", fontSize: 17, lineHeight: 1.65, marginBottom: 20 }}>
-          After harvest, leaves hang in <strong style={{ color: GOLD }}>traditional curing barns for 45–90 days</strong>.
-          Then they are stacked into a <em>pilón</em> — a tightly compressed bulk that generates intense internal heat.
-          Fermentation expels ammonia, transforms alkaloids, and builds the complex flavor architecture
-          that defines premium tobacco.
+        <h2 style={{ ...GW.title, marginBottom: 10 }}>Curing &amp; Fermentation</h2>
+        <p style={{ color: "rgba(240,232,212,0.72)", fontSize: 16, lineHeight: 1.65, marginBottom: 20 }}>
+          After harvest, the leaf undergoes a critical transformation. Two distinct methods define entirely different flavor architectures \u2014 your choice shapes the final alkaloid profile permanently.
         </p>
 
-        <div style={{ background: "rgba(232,116,26,0.05)", border: "1px solid rgba(232,116,26,0.20)",
-          borderRadius: 10, padding: "20px 22px", marginBottom: 22 }}>
-          <p style={{ color: "#E8741A", fontSize: 14, fontWeight: 700, letterSpacing: "0.16em",
-            textTransform: "uppercase" as const, marginBottom: 16 }}>
-            Interactive Pilón — Tap a Fermentation Temperature
+        {/* Console guidance ribbon */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+          style={{ background: "rgba(232,116,26,0.07)", border: "1px solid rgba(232,116,26,0.30)", borderRadius: 6, padding: "10px 16px", marginBottom: 20 }}>
+          <p style={{ color: "#E8741A", fontSize: 11, letterSpacing: "0.20em", textTransform: "uppercase" as const, margin: "0 0 3px", fontWeight: 700 }}>Blender Decision Required</p>
+          <p style={{ color: "rgba(240,232,212,0.78)", fontSize: 14, lineHeight: 1.55, margin: 0 }}>
+            Select a curing method. This choice permanently determines your blend's fermentation depth, alkaloid smoothness, and final flavor range.
           </p>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14, gap: 8, flexWrap: "wrap" as const }}>
-            {TEMPS.map(t => (
-              <button key={t.f}
-                onClick={() => { setActiveTemp(t.f); playClick(); }}
-                style={{
-                  background: activeTemp === t.f ? `${t.color}18` : "rgba(255,255,255,0.03)",
-                  border: `1.5px solid ${activeTemp === t.f ? t.color : "rgba(255,255,255,0.12)"}`,
-                  borderRadius: 8, padding: "10px 14px", cursor: "pointer", flex: 1,
-                }}>
-                <span style={{ color: activeTemp === t.f ? t.color : "rgba(240,232,212,0.55)",
-                  fontSize: 16, fontWeight: 700 }}>{t.label}</span>
-              </button>
-            ))}
-          </div>
-          <AnimatePresence mode="wait">
-            <motion.div key={activeTemp}
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
-              style={{ background: "rgba(0,0,0,0.35)", borderRadius: 8,
-                padding: "14px 18px", border: `1px solid ${active.color}28` }}>
-              <p style={{ color: active.color, fontSize: 16, fontWeight: 700, marginBottom: 6 }}>
-                {active.label} — Fermentation Stage
-              </p>
-              <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 16, lineHeight: 1.65, margin: 0 }}>
-                {active.desc}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+        </motion.div>
+
+        {/* Two-option selector */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 22 }}>
+          {METHODS.map((m, i) => {
+            const isSel = selectedMethod === m.id;
+            return (
+              <motion.div
+                key={m.id}
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.12 }}
+                onClick={() => { setSelectedMethod(m.id); playClick(); }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                style={{ borderRadius: 12, overflow: "hidden", cursor: "pointer", position: "relative" as const,
+                  border: `2px solid ${isSel ? m.color : m.color + "25"}`,
+                  boxShadow: isSel ? `0 0 30px ${m.color}30, 0 8px 24px rgba(0,0,0,0.5)` : "0 4px 16px rgba(0,0,0,0.4)" }}>
+                {/* Photo header */}
+                <div style={{ height: 130, position: "relative", overflow: "hidden" }}>
+                  <img src={m.img} alt={m.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover",
+                      filter: isSel ? "brightness(0.70) saturate(1.3)" : "brightness(0.40) saturate(0.55)",
+                      transition: "filter 0.4s ease" }} />
+                  <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 55%)` }} />
+                  {isSel && (
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                      style={{ position: "absolute", top: 10, right: 10,
+                        background: m.color, color: "#000", width: 24, height: 24,
+                        borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 13, fontWeight: 800 }}>
+                      \u2713
+                    </motion.div>
+                  )}
+                  {isSel && (
+                    <motion.div
+                      animate={{ boxShadow: [`inset 0 0 40px ${m.color}25`, `inset 0 0 70px ${m.color}45`, `inset 0 0 40px ${m.color}25`] }}
+                      transition={{ duration: 2.2, repeat: Infinity }}
+                      style={{ position: "absolute", inset: 0 }} />
+                  )}
+                </div>
+
+                {/* Card body */}
+                <div style={{ background: isSel ? `${m.color}0D` : "rgba(20,18,15,0.88)", padding: "14px 16px" }}>
+                  <p style={{ color: m.color, fontSize: 14, fontWeight: 700, letterSpacing: "0.08em", margin: "0 0 3px" }}>{m.title}</p>
+                  <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 10px" }}>{m.subtitle}</p>
+                  <div style={{ display: "flex", flexDirection: "column" as const, gap: 5 }}>
+                    {m.traits.map(t => (
+                      <div key={t} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ color: m.color, fontSize: 10 }}>\u25cf</span>
+                        <span style={{ color: "rgba(240,232,212,0.72)", fontSize: 13, lineHeight: 1.4 }}>{t}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 24 }}>
-          {[
-            { title: "Air Cure", sub: "45–90 days", color: "#8BC34A",
-              body: "Barn ventilation preserves natural sweetness and oils. Reduces chlorophyll. Foundation for Connecticut and Seco leaves." },
-            { title: "Pilón Stack", sub: "Fermentation bulk", color: GOLD,
-              body: "3–4 ft compressed stacks generate 100–130°F. Rotated every 3–4 days to equalize heat and prevent spontaneous combustion." },
-            { title: "Ammonia Release", sub: "Alkaloid transformation", color: "#E8741A",
-              body: "Fermentation expels harsh ammonia compounds. Converts raw nicotine into smooth, complex alkaloids. Critical quality marker." },
-            { title: "Rest Cycle", sub: "Post-fermentation", color: "#a78bfa",
-              body: "Leaves rest 30+ days post-pilón. Final moisture equilibration. Completes the aromatic profile before rolling begins." },
-          ].map(c => (
-            <div key={c.title} style={{ background: "rgba(255,255,255,0.025)",
-              border: `1px solid ${c.color}20`, borderRadius: 8, padding: "16px 18px" }}>
-              <p style={{ color: c.color, fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{c.title}</p>
-              <p style={{ color: `${GOLD}58`, fontSize: 12, letterSpacing: "0.10em",
-                textTransform: "uppercase" as const, marginBottom: 8 }}>{c.sub}</p>
-              <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 15, lineHeight: 1.6, margin: 0 }}>{c.body}</p>
-            </div>
-          ))}
-        </div>
+        {/* Mentor Strategic Guidance — appears on selection */}
+        <AnimatePresence>
+          {activeMethod && (
+            <motion.div
+              key={activeMethod.id}
+              initial={{ opacity: 0, y: 10, height: 0 }} animate={{ opacity: 1, y: 0, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              style={{ overflow: "hidden", marginBottom: 18 }}>
+              <div style={{ background: "rgba(212,175,55,0.06)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)",
+                border: "1px solid rgba(212,175,55,0.28)", borderRadius: 10, padding: "14px 16px" }}>
+                <p style={{ color: "#d4af37", fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase" as const, margin: "0 0 6px", fontWeight: 700 }}>
+                  Mentor Strategic Guidance
+                </p>
+                <p style={{ color: "rgba(240,232,212,0.82)", fontSize: 14, lineHeight: 1.7, margin: "0 0 10px", fontStyle: "italic" }}>
+                  "{activeMethod.mentor}"
+                </p>
+                <p style={{ color: "rgba(240,232,212,0.55)", fontSize: 13, lineHeight: 1.6, margin: 0 }}>
+                  {activeMethod.science}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
           <button style={GW.btn(true)} onTouchStart={() => playClick()} onClick={onBack}>Back</button>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <ReadTimer seconds={50} onReady={() => setReadyToAdvance(true)} />
             <motion.button
-              style={{ ...GW.btn(!readyToAdvance),
-                ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
+              style={{ ...GW.btn(!readyToAdvance), ...(readyToAdvance ? {} : { opacity: 0.45, cursor: "not-allowed" }) }}
               whileHover={readyToAdvance ? { scale: 1.03 } : {}}
               whileTap={readyToAdvance ? { scale: 0.97 } : {}}
               onTouchStart={() => readyToAdvance && playClick()}
               onClick={() => readyToAdvance && onNext()}>
-              {readyToAdvance ? "Rolling Bench →" : "Reading…"}
+              {readyToAdvance ? "Rolling Bench \u2192" : "Reading\u2026"}
             </motion.button>
           </div>
         </div>
@@ -3834,6 +4094,13 @@ function GatewayMovement1Gate({
 }) {
   const country = selectedTerroir ?? "Dominican Republic";
   const [suggestion, setSuggestion] = useState<{ cigar: string; spirit: string; spiritStyle: string; liveItems: Array<{ name: string; image_url: string | null }> } | null>(null);
+  const [overlayDismissed, setOverlayDismissed] = useState(false);
+  const [overlayVisible,   setOverlayVisible]   = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setOverlayVisible(true), 900);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     fetch(`/api/master-blender/humidor-suggestions?country=${encodeURIComponent(country)}`)
@@ -3860,6 +4127,119 @@ function GatewayMovement1Gate({
         <div style={{ position: "absolute", inset: 0,
           background: "radial-gradient(ellipse at 50% 20%, rgba(139,195,74,0.08) 0%, rgba(0,0,0,0.97) 100%)" }} />
       </div>
+
+      {/* ── Session 1 Cinematic Summary Overlay ── */}
+      <AnimatePresence>
+        {overlayVisible && !overlayDismissed && (
+          <motion.div
+            key="session1-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.65 }}
+            style={{ position: "absolute", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.97)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "28px 20px", overflowY: "auto" }}
+          >
+            {/* Ambient glow */}
+            <motion.div
+              animate={{ opacity: [0.06, 0.13, 0.06] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.15) 0%, transparent 60%)", pointerEvents: "none" }}
+            />
+
+            {/* Scanline accent */}
+            <motion.div
+              initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+              transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+              style={{ width: "100%", maxWidth: 560, height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}80, transparent)`, marginBottom: 28 }}
+            />
+
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              style={{ background: "rgba(212,175,55,0.10)", border: `1px solid ${GOLD}40`, borderRadius: 4, padding: "5px 18px", marginBottom: 16 }}
+            >
+              <p style={{ color: GOLD, fontSize: 10, letterSpacing: "0.42em", textTransform: "uppercase" as const, margin: 0, fontWeight: 700 }}>
+                SESSION 1 COMPLETE
+              </p>
+            </motion.div>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              style={{ fontFamily: "'Cormorant Garamond',serif", color: "rgba(245,235,215,0.95)", fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 300, letterSpacing: "0.04em", textAlign: "center" as const, margin: "0 0 6px", lineHeight: 1.2 }}
+            >
+              The Sovereign Core Matrix
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ delay: 0.55 }}
+              style={{ color: GOLD, fontSize: 12, letterSpacing: "0.32em", textTransform: "uppercase" as const, marginBottom: 28 }}
+            >
+              Complete
+            </motion.p>
+
+            {/* Dynamic Scoreboard */}
+            <motion.div
+              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              style={{ width: "100%", maxWidth: 520, background: "rgba(212,175,55,0.05)", border: `1px solid ${GOLD}25`, borderRadius: 12, padding: "20px 24px", marginBottom: 20 }}
+            >
+              <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.30em", textTransform: "uppercase" as const, margin: "0 0 16px" }}>
+                Core Matrix Summary
+              </p>
+              {[
+                { label: "Origin Terroir",  value: `${(COUNTRY_FLAGS as Record<string,string>)[country] ?? "🌿"} ${country}`, color: "#8BC34A" },
+                { label: "Seed Lineage",    value: selectedSeed === "corojo" ? "Corojo Premium" : selectedSeed === "criollo" ? "Criollo '98" : selectedSeed ?? "—", color: GOLD },
+                { label: "Movement Score",  value: `+${xp} XP`, color: "#a78bfa" },
+                { label: "Mastery Tier",    value: getTier(xp).name, color: getTier(xp).color },
+              ].map((row, i) => (
+                <motion.div key={row.label}
+                  initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.72 + i * 0.09 }}
+                  style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                  <span style={{ color: "rgba(240,232,212,0.50)", fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" as const }}>{row.label}</span>
+                  <span style={{ color: row.color, fontSize: 15, fontWeight: 700 }}>{row.value}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Session 2 Blueprint unlock banner */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.0, type: "spring", stiffness: 280 }}
+              style={{ width: "100%", maxWidth: 520, background: "rgba(139,195,74,0.08)", border: "1px solid rgba(139,195,74,0.32)", borderRadius: 8, padding: "12px 18px", marginBottom: 24, display: "flex", alignItems: "center", gap: 14 }}
+            >
+              <span style={{ fontSize: 22 }}>🔓</span>
+              <div>
+                <p style={{ color: "#8BC34A", fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase" as const, margin: "0 0 3px", fontWeight: 700 }}>Session 2 Blueprint Unlocked</p>
+                <p style={{ color: "rgba(240,232,212,0.60)", fontSize: 13, margin: 0 }}>
+                  The Craft & Structure Matrix awaits — Harvest, Curing, Rolling, Priming.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Scanline accent bottom */}
+            <motion.div
+              initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+              transition={{ delay: 0.9, duration: 0.8, ease: "easeOut" }}
+              style={{ width: "100%", maxWidth: 560, height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}80, transparent)`, marginBottom: 24 }}
+            />
+
+            <motion.button
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.1 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => { playClick(); setOverlayDismissed(true); }}
+              style={{ ...GW.btn(), background: "linear-gradient(135deg,#6a9a30,#4a7020)", border: "1px solid #8BC34A50", minWidth: 280 }}
+            >
+              ENTER SESSION 2 →
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div style={{ ...GW.chamber, maxWidth: 700 }} className="overflow-y-auto">
         {/* Achievement header */}
         <motion.div
@@ -5414,6 +5794,7 @@ export default function MasterBlender() {
               {gateway === "terroir" && (
                 <GatewayTerroir
                   key="terroir"
+                  selectedMentor={selectedMentor}
                   onNext={() => setGateway("seed_biology")}
                   onBack={() => setGateway("mentor_philosophy")}
                   onCountrySelect={(country) => {
@@ -5440,20 +5821,6 @@ export default function MasterBlender() {
                   onXP={spawnXP}
                   onNext={handleCultivationNext}
                   onBack={() => setGateway("seed_biology")}
-                />
-              )}
-            {gateway === "harvest" && (
-                <GatewayHarvest
-                  key="harvest"
-                  onNext={() => setGateway("curing")}
-                  onBack={() => setGateway("cultivation")}
-                />
-              )}
-              {gateway === "curing" && (
-                <GatewayCuring
-                  key="curing"
-                  onNext={() => setGateway("rolling_bench")}
-                  onBack={() => setGateway("harvest")}
                 />
               )}
               {gateway === "gate_movement_1" && (
