@@ -4,6 +4,7 @@ import { useGuest } from "@/context/GuestProfileContext";
 import { BackButton } from "@/components/BackButton";
 import { LeaderboardTicker } from "@/components/LeaderboardTicker";
 import { POSGateModal } from "@/components/POSGateModal";
+import { CheatCodeEngine } from "@/components/CheatCodeEngine";
 import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
 import { CigarHero } from "@/components/CigarHero";
 
@@ -343,31 +344,31 @@ export function S1_InitGate() {
               <RightPanel>
                 <Eyebrow>Scoring Mechanics</Eyebrow>
                 <SectionTitle style={{ marginBottom: 20 }}>The Golden Box</SectionTitle>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 28 }}>
                   {[
-                    { icon: "✦", t: "Visual Accuracy & Synergy",    badge: "+10 XP", body: "Each correct architecture decision earns +10 XP.", gain: true },
-                    { icon: "⚠", t: "Mentor Blind Quiz Failures",   badge: "−2 PTS", body: "Each wrong Seed Priming answer deducts 2 pts.",    gain: false },
-                    { icon: "💨", t: "Volatile Blend · Draw Collapse", badge: "−5 PTS", body: "Excess Ligero collapses airflow — −5 PTS each.",  gain: false },
-                    { icon: "🔁", t: "Table Orders · Cheat Codes",  badge: "2× 3× 5×", body: "Cigar+Drink (2×) · Double Pour (3×) · Grand Slam (5× + wipes penalties).", gain: true },
+                    { icon: "✦", t: "Visual Accuracy & Synergy",      badge: "+10 XP", body: "Each correct architecture decision earns +10 XP.", gain: true },
+                    { icon: "⚠", t: "Mentor Blind Quiz Failures",     badge: "−2 PTS", body: "Each wrong Seed Priming answer deducts 2 pts.",    gain: false },
+                    { icon: "💨", t: "Volatile Blend · Draw Collapse", badge: "−5 PTS", body: "Excess Ligero collapses airflow — −5 PTS each.",    gain: false },
+                    { icon: "🔁", t: "Table Orders · Cheat Codes",    badge: "2× 3× 5×", body: "Cigar+Drink (2×) · Double Pour (3×) · Grand Slam (5× — wipes all penalties).", gain: true },
                   ].map(r => (
                     <div key={r.t} style={{
-                      display: "flex", gap: 14, alignItems: "flex-start",
-                      background: r.gain ? "rgba(212,175,55,0.05)" : "rgba(200,50,42,0.05)",
-                      border: `1px solid ${r.gain ? "rgba(212,175,55,0.22)" : "rgba(200,50,42,0.22)"}`,
-                      borderRadius: 14, padding: "16px 18px",
+                      display: "flex", gap: 18, alignItems: "flex-start",
+                      background: r.gain ? "rgba(212,175,55,0.06)" : "rgba(200,50,42,0.06)",
+                      border: `1px solid ${r.gain ? "rgba(212,175,55,0.28)" : "rgba(200,50,42,0.28)"}`,
+                      borderRadius: 14, padding: "20px 22px",
                     }}>
-                      <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1, marginTop: 2 }}>{r.icon}</span>
+                      <span style={{ fontSize: 28, flexShrink: 0, lineHeight: 1, marginTop: 4 }}>{r.icon}</span>
                       <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginBottom: 5 }}>
-                          <span style={{ fontSize: 15, fontWeight: 700, color: "#F0E8D4" }}>{r.t}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                          <span style={{ fontSize: 24, fontWeight: 700, color: "#F0E8D4", lineHeight: 1.2 }}>{r.t}</span>
                           <span style={{
-                            background: r.gain ? "rgba(212,175,55,0.16)" : "rgba(200,50,42,0.16)",
-                            border: `1px solid ${r.gain ? GOLD + "55" : "rgba(200,50,42,0.55)"}`,
-                            borderRadius: 6, padding: "3px 9px", fontSize: 12, fontWeight: 900,
+                            background: r.gain ? "rgba(212,175,55,0.18)" : "rgba(200,50,42,0.18)",
+                            border: `1px solid ${r.gain ? GOLD + "66" : "rgba(200,50,42,0.66)"}`,
+                            borderRadius: 8, padding: "6px 14px", fontSize: 18, fontWeight: 900,
                             color: r.gain ? GOLD : "#C8322A", letterSpacing: "0.08em", flexShrink: 0,
                           }}>{r.badge}</span>
                         </div>
-                        <p style={{ fontSize: 13, color: "rgba(240,232,212,0.46)", margin: 0, lineHeight: 1.55 }}>{r.body}</p>
+                        <p style={{ fontSize: 20, color: "rgba(240,232,212,0.55)", margin: 0, lineHeight: 1.55 }}>{r.body}</p>
                       </div>
                     </div>
                   ))}
@@ -655,34 +656,34 @@ export function S1_InitGate() {
                     <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 44, fontWeight: 400, color: "#F0E8D4", margin: "0 0 14px", letterSpacing: "0.04em", lineHeight: 1.05 }}>
                       {seed.name}
                     </h2>
-                    <p style={{ fontSize: 16, color: "rgba(240,232,212,0.50)", lineHeight: 1.68, margin: 0 }}>{seed.profile}</p>
+                    <p style={{ fontSize: 22, color: "rgba(240,232,212,0.55)", lineHeight: 1.65, margin: 0 }}>{seed.profile}</p>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    <div style={{ fontSize: 10, letterSpacing: "0.38em", textTransform: "uppercase", color: "rgba(255,255,255,0.22)", fontWeight: 700, marginBottom: 2 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                    <div style={{ fontSize: 11, letterSpacing: "0.38em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", fontWeight: 800, marginBottom: 2 }}>
                       Profile Telemetry
                     </div>
                     {seed.specs.map(sp => (
                       <div key={sp.k}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                          <span style={{ fontSize: 12, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(240,232,212,0.32)", fontWeight: 700 }}>{sp.k}</span>
-                          <span style={{ fontSize: 15, fontWeight: 800, color: "#F0E8D4" }}>{sp.v}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                          <span style={{ fontSize: 20, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(240,232,212,0.42)", fontWeight: 700 }}>{sp.k}</span>
+                          <span style={{ fontSize: 24, fontWeight: 800, color: "#F0E8D4" }}>{sp.v}</span>
                         </div>
-                        <div style={{ height: 7, background: "rgba(255,255,255,0.06)", borderRadius: 4, boxShadow: "inset 0 1px 2px rgba(0,0,0,0.45)" }}>
+                        <div style={{ height: 9, background: "rgba(255,255,255,0.07)", borderRadius: 5, boxShadow: "inset 0 1px 3px rgba(0,0,0,0.50)" }}>
                           <motion.div key={seedId + sp.k}
                             initial={{ width: 0 }} animate={{ width: `${sp.b}%` }}
-                            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                            style={{ height: "100%", background: `linear-gradient(90deg, ${GOLD}77, ${GOLD})`, borderRadius: 4, boxShadow: `0 0 12px ${GOLD}55` }} />
+                            transition={{ duration: 0.60, ease: [0.22, 1, 0.36, 1] }}
+                            style={{ height: "100%", background: `linear-gradient(90deg, ${GOLD}88, ${GOLD})`, borderRadius: 5, boxShadow: `0 0 14px ${GOLD}66` }} />
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div style={{ background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.16)", borderRadius: 14, padding: "18px 20px" }}>
-                    <div style={{ fontSize: 10, letterSpacing: "0.30em", color: `${GOLD}70`, textTransform: "uppercase", fontWeight: 700, marginBottom: 8 }}>
+                  <div style={{ background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 14, padding: "22px 24px" }}>
+                    <div style={{ fontSize: 11, letterSpacing: "0.32em", color: `${GOLD}80`, textTransform: "uppercase", fontWeight: 800, marginBottom: 12 }}>
                       Vein Architecture
                     </div>
-                    <p style={{ fontSize: 14, color: "rgba(240,232,212,0.52)", lineHeight: 1.60, margin: 0 }}>
+                    <p style={{ fontSize: 20, color: "rgba(240,232,212,0.58)", lineHeight: 1.62, margin: 0 }}>
                       {seedId === "connecticut"
                         ? "Near-invisible tertiary vein network. Microscopic cross-fibers sealed under the cuticle — standard for premium wrapper aesthetics."
                         : seedId === "corojo"
@@ -750,7 +751,7 @@ export function S1_InitGate() {
                               padding: "20px 24px",
                               background: "rgba(255,255,255,0.028)", backdropFilter: "blur(14px)",
                               border: "1px solid rgba(255,255,255,0.09)", borderRadius: 13,
-                              color: "#F0E8D4", fontSize: 19, fontWeight: 500, textAlign: "left",
+                              color: "#F0E8D4", fontSize: 24, fontWeight: 500, textAlign: "left",
                               cursor: done ? "default" : "pointer", fontFamily: "'Inter', sans-serif",
                               display: "flex", alignItems: "center", gap: 18,
                               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 10px rgba(0,0,0,0.30)",
@@ -767,7 +768,7 @@ export function S1_InitGate() {
                         );
                       })}
                     </div>
-                    <p style={{ color: "rgba(200,50,42,0.58)", fontSize: 13, margin: "14px 0 0", letterSpacing: "0.06em" }}>
+                    <p style={{ color: "rgba(200,50,42,0.65)", fontSize: 20, margin: "18px 0 0", letterSpacing: "0.04em" }}>
                       Wrong answer = −{QUIZ[qIdx].pen} pts from your session total
                     </p>
                   </motion.div>
@@ -790,13 +791,16 @@ export function S1_InitGate() {
             }
             right={
               <RightPanel>
-                <div style={{ fontSize: 60, marginBottom: 24 }}>🌱</div>
-                <Eyebrow>Next Step</Eyebrow>
+                <div style={{ fontSize: 64, marginBottom: 20 }}>🌱</div>
+                <Eyebrow>Session 1 Complete</Eyebrow>
                 <SectionTitle>Enter Receipt Code</SectionTitle>
-                <p style={{ color: "rgba(240,232,212,0.40)", fontSize: 17, lineHeight: 1.65, marginBottom: 32 }}>
-                  Present your table receipt to your server. They will provide a 4–6 character code that unlocks Session 2: the Terroir Matrix.
+                <p style={{ color: "rgba(240,232,212,0.52)", fontSize: 24, lineHeight: 1.60, marginBottom: 28 }}>
+                  Present your table receipt to your server. They will provide a 4–6 character code to unlock Session 2: the Terroir Matrix.
                 </p>
                 <GoldBtn onClick={() => setShowPOS(true)} fullWidth>ENTER RECEIPT CODE →</GoldBtn>
+                <div style={{ marginTop: 28 }}>
+                  <CheatCodeEngine />
+                </div>
               </RightPanel>
             }
           />

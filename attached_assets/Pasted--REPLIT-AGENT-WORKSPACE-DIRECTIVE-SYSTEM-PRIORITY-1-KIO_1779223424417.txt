@@ -1,0 +1,31 @@
+[REPLIT AGENT WORKSPACE DIRECTIVE]
+
+SYSTEM PRIORITY 1: KIOSK UI OVERHAUL (SMOKECRAFT 360)
+SYSTEM PRIORITY 2: SENSORY SATURATION & TELEMETRY
+SYSTEM PRIORITY 3: NATIVE TRANSITION ENGINE
+
+Wipe all generic web stubs and replace the entire framework with the unified, 4-session kiosk architecture now. Treat this platform as native hardware (1920x1080 landscape).
+
+***
+
+1. NATIVE IMMERSION OVERHAUL:
+- Materials: Erase all generic cards. Deploy full-bleed, textured high-end materials: Obsidian Glass panels, Brushed Titanium structural headers, Warm Gold accents, and Smoked Chrome background layers.
+- Movement: Replace page cuts with 0.35s weighted spring animations. forward/backward: (opacity 1->0, slide -50px); incoming: (slide in, scale 0.95->1.0).
+- Feedback: Map 3400Hz mechanical oscillator synthetic switch tones and physical vibration pulses to all touch nodes. Set oversized, high-contrast text for 40-60 age cohorts in dim lighting.
+
+2. ENFORCE THE WORKFLOW MATRIX (NO SKIPPING):
+- Step 1.3: Golden Box Rules Disclosure: Immediately after registration, deploy a mandatory rules view:
+    * XP SCORING: Synergy (+10), Structural Fail (-5), Quiz Fail (-2).
+    * POS RECOVERY: Explain that lost points can be multiplied/recovered via table spend "Cheat Codes."
+- Step 1.4: Mentor Curation (Heritage-Based): Depict realistic portrait blenders. Users must first select a master (Dominican Maestro, Nicaraguan Puro Boss, or Traditionalist Wrapper) to curate coaching dialogues.
+
+3. SENSORY INJECTION & AGRONOMY TELEMETRY (ZERO GUESSING):
+- Deep Content: When a user makes a selection, display the specific flavor, strength, and burn characteristics of their chosen seed line or soil matrix, completely eliminating guessing.
+- Real Visuals: Replace icons with photorealistic visual assets: high-resolution tobacco leaf textures (veins visible), textured volcanic soil, and premium cedar boxes for the custom packaging studio utilizing the name "Ronnie Felder."
+- State Lock: Enforce a functional, top-left "Back" navigation anchor Linked to a persistent state-history router across all views.
+
+4. DUAL MONETIZATION:
+- Cheat Codes: Implement the 2x (Cigar+Drink), 3x (Double Pour), and 5x (Sovereign Grand Slam) receipt-scanning multipliers to erase past failures.
+- Progress: Track spend-based loyalty tiers through the root state. Push final scores to the live lounge leaderboard and print the physical receipt token.
+
+Zero broken imports. Zero empty stubs. Full compliance with the native kiosk design standard. Execute batch write now.

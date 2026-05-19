@@ -63,43 +63,45 @@ export function CheatCodeEngine() {
   return (
     <div style={{
       background: "rgba(212,175,55,0.04)",
-      border: `1px solid rgba(212,175,55,0.20)`,
+      border: `1px solid rgba(212,175,55,0.22)`,
       borderRadius: 16,
-      padding: "28px 28px 22px",
+      padding: "28px 28px 24px",
     }}>
       <p style={{
-        fontSize: 10,
-        letterSpacing: "0.34em",
-        color: `${GOLD}88`,
+        fontSize: 11,
+        letterSpacing: "0.38em",
+        color: `${GOLD}90`,
         textTransform: "uppercase",
-        fontWeight: 700,
-        margin: "0 0 16px",
+        fontWeight: 800,
+        margin: "0 0 20px",
         fontFamily: "'Inter', sans-serif",
       }}>
         Transactional Recovery · Cheat Codes
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
         {CHEAT_DEFS.map(d => (
           <div
             key={d.code}
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 14,
+              gap: 16,
               opacity: profile.cheatCodesUsed.includes(d.code) ? 0.35 : 1,
               transition: "opacity 0.3s",
+              padding: "10px 0",
+              borderBottom: "1px solid rgba(255,255,255,0.05)",
             }}
           >
             <span style={{
               background: d.color + "22",
               border: `1px solid ${d.color}55`,
               borderRadius: 8,
-              padding: "4px 10px",
-              fontSize: 11,
+              padding: "8px 14px",
+              fontSize: 16,
               fontWeight: 800,
               color: d.color,
-              letterSpacing: "0.14em",
+              letterSpacing: "0.12em",
               textTransform: "uppercase",
               fontFamily: "'Inter', sans-serif",
               whiteSpace: "nowrap",
@@ -108,20 +110,21 @@ export function CheatCodeEngine() {
               {d.badge}
             </span>
             <span style={{
-              color: "rgba(240,232,212,0.55)",
-              fontSize: 14,
+              color: "rgba(240,232,212,0.65)",
+              fontSize: 20,
               fontFamily: "'Inter', sans-serif",
+              lineHeight: 1.4,
             }}>
               {d.label} — {d.desc}
             </span>
             {profile.cheatCodesUsed.includes(d.code) && (
-              <span style={{ color: GOLD, fontSize: 16, marginLeft: "auto" }}>✓</span>
+              <span style={{ color: GOLD, fontSize: 22, marginLeft: "auto", flexShrink: 0 }}>✓</span>
             )}
           </div>
         ))}
       </div>
 
-      <div style={{ display: "flex", gap: 10 }}>
+      <div style={{ display: "flex", gap: 12 }}>
         <input
           type="text"
           value={input}
@@ -130,12 +133,12 @@ export function CheatCodeEngine() {
           placeholder="ENTER COUPON CODE"
           style={{
             flex: 1,
-            padding: "16px 18px",
-            background: "rgba(255,255,255,0.04)",
-            border: `1px solid ${error ? "#C8322A" : `${GOLD}30`}`,
-            borderRadius: 10,
+            padding: "20px 22px",
+            background: "rgba(255,255,255,0.05)",
+            border: `1.5px solid ${error ? "#C8322A" : `${GOLD}35`}`,
+            borderRadius: 12,
             color: "#F0E8D4",
-            fontSize: 18,
+            fontSize: 24,
             fontWeight: 700,
             letterSpacing: "0.14em",
             fontFamily: "'Inter', sans-serif",
@@ -147,12 +150,12 @@ export function CheatCodeEngine() {
           onPointerDown={attempt}
           whileTap={{ scale: 0.95 }}
           style={{
-            padding: "16px 28px",
+            padding: "20px 32px",
             background: `linear-gradient(135deg, ${GOLD} 0%, #9A7A14 100%)`,
             border: "none",
-            borderRadius: 10,
+            borderRadius: 12,
             color: "#0A0604",
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: 900,
             letterSpacing: "0.16em",
             cursor: "pointer",
@@ -165,7 +168,7 @@ export function CheatCodeEngine() {
       </div>
 
       {error && (
-        <p style={{ color: "#C8322A", fontSize: 14, margin: "8px 0 0", fontFamily: "'Inter', sans-serif" }}>
+        <p style={{ color: "#C8322A", fontSize: 20, margin: "12px 0 0", fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
           {error}
         </p>
       )}
@@ -177,14 +180,14 @@ export function CheatCodeEngine() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: -6 }}
             style={{
-              marginTop: 16,
-              padding: "16px",
-              background: `rgba(212,175,55,0.12)`,
-              border: `1.5px solid ${GOLD}`,
-              borderRadius: 10,
+              marginTop: 18,
+              padding: "20px",
+              background: `rgba(212,175,55,0.14)`,
+              border: `2px solid ${GOLD}`,
+              borderRadius: 12,
               textAlign: "center",
               color: GOLD,
-              fontSize: 22,
+              fontSize: 28,
               fontWeight: 900,
               letterSpacing: "0.18em",
               fontFamily: "'Inter', sans-serif",

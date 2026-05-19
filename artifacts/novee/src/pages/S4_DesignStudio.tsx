@@ -209,9 +209,9 @@ export function S4_DesignStudio() {
                         transition: "all 0.22s",
                       }}
                     >
-                      <div style={{ fontSize: 28, color: active ? GOLD : "rgba(255,255,255,0.25)", marginBottom: 8, fontWeight: 700 }}>{c.glyph}</div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: active ? GOLD : "#F0E8D4", marginBottom: 4 }}>{c.label}</div>
-                      <div style={{ fontSize: 12, color: "rgba(240,232,212,0.36)" }}>{c.desc}</div>
+                      <div style={{ fontSize: 32, color: active ? GOLD : "rgba(255,255,255,0.30)", marginBottom: 10, fontWeight: 700 }}>{c.glyph}</div>
+                      <div style={{ fontSize: 22, fontWeight: 700, color: active ? GOLD : "#F0E8D4", marginBottom: 6 }}>{c.label}</div>
+                      <div style={{ fontSize: 16, color: "rgba(240,232,212,0.45)" }}>{c.desc}</div>
                     </motion.button>
                   );
                 })}
@@ -273,7 +273,7 @@ export function S4_DesignStudio() {
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 20 }}>
                   {/* Wood Grain */}
                   <div>
-                    <p style={{ fontSize: 12, letterSpacing: "0.24em", color: `${GOLD}80`, textTransform: "uppercase", fontWeight: 700, margin: "0 0 12px" }}>
+                    <p style={{ fontSize: 14, letterSpacing: "0.24em", color: `${GOLD}90`, textTransform: "uppercase", fontWeight: 800, margin: "0 0 14px" }}>
                       Wood Grain Texture
                     </p>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
@@ -305,7 +305,7 @@ export function S4_DesignStudio() {
                               border: "1px solid rgba(255,255,255,0.12)",
                               boxShadow: active ? `0 0 12px ${GOLD}55` : "none",
                             }} />
-                            <div style={{ fontSize: 12, color: active ? GOLD : "rgba(240,232,212,0.50)", fontWeight: active ? 700 : 400 }}>
+                            <div style={{ fontSize: 18, color: active ? GOLD : "rgba(240,232,212,0.55)", fontWeight: active ? 700 : 400 }}>
                               {g.label}
                             </div>
                           </motion.button>
@@ -339,8 +339,8 @@ export function S4_DesignStudio() {
                         }}
                       >
                         <div style={{ textAlign: "left" }}>
-                          <div style={{ fontSize: 17, fontWeight: 600, color: t.val ? t.color : "#F0E8D4", transition: "color 0.2s" }}>{t.label}</div>
-                          <div style={{ fontSize: 12, color: "rgba(240,232,212,0.36)", marginTop: 2 }}>{t.sub}</div>
+                          <div style={{ fontSize: 24, fontWeight: 700, color: t.val ? t.color : "#F0E8D4", transition: "color 0.2s" }}>{t.label}</div>
+                          <div style={{ fontSize: 18, color: "rgba(240,232,212,0.42)", marginTop: 4 }}>{t.sub}</div>
                         </div>
                         <div style={{
                           width: 44,
@@ -370,84 +370,96 @@ export function S4_DesignStudio() {
                   </div>
                 </div>
 
-                {/* Live box preview */}
+                {/* Live box preview — cedar box photo */}
                 <div style={{
-                  width: 240,
+                  width: 260,
                   flexShrink: 0,
-                  background: woodGrain ? WOOD_GRAINS.find(g => g.id === woodGrain)!.color : "rgba(255,255,255,0.03)",
-                  border: `1.5px solid ${GOLD}33`,
+                  position: "relative",
+                  border: `1.5px solid ${goldFoil ? GOLD + "88" : GOLD + "33"}`,
                   borderRadius: 16,
-                  padding: 0,
+                  overflow: "hidden",
+                  boxShadow: goldFoil
+                    ? `0 0 50px rgba(212,175,55,0.45), 0 10px 40px rgba(0,0,0,0.70)`
+                    : "0 8px 36px rgba(0,0,0,0.60)",
+                  transition: "box-shadow 0.45s, border-color 0.45s",
                   display: "flex",
                   flexDirection: "column",
-                  overflow: "hidden",
-                  boxShadow: goldFoil ? `0 0 40px rgba(212,175,55,0.35), 0 8px 32px rgba(0,0,0,0.60)` : "0 8px 32px rgba(0,0,0,0.50)",
-                  transition: "all 0.4s",
                 }}>
-                  {/* Box lid */}
+                  {/* Cedar box background photo */}
+                  <img
+                    src={`${import.meta.env.BASE_URL}images/cedar_box.png`}
+                    alt="Cedar Humidor Box"
+                    style={{
+                      position: "absolute", inset: 0,
+                      width: "100%", height: "100%",
+                      objectFit: "cover", objectPosition: "center",
+                      zIndex: 0,
+                    }}
+                    onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  {/* Dark overlay tinted with selected wood color */}
                   <div style={{
-                    background: goldFoil
-                      ? `linear-gradient(135deg, rgba(212,175,55,0.35) 0%, rgba(212,175,55,0.10) 50%, rgba(212,175,55,0.28) 100%)`
-                      : "rgba(255,255,255,0.06)",
-                    padding: "22px 18px 18px",
-                    borderBottom: `1px solid ${GOLD}22`,
+                    position: "absolute", inset: 0, zIndex: 1,
+                    background: woodGrain
+                      ? `linear-gradient(180deg, rgba(0,0,0,0.55) 0%, ${WOOD_GRAINS.find(g=>g.id===woodGrain)!.color}CC 100%)`
+                      : "rgba(0,0,0,0.72)",
+                    transition: "background 0.45s",
+                  }} />
+                  {/* Gold foil shimmer */}
+                  {goldFoil && (
+                    <div style={{
+                      position: "absolute", inset: 0, zIndex: 2,
+                      background: "linear-gradient(135deg, rgba(212,175,55,0.30) 0%, transparent 50%, rgba(212,175,55,0.20) 100%)",
+                      pointerEvents: "none",
+                    }} />
+                  )}
+
+                  {/* Box lid content */}
+                  <div style={{
+                    position: "relative", zIndex: 3,
+                    padding: "24px 18px 18px",
+                    borderBottom: `1px solid ${GOLD}33`,
                     textAlign: "center",
-                    transition: "all 0.4s",
                   }}>
                     <div style={{
-                      fontSize: 12,
-                      letterSpacing: "0.36em",
-                      textTransform: "uppercase",
-                      color: goldFoil ? GOLD : "rgba(240,232,212,0.40)",
-                      fontWeight: 700,
-                      marginBottom: 6,
-                      transition: "color 0.3s",
+                      fontSize: 11, letterSpacing: "0.38em", textTransform: "uppercase",
+                      color: goldFoil ? GOLD : "rgba(240,232,212,0.50)", fontWeight: 800, marginBottom: 8,
+                      transition: "color 0.3s", fontFamily: "'Inter', sans-serif",
                     }}>
                       SmokeCraft 360
                     </div>
                     <div style={{
                       fontFamily: "'Cormorant Garamond', Georgia, serif",
-                      fontSize: 22,
-                      fontWeight: 400,
-                      color: goldFoil ? "#F0E8D4" : "rgba(240,232,212,0.60)",
-                      transition: "color 0.3s",
+                      fontSize: 26, fontWeight: 400,
+                      color: goldFoil ? "#F0E8D4" : "rgba(240,232,212,0.70)",
+                      transition: "color 0.3s", lineHeight: 1.1,
                     }}>
                       {profile.firstName || "Your Name"}
                     </div>
                   </div>
 
                   {/* Box body */}
-                  <div style={{ flex: 1, padding: "18px", display: "flex", flexDirection: "column", gap: 10 }}>
-                    {/* Cigar silhouettes */}
+                  <div style={{ flex: 1, padding: "16px", position: "relative", zIndex: 3, display: "flex", flexDirection: "column", gap: 8 }}>
                     {[1, 2, 3].map(i => (
                       <div key={i} style={{
-                        height: 18,
-                        borderRadius: 9,
-                        background: `rgba(212,175,55,${0.08 + i * 0.04})`,
-                        border: `1px solid rgba(212,175,55,${0.12 + i * 0.04})`,
+                        height: 20, borderRadius: 10,
+                        background: `rgba(212,175,55,${0.10 + i * 0.05})`,
+                        border: `1px solid rgba(212,175,55,${0.18 + i * 0.05})`,
                       }} />
                     ))}
 
-                    {/* Stamp */}
                     <AnimatePresence>
                       {stamp && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.7, rotate: -12 }}
                           animate={{ opacity: 1, scale: 1, rotate: -8 }}
                           exit={{ opacity: 0, scale: 0.7 }}
-                          style={{
-                            marginTop: 8,
-                            padding: "6px 10px",
-                            border: `2px solid ${GOLD}88`,
-                            borderRadius: 6,
-                            textAlign: "center",
-                            transform: "rotate(-8deg)",
-                          }}
+                          style={{ marginTop: 10, padding: "8px 12px", border: `2px solid ${GOLD}99`, borderRadius: 6, textAlign: "center" }}
                         >
-                          <div style={{ fontSize: 9, letterSpacing: "0.20em", color: `${GOLD}88`, fontWeight: 800, textTransform: "uppercase" }}>
+                          <div style={{ fontSize: 12, letterSpacing: "0.22em", color: `${GOLD}CC`, fontWeight: 800, textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
                             Ronnie Felder
                           </div>
-                          <div style={{ fontSize: 7, color: `${GOLD}55`, letterSpacing: "0.14em" }}>
+                          <div style={{ fontSize: 10, color: `${GOLD}77`, letterSpacing: "0.16em", fontFamily: "'Inter',sans-serif" }}>
                             Master Blender
                           </div>
                         </motion.div>
@@ -458,15 +470,14 @@ export function S4_DesignStudio() {
                   {/* Vitola band */}
                   {selectedVitola && (
                     <div style={{
-                      background: "rgba(0,0,0,0.55)",
-                      padding: "12px 18px",
-                      textAlign: "center",
-                      borderTop: `1px solid ${GOLD}22`,
+                      background: "rgba(0,0,0,0.70)", padding: "14px 18px",
+                      textAlign: "center", borderTop: `1px solid ${GOLD}33`,
+                      position: "relative", zIndex: 3,
                     }}>
-                      <div style={{ fontSize: 11, letterSpacing: "0.20em", color: `${GOLD}80`, textTransform: "uppercase", fontWeight: 700 }}>
+                      <div style={{ fontSize: 14, letterSpacing: "0.22em", color: `${GOLD}AA`, textTransform: "uppercase", fontWeight: 800, fontFamily: "'Inter',sans-serif" }}>
                         {selectedVitola.label}
                       </div>
-                      <div style={{ fontSize: 10, color: "rgba(240,232,212,0.32)", marginTop: 2 }}>
+                      <div style={{ fontSize: 12, color: "rgba(240,232,212,0.40)", marginTop: 4, fontFamily: "'Inter',sans-serif" }}>
                         {selectedVitola.dims} · {selectedVitola.temp}
                       </div>
                     </div>
@@ -574,8 +585,8 @@ export function S4_DesignStudio() {
                       padding: "16px 24px",
                       minWidth: 130,
                     }}>
-                      <div style={{ fontSize: 26, fontWeight: 800, color: s.color }}>{s.val}</div>
-                      <div style={{ fontSize: 11, color: "rgba(240,232,212,0.40)", letterSpacing: "0.14em", textTransform: "uppercase", marginTop: 4 }}>{s.label}</div>
+                      <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.val}</div>
+                      <div style={{ fontSize: 14, color: "rgba(240,232,212,0.45)", letterSpacing: "0.14em", textTransform: "uppercase", marginTop: 6 }}>{s.label}</div>
                     </div>
                   ))}
                 </div>
@@ -589,14 +600,14 @@ export function S4_DesignStudio() {
                   marginBottom: 28,
                   textAlign: "left",
                 }}>
-                  <p style={{ fontSize: 12, letterSpacing: "0.24em", color: `${GOLD}80`, textTransform: "uppercase", fontWeight: 700, margin: "0 0 8px" }}>
+                  <p style={{ fontSize: 12, letterSpacing: "0.26em", color: `${GOLD}90`, textTransform: "uppercase", fontWeight: 800, margin: "0 0 10px", fontFamily: "'Inter',sans-serif" }}>
                     Hardware Receipt Token
                   </p>
-                  <p style={{ fontSize: 22, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.12em", margin: 0 }}>
+                  <p style={{ fontSize: 28, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.14em", margin: 0, fontFamily: "'Inter',sans-serif" }}>
                     SC360-{profile.firstName.toUpperCase().slice(0, 3)}-
                     {Math.random().toString(36).substring(2, 7).toUpperCase()}
                   </p>
-                  <p style={{ fontSize: 13, color: "rgba(240,232,212,0.36)", margin: "6px 0 0" }}>
+                  <p style={{ fontSize: 20, color: "rgba(240,232,212,0.42)", margin: "8px 0 0", fontFamily: "'Inter',sans-serif" }}>
                     Present to server · Valid tonight only
                   </p>
                 </div>
