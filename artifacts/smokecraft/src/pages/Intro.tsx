@@ -16,7 +16,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { useBrowserSpeech } from "@/hooks/useBrowserSpeech";
+import { useVoice } from "@/hooks/useVoice";
 
 interface RippleItem { id: number; x: number; y: number; size: number; color: string }
 let _rippleId = 0;
@@ -92,7 +92,6 @@ const CIGAR_STAGES = [
   "images/cigar3.png",
   "images/cigar4.png",
 ] as const;
-const WHISKEY_GLASS = "images/whiskey.png";
 
 /**
  * Client-side mirror of the server's /api/scoring formula:
@@ -123,26 +122,13 @@ interface Experience {
   gradient:   string;   // overlay gradient on the card
 }
 
-/**
- * Browser-TTS ambient voice cues for the entry portal. Kept short + literal
- * so OS voices read them clearly without intonation drift. Resolved per
- * ThemeKey so the same maps cover all four cards. Hover cooldown in the
- * component prevents rapid re-entry from re-speaking. */
-const VOICE_HOVER: Record<ThemeKey, string> = {
-  smokecraft: "SmokeCraft. Cigar experience system.",
-  pourcraft:  "PourCraft. Spirits and pairing system.",
-  vapecraft:  "VapeCraft. Vapor experience system.",
-  brewcraft:  "BrewCraft. Beer experience system.",
-};
+/** ElevenLabs voice cues fired on session entry and craft selection. */
 const VOICE_PICK: Record<ThemeKey, string> = {
   smokecraft: "Entering SmokeCraft.",
   pourcraft:  "Entering PourCraft.",
   vapecraft:  "Entering VapeCraft.",
   brewcraft:  "Entering BrewCraft.",
 };
-/** Minimum gap between consecutive hover cues so jittery mouse movement
- *  doesn't re-trigger speech every frame. */
-const HOVER_COOLDOWN_MS = 1200;
 /** sessionStorage flag — once-per-session entry-screen voice cue. */
 const VOICE_INTRO_SESSION_KEY = "pi_voice_intro_cue";
 
@@ -243,13 +229,7 @@ export default function Intro() {
   const [cardRipples, setCardRipples] = useState<RippleItem[]>([]);
   const [tod]                  = useState<TimeOfDay>(() => timeOfDayFromHour(new Date().getHours()));
   const playClick              = useClickSound();
-  /* Browser-native TTS for ambient entry-portal cues. Distinct from
-   * useVoice (server ElevenLabs) — this is for low-latency atmosphere,
-   * not narrator content. Auto-respects prefers-reduced-motion. */
-  const { speak: speakCue }    = useBrowserSpeech();
-  /* Last hover-cue timestamp; gates HOVER_COOLDOWN_MS to suppress
-   * re-speaks from jittery cursor movement. */
-  const hoverCooldownRef       = useRef<number>(0);
+  const voice                  = useVoice();
 
   // Time-of-day driven copy + overlay opacity. Night gets the most
   // atmospheric framing; day is the lightest read.
@@ -336,27 +316,19 @@ export default function Intro() {
     catch { /* private mode — just speak once per mount */ }
     if (alreadyFired) return;
     try { sessionStorage.setItem(VOICE_INTRO_SESSION_KEY, "1"); } catch { /* ignore */ }
-    const t = window.setTimeout(() => speakCue("Select your experience."), 600);
+    const t = window.setTimeout(() => { void voice.speak("Select your experience."); }, 600);
     return () => window.clearTimeout(t);
-  }, [stage, speakCue]);
+  }, [stage, voice]);
 
-  /* Hover cue — speaks the per-card descriptor on first hover, with a
-   * cooldown so wiggling between two cards doesn't queue speech. Skipped
-   * during attract mode (cards animate themselves; voice would clash) and
-   * once a selection is in flight. */
-  const onHoverCard = useCallback((key: ThemeKey) => {
-    if (selected) return;
-    if (isIdle)   return;
-    const now = Date.now();
-    if (now - hoverCooldownRef.current < HOVER_COOLDOWN_MS) return;
-    hoverCooldownRef.current = now;
-    speakCue(VOICE_HOVER[key]);
-  }, [selected, isIdle, speakCue]);
+  const onHoverCard = useCallback((_key: ThemeKey) => {
+    /* Hover cues intentionally silent — ElevenLabs latency is unsuitable
+     * for rapid mouse movement. Only entry and selection use voice. */
+  }, []);
 
   const onPick = (key: ThemeKey) => {
     if (selected) return;
     playClick();
-    speakCue(VOICE_PICK[key]);
+    void voice.speak(VOICE_PICK[key]);
     setSel(key);
     // Persist choice so loadTheme() picks it up on the next page.
     try { localStorage.setItem("smokecraft_theme", key); } catch { /* ignore */ }
@@ -830,7 +802,7 @@ export default function Intro() {
                   filter: "drop-shadow(0 24px 50px rgba(26,26,27,0.30))",
                 }}
               >
-                {/* Hidden preloaders so all 4 cigar stages and the glass are
+                {/* Hidden preloaders so all 4 cigar stages are
                     decoded before the cycle reaches them. */}
                 <div
                   aria-hidden
@@ -839,7 +811,6 @@ export default function Intro() {
                   {CIGAR_STAGES.map((src) => (
                     <img key={src} src={`${base}${src}`} alt="" />
                   ))}
-                  <img src={`${base}${WHISKEY_GLASS}`} alt="" />
                 </div>
 
                 {/* Cigar — cross-fades between stages, advancing one per beat. */}
@@ -860,26 +831,6 @@ export default function Intro() {
                   />
                 </AnimatePresence>
 
-                {/* Whiskey glass — only on the reveal beat, slides in from
-                    the right with a slight bounce. */}
-                <AnimatePresence>
-                  {attractIdx === REVEAL_BEAT && (
-                    <motion.img
-                      key="whiskey"
-                      src={`${base}${WHISKEY_GLASS}`}
-                      alt=""
-                      initial={{ opacity: 0, x: 40, scale: 0.9 }}
-                      animate={{ opacity: 1, x: 0, scale: 1 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                      style={{
-                        width: "clamp(110px, 13vw, 180px)",
-                        height: "auto",
-                        display: "block",
-                      }}
-                    />
-                  )}
-                </AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>

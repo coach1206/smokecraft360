@@ -1,0 +1,26 @@
+================================================================================
+GLOBAL CONSTANTS: PREMIUM UI & ARCHITECTURAL WRAPPER (DO NOT DEROGATE)
+================================================================================
+[SYSTEM RULE]: You must apply these structural, visual, and audio laws across ALL sub-interfaces, modules, and generated code blocks. Functional logic must NEVER overwrite or deprioritize this aesthetic layer.
+
+1. TYPOGRAPHY & READABILITY (LOW-LIGHT / 45+ AGE TARGET)
+   - Force absolute contrast. Standard body text and functional UI labels MUST be a strict minimum of 24px.
+   - Headers and major structural indicators MUST be a strict minimum of 36px to 48px.
+   - Use heavy-weight, high-legibility sans-serif fonts with enhanced letter-spacing (tracking) to prevent bleeding on digital displays in dim environments.
+   - Under no circumstances scale text down using standard fluid browser defaults.
+
+2. CINEMATIC VISUAL SYSTEM & TEXTURES
+   - Base Layer: Solid, pure deep-black (#000000) canvas to prevent light washing out the venue environment.
+   - UI Elements: Render all panels with an "Obsidian Glass" (highly blurred backdrop-filter glassmorphic) texture, bounded by razor-thin, 1px weighted gold accents (#D4AF37).
+   - Asset Integration: Every screen background must utilize a high-resolution contextual image asset, strictly masked with a 60% to 80% dark gradient overlay. The background image must remain visible but anchored deep in the z-index so text never loses crisp readability.
+
+3. MOTION, KINETICS & TOUCH INTERACTION
+   - The entire environment must support high-fidelity touch interactions, including fluent drag-and-drop mechanics for spatial layouts (e.g., venue table configurations).
+   - Inject continuous, weighted micro-animations (via CSS Keyframes or Anime.js) for all interface transitions, state changes, and component selections. 
+   - Components must feel tactile and heavy, with fluid kinetic motion rather than instantaneous, flat cuts.
+
+4. ELEVENLABS AUDIO RUNTIME HANDSHAKE
+   - Maintain an active ElevenLabs TTS SDK connection lifecycle.
+   - Map all contextual system outputs, voice updates, and interface state-changes directly to the authorized ElevenLabs Voice ID streaming endpoint.
+   - Ensure audio playback triggers automatically upon layout execution or state transitions without requiring explicit re-initialization.
+================================================================================
