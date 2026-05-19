@@ -113,6 +113,8 @@ const SystemValidation      = lazy(() => import('@/pages/SystemValidation'));
 const StaffFloorCockpit     = lazy(() => import('@/pages/StaffFloorCockpit'));
 const DevicesModule         = lazy(() => import('@/pages/DevicesModule'));
 const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
+const EnvironmentControl    = lazy(() => import('@/pages/EnvironmentControl'));
+const TransactionTerminal   = lazy(() => import('@/pages/TransactionTerminal'));
 const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
 const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
 const EEIELandingHub         = lazy(() => import('@/pages/EEIELandingHub'));
@@ -1202,7 +1204,10 @@ export default function App() {
             <SubPageProviders><DevicesModule /></SubPageProviders>
           </Route>
           <Route path="/environment">
-            <SubPageProviders><EnvironmentEngine /></SubPageProviders>
+            <EnvironmentControl />
+          </Route>
+          <Route path="/transaction">
+            <TransactionTerminal />
           </Route>
           <Route path="/enterprise-intelligence">
             <SubPageProviders><SovereignRoute featureName="Enterprise Intelligence"><EnterpriseIntelligence /></SovereignRoute></SubPageProviders>

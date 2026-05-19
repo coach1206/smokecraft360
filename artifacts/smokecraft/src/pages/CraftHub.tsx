@@ -811,7 +811,7 @@ function PinModal({ onClose }: { onClose: () => void }) {
     if (import.meta.env.DEV && fullPin === "2501") {
       localStorage.setItem("axiom_token", "dev_token_2501");
       setFlashGreen(true);
-      setTimeout(() => { onClose(); navigate("/operations"); }, 300);
+      setTimeout(() => { onClose(); navigate("/transaction"); }, 300);
       return;
     }
 
@@ -1109,7 +1109,7 @@ function CraftHubInner() {
           transition={{ delay: 0.42 }}
           style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 14, pointerEvents: "auto" }}>
           {([
-            { code: "ENVIRONMENT",  label: "TACTICAL AMBIENCE & LIGHTING",    action: () => navigate("/operations")       },
+            { code: "ENVIRONMENT",  label: "TACTICAL AMBIENCE & LIGHTING",    action: () => navigate("/environment")      },
             { code: "ASSET VAULT",  label: "LIVE INVENTORY LEDGER",           action: () => navigate("/inventory")        },
             { code: "TRANSACTION",  label: "TABLE-SIDE SOMMELIER UP-SELL",    action: () => setShowPinModal(true)         },
           ] as Array<{ code: string; label: string; action: () => void }>).map(badge => (
