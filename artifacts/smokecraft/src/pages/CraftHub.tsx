@@ -1514,25 +1514,60 @@ function CraftHubInner() {
         pointerEvents:  "none",
       }}>
 
-        {/* ── Left Console Zone: NOVEÈ OS REVENUE COMMAND + live engine dot ── */}
+        {/* ── Left Console Zone: Brand logo mark + live engine dot ── */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
           style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, gap: 5, pointerEvents: "auto", paddingRight: 32, borderRight: "1px solid rgba(255,255,255,0.08)", marginRight: 28 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            {/* Primary brand mark — CraftHub logo asset */}
             <motion.div
-              animate={{ opacity: [1, 0.22, 1], scale: [1, 1.35, 1] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              style={{ width: 12, height: 12, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 14px #4ade80cc", flexShrink: 0 }}
-            />
-            <span style={{ color: C.gold, fontSize: 26, fontWeight: 900, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap", fontFamily: "inherit" }}>
-              NOVEÈ OS <span style={{ color: "rgba(212,175,55,0.38)", fontWeight: 300 }}>//</span> REVENUE COMMAND
-            </span>
+              initial={{ opacity: 0, scale: 0.88 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.55, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              style={{ flexShrink: 0, display: "flex", alignItems: "center" }}
+            >
+              <img
+                src={craftHubLogo}
+                alt="CraftHub"
+                style={{
+                  height:       52,
+                  width:        "auto",
+                  objectFit:    "contain",
+                  objectPosition: "left center",
+                  filter:       "brightness(1.08) contrast(1.05) drop-shadow(0 0 8px rgba(212,175,55,0.30))",
+                  maxWidth:     200,
+                }}
+              />
+            </motion.div>
+            {/* Separator hairline */}
+            <div style={{ width: 1, height: 36, background: "rgba(212,175,55,0.22)", flexShrink: 0 }} />
+            {/* E.A.T. logo + status stack */}
+            <div style={{ display: "flex", flexDirection: "column" as const, gap: 3 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <motion.div
+                  animate={{ opacity: [1, 0.22, 1], scale: [1, 1.35, 1] }}
+                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ width: 10, height: 10, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 12px #4ade80cc", flexShrink: 0 }}
+                />
+                <img
+                  src={eatLogo}
+                  alt="E.A.T. Console"
+                  style={{
+                    height:    22,
+                    width:     "auto",
+                    objectFit: "contain",
+                    filter:    "brightness(1.05) drop-shadow(0 0 5px rgba(212,175,55,0.22))",
+                    maxWidth:  140,
+                  }}
+                />
+              </div>
+              <span style={{ color: "#4ade80", fontSize: 13, letterSpacing: "0.22em", textTransform: "uppercase" as const, fontWeight: 700, paddingLeft: 18, whiteSpace: "nowrap" }}>
+                REVENUE ENGINE: ACTIVE
+              </span>
+            </div>
           </div>
-          <span style={{ color: "#4ade80", fontSize: 16, letterSpacing: "0.22em", textTransform: "uppercase" as const, fontWeight: 700, paddingLeft: 24, whiteSpace: "nowrap" }}>
-            REVENUE ENGINE: ACTIVE
-          </span>
         </motion.div>
 
         {/* ── Central E.A.T. Gateway — 3 large touchscreen command badges ── */}

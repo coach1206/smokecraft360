@@ -978,6 +978,7 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
 
   // ── Demographic capture form ──
   const [showDemoForm, setShowDemoForm] = useState(false);
+  const [wizStep,      setWizStep]      = useState(0);
   const [demoFullName, setDemoFullName] = useState("");
   const [demoPhone,    setDemoPhone]    = useState("");
   const [demoEmail,    setDemoEmail]    = useState("");
@@ -1218,7 +1219,7 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
               boxShadow: "0 0 28px rgba(212,175,55,0.24), inset 0 1px 0 rgba(255,255,255,0.08)",
             }}
             onTouchStart={() => playClick()}
-            onClick={() => { playClick(); setShowDemoForm(true); }}
+            onClick={() => { playClick(); setWizStep(0); setShowDemoForm(true); }}
           >
             BEGIN JOURNEY
           </motion.button>
@@ -1269,138 +1270,414 @@ function GatewayIntro({ onEnterNew, onBack, onStartSession }: {
         </motion.div>
       </div>
 
-      {/* ── Demographic capture form slide-up ── */}
+      {/* ── Prestige Enrollment Wizard — full-screen, step-by-step ── */}
       <AnimatePresence>
-        {showDemoForm && (
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ duration: 0.32, ease: "easeOut" }}
-            style={{
-              position: "fixed", bottom: 0, left: 0, right: 0,
-              background: "rgba(6,4,2,0.97)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
-              borderTop: "1px solid rgba(212,175,55,0.30)",
-              borderRadius: "20px 20px 0 0",
-              padding: "32px 28px 44px",
-              zIndex: 9999998,
-              maxHeight: "90dvh",
-              overflowY: "auto",
-            }}
-          >
-            <div style={{ maxWidth: 640, margin: "0 auto" }}>
-              <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.3rem,2.2vw,1.7rem)", color: "#d4af37", fontWeight: 300, margin: "0 0 4px", letterSpacing: "0.04em" }}>
-                Guest Profile
-              </p>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, color: "rgba(255,252,245,0.40)", letterSpacing: "0.18em", textTransform: "uppercase" as const, margin: "0 0 24px" }}>
-                Complete all fields to unlock the gold BEGIN JOURNEY action
-              </p>
+        {showDemoForm && (() => {
+          const WIZ_STEPS = 4;
+          const US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"];
+          const AGE_TIERS = [
+            { id: "21-30", label: "21 – 30", sub: "The Emerging Connoisseur" },
+            { id: "31-45", label: "31 – 45", sub: "The Cultivated Palate" },
+            { id: "46-60", label: "46 – 60", sub: "The Distinguished Master" },
+            { id: "61+",   label: "61 +",    sub: "The Sovereign Patriarch" },
+          ];
+          const GENDER_TILES = [
+            { id: "M" as const, label: "Male",             sub: "Sir" },
+            { id: "F" as const, label: "Female",           sub: "Madam" },
+            { id: "X" as const, label: "Prefer Not to Say", sub: "Guest" },
+          ];
 
-              {/* 2-column grid */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-                {[
-                  { label: "Full Name", val: demoFullName, set: setDemoFullName, type: "text", placeholder: "Jane Doe", span: 2 },
-                  { label: "Mobile Phone", val: demoPhone, set: (v: string) => setDemoPhone(v.replace(/\D/g,"").slice(0,10)), type: "tel", placeholder: "10-digit number", span: 1 },
-                  { label: "Email Address", val: demoEmail, set: setDemoEmail, type: "email", placeholder: "you@example.com", span: 1 },
-                  { label: "City", val: demoCity, set: setDemoCity, type: "text", placeholder: "City", span: 1 },
-                ].map(f => (
-                  <div key={f.label} style={{ gridColumn: `span ${f.span}` }}>
-                    <p style={{ margin: "0 0 5px", fontSize: 9, letterSpacing: "0.18em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>{f.label}</p>
-                    <input
-                      type={f.type}
-                      placeholder={f.placeholder}
-                      value={f.val}
-                      onChange={e => f.set(e.target.value)}
-                      style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.28)", borderRadius: 6, padding: "13px 16px", color: "#fff", fontSize: 14, fontFamily: "'Inter',sans-serif", outline: "none", boxSizing: "border-box" as const }}
-                    />
-                  </div>
-                ))}
+          const canAdvanceStep = (() => {
+            if (wizStep === 0) return demoFullName.trim().length > 1;
+            if (wizStep === 1) return !!demoAge;
+            if (wizStep === 2) return !!demoGender;
+            if (wizStep === 3) return (
+              demoPhone.replace(/\D/g, "").length >= 10 &&
+              demoEmail.includes("@") &&
+              demoCity.trim().length > 0 &&
+              demoState.length > 0
+            );
+            return false;
+          })();
 
-                {/* Age Range */}
-                <div>
-                  <p style={{ margin: "0 0 5px", fontSize: 9, letterSpacing: "0.18em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>Age Range</p>
-                  <select value={demoAge} onChange={e => setDemoAge(e.target.value)}
-                    style={{ width: "100%", background: "rgba(20,15,5,0.95)", border: "1px solid rgba(212,175,55,0.28)", borderRadius: 6, padding: "13px 16px", color: demoAge ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 14, fontFamily: "'Inter',sans-serif", outline: "none" }}>
-                    <option value="" disabled>Select range</option>
-                    {["21-30","31-45","46-60","61+"].map(r => <option key={r} value={r}>{r}</option>)}
-                  </select>
-                </div>
+          const handleWizAdvance = () => {
+            if (!canAdvanceStep) return;
+            if (wizStep < WIZ_STEPS - 1) {
+              setWizStep(w => w + 1);
+            } else {
+              saveNoveeGuest({
+                name:             demoFullName.trim(),
+                phone:            demoPhone.replace(/\D/g, ""),
+                email:            demoEmail.trim(),
+                ageRange:         demoAge,
+                gender:           demoGender,
+                state:            demoState,
+                city:             demoCity.trim(),
+                phase_checkpoint: "gateway",
+                running_score:    100,
+              });
+              setShowDemoForm(false);
+              onEnterNew();
+            }
+          };
 
-                {/* State */}
-                <div>
-                  <p style={{ margin: "0 0 5px", fontSize: 9, letterSpacing: "0.18em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>State</p>
-                  <select value={demoState} onChange={e => setDemoState(e.target.value)}
-                    style={{ width: "100%", background: "rgba(20,15,5,0.95)", border: "1px solid rgba(212,175,55,0.28)", borderRadius: 6, padding: "13px 16px", color: demoState ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 14, fontFamily: "'Inter',sans-serif", outline: "none" }}>
-                    <option value="" disabled>Select state</option>
-                    {["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"].map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-              </div>
+          return (
+            <motion.div
+              key="prestige-wizard"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.38, ease: "easeOut" }}
+              style={{
+                position: "fixed", inset: 0, zIndex: 9999998,
+                background: "rgba(3,2,1,0.97)",
+                backdropFilter: "blur(32px)",
+                WebkitBackdropFilter: "blur(32px)",
+                display: "flex", flexDirection: "column" as const,
+                alignItems: "center", justifyContent: "center",
+                padding: "28px 24px 32px",
+                overflowY: "auto",
+              }}
+            >
+              {/* Ambient gold glow */}
+              <div style={{
+                position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)",
+                width: 600, height: 600, borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(212,175,55,0.07) 0%, transparent 68%)",
+                pointerEvents: "none",
+              }} />
 
-              {/* Gender toggles */}
-              <div style={{ marginBottom: 22 }}>
-                <p style={{ margin: "0 0 8px", fontSize: 9, letterSpacing: "0.18em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>Gender</p>
-                <div style={{ display: "flex", gap: 10 }}>
-                  {(["M","F","X"] as const).map(g => (
-                    <button key={g} onClick={() => setDemoGender(g)}
-                      style={{
-                        flex: 1, padding: "11px 0", borderRadius: 6, fontSize: 12, fontWeight: 700,
-                        letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif", cursor: "pointer",
-                        background: demoGender === g ? "rgba(212,175,55,0.18)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${demoGender === g ? "rgba(212,175,55,0.60)" : "rgba(212,175,55,0.18)"}`,
-                        color: demoGender === g ? "#D4AF37" : "rgba(245,235,215,0.45)",
-                        transition: "all 0.18s ease",
-                      }}>
-                      {g === "M" ? "Male" : g === "F" ? "Female" : "Prefer Not to Say"}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* Close */}
+              <button
+                onClick={() => setShowDemoForm(false)}
+                style={{
+                  position: "absolute", top: 24, right: 24, zIndex: 10,
+                  background: "none", border: "none", cursor: "pointer",
+                  color: "rgba(212,175,55,0.45)", fontSize: 13, letterSpacing: "0.22em",
+                  textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace",
+                  padding: "8px 14px",
+                }}
+              >
+                ✕ CLOSE
+              </button>
 
-              <div style={{ display: "flex", gap: 12 }}>
-                <motion.button
-                  whileTap={{ scale: 0.96 }}
-                  disabled={!demoComplete}
-                  onClick={() => {
-                    if (!demoComplete) return;
-                    saveNoveeGuest({
-                      name:             demoFullName.trim(),
-                      phone:            demoPhone.replace(/\D/g, ""),
-                      email:            demoEmail.trim(),
-                      ageRange:         demoAge,
-                      gender:           demoGender,
-                      state:            demoState,
-                      city:             demoCity.trim(),
-                      phase_checkpoint: "gateway",
-                      running_score:    100,
-                    });
-                    setShowDemoForm(false);
-                    onEnterNew();
-                  }}
+              {/* Back arrow */}
+              {wizStep > 0 && (
+                <button
+                  onClick={() => setWizStep(w => w - 1)}
                   style={{
-                    flex: 1, ...GW.btn(), minHeight: 54, fontSize: "clamp(11px,1.5vw,13px)",
-                    letterSpacing: "0.28em",
-                    opacity: demoComplete ? 1 : 0.38,
-                    cursor: demoComplete ? "pointer" : "not-allowed",
+                    position: "absolute", top: 24, left: 24, zIndex: 10,
+                    background: "none", border: "none", cursor: "pointer",
+                    color: "rgba(212,175,55,0.45)", fontSize: 13, letterSpacing: "0.22em",
+                    textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace",
+                    padding: "8px 14px",
                   }}
                 >
-                  UNLOCK JOURNEY
-                </motion.button>
-                <button onClick={() => setShowDemoForm(false)}
-                  style={{
-                    background: "transparent", border: "1px solid rgba(212,175,55,0.25)",
-                    color: "rgba(212,175,55,0.50)", padding: "14px 22px", borderRadius: 4,
-                    fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase" as const,
-                    cursor: "pointer", fontFamily: "'Inter',sans-serif",
-                  }}>
-                  CANCEL
+                  ← BACK
                 </button>
+              )}
+
+              {/* Step dots */}
+              <div style={{ position: "absolute", top: 28, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8, zIndex: 10 }}>
+                {Array.from({ length: WIZ_STEPS }).map((_, i) => (
+                  <div key={i} style={{
+                    width: i === wizStep ? 28 : 8, height: 8, borderRadius: 4,
+                    background: i === wizStep ? GOLD : i < wizStep ? `${GOLD}55` : "rgba(212,175,55,0.18)",
+                    transition: "all 0.35s ease",
+                    boxShadow: i === wizStep ? `0 0 10px ${GOLD}66` : "none",
+                  }} />
+                ))}
               </div>
-            </div>
-          </motion.div>
-        )}
+
+              {/* Step content — animated */}
+              <AnimatePresence mode="wait">
+                {/* ── Step 0: Identity — Name ── */}
+                {wizStep === 0 && (
+                  <motion.div
+                    key="wiz-0"
+                    initial={{ opacity: 0, x: 60 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -60 }}
+                    transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ width: "100%", maxWidth: 620, display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 0 }}
+                  >
+                    <p style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, letterSpacing: "0.38em", color: `${GOLD}60`, textTransform: "uppercase" as const, marginBottom: 18 }}>
+                      Protocol 01 — Identity
+                    </p>
+                    <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(2.2rem,4vw,3.4rem)", fontWeight: 300, color: "#F0E8D4", letterSpacing: "0.04em", textAlign: "center" as const, margin: "0 0 14px", lineHeight: 1.15 }}>
+                      What shall we call you?
+                    </h2>
+                    <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(16px,2vw,20px)", color: "rgba(240,232,212,0.50)", fontStyle: "italic", margin: "0 0 44px", textAlign: "center" as const }}>
+                      Your name anchors your palate profile for life.
+                    </p>
+                    {/* Gold-ruled prestige input */}
+                    <div style={{ width: "100%", borderBottom: `2px solid ${GOLD}50`, marginBottom: 8, position: "relative" }}>
+                      <input
+                        autoFocus
+                        type="text"
+                        placeholder="Full name"
+                        value={demoFullName}
+                        onChange={e => setDemoFullName(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter" && canAdvanceStep) handleWizAdvance(); }}
+                        style={{
+                          width: "100%", background: "transparent", border: "none", outline: "none",
+                          fontFamily: "'Cormorant Garamond',serif",
+                          fontSize: "clamp(1.8rem,3.5vw,2.6rem)",
+                          fontWeight: 300,
+                          color: "#F0E8D4",
+                          letterSpacing: "0.04em",
+                          padding: "10px 0 14px",
+                          textAlign: "center" as const,
+                          caretColor: GOLD,
+                          boxSizing: "border-box" as const,
+                        }}
+                      />
+                      {demoFullName.trim().length > 1 && (
+                        <motion.div
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          style={{ position: "absolute", bottom: -2, left: 0, right: 0, height: 2, background: GOLD, transformOrigin: "left", boxShadow: `0 0 12px ${GOLD}88` }}
+                        />
+                      )}
+                    </div>
+                    <p style={{ fontSize: 11, letterSpacing: "0.18em", color: "rgba(212,175,55,0.35)", textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace", marginTop: 10 }}>
+                      First &amp; Last name
+                    </p>
+                  </motion.div>
+                )}
+
+                {/* ── Step 1: Experience Tier — Age Range ── */}
+                {wizStep === 1 && (
+                  <motion.div
+                    key="wiz-1"
+                    initial={{ opacity: 0, x: 60 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -60 }}
+                    transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ width: "100%", maxWidth: 680, display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 0 }}
+                  >
+                    <p style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, letterSpacing: "0.38em", color: `${GOLD}60`, textTransform: "uppercase" as const, marginBottom: 18 }}>
+                      Protocol 02 — Experience Tier
+                    </p>
+                    <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(2rem,3.8vw,3.2rem)", fontWeight: 300, color: "#F0E8D4", letterSpacing: "0.04em", textAlign: "center" as const, margin: "0 0 10px", lineHeight: 1.15 }}>
+                      Your Connoisseur Tier
+                    </h2>
+                    <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(16px,2vw,20px)", color: "rgba(240,232,212,0.50)", fontStyle: "italic", margin: "0 0 38px", textAlign: "center" as const }}>
+                      Each tier unlocks a different calibration of the palate algorithm.
+                    </p>
+                    <div style={{ width: "100%", display: "flex", flexDirection: "column" as const, gap: 14 }}>
+                      {AGE_TIERS.map(tier => {
+                        const sel = demoAge === tier.id;
+                        return (
+                          <motion.button
+                            key={tier.id}
+                            onClick={() => setDemoAge(tier.id)}
+                            whileHover={{ scale: 1.015 }}
+                            whileTap={{ scale: 0.985 }}
+                            style={{
+                              width: "100%", background: sel ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.025)",
+                              border: `${sel ? "2px" : "1px"} solid ${sel ? GOLD : "rgba(212,175,55,0.22)"}`,
+                              borderRadius: 14, padding: "22px 32px",
+                              cursor: "pointer", fontFamily: "inherit",
+                              display: "flex", alignItems: "center", justifyContent: "space-between",
+                              boxShadow: sel ? `0 0 32px rgba(212,175,55,0.18), inset 0 0 20px rgba(212,175,55,0.06)` : "none",
+                              transition: "all 0.22s ease",
+                              textAlign: "left" as const,
+                            }}
+                          >
+                            <div>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.4rem,2.4vw,1.9rem)", fontWeight: 600, color: sel ? GOLD : "#F0E8D4", letterSpacing: "0.05em", lineHeight: 1.2 }}>
+                                {tier.label}
+                              </div>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(14px,1.6vw,17px)", color: sel ? `${GOLD}90` : "rgba(240,232,212,0.45)", fontStyle: "italic", marginTop: 4 }}>
+                                {tier.sub}
+                              </div>
+                            </div>
+                            {sel && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                style={{ width: 22, height: 22, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${GOLD}88`, flexShrink: 0 }}
+                              >
+                                <span style={{ color: "#0a0700", fontSize: 13, fontWeight: 900 }}>✓</span>
+                              </motion.div>
+                            )}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── Step 2: Gender / Salutation ── */}
+                {wizStep === 2 && (
+                  <motion.div
+                    key="wiz-2"
+                    initial={{ opacity: 0, x: 60 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -60 }}
+                    transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ width: "100%", maxWidth: 680, display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 0 }}
+                  >
+                    <p style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, letterSpacing: "0.38em", color: `${GOLD}60`, textTransform: "uppercase" as const, marginBottom: 18 }}>
+                      Protocol 03 — Profile
+                    </p>
+                    <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(2rem,3.8vw,3.2rem)", fontWeight: 300, color: "#F0E8D4", letterSpacing: "0.04em", textAlign: "center" as const, margin: "0 0 10px", lineHeight: 1.15 }}>
+                      How shall we address you?
+                    </h2>
+                    <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(16px,2vw,20px)", color: "rgba(240,232,212,0.50)", fontStyle: "italic", margin: "0 0 38px", textAlign: "center" as const }}>
+                      Your profile shapes the voice and tone of your recommendations.
+                    </p>
+                    <div style={{ width: "100%", display: "flex", flexDirection: "column" as const, gap: 14 }}>
+                      {GENDER_TILES.map(g => {
+                        const sel = demoGender === g.id;
+                        return (
+                          <motion.button
+                            key={g.id}
+                            onClick={() => setDemoGender(g.id)}
+                            whileHover={{ scale: 1.015 }}
+                            whileTap={{ scale: 0.985 }}
+                            style={{
+                              width: "100%", background: sel ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.025)",
+                              border: `${sel ? "2px" : "1px"} solid ${sel ? GOLD : "rgba(212,175,55,0.22)"}`,
+                              borderRadius: 14, padding: "22px 32px",
+                              cursor: "pointer", fontFamily: "inherit",
+                              display: "flex", alignItems: "center", justifyContent: "space-between",
+                              boxShadow: sel ? `0 0 32px rgba(212,175,55,0.18), inset 0 0 20px rgba(212,175,55,0.06)` : "none",
+                              transition: "all 0.22s ease",
+                              textAlign: "left" as const,
+                            }}
+                          >
+                            <div>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.4rem,2.4vw,1.9rem)", fontWeight: 600, color: sel ? GOLD : "#F0E8D4", letterSpacing: "0.05em", lineHeight: 1.2 }}>
+                                {g.label}
+                              </div>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(14px,1.6vw,17px)", color: sel ? `${GOLD}90` : "rgba(240,232,212,0.45)", fontStyle: "italic", marginTop: 4 }}>
+                                {g.sub}
+                              </div>
+                            </div>
+                            {sel && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                style={{ width: 22, height: 22, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${GOLD}88`, flexShrink: 0 }}
+                              >
+                                <span style={{ color: "#0a0700", fontSize: 13, fontWeight: 900 }}>✓</span>
+                              </motion.div>
+                            )}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── Step 3: Contact & Location ── */}
+                {wizStep === 3 && (
+                  <motion.div
+                    key="wiz-3"
+                    initial={{ opacity: 0, x: 60 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -60 }}
+                    transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ width: "100%", maxWidth: 680, display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 0, overflowY: "auto" as const }}
+                  >
+                    <p style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, letterSpacing: "0.38em", color: `${GOLD}60`, textTransform: "uppercase" as const, marginBottom: 18 }}>
+                      Protocol 04 — Contact &amp; Location
+                    </p>
+                    <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.8rem,3.2vw,2.8rem)", fontWeight: 300, color: "#F0E8D4", letterSpacing: "0.04em", textAlign: "center" as const, margin: "0 0 10px", lineHeight: 1.15 }}>
+                      Secure your profile signal
+                    </h2>
+                    <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(15px,1.8vw,18px)", color: "rgba(240,232,212,0.50)", fontStyle: "italic", margin: "0 0 32px", textAlign: "center" as const }}>
+                      Used exclusively to send your curated tasting notes &amp; event invitations.
+                    </p>
+
+                    {/* Gold-ruled inputs */}
+                    <div style={{ width: "100%", display: "flex", flexDirection: "column" as const, gap: 22, marginBottom: 28 }}>
+                      {[
+                        { label: "Mobile Phone", val: demoPhone, type: "tel" as const, placeholder: "10-digit number",
+                          set: (v: string) => setDemoPhone(v.replace(/\D/g,"").slice(0,10)) },
+                        { label: "Email Address", val: demoEmail, type: "email" as const, placeholder: "you@example.com",
+                          set: setDemoEmail },
+                        { label: "City", val: demoCity, type: "text" as const, placeholder: "Your city",
+                          set: setDemoCity },
+                      ].map(f => (
+                        <div key={f.label} style={{ width: "100%", borderBottom: `1px solid ${demoPhone && f.val ? GOLD + "55" : "rgba(212,175,55,0.25)"}`, paddingBottom: 4, position: "relative" }}>
+                          <p style={{ margin: "0 0 6px", fontSize: 10, letterSpacing: "0.28em", color: `${GOLD}70`, textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>{f.label}</p>
+                          <input
+                            type={f.type}
+                            placeholder={f.placeholder}
+                            value={f.val}
+                            onChange={e => f.set(e.target.value)}
+                            style={{
+                              width: "100%", background: "transparent", border: "none", outline: "none",
+                              fontFamily: "'Cormorant Garamond',serif",
+                              fontSize: "clamp(1.2rem,2.2vw,1.6rem)",
+                              fontWeight: 300, color: "#F0E8D4",
+                              letterSpacing: "0.03em", padding: "4px 0 8px",
+                              caretColor: GOLD, boxSizing: "border-box" as const,
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* State selector — pill grid, no <select> */}
+                    <div style={{ width: "100%", marginBottom: 6 }}>
+                      <p style={{ margin: "0 0 12px", fontSize: 10, letterSpacing: "0.28em", color: `${GOLD}70`, textTransform: "uppercase" as const, fontFamily: "'Space Mono',monospace" }}>US State</p>
+                      <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 7 }}>
+                        {US_STATES.map(s => {
+                          const sel = demoState === s;
+                          return (
+                            <button
+                              key={s}
+                              onClick={() => setDemoState(s)}
+                              style={{
+                                padding: "8px 12px", borderRadius: 6, fontSize: 13, fontWeight: 700,
+                                fontFamily: "'Space Mono',monospace", letterSpacing: "0.06em",
+                                cursor: "pointer", border: "none",
+                                background: sel ? GOLD : "rgba(212,175,55,0.08)",
+                                color: sel ? "#0a0700" : "rgba(212,175,55,0.60)",
+                                boxShadow: sel ? `0 0 12px ${GOLD}66` : "none",
+                                transition: "all 0.15s ease",
+                              }}
+                            >
+                              {s}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* ── Bottom CTA ── */}
+              <div style={{ width: "100%", maxWidth: 680, marginTop: 40, display: "flex", flexDirection: "column" as const, gap: 12 }}>
+                <motion.button
+                  whileHover={{ scale: canAdvanceStep ? 1.02 : 1, boxShadow: canAdvanceStep ? `0 0 48px rgba(212,175,55,0.38)` : "none" }}
+                  whileTap={{ scale: canAdvanceStep ? 0.97 : 1 }}
+                  onClick={handleWizAdvance}
+                  style={{
+                    width: "100%", minHeight: 62,
+                    background: canAdvanceStep ? `linear-gradient(135deg, ${GOLD}, #b8861a)` : "rgba(212,175,55,0.08)",
+                    border: `1.5px solid ${canAdvanceStep ? GOLD : "rgba(212,175,55,0.22)"}`,
+                    borderRadius: 12, cursor: canAdvanceStep ? "pointer" : "not-allowed",
+                    color: canAdvanceStep ? "#0a0700" : "rgba(212,175,55,0.28)",
+                    fontFamily: "'Space Mono',monospace",
+                    fontSize: "clamp(12px,1.6vw,14px)",
+                    fontWeight: 700, letterSpacing: "0.32em",
+                    textTransform: "uppercase" as const,
+                    boxShadow: canAdvanceStep ? `0 0 32px rgba(212,175,55,0.28), inset 0 1px 0 rgba(255,255,255,0.12)` : "none",
+                    transition: "all 0.22s ease",
+                  }}
+                >
+                  {wizStep === WIZ_STEPS - 1 ? "UNLOCK JOURNEY" : "CONTINUE →"}
+                </motion.button>
+              </div>
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
 
       {/* Returning guest slide-up drawer */}
