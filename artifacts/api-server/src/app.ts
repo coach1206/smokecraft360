@@ -533,6 +533,7 @@ import { startTokenRefreshWorker }        from "./integrations/workers/tokenRefr
 import { startHealthMonitor }             from "./integrations/services/posHealthMonitor";
 import { startEdgeSyncReplay }            from "./integrations/services/edgeSync";
 import { platformAdminRouter }           from "./routes/platformAdmin";
+import deploymentRouter                  from "./routes/deployment";
 app.use("/api/mentor",        aiLimiter, mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
@@ -603,6 +604,7 @@ app.use("/api/experience", experienceLayerRouter);
 // Feature flags, policy engine, observability, backpressure, versioning,
 // data retention, self-healing workers, simulation/sandbox
 app.use("/api",           platformAdminRouter);
+app.use("/api",           deploymentRouter);
 
 // ── Universal POS Integration Layer ───────────────────────────────────────────
 // Connections CRUD, credential vault, OAuth flow, on-demand sync

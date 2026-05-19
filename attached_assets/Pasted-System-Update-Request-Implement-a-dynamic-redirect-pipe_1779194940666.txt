@@ -1,0 +1,91 @@
+System Update Request:
+
+Implement a dynamic redirect pipeline for the NOVEE OS and SmokeCraft deployment interface. Apply the following backend route and frontend layout component directly into the codebase to allow instant updates without changing the QR code later.
+
+1. BACKEND ROUTE (Add to server routes file, e.g., server.ts):
+
+let latestDeploymentConfig = {
+  downloadUrl: "https://your-storage-bucket.com/releases/novee-os-latest.apk",
+  instructions: {
+    step1: "Power on the kiosk/tablet and connect to the venue secure Wi-Fi network.",
+    step2: "Once the NOVEE OS installer downloads, open the package and authorize security permissions.",
+    step3: "Launch CraftHub, select the SmokeCraft module, and enter the assigned Venue/Table ID to initialize."
+  }
+};
+
+app.get('/api/download/latest', (req, res) => {
+  const userAgent = req.headers['user-agent'] || '';
+  if (req.query.action === 'download' || userAgent.includes('Mozilla')) {
+    return res.redirect(latestDeploymentConfig.downloadUrl);
+  }
+  return res.json({ success: true, ...latestDeploymentConfig });
+});
+
+app.post('/api/admin/update-deployment', (req, res) => {
+  const { newDownloadUrl, newInstructions } = req.body;
+  if (newDownloadUrl) latestDeploymentConfig.downloadUrl = newDownloadUrl;
+  if (newInstructions) latestDeploymentConfig.instructions = { ...latestDeploymentConfig.instructions, ...newInstructions };
+  return res.json({ success: true, message: "Deployment pipeline updated successfully.", currentConfig: latestDeploymentConfig });
+});
+
+
+2. FRONTEND COMPONENT (Update setup UI file, e.g., ActivationGate.tsx):
+
+import React, { useEffect, useState } from 'react';
+import QRCode from 'qrcode';
+
+export const DeploymentScreen: React.FC = () => {
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
+  const [instructions, setInstructions] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const serverOrigin = window.location.origin;
+  const permanentDownloadRoute = `${serverOrigin}/api/download/latest?action=download`;
+
+  useEffect(() => {
+    QRCode.toDataURL(permanentDownloadRoute, { width: 256, margin: 2 }, (err, url) => {
+      if (!err) setQrCodeDataUrl(url);
+    });
+
+    fetch(`${serverOrigin}/api/download/latest`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setInstructions(data.instructions);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [serverOrigin, permanentDownloadRoute]);
+
+  return (
+    <div style={{ backgroundColor: '#0B0B0C', color: '#FFFFFF', padding: '40px', fontFamily: 'sans-serif', minHeight: '100vh' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', border: '1px solid rgba(212, 175, 55, 0.2)', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '16px', padding: '32px', backdropFilter: 'blur(20px)' }}>
+        <h1 style={{ color: '#D4AF37', fontSize: '28px', marginBottom: '8px', letterSpacing: '1px' }}>NOVEE OS</h1>
+        <p style={{ color: '#A0A0A5', marginBottom: '32px' }}>System Provisioning & Onboarding Gateway</p>
+        <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+            {qrCodeDataUrl ? (
+              <img src={qrCodeDataUrl} alt="Scan to deploy NOVEE OS" style={{ width: '220px', height: '220px', display: 'block' }} />
+            ) : (
+              <div style={{ width: '220px', height: '220px', backgroundColor: '#F0F0F0' }} />
+            )}
+            <p style={{ color: '#000000', fontSize: '12px', textAlign: 'center', marginTop: '8px', fontWeight: 'bold' }}>SCAN TO INSTALL</p>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ color: '#E5E5E7', fontSize: '18px', marginBottom: '16px' }}>SmokeCraft Implementation Steps:</h3>
+            {loading ? (
+              <p style={{ color: '#A0A0A5' }}>Loading latest deployment configurations...</p>
+            ) : instructions ? (
+              <ol style={{ paddingLeft: '20px', color: '#D1D1D6', lineHeight: '1.6' }}>
+                <li style={{ marginBottom: '12px' }}>{instructions.step1}</li>
+                <li style={{ marginBottom: '12px' }}>{instructions.step2}</li>
+                <li style={{ marginBottom: '12px' }}>{instructions.step3}</li>
+              </ol>
+            ) : (
+              <p style={{ color: '#FF453A' }}>Failed to retrieve live instruction metadata.</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
