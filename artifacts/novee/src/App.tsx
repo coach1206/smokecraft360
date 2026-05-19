@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
 import CraftPortalHome from "@/pages/CraftPortalHome";
+import EATDashboard from "@/pages/EATDashboard";
 import { ReentryGate } from "@/pages/ReentryGate";
 import { S1_InitGate } from "@/pages/S1_InitGate";
 import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
@@ -16,15 +17,39 @@ const S2_PHASES = new Set(["s2_terroir","s2_voucher"]);
 const S3_PHASES = new Set(["s3_spiritquiz","s3_sensorytrap","s3_leafsliders"]);
 const S4_PHASES = new Set(["s4_vitola","s4_designstudio","s4_results"]);
 
+function EATWrapper() {
+  const { setPhase } = useGuest();
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
+      <EATDashboard />
+      <button
+        onClick={() => setPhase("crafthub")}
+        style={{
+          position: "fixed", top: 20, left: 20, zIndex: 99999,
+          background: "rgba(0,0,0,0.72)", backdropFilter: "blur(16px)",
+          border: "1px solid rgba(212,175,55,0.50)", borderRadius: 8,
+          color: "#D4AF37", fontSize: 13, fontWeight: 700,
+          letterSpacing: "0.22em", textTransform: "uppercase",
+          padding: "12px 24px", cursor: "pointer",
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        ← Hub
+      </button>
+    </div>
+  );
+}
+
 function PhaseRouter() {
   const { profile } = useGuest();
   const { phase }   = profile;
-  if (phase === "crafthub")   return <CraftPortalHome />;
-  if (phase === "reentry")    return <ReentryGate />;
-  if (S1_PHASES.has(phase))   return <S1_InitGate />;
-  if (S2_PHASES.has(phase))   return <S2_TerroirMatrix />;
-  if (S3_PHASES.has(phase))   return <S3_FormulationLab />;
-  if (S4_PHASES.has(phase))   return <S4_DesignStudio />;
+  if (phase === "crafthub")     return <CraftPortalHome />;
+  if (phase === "eat_dashboard") return <EATWrapper />;
+  if (phase === "reentry")      return <ReentryGate />;
+  if (S1_PHASES.has(phase))     return <S1_InitGate />;
+  if (S2_PHASES.has(phase))     return <S2_TerroirMatrix />;
+  if (S3_PHASES.has(phase))     return <S3_FormulationLab />;
+  if (S4_PHASES.has(phase))     return <S4_DesignStudio />;
   return <CraftPortalHome />;
 }
 

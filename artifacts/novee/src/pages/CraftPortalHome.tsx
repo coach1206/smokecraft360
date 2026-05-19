@@ -110,6 +110,8 @@ const smoke = PORTALS[0]!;
 const bottomPortals = PORTALS.slice(1);
 
 // ── Main component ────────────────────────────────────────────────────────────
+const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
+
 export default function CraftPortalHome() {
   const { setPhase } = useGuest();
   const [comingSoon,  setComingSoon]  = useState<string | null>(null);
@@ -153,7 +155,7 @@ export default function CraftPortalHome() {
       {/* ── Level 3: SMOKECRAFT 360 top + 3 portals bottom ── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0", overflow: "hidden" }}>
 
-        {/* SMOKECRAFT 360 — full width top section */}
+        {/* SMOKECRAFT 360 — full width top section with hero photo */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -161,39 +163,66 @@ export default function CraftPortalHome() {
           onClick={handleSmokeTap}
           whileTap={{ scale: 0.995 }}
           style={{
-            flex: "0 0 54%",
+            flex: "0 0 58%",
             position: "relative",
             overflow: "hidden",
-            background: "rgba(12,10,8,0.92)",
-            borderBottom: "1px solid rgba(212,175,55,0.12)",
+            background: "#080502",
+            borderBottom: "1px solid rgba(212,175,55,0.18)",
             cursor: "pointer",
             userSelect: "none",
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(212,175,55,0.10) 0%,rgba(10,8,4,0.96) 55%,#030201 100%)", zIndex: 2, pointerEvents: "none" }} />
+          {/* Hero photo */}
+          <img
+            src={IMG("cigar_hero.png")}
+            alt=""
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%", zIndex: 0 }}
+            onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+          {/* Dark cinematic gradient */}
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(120deg, rgba(0,0,0,0.15) 0%, rgba(4,3,1,0.55) 45%, rgba(4,3,1,0.92) 100%)", zIndex: 1, pointerEvents: "none" }} />
+          {/* Amber ember top glow */}
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "40%", background: "radial-gradient(ellipse at 20% 0%, rgba(212,140,30,0.18) 0%, transparent 60%)", zIndex: 2, pointerEvents: "none" }} />
+
+          {/* E.A.T. Engine button — top right */}
+          <button
+            onClick={e => { e.stopPropagation(); setPhase("eat_dashboard"); }}
+            style={{
+              position: "absolute", top: 20, right: 20, zIndex: 10,
+              background: "rgba(0,0,0,0.60)", backdropFilter: "blur(14px)",
+              border: "1px solid rgba(212,175,55,0.35)", borderRadius: 8,
+              color: "#D4AF37", fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.22em", textTransform: "uppercase",
+              padding: "10px 20px", cursor: "pointer",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            E.A.T. Engine
+          </button>
 
           {/* Content */}
-          <div style={{ position: "absolute", inset: 0, zIndex: 3, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "32px 44px" }}>
-            <p style={{ fontSize: 8, letterSpacing: "0.52em", textTransform: "uppercase", color: "rgba(212,175,55,0.55)", margin: "0 0 10px" }}>Profound Innovations · SmokeCraft 360</p>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "clamp(26px, 4vw, 52px)", fontWeight: 300, letterSpacing: "0.08em", margin: "0 0 10px", color: "#D4AF37", lineHeight: 1.05 }}>
+          <div style={{ position: "absolute", inset: 0, zIndex: 3, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "36px 52px" }}>
+            <p style={{ fontSize: 11, letterSpacing: "0.52em", textTransform: "uppercase", color: "rgba(212,175,55,0.70)", margin: "0 0 12px", fontFamily: "'Inter',sans-serif", fontWeight: 700 }}>
+              Profound Innovations · SmokeCraft 360
+            </p>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "clamp(48px, 5.5vw, 80px)", fontWeight: 300, letterSpacing: "0.06em", margin: "0 0 12px", color: "#D4AF37", lineHeight: 1.0, textShadow: "0 4px 32px rgba(0,0,0,0.80)" }}>
               SmokeCraft 360
             </h2>
-            <p style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(229,229,229,0.65)", margin: "0 0 24px" }}>
+            <p style={{ fontSize: 18, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(240,232,212,0.75)", margin: "0 0 28px", fontFamily: "'Inter',sans-serif" }}>
               {smoke.sub}
             </p>
-            <button
+            <motion.button
               onClick={e => { e.stopPropagation(); handleSmokeTap(); }}
-              style={{ alignSelf: "flex-start", background: "rgba(212,175,55,0.12)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(212,175,55,0.45)", color: "#D4AF37", padding: "14px 36px", fontSize: 10, fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", borderRadius: 4, cursor: "pointer", transition: "background 0.3s, border-color 0.3s" }}
-              onMouseEnter={e => { const b = e.currentTarget; b.style.background = "rgba(212,175,55,0.20)"; b.style.borderColor = "rgba(212,175,55,0.70)"; }}
-              onMouseLeave={e => { const b = e.currentTarget; b.style.background = "rgba(212,175,55,0.12)"; b.style.borderColor = "rgba(212,175,55,0.45)"; }}
+              whileTap={{ scale: 0.97 }}
+              style={{ alignSelf: "flex-start", background: "rgba(212,175,55,0.15)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1.5px solid rgba(212,175,55,0.60)", color: "#D4AF37", padding: "18px 44px", fontSize: 14, fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", borderRadius: 6, cursor: "pointer", fontFamily: "'Inter',sans-serif", boxShadow: "0 0 28px rgba(212,175,55,0.18)" }}
             >
               Enter Masterclass
-            </button>
+            </motion.button>
           </div>
 
-          {/* Glow ring */}
-          <motion.div animate={{ opacity: [0.12, 0.30, 0.12] }} transition={{ duration: 3.5, repeat: Infinity }} style={{ position: "absolute", inset: 0, border: "1px solid rgba(212,175,55,0.20)", pointerEvents: "none", zIndex: 4 }} />
+          {/* Glow border pulse */}
+          <motion.div animate={{ opacity: [0.10, 0.28, 0.10] }} transition={{ duration: 3.5, repeat: Infinity }} style={{ position: "absolute", inset: 0, border: "1px solid rgba(212,175,55,0.22)", pointerEvents: "none", zIndex: 5 }} />
         </motion.div>
 
         {/* Bottom row: POURCRAFT · BEERCRAFT · WINECRAFT */}
@@ -201,7 +230,7 @@ export default function CraftPortalHome() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-          style={{ flex: "0 0 46%", display: "flex", flexDirection: "row" }}
+          style={{ flex: "0 0 42%", display: "flex", flexDirection: "row" }}
         >
           {bottomPortals.map((portal, i) => (
             <div
@@ -211,24 +240,24 @@ export default function CraftPortalHome() {
                 flex: "1 1 0",
                 position: "relative",
                 overflow: "hidden",
-                background: "rgba(10,9,7,0.92)",
-                borderRight: i < bottomPortals.length - 1 ? "1px solid rgba(212,175,55,0.08)" : "none",
+                background: "rgba(8,7,5,0.96)",
+                borderRight: i < bottomPortals.length - 1 ? "1px solid rgba(212,175,55,0.10)" : "none",
                 cursor: "pointer",
                 userSelect: "none",
                 WebkitTapHighlightColor: "transparent",
               }}
             >
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(60,45,20,0.12) 0%,rgba(8,6,2,0.97) 55%,#030201 100%)", zIndex: 2, pointerEvents: "none" }} />
-              <div style={{ position: "absolute", inset: 0, zIndex: 3, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "20px 24px" }}>
-                <h3 style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: "clamp(16px, 2.2vw, 26px)", fontWeight: 300, letterSpacing: "0.06em", margin: "0 0 6px", color: "#D4AF37", lineHeight: 1.1 }}>
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg,rgba(212,175,55,0.06) 0%,rgba(4,3,1,0.98) 60%)", zIndex: 1, pointerEvents: "none" }} />
+              <div style={{ position: "absolute", inset: 0, zIndex: 2, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "22px 28px" }}>
+                <h3 style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: "clamp(28px, 2.6vw, 38px)", fontWeight: 300, letterSpacing: "0.06em", margin: "0 0 8px", color: "#D4AF37", lineHeight: 1.1 }}>
                   {portal.title}
                 </h3>
-                <p style={{ fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(229,229,229,0.55)", margin: "0 0 14px" }}>
+                <p style={{ fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(229,229,229,0.50)", margin: "0 0 16px", fontFamily: "'Inter',sans-serif" }}>
                   {portal.sub}
                 </p>
                 <button
                   onClick={e => handlePortalClick(portal, e as unknown as React.MouseEvent)}
-                  style={{ alignSelf: "flex-start", background: "rgba(12,12,12,0.75)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(212,175,55,0.20)", color: "rgba(229,229,229,0.75)", padding: "10px 20px", fontSize: 8, fontWeight: 500, letterSpacing: "0.28em", textTransform: "uppercase", borderRadius: 3, cursor: "pointer", transition: "border-color 0.3s" }}
+                  style={{ alignSelf: "flex-start", background: "rgba(0,0,0,0.60)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(212,175,55,0.22)", color: "rgba(212,175,55,0.65)", padding: "12px 22px", fontSize: 11, fontWeight: 600, letterSpacing: "0.26em", textTransform: "uppercase", borderRadius: 4, cursor: "pointer", fontFamily: "'Inter',sans-serif" }}
                 >
                   {portal.active ? "Begin Experience" : "Coming Soon"}
                 </button>

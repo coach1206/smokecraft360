@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 
 export type Phase =
   | "crafthub"
+  | "eat_dashboard"
   | "reentry"
   | "s1_demo"
   | "s1_rules"
