@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
 import CraftPortalHome from "@/pages/CraftPortalHome";
 import EATDashboard from "@/pages/EATDashboard";
@@ -9,6 +10,14 @@ import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
 import { S4_DesignStudio } from "@/pages/S4_DesignStudio";
 import { playClick } from "@/hooks/useAudio";
 import { hapticClick } from "@/hooks/useHaptic";
+
+/* ── Weighted spring page transition — 0.35s dissolve + slide ── */
+const PAGE_V = {
+  enter:  { opacity: 0, x: 50,  scale: 0.95 },
+  active: { opacity: 1, x: 0,   scale: 1    },
+  exit:   { opacity: 0, x: -50, scale: 0.98 },
+};
+const PAGE_T = { type: "spring" as const, mass: 1.1, stiffness: 280, damping: 32, duration: 0.35 };
 
 const queryClient = new QueryClient();
 
@@ -40,17 +49,49 @@ function EATWrapper() {
   );
 }
 
-function PhaseRouter() {
+/* Resolve which screen group a phase belongs to (key drives AnimatePresence transitions) */
+function phaseKey(phase: string): string {
+  if (phase === "crafthub")      return "crafthub";
+  if (phase === "eat_dashboard") return "eat_dashboard";
+  if (phase === "reentry")       return "reentry";
+  if (S1_PHASES.has(phase))      return "s1";
+  if (S2_PHASES.has(phase))      return "s2";
+  if (S3_PHASES.has(phase))      return "s3";
+  if (S4_PHASES.has(phase))      return "s4";
+  return "crafthub";
+}
+
+function PhaseScreen() {
   const { profile } = useGuest();
   const { phase }   = profile;
-  if (phase === "crafthub")     return <CraftPortalHome />;
+  if (phase === "crafthub")      return <CraftPortalHome />;
   if (phase === "eat_dashboard") return <EATWrapper />;
-  if (phase === "reentry")      return <ReentryGate />;
-  if (S1_PHASES.has(phase))     return <S1_InitGate />;
-  if (S2_PHASES.has(phase))     return <S2_TerroirMatrix />;
-  if (S3_PHASES.has(phase))     return <S3_FormulationLab />;
-  if (S4_PHASES.has(phase))     return <S4_DesignStudio />;
+  if (phase === "reentry")       return <ReentryGate />;
+  if (S1_PHASES.has(phase))      return <S1_InitGate />;
+  if (S2_PHASES.has(phase))      return <S2_TerroirMatrix />;
+  if (S3_PHASES.has(phase))      return <S3_FormulationLab />;
+  if (S4_PHASES.has(phase))      return <S4_DesignStudio />;
   return <CraftPortalHome />;
+}
+
+function PhaseRouter() {
+  const { profile } = useGuest();
+  const key = phaseKey(profile.phase);
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={key}
+        variants={PAGE_V}
+        initial="enter"
+        animate="active"
+        exit="exit"
+        transition={PAGE_T}
+        style={{ position: "absolute", inset: 0 }}
+      >
+        <PhaseScreen />
+      </motion.div>
+    </AnimatePresence>
+  );
 }
 
 function handlePointerDown() { playClick(); hapticClick(); }

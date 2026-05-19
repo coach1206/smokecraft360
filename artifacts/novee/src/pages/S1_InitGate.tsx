@@ -56,27 +56,30 @@ const SEED_PHOTOS: Record<string,string> = {
 const SEEDS = [
   {
     id: "criollo", name: "Criollo '98", origin: "Cuban-Seed · Dominican Republic",
-    profile: "Traditional Cuban-seed genetics. Deep, earth-toned flavor transitions with heavy spice tracking. Medium-to-full body with secondary chocolate and cedar notes.",
+    profile: "Delivers deep, traditional earth-toned flavor transitions and heavy spice tracking. Medium-to-full body with secondary dark chocolate, cedar, and aged leather notes across the full smoke.",
     specs: [{ k: "Body", v: "Medium-Full", b: 70 }, { k: "Nicotine", v: "High", b: 78 }, { k: "Burn Rate", v: "Slow / Even", b: 38 }, { k: "Aroma", v: "Earth · Spice", b: 80 }],
     veinColor: "rgba(170,130,45,0.58)", veinW: 2.2, oilSheen: true,
     c1: "#213A10", c2: "#0E1E06", cs: "#3A5C18", tx: 0.62,
-    tagline: "The classic. Heavy earth, deep spice.",
+    tagline: "Deep earth. Heavy spice tracking.",
+    veinDesc: "Balanced vein system with moderate secondary density. Classic Cuban-seed architecture for reliable, consistent draw and even oil channel distribution.",
   },
   {
     id: "corojo", name: "Corojo", origin: "Vuelta Abajo, Cuba · Honduras",
-    profile: "Oil-dense, highly robust. Intense peppery finishes with maximum natural oil saturation. The thick cuticle locks in volatile aromatic compounds through fermentation.",
+    profile: "A robust, altamente resiliente leaf known for producing intense peppery finishes and high natural oil yield. The thick cuticle locks in volatile aromatic compounds through fermentation.",
     specs: [{ k: "Body", v: "Full", b: 95 }, { k: "Nicotine", v: "Very High", b: 94 }, { k: "Burn Rate", v: "Medium", b: 55 }, { k: "Aroma", v: "Pepper · Oak", b: 90 }],
     veinColor: "rgba(200,155,30,0.68)", veinW: 2.8, oilSheen: true,
     c1: "#162E08", c2: "#080E02", cs: "#2A4A10", tx: 0.73,
     tagline: "Maximum strength. Pepper dominance.",
+    veinDesc: "Dense primary vein with aggressive secondary branching. Maximum oil-channel surface area for aromatic concentration and palate intensity.",
   },
   {
     id: "connecticut", name: "Connecticut Shade", origin: "Connecticut River Valley, USA",
-    profile: "Ultra-smooth delicate wrapper grown under cheesecloth shade canopies. Creamy tasting notes, mild body, near-invisible veins — the gold standard for aesthetic construction.",
+    profile: "A delicate, ultra-smooth wrapper leaf delivering creamy tasting notes, mild body, and seamless aesthetics. Grown under cheesecloth shade canopies — the gold standard for premium construction.",
     specs: [{ k: "Body", v: "Mild", b: 22 }, { k: "Nicotine", v: "Low-Medium", b: 28 }, { k: "Burn Rate", v: "Fast / Smooth", b: 78 }, { k: "Aroma", v: "Cream · Hay", b: 45 }],
     veinColor: "rgba(220,205,150,0.26)", veinW: 0.9, oilSheen: false,
     c1: "#4A6E28", c2: "#2E4A14", cs: "#7AAA44", tx: 0.48,
-    tagline: "Invisible veins. Creamy, smooth.",
+    tagline: "Invisible veins. Creamy aesthetics.",
+    veinDesc: "Near-invisible tertiary vein network. Microscopic cross-fibers sealed under the cuticle — standard for premium wrapper aesthetics and consistent draw.",
   },
 ];
 
@@ -571,16 +574,16 @@ export function S1_InitGate() {
                   whileTap={{ scale: 0.98 }}
                   style={{
                     flex: 1, border: "none", borderRight: "1px solid rgba(255,255,255,0.05)",
-                    background: seedId === s.id ? "rgba(212,175,55,0.09)" : "transparent",
+                    background: seedId === s.id ? "rgba(212,175,55,0.10)" : "transparent",
                     cursor: "pointer", padding: "18px 28px",
                     borderBottom: seedId === s.id ? `3px solid ${GOLD}` : "3px solid transparent",
                     fontFamily: "'Inter', sans-serif", textAlign: "left",
                     transition: "all 0.22s",
                   }}>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: seedId === s.id ? GOLD : "rgba(240,232,212,0.50)", marginBottom: 3, transition: "color 0.22s" }}>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: seedId === s.id ? GOLD : "rgba(240,232,212,0.55)", marginBottom: 4, transition: "color 0.22s" }}>
                     {s.name}
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(240,232,212,0.28)", letterSpacing: "0.12em" }}>{s.tagline}</div>
+                  <div style={{ fontSize: 14, color: "rgba(240,232,212,0.35)", letterSpacing: "0.10em" }}>{s.tagline}</div>
                 </motion.button>
               ))}
             </div>
@@ -679,16 +682,12 @@ export function S1_InitGate() {
                     ))}
                   </div>
 
-                  <div style={{ background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 14, padding: "22px 24px" }}>
-                    <div style={{ fontSize: 11, letterSpacing: "0.32em", color: `${GOLD}80`, textTransform: "uppercase", fontWeight: 800, marginBottom: 12 }}>
+                  <div style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.22)", borderRadius: 14, padding: "22px 24px" }}>
+                    <div style={{ fontSize: 12, letterSpacing: "0.32em", color: `${GOLD}90`, textTransform: "uppercase", fontWeight: 800, marginBottom: 12 }}>
                       Vein Architecture
                     </div>
-                    <p style={{ fontSize: 20, color: "rgba(240,232,212,0.58)", lineHeight: 1.62, margin: 0 }}>
-                      {seedId === "connecticut"
-                        ? "Near-invisible tertiary vein network. Microscopic cross-fibers sealed under the cuticle — standard for premium wrapper aesthetics."
-                        : seedId === "corojo"
-                        ? "Dense primary vein with aggressive secondary branching. Maximum oil-channel surface area for aromatic concentration and intensity."
-                        : "Balanced vein system with moderate secondary density. Classic Cuban-seed architecture for reliable, consistent draw."}
+                    <p style={{ fontSize: 20, color: "rgba(240,232,212,0.65)", lineHeight: 1.62, margin: 0 }}>
+                      {seed.veinDesc}
                     </p>
                   </div>
 

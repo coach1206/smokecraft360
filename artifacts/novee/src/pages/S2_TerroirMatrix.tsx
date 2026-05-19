@@ -32,7 +32,7 @@ function getTelemetry(n: number, k: number, ph: number): Card {
     id:       "high_n",
     title:    "High Nitrogen Balance",
     subtitle: "Dark Maduro Formation Active",
-    body:     "Maximum nitrogen deepens leaf oil saturation, forcing a dense Maduro wrapper format. Thick, waxy cuticle develops — elevated nicotine strength and heavy aromatic combustion. Expect dark chocolate, earth, and leather transition notes across the full smoke.",
+    body:     "Deepens leaf oil saturation, resulting in a dark maduro leaf format with thick texture and high nicotine strength. Maximum nitrogen forces a dense, waxy cuticle — expect dark chocolate, earth, and leather transition notes with elevated aromatic combustion across the full smoke.",
     color:    "#C87820",
     icon:     "N",
     bgTop:    "#1A0A02",
@@ -43,7 +43,7 @@ function getTelemetry(n: number, k: number, ph: number): Card {
     id:       "high_k",
     title:    "High Potassium Balance",
     subtitle: "Combustion Elasticity Optimized",
-    body:     "Elevated potassium optimizes combustion elasticity and ash column stability, preventing structural tunneling, canoeing, and wrapper splits under draw pressure. The ash holds a long, firm, pearl-white column — the mark of elite blend construction.",
+    body:     "Optimizes burn elasticity and ash structure stability, preventing structural tunneling, canoeing, or wrapper splits. The ash holds a long, firm, pearl-white column under draw pressure — the mark of elite blend construction and precision terroir control.",
     color:    GREEN,
     icon:     "K",
     bgTop:    "#071408",
@@ -101,49 +101,31 @@ function getHumidorKey(n: number, k: number, ph: number) {
   return "balanced";
 }
 
-/* ── Volcanic soil SVG ── */
+const IMG_SOIL = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
+
+/* ── Volcanic soil photo panel ── */
 function SoilTexture({ card }: { card: Card }) {
   return (
-    <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 1 }}>
-      <defs>
-        <filter id={`soil_${card.id}`}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="5" seed="14" stitchTiles="stitch" result="noise" />
-          <feColorMatrix type="matrix"
-            values="0 0 0 0 0.04  0 0 0 0 0.02  0 0 0 0 0.01  0 0 0 0.55 0"
-            in="noise" result="dark" />
-          <feBlend in="SourceGraphic" in2="dark" mode="multiply" />
-        </filter>
-        <linearGradient id={`soilGrad_${card.id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor={card.bgTop} />
-          <stop offset="100%" stopColor={card.bgBot} />
-        </linearGradient>
-      </defs>
-
-      {/* Base soil gradient */}
-      <rect width="100%" height="100%" fill={`url(#soilGrad_${card.id})`} />
-
-      {/* Soil strata lines */}
-      {[22, 35, 48, 60, 72, 84].map((pct, i) => (
-        <line key={i} x1="0" y1={`${pct}%`} x2="100%" y2={`${pct + (i % 2 === 0 ? 1 : -0.5)}%`}
-          stroke={card.grainColor} strokeWidth={i % 3 === 0 ? 1.5 : 0.7} />
-      ))}
-
-      {/* Mineral particle field */}
-      {Array.from({ length: 28 }, (_, i) => {
-        const x  = (i * 97 + 13) % 100;
-        const y  = (i * 53 + 27) % 100;
-        const r  = 0.8 + (i % 4) * 0.5;
-        const op = 0.20 + (i % 5) * 0.07;
-        return <circle key={i} cx={`${x}%`} cy={`${y}%`} r={r} fill={card.color} opacity={op} />;
-      })}
-
-      {/* Texture noise on top */}
-      <rect width="100%" height="100%" filter={`url(#soil_${card.id})`} opacity="0.38" />
-
-      {/* Top glow */}
-      <ellipse cx="50%" cy="20%" rx="55%" ry="30%"
-        fill={card.color} opacity="0.08" />
-    </svg>
+    <>
+      {/* Real volcanic soil photograph */}
+      <img
+        src={IMG_SOIL("volcanic_soil.png")}
+        alt="Volcanic soil"
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", zIndex: 0 }}
+        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+      />
+      {/* Tinted color overlay keyed to current telemetry state */}
+      <div style={{
+        position: "absolute", inset: 0, zIndex: 1,
+        background: `linear-gradient(160deg, ${card.bgTop}CC 0%, ${card.bgBot}99 100%)`,
+        mixBlendMode: "multiply",
+      }} />
+      {/* Top rim glow */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 3, zIndex: 2,
+        background: `linear-gradient(90deg, transparent, ${card.color}99, transparent)`,
+      }} />
+    </>
   );
 }
 
@@ -216,11 +198,11 @@ export function S2_TerroirMatrix() {
                     <div key={sl.label}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
                         <div>
-                          <span style={{ color: sl.color, fontSize: 16, fontWeight: 700, letterSpacing: "0.06em" }}>{sl.label}</span>
-                          <span style={{ color: "rgba(240,232,212,0.28)", fontSize: 10, letterSpacing: "0.20em", textTransform: "uppercase", marginLeft: 10, fontWeight: 700 }}>{sl.sub}</span>
+                          <span style={{ color: sl.color, fontSize: 22, fontWeight: 700, letterSpacing: "0.06em" }}>{sl.label}</span>
+                          <span style={{ color: "rgba(240,232,212,0.35)", fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", marginLeft: 12, fontWeight: 700 }}>{sl.sub}</span>
                         </div>
                         <motion.span key={sl.val} initial={{ scale: 1.22 }} animate={{ scale: 1 }}
-                          style={{ color: sl.color, fontSize: 24, fontWeight: 900, letterSpacing: "0.04em" }}>
+                          style={{ color: sl.color, fontSize: 28, fontWeight: 900, letterSpacing: "0.04em" }}>
                           {sl.label === "pH Balance" ? (sl.val as number).toFixed(1) : sl.val}{" "}{sl.unit}
                         </motion.span>
                       </div>
@@ -330,21 +312,21 @@ export function S2_TerroirMatrix() {
                       padding:        "20px 20px 24px",
                       flex:           1,
                     }}>
-                      <div style={{ fontSize: 9, letterSpacing: "0.32em", color: `${telemetry.color}AA`, textTransform: "uppercase", fontWeight: 700, marginBottom: 6 }}>
+                      <div style={{ fontSize: 12, letterSpacing: "0.30em", color: `${telemetry.color}CC`, textTransform: "uppercase", fontWeight: 800, marginBottom: 8 }}>
                         {telemetry.subtitle}
                       </div>
                       <h4 style={{
                         fontFamily:    "'Cormorant Garamond', Georgia, serif",
-                        fontSize:      21,
+                        fontSize:      28,
                         fontWeight:    400,
                         color:         "#F0E8D4",
-                        margin:        "0 0 10px",
-                        lineHeight:    1.28,
+                        margin:        "0 0 12px",
+                        lineHeight:    1.20,
                         letterSpacing: "0.03em",
                       }}>
                         {telemetry.title}
                       </h4>
-                      <p style={{ fontSize: 13, color: "rgba(240,232,212,0.46)", lineHeight: 1.62, margin: "0 0 16px" }}>
+                      <p style={{ fontSize: 18, color: "rgba(240,232,212,0.60)", lineHeight: 1.62, margin: "0 0 18px" }}>
                         {telemetry.body}
                       </p>
 
@@ -354,19 +336,19 @@ export function S2_TerroirMatrix() {
                         { l: "K", pct: Math.round(((soilK  - 10) / 80) * 100), c: "#4A90D9" },
                         { l: "pH", pct: Math.round(((soilPH - 4)  / 4)  * 100), c: "#C8762A" },
                       ].map(m => (
-                        <div key={m.l} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                          <span style={{ fontSize: 10, fontWeight: 900, color: m.c, width: 24, letterSpacing: "0.08em" }}>{m.l}</span>
-                          <div style={{ flex: 1, height: 5, background: "rgba(255,255,255,0.07)", borderRadius: 3 }}>
+                        <div key={m.l} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                          <span style={{ fontSize: 14, fontWeight: 900, color: m.c, width: 28, letterSpacing: "0.08em" }}>{m.l}</span>
+                          <div style={{ flex: 1, height: 7, background: "rgba(255,255,255,0.07)", borderRadius: 4 }}>
                             <motion.div
                               animate={{ width: `${m.pct}%` }}
                               transition={{ type: "spring", stiffness: 350, damping: 30 }}
                               style={{
-                                height: "100%", background: m.c, borderRadius: 3,
-                                boxShadow: `0 0 6px ${m.c}70`,
+                                height: "100%", background: m.c, borderRadius: 4,
+                                boxShadow: `0 0 8px ${m.c}80`,
                               }}
                             />
                           </div>
-                          <span style={{ fontSize: 11, color: m.c, fontWeight: 800, width: 28, textAlign: "right" }}>{m.pct}%</span>
+                          <span style={{ fontSize: 14, color: m.c, fontWeight: 800, width: 34, textAlign: "right" }}>{m.pct}%</span>
                         </div>
                       ))}
                     </div>
