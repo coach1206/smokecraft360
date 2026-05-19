@@ -1,0 +1,23 @@
+EXECUTE TOTAL HARDWARE UI/UX OVERHAUL (ZERO GUESSING / PURE SENSORY STIMULATION)
+
+1. ERASE ALL CHEAP GLYPHS AND ABSTRACT CARDS: Look at the screenshots you just served. They are a generic website. Strip them all out. This is a hardware touchscreen. Your new design standard must use ultra-premium, full-bleed imagery (e.g., obsidian glass panels, brushed titanium bezels, warm gold accents, and deep smoked chrome background plates). Eliminate every single abstract icon.
+
+2. BUILD OUT DEEP AGRONOMY SPECIFICATION SHEETS (NO MORE GUESSING): Users cannot blindly guess. Every selection card must feature interactive, high-resolution visual assets with uncompromised data on touch:
+- STEP 1.5: SEED QUALITY MATRIX: Replace empty text with a split-screen canvas. The left pane must stream a highly realistic, textured visual image of the raw tobacco leaves. The right pane must dynamically display educational telemetry:
+  * Criollo '98: Delivers deep, traditional earth-toned flavor transitions and heavy spice tracking.
+  * Corojo: A robust, highly resilient leaf known for intense peppery finishes and high natural oil saturation.
+  * Connecticut Shade: An ultra-smooth, delicate wrapper leaf delivering creamy notes, mild body, and nearly invisible veins.
+- STEP 1.6: SOIL MENTOR CHEMISTRY MATRIX: Moving the Nitrogen, Potassium, and pH sliders must instantly update dynamic data cross-fade cards. The display must show photorealistic close-ups of the dark, rich volcanic soil profiles and explain the exact chemical agricultural outcomes on-screen:
+  * High Nitrogen Balance: Deepens leaf oil saturation, resulting in a dark maduro format with thick texture and high nicotine strength.
+  * High Potassium Balance: Optimizes burn elasticity and ash structure stability, preventing structural tunneling or wrapper splits.
+
+3. PRESERVE AND LOCK IN ALL S1-S4 MECHANICS:
+- Retain the strict 4-session persistent local storage checkpoint with the 2-Step Handshake re-entry handshake.
+- Retain the full Step 1.3 Golden Box Rules Disclosure screen.
+- Retain the full Step 1.4 Realistic Mentor Portfolio with Country Flags.
+- Retain the full Step 4.2 Bespoke Packaging studio utilizing the name "Ronnie Felder."
+- Retain all 2x, 3x, and 5x receipt-scanning "Cheat Code" point multipliers.
+
+4. NATIVE HARDWARE TRANSITIONS & MOTION ENGINE:
+- Replace instant page cuts with fluid view-state animations. When moving forward or utilizing the mandatory top-left Back Button (which must remain anchored across all views), the active view must smoothly dissolve opacity (1 to 0) and slide horizontally (-50px). The incoming view must slide in, scale up smoothly from 0.95 to 1.0, and lock with a heavy, weighted mass spring calculation (duration: 0.35s).
+- Ensure 3400Hz mechanical oscillator synthetic tone bursts and touch vibration pulses are mapped to ALL pointerDown events. Remove ALL hover states.
