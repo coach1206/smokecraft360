@@ -1,0 +1,73 @@
+CRITICAL SYSTEM ARCHITECTURE OVERRIDE, TOTAL LAYER COHESION & 45+ PRESTIGE ACCESSIBILITY MATRIX: The platform exhibits critical component cloning, erroneously duplicating the [ ENVIRONMENT ] spatial engine layout inside the [ TRANSACTION ] viewport. The user interface across all modules suffers from washed-out palettes, bright glare-inducing containers, and microscopic typography completely unreadable in dimly lit hospitality environments by individuals over 45 with low visibility. 
+
+Execute a comprehensive repository-wide refactor of App.tsx, SideNavigation.tsx, Operations.tsx, EnvironmentControl.tsx, TransactionTerminal.tsx, InventoryLedger.tsx, SecurityProvider.tsx, and MasterBlender.tsx. Re-architect the entire system into a deeply saturated, high-contrast landscape tablet console instrument. Force 'tsc --noEmit' to pass flawlessly with exit code 0.
+
+=========================================
+1. 45+ DIM-LIGHT ACCESSIBILITY, ANTI-GLARE CONTRAST & E.A.T. BRANDING
+=========================================
+- Anti-Glare Obsidian Base Canvas:
+  * Eradicate all white backgrounds, light gray containers, pale text grids, or high-luminescence web templates across all views. Force the workspace base layout to absolute matte black (#000000) or rich smoky obsidian glass.
+  * E.A.T. Premium Color Palette: Standardize the system branding—utilize heavy obsidian glass panels, brushed-titanium separation borders, and high-intensity, glowing neon-amber and radiant gold accents.
+- Giant High-Readability Typography & Telemetry:
+  * FORCE TEXT HYPER-SCALING: Increase all primary text scales, title assets, interactive touch labels, and menu item labels system-wide by a minimum of 50% to ensure zero squinting or eye-strain in dark hospitality spaces.
+  * All active metrics, quantities, percentages, slider tracking text, table row values, and system scores must render in a bold, oversized, high-contrast neon-amber DIGITAL segment display font. This guarantees instant legibility on physical glass from an arm's length away.
+
+=========================================
+2. NESTED NAVIGATION STORAGE & 3-TIER PRIVILEGE MATRIX (RBAC)
+=========================================
+- Smart Back-Button History Stack:
+  * Implement a localized view stack array (viewHistory: string[]) within the global application context. 
+  * Tapping the top-layer fixed gold-bordered 'BACK' button ('position: fixed; z-index: 999999; pointer-events: auto;') must pop the immediate current sub-interface state from the stack and step backward exactly ONE frame (e.g., exiting an inventory card details sheet rolls you back to the Asset Ledger list, NOT resetting completely back to the root CraftHub dashboard cockpit).
+- Operational Role-Based Gateways (RBAC Management):
+  * Bind interface access properties directly to authorized user tokens controlled in SecurityProvider.tsx:
+    1. DEVELOPER ROLE (Master Override): Unrestricted root validation privileges across all technical development, administrative management, and public masterclass layers for sandbox testing.
+    2. MANAGEMENT PROFILE (System Configuration): Exclusive access to the secure credential provisioning panel. Management controls PIN assignments, maps specific access scopes, overrides staff access metrics, and tracks real-time terminal operations.
+    3. STAFF MODE (Restricted Workspace): Hides system configurations and PIN generation. Limits personnel strictly to table-side Sommelier up-sell cards, active environment telemetry adjustments, and dragging/numbering floor tables.
+
+=========================================
+3. THE DRAG-AND-DROP VENUE PLANNER [ ENVIRONMENT ]
+=========================================
+- Dedicated Floor Plan Canvas:
+  * This view must strictly focus on room layout control. Render an expansive, touch-responsive drag-and-drop spatial room designer on a deep obsidian grid matrix.
+  * Left Blueprint Component Drawer (35% Viewport Width): Contains oversized, high-contrast glassmorphic blocks representing room assets: [ Circular Table ], [ Square Booth ], [ VIP Lounge Couch ], [ Main Bar Module ].
+  * Right Footprint Grid Matrix (65% Viewport Width): A highly structured geometric grid representing the physical venue floor layout.
+- Touch Drag & ID Assignment:
+  * Staff can drag components from the left drawer directly onto the grid using touch gestures. Dropping an element fires a 150ms spring-back animation, renders an automated sequential tag in giant digital typography (e.g., "TABLE 01"), and triggers an input block to manually override the table number and scale seat capacities.
+  * Tapping a placed table illuminates its border with a glowing amber halo ring, immediately linking that precise coordinate to active guest profiles, lighting levels, or premium humidor orders.
+
+=========================================
+4. THE SEPARATE TABLE-SIDE SOMMELIER UP-SELL PORTAL [ TRANSACTION ]
+=========================================
+- Dedicated Checkout & Up-Sell Interface:
+  * DO NOT render the room layout or floor plan designer here. Rebuild this module completely as a clean, high-velocity table-side point-of-sale checkout system.
+  * Left Product Matrix Grid (60% Width): Displays massive touchscreen glass cards grouping premium high-margin pairings: [ Masterclass Allocations ], [ Rare Cigar Packs ], [ Elite Single-Malt Scotch Flights ], [ Private Bin Wines ]. Tapping an asset plays an instantaneous haptic fluid compression animation and lists the product on the invoice sheet.
+  * Right Live Invoice Terminal Sheet (40% Width): Displays a crisp, large-font digital receipt breakdown showing Table Number Assignment, Live Item Counts, Subtotals, and a giant gold-neon [ AUTHORIZE & CLOSE TRANSACTION ] touchscreen block.
+
+=========================================
+5. REAL MANAGEMENT ANALYTICS & LIVE INVENTORY LOGISTICS
+=========================================
+- SVG Revenue Visualizations:
+  * Integrate smooth, high-contrast, neon-glowing data charts tracking venue velocity:
+    - Sales Curve: A clean, tracking neon-gold line graph mapping hourly table-side sommelier transactions.
+    - Product Velocity: A minimal doughnut chart detailing manufacturing leaf usage (Seco vs. Viso vs. Ligero distribution numbers).
+- Real-Image Logistics Binding:
+  * All active inventory columns are strictly hard-bound to authentic visual representations of exact production sources and manufacturer details:
+    - Cigar Ledger Rows: Render high-fidelity macro graphics of physical cedar brand boxes (e.g., Padrón 1926 or Fuente Fuente Opus X) showing visible manufacturing origin text labels, authentic wood-grain texture patterns, and regulatory tax seals.
+    - Spirits Ledger Rows: Display flawless cinematic photos of actual crystal bottles of single-malt scotch and fine aged bourbons sitting behind an illuminated, ultra-luxury backbar frame.
+
+=========================================
+6. THE INTEGRATED OPERATIONAL PIN AUTHENTICATION LAYERING
+=========================================
+- Modal Hardware Mapping: Completely eliminate the standalone, frozen '/pin-login' URL route string. Re-architect the PIN entry keypad exclusively as a beautiful glassmorphic modal overlay drawer that slides up gracefully on top of the active view state.
+- Keypad Touch Mechanics: Scale up the touch boundaries of the physical keys. Inject an active 100ms visual compression scale-back effect ('scale-95') and fire a clear tactile audio pulse ('playClick() 3400Hz') on every single digit strike to guarantee absolute hardware-level feedback on physical glass.
+- Verification Token Loop: Bind the keypad buttons directly to the central security state controller. Upon striking the 4th digit entry, the state machine must instantly process and validate the token locally. If valid, execute a smooth 300ms horizontal wipe animation that reveals the secure enterprise module without refreshing the browser or dropping active connection state.
+- Staff & Admin Provisioning Module: Accessible through the management toolbar. Features a 10-key tactile glass matrix with an oversized readout panel instructing exactly: "REGISTER NEW 4-DIGIT SECURE PASSCODE". Upon confirmation matching, a radiant gold neon outline flares around the pad structure, binds the code to a specific permission tier ([ STAFF ] or [ ADMIN ]), and immediately registers the attribute into the active security context.
+
+=========================================
+7. INITIALIZATION, PORTFOLIO COCKPIT & MASTERCLASS RETENTION (SESSION 1 ENDPOINT)
+=========================================
+- Level 0 & 1 (Power Up & Core Launch): Initialize on the radiant smoke canvas with 'Profound Innovations LLC' rendered centrally in tracking-spaced gold typography.
+- Level 2 & 3 (Direct Dashboard Fork): Tapping the opening console block fires a playClick() audio burst and runs a smooth 1.2-second horizontal slide transition directly into 'NOVEÈ OS' / 'CraftHub'. Structure the 4 brand pillars as massive, edge-to-edge touchscreen glass blocks across the landscape viewport: SMOKECRAFT 360 spans the top horizontal width, while POURCRAFT 360, BEERCRAFT 360, and WINECRAFT 360 anchor the bottom row.
+- Kinetic Masterclass Continuity: Ensure the complete visual flow for Vitola Science and Precision Cuts uses landscape side-by-side splits. Selecting a vitola or cut must trigger smooth 3D object rotation shifts and razor-sharp imagery of real tools (Guillotine, V-Cut, Punch) with live amber airflow trace animations.
+- Session 1 Closing Summary Overlay: Hard-stop progression cleanly at the end of Part 1. Background displays a jaw-dropping cinematic shot of a physical premium cigar burning next to a crystal whiskey tumbler on an obsidian counter bar. Center a pulsing gold summary block tracking your Intelligence Score, and anchor an oversized neon footer banner stating exactly:
+  "STATUS: MASTERCLASS PART 1 LOCKOUT ACTIVE. Your custom tobacco blend matrix is officially resting inside the fermentation vault. In Session 2, we take the floor. Get ready to step up to the wooden bench, calibrate your binding glue, slice the wrapper anatomy, and manually roll your physical masterwork. Review your pairing notes above—your mentor awaits you at the rolling bench next session."

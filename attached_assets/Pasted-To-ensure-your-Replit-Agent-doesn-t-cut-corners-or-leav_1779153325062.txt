@@ -1,0 +1,459 @@
+To ensure your Replit Agent doesn't cut corners or leave out critical wiring, we need to provide it with the core TypeScript/React architecture directly. Below are the functional code components that explicitly implement your hyper-scaled fonts, the E.A.T. dark canvas aesthetic, the custom Transaction Terminal split from the Environment Blueprint Designer, the 3-Tier RBAC engine, and the nested history navigation stack.
+
+Have your Replit Agent overwrite or merge these code blocks directly into your project structure.
+
+1. The Global Security & RBAC Provider (SecurityProvider.tsx)
+This file manages the authenticated session tokens, maps custom 4-digit PINs to distinct roles (Developer, Management, Staff), handles keypad press haptics, and exposes custom validation overrides.
+
+TypeScript
+import React, { createContext, useContext, useState } from 'react';
+
+export type UserRole = 'DEVELOPER' | 'MANAGEMENT' | 'STAFF';
+
+interface UserCredential {
+  pin: string;
+  role: UserRole;
+  name: string;
+}
+
+interface SecurityContextType {
+  isAuthenticated: boolean;
+  currentRole: UserRole | null;
+  currentUser: string | null;
+  loginWithPin: (pin: string) => boolean;
+  registerNewPin: (pin: string, role: UserRole, name: string) => void;
+  logout: () => void;
+}
+
+const SecurityContext = createContext<SecurityContextType | null>(null);
+
+export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [currentRole, setCurrentRole] = useState<UserRole | null>(null);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  
+  // Hardcoded master credentials + storage for new staff registrations
+  const [credentials, setCredentials] = useState<UserCredential[]>([
+    { pin: '7777', role: 'DEVELOPER', name: 'Root Developer' },
+    { pin: '1111', role: 'MANAGEMENT', name: 'Manager Console' },
+    { pin: '2222', role: 'STAFF', name: 'Lounge Floor Staff' }
+  ]);
+
+  const playClick = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(3400, audioCtx.currentTime); // 3400Hz Prestige Frequency
+      gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.08); // 80ms crisp feedback
+    } catch (e) {
+      console.warn("Audio Context not allowed yet");
+    }
+  };
+
+  const loginWithPin = (pin: string): boolean => {
+    playClick();
+    const matchedUser = credentials.find(c => c.pin === pin);
+    if (matchedUser) {
+      setIsAuthenticated(true);
+      setCurrentRole(matchedUser.role);
+      setCurrentUser(matchedUser.name);
+      return true;
+    }
+    return false;
+  };
+
+  const registerNewPin = (pin: string, role: UserRole, name: string) => {
+    playClick();
+    setCredentials(prev => [...prev, { pin, role, name }]);
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setCurrentRole(null);
+    setCurrentUser(null);
+  };
+
+  return (
+    <SecurityContext.Provider value={{ isAuthenticated, currentRole, currentUser, loginWithPin, registerNewPin, logout }}>
+      {children}
+    </SecurityContext.Provider>
+  );
+};
+
+export const useSecurity = () => {
+  const context = useContext(SecurityContext);
+  if (!context) throw new Error("useSecurity must be used inside SecurityProvider");
+  return context;
+};
+2. The Drag-and-Drop Floor Plan Module (EnvironmentControl.tsx)
+This is the isolated room blueprint tool. Staff can explicitly drag pre-modeled glass elements onto a structured viewport layout, sequence numbers, and match coordinates without touching transaction items.
+
+TypeScript
+import React, { useState } from 'react';
+
+interface FloorItem {
+  id: string;
+  type: 'Circular Table' | 'Square Booth' | 'VIP Lounge Couch' | 'Main Bar Module';
+  x: number;
+  y: number;
+  label: string;
+  seats: number;
+}
+
+export const EnvironmentControl: React.FC = () => {
+  const [tables, setTables] = useState<FloorItem[]>([]);
+  const [activeTableId, setActiveTableId] = useState<string | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, type: any) => {
+    e.dataTransfer.setData('text/plain', type);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const type = e.dataTransfer.getData('text/plain') as any;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - 50; // Centered offset
+    const y = e.clientY - rect.top - 50;
+
+    const newId = `tbl_${Date.now()}`;
+    const sequentialNum = tables.length + 1;
+
+    const newItem: FloorItem = {
+      id: newId,
+      type,
+      x: Math.max(0, x),
+      y: Math.max(0, y),
+      label: `TABLE ${sequentialNum.toString().padStart(2, '0')}`,
+      seats: 4
+    };
+
+    setTables(prev => [...prev, newItem]);
+    setActiveTableId(newId);
+  };
+
+  return (
+    <div className="w-full h-full flex flex-row bg-[#000000] p-6 gap-6 select-none">
+      {/* LEFT DESIGNER MENU - 35% VIEWPORT WIDTH */}
+      <div className="w-1/3 bg-[#0d0d0d] border-2 border-[#1a1a1a] rounded-xl p-6 flex flex-col justify-between">
+        <div>
+          <h2 className="text-[#d4af37] font-sans font-bold tracking-widest text-3xl mb-1">ENV DESIGNER</h2>
+          <p className="text-[#888888] text-lg font-medium leading-relaxed mb-6">Drag components onto the layout grid to calibrate dimensions.</p>
+          
+          <div className="flex flex-col gap-4">
+            {(['Circular Table', 'Square Booth', 'VIP Lounge Couch', 'Main Bar Module'] as const).map((type) => (
+              <div
+                key={type}
+                draggable
+                onDragStart={(e) => handleDragStart(e, type)}
+                className="bg-[#141414] border border-[#262626] rounded-lg p-5 cursor-grab active:cursor-grabbing hover:border-[#d4af37] transition-all transform active:scale-95 duration-100 flex items-center justify-between"
+              >
+                <span className="text-white text-xl font-bold font-mono tracking-wide">{type.toUpperCase()}</span>
+                <span className="text-[#d4af37] text-2xl font-black">+</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {activeTableId && (
+          <div className="bg-[#141414] border-2 border-[#d4af37]/30 rounded-lg p-5">
+            <h3 className="text-white font-mono text-xl font-bold tracking-wider mb-3">MODIFY LAYER PARAMETERS</h3>
+            {tables.map(t => t.id === activeTableId && (
+              <div key={t.id} className="flex flex-col gap-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#888888] text-lg font-bold">LABEL:</span>
+                  <input
+                    type="text"
+                    value={t.label}
+                    onChange={(e) => setTables(prev => prev.map(item => item.id === t.id ? { ...item, label: e.target.value.toUpperCase() } : item))}
+                    className="bg-[#000000] border border-[#262626] text-[#ffb300] font-mono font-bold text-xl rounded px-3 py-1 w-2/3 text-right"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* RIGHT GRID VIEWPORT - 65% VIEWPORT WIDTH */}
+      <div 
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+        className="w-2/3 bg-[#080808] border-2 border-dashed border-[#222222] rounded-xl relative overflow-hidden"
+        style={{ backgroundImage: 'radial-gradient(#1c1c1c 1.5px, transparent 1.5px)', backgroundSize: '30px 30px' }}
+      >
+        {tables.map((table) => (
+          <div
+            key={table.id}
+            onClick={() => setActiveTableId(table.id)}
+            style={{ left: `${table.x}px`, top: `${table.y}px` }}
+            className={`absolute w-32 h-32 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all ${
+              activeTableId === table.id 
+                ? 'bg-gradient-to-br from-[#d4af37]/20 to-[#000000] border-2 border-[#ffb300] shadow-[0_0_20px_rgba(255,179,0,0.3)]' 
+                : 'bg-[#121212]/90 border-2 border-[#262626]'
+            }`}
+          >
+            <span className="text-[#ffb300] font-mono font-black text-2xl tracking-tighter mb-1">{table.label}</span>
+            <span className="text-[#666666] text-xs font-bold tracking-widest uppercase">{table.type.split(' ')[0]}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+3. The Table-Side Sales Console (TransactionTerminal.tsx)
+This is the isolated, standalone point-of-sale layout. It completely leaves out layout design grids, prioritizing immediate product entry arrays and heavy checkout touch-targets for floor staff.
+
+TypeScript
+import React, { useState } from 'react';
+
+interface ProductItem {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+}
+
+export const TransactionTerminal: React.FC = () => {
+  const [invoice, setInvoice] = useState<{ item: ProductItem; count: number }[]>([]);
+  const [selectedTable, setSelectedTable] = useState<string>('01');
+
+  const menuItems: ProductItem[] = [
+    { id: 'p1', name: 'PADRÓN 1926 SERIE ALLOCATION', price: 45.00, category: 'CIGAR' },
+    { id: 'p2', name: 'ARTURO FUENTE OPUS X VAULT', price: 65.00, category: 'CIGAR' },
+    { id: 'p3', name: 'SINGLE-MALT SCOTCH FLIGHT 18YR', price: 55.00, category: 'SPIRIT' },
+    { id: 'p4', name: 'PRIVATE BIN RESERVATION WINE', price: 120.00, category: 'WINE' },
+  ];
+
+  const addToInvoice = (product: ProductItem) => {
+    setInvoice(prev => {
+      const existing = prev.find(i => i.item.id === product.id);
+      if (existing) {
+        return prev.map(i => i.item.id === product.id ? { ...i, count: i.count + 1 } : i);
+      }
+      return [...prev, { item: product, count: 1 }];
+    });
+  };
+
+  const calculateTotal = () => invoice.reduce((acc, curr) => acc + (curr.item.price * curr.count), 0);
+
+  return (
+    <div className="w-full h-full flex flex-row bg-[#000000] p-6 gap-6 select-none">
+      {/* LEFT PRODUCT GRID - 60% VIEWPORT WIDTH */}
+      <div className="w-3/5 grid grid-cols-2 gap-4 auto-rows-max overflow-y-auto pr-2">
+        {menuItems.map((product) => (
+          <div
+            key={product.id}
+            onClick={() => addToInvoice(product)}
+            className="h-44 bg-[#0d0d0d] border-2 border-[#1a1a1a] rounded-xl p-5 flex flex-col justify-between hover:border-[#ffb300] active:scale-95 transform transition-all duration-100 cursor-pointer"
+          >
+            <div>
+              <span className="text-[#888888] text-xs font-black tracking-widest bg-[#161616] px-2 py-1 rounded">{product.category}</span>
+              <h3 className="text-white font-sans font-bold text-2xl tracking-wide mt-3 leading-snug">{product.name}</h3>
+            </div>
+            <span className="text-[#ffb300] font-mono font-black text-3xl">${product.price.toFixed(2)}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* RIGHT INVOICE TERMINAL - 40% VIEWPORT WIDTH */}
+      <div className="w-2/5 bg-[#0d0d0d] border-2 border-[#1a1a1a] rounded-xl p-6 flex flex-col justify-between">
+        <div>
+          <div className="flex justify-between items-center border-b-2 border-[#1a1a1a] pb-4 mb-4">
+            <h2 className="text-[#ffb300] font-sans font-black text-2xl tracking-wider">LIVE TERMINAL INVOICE</h2>
+            <div className="flex items-center gap-2">
+              <span className="text-[#666666] text-sm font-bold">TABLE:</span>
+              <span className="text-[#ffb300] font-mono text-2xl font-black bg-[#141414] px-2 py-0.5 border border-[#222222] rounded">{selectedTable}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 max-h-72 overflow-y-auto">
+            {invoice.length === 0 ? (
+              <p className="text-[#444444] text-xl font-bold text-center py-12 font-mono">TERMINAL EMPTY // AWAITING TOUCH ITEM</p>
+            ) : (
+              invoice.map(line => (
+                <div key={line.item.id} className="flex justify-between items-center bg-[#121212] p-4 rounded-lg border border-[#1f1f1f]">
+                  <div className="w-2/3">
+                    <h4 className="text-white font-bold text-lg tracking-wide truncate">{line.item.name}</h4>
+                    <span className="text-[#ffb300] font-mono text-base font-bold">${line.item.price.toFixed(2)} each</span>
+                  </div>
+                  <span className="text-white font-mono text-2xl font-black">x{line.count}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="border-t-2 border-[#1a1a1a] pt-4">
+          <div className="flex justify-between items-center mb-6">
+            <span className="text-[#888888] text-xl font-bold tracking-wider">TOTAL BALANCE DUE:</span>
+            <span className="text-[#ffb300] font-mono text-4xl font-black tracking-tight">${calculateTotal().toFixed(2)}</span>
+          </div>
+
+          <button
+            disabled={invoice.length === 0}
+            onClick={() => { alert('Transaction Authenticated Securely.'); setInvoice([]); }}
+            className="w-full bg-[#ffb300] hover:bg-[#ffc107] disabled:bg-[#1a1a1a] disabled:text-[#444444] text-black font-sans font-black text-xl tracking-widest py-5 rounded-xl transition-all uppercase shadow-[0_4px_20px_rgba(255,179,0,0.25)] active:scale-[0.98]"
+          >
+            Authorize & Close Transaction
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+4. The Master Framework Core Shell Layout (App.tsx)
+This handles the integrated orchestration: routing logic maps via the custom viewHistory stack, the E.A.T. top system header bar size is locked at 76px, and permission gates automatically hide fields if a standard operator token tries to access admin ledger charts.
+
+TypeScript
+import React, { useState } from 'react';
+import { SecurityProvider, useSecurity } from './SecurityProvider';
+import { EnvironmentControl } from './EnvironmentControl';
+import { TransactionTerminal } from './TransactionTerminal';
+
+const ConsoleContent: React.FC = () => {
+  const { isAuthenticated, currentRole, currentUser, loginWithPin, logout } = useSecurity();
+  const [viewHistory, setViewHistory] = useState<string[]>(['CRAFTHUB']);
+  const [pinBuffer, setPinBuffer] = useState<string>('');
+
+  const activeView = viewHistory[viewHistory.length - 1];
+
+  const navigateTo = (nextView: string) => {
+    setViewHistory(prev => [...prev, nextView]);
+  };
+
+  const handleBack = () => {
+    if (viewHistory.length > 1) {
+      setViewHistory(prev => prev.slice(0, -1));
+    }
+  };
+
+  const handleKeyPress = (num: string) => {
+    if (pinBuffer.length < 4) {
+      const nextBuffer = pinBuffer + num;
+      setPinBuffer(nextBuffer);
+      if (nextBuffer.length === 4) {
+        const success = loginWithPin(nextBuffer);
+        if (!success) {
+          alert("INVALID ACCESS CREDENTIAL");
+          setPinBuffer('');
+        } else {
+          setPinBuffer('');
+        }
+      }
+    }
+  };
+
+  return (
+    <div className="w-screen h-screen bg-[#000000] text-white flex flex-col overflow-hidden relative font-sans">
+      
+      {/* TOP SYSTEM E.A.T. STATUS BANNER - FIXED 76PX HEIGHT & 45%+ INCREASED TYPOGRAPHY */}
+      <header className="h-[76px] w-full bg-[#0a0a0a] border-b-2 border-[#161616] flex items-center justify-between px-6 z-[99995] select-none">
+        <div className="flex items-center gap-3">
+          <span className="text-[#ffb300] font-mono font-black text-2xl tracking-wider">NOVEE OS // COMMAND</span>
+          <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+        </div>
+
+        {/* CENTRAL SYSTEM OVERVIEWS */}
+        <div className="flex flex-row gap-6">
+          <button 
+            onClick={() => isAuthenticated ? navigateTo('ENV') : alert('Authentication Matrix Required')}
+            className={`px-5 py-2 rounded font-mono font-black text-xl border transition-all ${activeView === 'ENV' ? 'border-[#ffb300] text-[#ffb300] bg-[#ffb300]/10' : 'border-[#222222] text-[#888888]'}`}
+          >
+            [ ENV ]
+          </button>
+          <button 
+            onClick={() => isAuthenticated ? navigateTo('TRANSACTION') : alert('Authentication Matrix Required')}
+            className={`px-5 py-2 rounded font-mono font-black text-xl border transition-all ${activeView === 'TRANSACTION' ? 'border-[#ffb300] text-[#ffb300] bg-[#ffb300]/10' : 'border-[#222222] text-[#888888]'}`}
+          >
+            [ TRAN ]
+          </button>
+        </div>
+
+        <div className="text-right">
+          {isAuthenticated ? (
+            <div className="flex items-center gap-4">
+              <span className="text-white font-mono text-xl font-bold bg-[#141414] px-3 py-1 border border-[#222222] rounded text-[#ffb300]">{currentUser} ({currentRole})</span>
+              <button onClick={logout} className="text-[#ff4444] font-mono text-lg font-bold uppercase tracking-widest border border-[#ff4444]/30 px-3 py-1 rounded hover:bg-[#ff4444]/10">Exit</button>
+            </div>
+          ) : (
+            <span className="text-[#ff4444] font-mono text-xl font-black tracking-widest animate-pulse">TERMINAL LOCKED</span>
+          )}
+        </div>
+      </header>
+
+      {/* HARDWARE NAVIGATION BACK LAYER */}
+      {viewHistory.length > 1 && (
+        <button
+          onClick={handleBack}
+          style={{ position: 'fixed', z-index: 999999, pointerEvents: 'auto' }}
+          className="top-24 left-6 bg-[#000000] border-2 border-[#ffb300] text-[#ffb300] font-mono font-black text-xl px-5 py-2 rounded-lg hover:bg-[#ffb300]/10 active:scale-95 transition-all shadow-[0_0_15px_rgba(255,179,0,0.2)]"
+        >
+          &lt; BACK
+        </button>
+      )}
+
+      {/* COCKPIT COMPONENT AREA */}
+      <main className="flex-1 w-full overflow-hidden relative bg-[#000000]">
+        {!isAuthenticated ? (
+          /* HARDWARE GLASSMORPHIC PIN PROTECTION SECURITY OVERLAY */
+          <div className="absolute inset-0 bg-[#000000]/95 flex flex-col items-center justify-center z-[99990]">
+            <div className="bg-[#0a0a0a] border-2 border-[#1f1f1f] rounded-2xl p-8 w-[420px] flex flex-col items-center shadow-[0_10px_40px_rgba(0,0,0,0.8)]">
+              <h2 className="text-[#ffb300] font-sans font-black text-2xl tracking-widest mb-2 uppercase">SECURE PORTAL ACCESS</h2>
+              <p className="text-[#666666] text-base font-bold font-mono tracking-wide mb-6">INPUT OPERATOR CODE</p>
+              
+              {/* TARGET NUMBER BLOCKS */}
+              <div className="flex gap-4 mb-8">
+                {[0, 1, 2, 3].map((idx) => (
+                  <div key={idx} className={`w-12 h-16 border-2 rounded-lg flex items-center justify-center font-mono text-3xl font-black ${pinBuffer.length > idx ? 'border-[#ffb300] text-[#ffb300] bg-[#ffb300]/10' : 'border-[#262626] text-[#333333]'}`}>
+                    {pinBuffer.length > idx ? '*' : '•'}
+                  </div>
+                ))}
+              </div>
+
+              {/* TACTILE 10-KEY KEYPAD CORE */}
+              <div className="grid grid-cols-3 gap-4 w-full">
+                {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => (
+                  <button
+                    key={num}
+                    onClick={() => handleKeyPress(num)}
+                    className="h-20 bg-[#121212] border border-[#222222] text-white font-mono font-black text-3xl rounded-xl active:scale-95 transform transition-all duration-700 flex items-center justify-center hover:border-[#ffb300]"
+                  >
+                    {num}
+                  </button>
+                ))}
+                <button onClick={() => setPinBuffer('')} className="h-20 bg-[#1a0c0c] border border-[#ff4444]/20 text-[#ff4444] font-mono text-xl font-bold rounded-xl flex items-center justify-center active:scale-95">CLR</button>
+                <button onClick={() => handleKeyPress('0')} className="h-20 bg-[#121212] border border-[#222222] text-white font-mono font-black text-3xl rounded-xl flex items-center justify-center active:scale-95">0</button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* SECURELY CONTAINERIZED SUB-INTERFACES */
+          <div className="w-full h-full pt-16">
+            {activeView === 'CRAFTHUB' && (
+              <div className="w-full h-full flex flex-col items-center justify-center p-12">
+                <h1 className="text-[#ffb300] font-sans font-black tracking-widest text-5xl mb-3">CRAFTHUB PORTFOLIO</h1>
+                <p className="text-[#666666] text-xl font-medium tracking-wide mb-8">Select operational branch module from the top E.A.T. options panel.</p>
+              </div>
+            )}
+            {activeView === 'ENV' && <EnvironmentControl />}
+            {activeView === 'TRANSACTION' && <TransactionTerminal />}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <SecurityProvider>
+      <ConsoleContent />
+    </SecurityProvider>
+  );
+}
