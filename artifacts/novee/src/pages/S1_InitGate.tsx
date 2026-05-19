@@ -7,6 +7,8 @@ import { POSGateModal } from "@/components/POSGateModal";
 import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
 import { CigarHero } from "@/components/CigarHero";
 
+const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
+
 const GOLD = "#D4AF37";
 const PV = {
   enter:  { opacity: 0, x: 50,  scale: 0.97 },
@@ -23,6 +25,7 @@ const MENTORS = [
     bio: "Old-world master of aged Olor Dominicano. Multi-leaf complexity with deep earth-tone transitions and slow fermentation curves.",
     tags: ["Aged Profiles", "Earth Transitions", "Multi-Leaf"],
     hue: "#1B4BD4", soilTop: "#110A02", soilBot: "#1E1008",
+    photo: "mentor_dominican.png",
   },
   {
     id: "nicaraguan", name: "The Nicaraguan Puro Boss", flag: "🇳🇮",
@@ -30,6 +33,7 @@ const MENTORS = [
     bio: "Commands volcanic mineral-rich soils for maximum Ligero density. Full-bodied, uncompromising palate intensity with volcanic earth notes.",
     tags: ["Volcanic Soil", "Heavy Ligero", "Full-Body"],
     hue: "#1A8C3A", soilTop: "#061006", soilBot: "#0C1C0A",
+    photo: "mentor_nicaraguan.png",
   },
   {
     id: "honduran", name: "The Traditionalist Wrapper", flag: "🇭🇳",
@@ -37,10 +41,17 @@ const MENTORS = [
     bio: "Flawless sun-grown wrapper selection with microscopic vein concealment and aerodynamic draw precision unmatched in the Americas.",
     tags: ["Wrapper Perfection", "Vein Concealment", "Draw Precision"],
     hue: "#2A7ABF", soilTop: "#060A12", soilBot: "#0C1020",
+    photo: "mentor_honduran.png",
   },
 ];
 
 /* ─── Seeds ─── */
+const SEED_PHOTOS: Record<string,string> = {
+  criollo: "tobacco_criollo.png",
+  corojo:  "tobacco_corojo.png",
+  connecticut: "tobacco_connecticut.png",
+};
+
 const SEEDS = [
   {
     id: "criollo", name: "Criollo '98", origin: "Cuban-Seed · Dominican Republic",
@@ -134,112 +145,44 @@ function LeafSVG({ s, scale = 1 }: { s: typeof SEEDS[0]; scale?: number }) {
 /* ─── Left visual panel — cinematic full-bleed ─── */
 function LeftPanel({ eyebrow, headline, sub, accent = GOLD }: { eyebrow: string; headline: string; sub?: string; accent?: string }) {
   return (
-    <div style={{
-      position:       "relative",
-      display:        "flex",
-      flexDirection:  "column",
-      overflow:       "hidden",
-      borderRight:    "1px solid rgba(212,175,55,0.18)",
-    }}>
-      {/* ── Deep obsidian base ── */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: "linear-gradient(165deg, #110C04 0%, #070502 55%, #0A0703 100%)",
-      }} />
+    <div style={{ position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      {/* ── Real cigar photograph — full bleed ── */}
+      <img src={IMG("cigar_hero.png")} alt=""
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%" }}
+        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+      />
+      {/* Dark cinematic overlay */}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(170deg, rgba(6,4,1,0.80) 0%, rgba(4,2,0,0.60) 35%, rgba(8,5,2,0.92) 100%)" }} />
+      {/* Amber top glow */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "55%", background: `radial-gradient(ellipse 85% 60% at 45% 0%, rgba(212,140,30,0.22) 0%, transparent 65%)`, pointerEvents: "none" }} />
+      {/* Gold top rim */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${accent}EE, ${accent}88 60%, transparent)`, boxShadow: `0 0 32px 5px ${accent}30`, zIndex: 5 }} />
+      {/* Gold right divider */}
+      <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 1, background: `linear-gradient(180deg, transparent, ${accent}55 35%, ${accent}44 65%, transparent)` }} />
 
-      {/* Brushed horizontal titanium grain */}
-      <div style={{
-        position: "absolute", inset: 0, opacity: 0.032,
-        backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, rgba(255,255,255,0.7) 1px, transparent 2px, transparent 12px)",
-      }} />
-
-      {/* Gold top-rim */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 3,
-        background: `linear-gradient(90deg, ${accent}EE 0%, ${accent}66 70%, transparent 100%)`,
-        boxShadow: `0 0 28px 4px ${accent}30`,
-        zIndex: 5,
-      }} />
-
-      {/* ── CIGAR HERO — upper 58% ── */}
-      <div style={{
-        position: "relative",
-        flex: "0 0 58%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
-        padding: "28px 32px 12px",
-      }}>
-        {/* Ember ambient light behind cigar — glows from the right */}
-        <div style={{
-          position: "absolute",
-          top: "30%", right: "-5%",
-          width: "55%", height: "55%",
-          background: "radial-gradient(ellipse at 70% 50%, rgba(255,100,20,0.22) 0%, rgba(255,60,0,0.08) 40%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
-        {/* Cool ambient counter-light from left */}
-        <div style={{
-          position: "absolute",
-          top: "20%", left: "-5%",
-          width: "40%", height: "60%",
-          background: "radial-gradient(ellipse at 20% 50%, rgba(212,175,55,0.10) 0%, transparent 65%)",
-          pointerEvents: "none",
-        }} />
-        {/* Surface reflection stripe */}
-        <div style={{
-          position: "absolute",
-          bottom: 0, left: 0, right: 0,
-          height: "25%",
-          background: "linear-gradient(0deg, rgba(212,175,55,0.06) 0%, transparent 100%)",
-          pointerEvents: "none",
-        }} />
-        <CigarHero wrapperTone="criollo" />
-      </div>
-
-      {/* ── Text block — lower 42% ── */}
-      <div style={{
-        position: "relative",
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        padding: "0 52px 52px",
-        zIndex: 2,
-      }}>
-        {/* Vignette above text */}
-        <div style={{
-          position: "absolute", top: "-60px", left: 0, right: 0, height: 80,
-          background: "linear-gradient(180deg, transparent, rgba(8,5,2,0.70))",
-          pointerEvents: "none",
-        }} />
-
-        <div style={{
-          fontSize: 10, letterSpacing: "0.56em", textTransform: "uppercase",
-          fontWeight: 800, color: `${accent}70`, marginBottom: 16,
-          fontFamily: "'Inter', sans-serif",
-        }}>
+      {/* ── Text anchored bottom ── */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 52px 52px", zIndex: 2 }}>
+        {/* Fade above text */}
+        <div style={{ position: "absolute", bottom: "100%", left: 0, right: 0, height: 160, background: "linear-gradient(0deg, rgba(5,3,1,0.96) 0%, transparent 100%)", pointerEvents: "none" }} />
+        <div style={{ fontSize: 11, letterSpacing: "0.58em", textTransform: "uppercase", fontWeight: 800, color: `${accent}80`, marginBottom: 18, fontFamily: "'Inter', sans-serif" }}>
           {eyebrow}
         </div>
         <h1 style={{
-          fontFamily:    "'Cormorant Garamond', Georgia, serif",
-          fontSize:      "clamp(44px, 5vw, 76px)",
-          fontWeight:    300,
-          color:         "#F0E8D4",
-          margin:        "0 0 18px",
-          letterSpacing: "0.04em",
-          lineHeight:    1.02,
-          textShadow:    `0 0 60px ${accent}20, 0 2px 30px rgba(0,0,0,0.90)`,
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontSize: "clamp(54px, 6.5vw, 92px)",
+          fontWeight: 300, color: "#F0E8D4", margin: "0 0 22px",
+          letterSpacing: "0.03em", lineHeight: 0.98,
+          textShadow: `0 0 80px ${accent}22, 0 4px 40px rgba(0,0,0,0.95)`,
+          whiteSpace: "pre-line",
         }}>
           {headline}
         </h1>
         {sub && (
-          <p style={{ fontSize: 17, color: "rgba(240,232,212,0.42)", lineHeight: 1.62, margin: 0, fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontSize: 20, color: "rgba(240,232,212,0.48)", lineHeight: 1.58, margin: "0 0 20px", fontFamily: "'Inter', sans-serif", fontWeight: 300 }}>
             {sub}
           </p>
         )}
-        <div style={{ marginTop: 22, width: 72, height: 2, background: `linear-gradient(90deg, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}55` }} />
+        <div style={{ width: 90, height: 2, background: `linear-gradient(90deg, ${accent}, transparent)`, boxShadow: `0 0 14px ${accent}66` }} />
       </div>
     </div>
   );
@@ -502,87 +445,81 @@ export function S1_InitGate() {
                       outline:    "none",
                     }}
                   >
-                    {/* Terrain full-bleed top */}
-                    <div style={{
-                      flex:       "0 0 55%",
-                      background: `
-                        radial-gradient(ellipse 80% 70% at 40% 55%, ${m.hue}28 0%, transparent 65%),
-                        linear-gradient(175deg, ${m.soilTop} 0%, ${m.soilBot} 100%)
-                      `,
-                      display:    "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      position:   "relative",
-                      overflow:   "hidden",
-                    }}>
-                      {/* Active gold overlay */}
-                      {active && (
-                        <div style={{ position: "absolute", inset: 0, background: `rgba(212,175,55,0.06)`, transition: "opacity 0.28s" }} />
-                      )}
-                      {/* Active top rim */}
-                      {active && (
-                        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${GOLD}44, ${GOLD}, ${GOLD}44)`, boxShadow: `0 0 18px ${GOLD}88` }} />
-                      )}
-                      {/* Mineral grid */}
+                    {/* ── Real portrait photo — full bleed top ── */}
+                    <div style={{ flex: "0 0 58%", position: "relative", overflow: "hidden" }}>
+                      <img
+                        src={IMG(m.photo)}
+                        alt={m.name}
+                        style={{
+                          position: "absolute", inset: 0,
+                          width: "100%", height: "100%",
+                          objectFit: "cover", objectPosition: "center top",
+                          transition: "transform 0.45s ease",
+                          transform: active ? "scale(1.04)" : "scale(1.00)",
+                        }}
+                        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                      {/* Gradient overlay — darkens bottom for text readability */}
                       <div style={{
-                        position: "absolute", inset: 0, opacity: active ? 0.14 : 0.07,
-                        backgroundImage: `radial-gradient(${m.hue} 1px, transparent 1px)`,
-                        backgroundSize: "14px 14px",
-                        transition: "opacity 0.28s",
+                        position: "absolute", inset: 0,
+                        background: active
+                          ? `linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.55) 100%)`
+                          : `linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.72) 100%)`,
+                        transition: "background 0.30s",
                       }} />
-                      {/* Flag circle */}
+                      {/* Active gold rim */}
+                      {active && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                          style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${GOLD}55, ${GOLD}, ${GOLD}55)`, boxShadow: `0 0 22px ${GOLD}99` }} />
+                      )}
+                      {/* Flag badge — bottom left of photo */}
                       <div style={{
-                        width:         130,
-                        height:        130,
-                        borderRadius:  "50%",
-                        background:    `radial-gradient(circle at 32% 28%, ${m.hue}32, rgba(6,6,10,0.96))`,
-                        border:        `3px solid ${active ? GOLD : m.hue + "50"}`,
-                        boxShadow:     active
-                          ? `0 0 48px ${GOLD}55, 0 0 90px ${GOLD}22, inset 0 0 28px rgba(0,0,0,0.75)`
-                          : `0 0 22px ${m.hue}22, inset 0 0 28px rgba(0,0,0,0.75)`,
-                        display:       "flex",
-                        alignItems:    "center",
-                        justifyContent:"center",
-                        fontSize:      62,
-                        zIndex:        2,
-                        position:      "relative",
-                        transition:    "all 0.28s",
+                        position: "absolute", bottom: 16, left: 20,
+                        display: "flex", alignItems: "center", gap: 10,
                       }}>
-                        {m.flag}
+                        <span style={{ fontSize: 36, lineHeight: 1 }}>{m.flag}</span>
+                        <div>
+                          <div style={{ fontSize: 10, letterSpacing: "0.35em", textTransform: "uppercase", color: active ? GOLD : "rgba(255,255,255,0.55)", fontWeight: 800, fontFamily: "'Inter',sans-serif", transition: "color 0.28s" }}>{m.country}</div>
+                          <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(255,255,255,0.35)", fontFamily: "'Inter',sans-serif" }}>{m.valley}</div>
+                        </div>
                       </div>
                     </div>
 
                     {/* Info panel */}
                     <div style={{
                       flex: 1,
-                      padding: "22px 24px 24px",
-                      background: active
-                        ? "rgba(212,175,55,0.06)"
-                        : "rgba(8,6,3,0.70)",
-                      backdropFilter: "blur(14px)",
-                      borderTop: `1px solid ${active ? GOLD + "33" : "rgba(255,255,255,0.06)"}`,
-                      transition: "all 0.28s",
+                      padding: "24px 26px 26px",
+                      background: active ? "rgba(212,175,55,0.08)" : "rgba(6,4,2,0.82)",
+                      backdropFilter: "blur(20px)",
+                      borderTop: `1px solid ${active ? GOLD + "44" : "rgba(255,255,255,0.07)"}`,
+                      transition: "all 0.30s",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 12,
                     }}>
-                      <div style={{ fontSize: 20, fontWeight: 800, color: active ? GOLD : "#F0E8D4", marginBottom: 4, transition: "color 0.28s", letterSpacing: "0.01em" }}>
+                      <div style={{ fontSize: 24, fontWeight: 800, color: active ? GOLD : "#F0E8D4", transition: "color 0.28s", letterSpacing: "0.01em", lineHeight: 1.2 }}>
                         {m.name}
                       </div>
-                      <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: `${m.hue}CC`, fontWeight: 700, marginBottom: 14 }}>
-                        {m.country} · {m.valley}
-                      </div>
-                      <p style={{ fontSize: 14, color: "rgba(240,232,212,0.45)", lineHeight: 1.60, margin: "0 0 16px" }}>
+                      <p style={{ fontSize: 16, color: "rgba(240,232,212,0.55)", lineHeight: 1.58, margin: 0 }}>
                         {m.bio}
                       </p>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: "auto" }}>
                         {m.tags.map(t => (
                           <span key={t} style={{
-                            background: active ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.05)",
-                            border: `1px solid ${active ? GOLD + "44" : "rgba(255,255,255,0.09)"}`,
-                            borderRadius: 6, padding: "5px 11px",
-                            fontSize: 10, fontWeight: 700, color: active ? GOLD : "rgba(240,232,212,0.36)",
-                            letterSpacing: "0.14em", textTransform: "uppercase", transition: "all 0.28s",
+                            background: active ? "rgba(212,175,55,0.14)" : "rgba(255,255,255,0.05)",
+                            border: `1px solid ${active ? GOLD + "55" : "rgba(255,255,255,0.10)"}`,
+                            borderRadius: 4, padding: "6px 14px",
+                            fontSize: 11, fontWeight: 700, color: active ? GOLD : "rgba(240,232,212,0.38)",
+                            letterSpacing: "0.15em", textTransform: "uppercase", transition: "all 0.28s",
                           }}>{t}</span>
                         ))}
                       </div>
+                      {active && (
+                        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                          style={{ fontSize: 13, letterSpacing: "0.28em", textTransform: "uppercase", color: GOLD, fontWeight: 800, fontFamily: "'Inter',sans-serif" }}>
+                          ✓ SELECTED
+                        </motion.div>
+                      )}
                     </div>
 
                     {/* Active selection border */}
@@ -656,51 +593,48 @@ export function S1_InitGate() {
                 transition={{ type: "spring", mass: 0.7, stiffness: 320, damping: 28 }}
                 style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}
               >
-                {/* LEFT — Full-bleed photorealistic leaf render */}
-                <div style={{
-                  position:   "relative",
-                  background: `
-                    radial-gradient(ellipse 68% 58% at 38% 35%, ${seed.cs}48 0%, transparent 52%),
-                    radial-gradient(ellipse 48% 40% at 68% 75%, ${seed.c1}36 0%, transparent 48%),
-                    linear-gradient(168deg, ${seed.c1}F0 0%, ${seed.c2}FF 55%, #020602 100%)
-                  `,
-                  display:    "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow:   "hidden",
-                  borderRight: "1px solid rgba(255,255,255,0.06)",
-                }}>
-                  {/* SVG grain */}
-                  <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.08, pointerEvents: "none" }}>
-                    <filter id="grain3">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.70" numOctaves="4" stitchTiles="stitch" />
-                      <feColorMatrix type="saturate" values="0" />
-                    </filter>
-                    <rect width="100%" height="100%" filter="url(#grain3)" />
-                  </svg>
-
-                  {/* Light shafts */}
-                  {[{ l: "28%", r: "14deg", op: 0.10, w: 3 }, { l: "46%", r: "7deg", op: 0.06, w: 1.5 }].map((ls, i) => (
-                    <div key={i} style={{
-                      position: "absolute", top: "-8%", left: ls.l,
-                      width: ls.w, height: "72%",
-                      background: "linear-gradient(180deg, rgba(255,255,200,1) 0%, transparent 100%)",
-                      transform: `rotate(${ls.r})`,
-                      opacity: ls.op, pointerEvents: "none",
-                    }} />
-                  ))}
-
-                  <LeafSVG s={seed} scale={1.5} />
-
-                  {/* Specimen label */}
+                {/* LEFT — Real tobacco leaf photograph */}
+                <div style={{ position: "relative", overflow: "hidden", borderRight: "1px solid rgba(255,255,255,0.07)" }}>
+                  <img
+                    src={IMG(SEED_PHOTOS[seedId] || "tobacco_criollo.png")}
+                    alt={seed.name}
+                    style={{
+                      position: "absolute", inset: 0,
+                      width: "100%", height: "100%",
+                      objectFit: "cover", objectPosition: "center",
+                    }}
+                    onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  {/* Dark vignette overlay */}
                   <div style={{
-                    position: "absolute", bottom: 20, left: 24,
-                    display: "flex", gap: 16, alignItems: "center",
-                  }}>
-                    <div style={{ width: 28, height: 1, background: `${GOLD}44` }} />
-                    <span style={{ fontSize: 9, letterSpacing: "0.42em", color: "rgba(255,255,255,0.26)", textTransform: "uppercase", fontWeight: 700 }}>
-                      MACRO RENDER · {seed.name.toUpperCase()}
-                    </span>
+                    position: "absolute", inset: 0,
+                    background: "linear-gradient(170deg, rgba(4,2,0,0.35) 0%, rgba(4,2,0,0.55) 100%)",
+                  }} />
+                  {/* Bottom fade for label */}
+                  <div style={{
+                    position: "absolute", bottom: 0, left: 0, right: 0, height: 120,
+                    background: "linear-gradient(0deg, rgba(4,2,0,0.88) 0%, transparent 100%)",
+                  }} />
+                  {/* Amber top glow */}
+                  <div style={{
+                    position: "absolute", top: 0, left: 0, right: 0, height: "40%",
+                    background: `radial-gradient(ellipse at 40% 0%, ${seed.cs}30 0%, transparent 65%)`,
+                    pointerEvents: "none",
+                  }} />
+                  {/* Specimen label bottom-left */}
+                  <div style={{ position: "absolute", bottom: 28, left: 32, display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                      <div style={{ width: 32, height: 1, background: `${GOLD}66` }} />
+                      <span style={{ fontSize: 10, letterSpacing: "0.44em", color: `${GOLD}BB`, textTransform: "uppercase", fontWeight: 800, fontFamily: "'Inter',sans-serif" }}>
+                        MACRO SPECIMEN
+                      </span>
+                    </div>
+                    <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 42, fontWeight: 300, color: "#F0E8D4", lineHeight: 1, textShadow: "0 2px 20px rgba(0,0,0,0.90)" }}>
+                      {seed.name}
+                    </div>
+                    <div style={{ fontSize: 13, letterSpacing: "0.20em", color: "rgba(240,232,212,0.45)", fontFamily: "'Inter',sans-serif" }}>
+                      {seed.origin}
+                    </div>
                   </div>
                 </div>
 

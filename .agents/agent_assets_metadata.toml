@@ -612,6 +612,54 @@ uri = "file://artifacts/smokecraft/public/images/craft/wine-3.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "d9ztXOofAVcgOb40060Fa"
+uri = "file://artifacts/novee/public/images/cigar_hero.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "hTyiSX8sv9rBgdDp5KCjS"
+uri = "file://artifacts/novee/public/images/lounge_bg.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "l6DEl1an2a-NrQFg2ADql"
+uri = "file://artifacts/novee/public/images/tobacco_criollo.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jqlbQmskPk1e43Zae5YVZ"
+uri = "file://artifacts/novee/public/images/tobacco_corojo.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "igvaG5kBSYepPAqHdLdQH"
+uri = "file://artifacts/novee/public/images/tobacco_connecticut.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "U8xt0L6I5gr3xnT_2a_HZ"
+uri = "file://artifacts/novee/public/images/mentor_dominican.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "DTu3nBKN4iup2C9AILhV2"
+uri = "file://artifacts/novee/public/images/mentor_nicaraguan.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "FK2mSnMlmcxyg-gZE-2gH"
+uri = "file://artifacts/novee/public/images/mentor_honduran.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "bcXlJZbThuFGk9x0tlMdt"
 uri = "file://.local/AXIOM_OS_OPERATIONS_MANUAL_SOURCE.md"
@@ -629,3 +677,51 @@ id = "ZjbSHXQIplft_nsvSSuy2"
 uri = "file://attached_assets/novee-smokecraft-qr.svg"
 type = "image"
 title = "NOVEE OS / SMOKECRAFT — Install Guide + QR Code"
+
+[[outputs]]
+id = "bmNhN_8sNuLvRluZJI6Jc"
+uri = "file://attached_assets/stock_images/lounge_bg.jpg"
+type = "image"
+title = "luxury cigar lounge dark leather chairs amber lighting smoke atmosphere upscale"
+
+[[outputs]]
+id = "ZpAAb7F4I_v5rcSlPjNLA"
+uri = "file://attached_assets/stock_images/cigar_hero.jpg"
+type = "image"
+title = "premium maduro cigar close-up macro photography dark background luxury"
+
+[[outputs]]
+id = "PeYlN7cL94Zyj_efwY3Se"
+uri = "file://attached_assets/stock_images/tobacco_criollo.jpg"
+type = "image"
+title = "dark tobacco leaves macro close-up texture brown earthy"
+
+[[outputs]]
+id = "QZdMM0TQWVBfGNfGodjH9"
+uri = "file://attached_assets/stock_images/tobacco_connecticut.jpg"
+type = "image"
+title = "connecticut shade tobacco leaf light golden tan delicate texture"
+
+[[outputs]]
+id = "1tRnHOo52wWZ_bZ7Nz0QH"
+uri = "file://attached_assets/stock_images/volcanic_soil.jpg"
+type = "image"
+title = "dark volcanic soil close-up texture rich earth agricultural"
+
+[[outputs]]
+id = "e_8DhIlC59zSEJweqcr-c"
+uri = "file://attached_assets/stock_images/mentor_dominican.jpg"
+type = "image"
+title = "elderly latin master craftsman portrait dramatic lighting Dominican Republic"
+
+[[outputs]]
+id = "iQPSwh73qAHTJVw8IPjwS"
+uri = "file://attached_assets/stock_images/mentor_nicaraguan.jpg"
+type = "image"
+title = "Nicaraguan man dramatic portrait intense cinematic lighting"
+
+[[outputs]]
+id = "_wlxa0mBNCgTRX5jFAab0"
+uri = "file://attached_assets/stock_images/mentor_honduran.jpg"
+type = "image"
+title = "Hispanic man craftsman expert hands examining leaf dramatic light"

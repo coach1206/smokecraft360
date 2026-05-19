@@ -5,346 +5,406 @@ import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
 import { CigarHero } from "@/components/CigarHero";
 
 const GOLD = "#D4AF37";
+const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
 export function ReentryGate() {
-  const { profile, setPhase } = useGuest();
+  const { updateProfile, setPhase, resetProfile } = useGuest();
   const [lastName, setLastName] = useState("");
-  const [phone4,   setPhone4]   = useState("");
-  const [error,    setError]    = useState("");
-  const [shake,    setShake]    = useState(false);
+  const [pin,      setPin]      = useState("");
+  const [error,    setError]    = useState(false);
 
-  function handleNew()    { setPhase("s1_demo"); }
-  function handleReturn() {
-    const ok =
-      profile.lastName.trim().length > 0 &&
-      lastName.trim().toLowerCase() === profile.lastName.trim().toLowerCase() &&
-      phone4.trim() === profile.phone4.trim();
-    if (ok) {
+  function beginNew() {
+    resetProfile();
+    hapticMilestone();
+    setPhase("s1_demo");
+  }
+
+  function returnGuest() {
+    if (lastName.trim() && pin.trim().length === 4) {
       hapticMilestone();
-      setPhase(profile.phase === "reentry" ? "s1_demo" : profile.phase);
+      updateProfile({ lastName: lastName.trim(), phone4: pin.trim() });
+      setPhase("s1_demo");
     } else {
       hapticError();
-      setError("Credentials not recognized.");
-      setShake(true);
-      setTimeout(() => setShake(false), 650);
+      setError(true);
+      setTimeout(() => setError(false), 900);
     }
   }
 
   return (
     <div style={{
-      position:   "fixed",
-      inset:      0,
-      display:    "grid",
+      position:            "fixed",
+      inset:               0,
+      display:             "grid",
       gridTemplateColumns: "1fr 1fr",
-      fontFamily: "'Inter', sans-serif",
-      overflow:   "hidden",
+      overflow:            "hidden",
     }}>
 
-      {/* ════════════ LEFT — Full-bleed brand panel ════════════ */}
-      <div style={{
-        position:      "relative",
-        display:       "flex",
-        flexDirection: "column",
-        overflow:      "hidden",
-        borderRight:   `1px solid rgba(212,175,55,0.18)`,
-      }}>
-        {/* Deep obsidian base */}
+      {/* ═══════════ LEFT — FULL-BLEED CIGAR PHOTO PANEL ═══════════ */}
+      <div style={{ position: "relative", overflow: "hidden" }}>
+
+        {/* PRIMARY: AI cigar photo — full bleed background */}
+        <img
+          src={IMG("cigar_hero.png")}
+          alt=""
+          style={{
+            position:       "absolute",
+            inset:          0,
+            width:          "100%",
+            height:         "100%",
+            objectFit:      "cover",
+            objectPosition: "center 30%",
+          }}
+        />
+
+        {/* Deep dark gradient overlay — keeps photo visible but anchors text */}
         <div style={{
-          position: "absolute", inset: 0,
-          background: "linear-gradient(165deg, #110C04 0%, #070502 55%, #0A0703 100%)",
+          position:   "absolute",
+          inset:      0,
+          background: `
+            linear-gradient(180deg,
+              rgba(4,2,0,0.52) 0%,
+              rgba(4,2,0,0.48) 35%,
+              rgba(4,2,0,0.78) 65%,
+              rgba(2,1,0,0.96) 100%
+            )
+          `,
         }} />
 
-        {/* Brushed horizontal titanium grain */}
+        {/* Warm amber corona from the ember — top right */}
         <div style={{
-          position: "absolute", inset: 0, opacity: 0.032,
-          backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, rgba(255,255,255,0.7) 1px, transparent 2px, transparent 14px)",
+          position:   "absolute",
+          top:        "-5%", right: "-5%",
+          width:      "60%", height: "55%",
+          background: "radial-gradient(ellipse at 70% 20%, rgba(255,120,20,0.18) 0%, rgba(212,140,30,0.10) 35%, transparent 65%)",
+          pointerEvents: "none",
         }} />
 
         {/* Gold top rim */}
         <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: 3,
-          background: `linear-gradient(90deg, ${GOLD}EE 0%, ${GOLD}66 70%, transparent 100%)`,
-          boxShadow: `0 0 28px 4px rgba(212,175,55,0.28)`,
-          zIndex: 6,
+          position:  "absolute",
+          top: 0, left: 0, right: 0,
+          height:    3,
+          background: `linear-gradient(90deg, ${GOLD}EE, ${GOLD}88 60%, transparent 100%)`,
+          boxShadow: `0 0 32px 4px rgba(212,175,55,0.28)`,
+          zIndex:    6,
         }} />
 
-        {/* ── CIGAR HERO — upper 52% ── */}
+        {/* Gold left rim */}
         <div style={{
-          position: "relative",
-          flex: "0 0 52%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-          padding: "32px 36px 8px",
-        }}>
-          {/* Ember ambient light from foot (right side) */}
-          <div style={{
-            position: "absolute",
-            top: "25%", right: "-4%",
-            width: "50%", height: "60%",
-            background: "radial-gradient(ellipse at 72% 50%, rgba(255,110,20,0.26) 0%, rgba(255,50,0,0.08) 45%, transparent 72%)",
-            pointerEvents: "none",
-          }} />
-          {/* Cool gold counter-light from left */}
-          <div style={{
-            position: "absolute",
-            top: "15%", left: "-4%",
-            width: "38%", height: "70%",
-            background: "radial-gradient(ellipse at 18% 50%, rgba(212,175,55,0.12) 0%, transparent 65%)",
-            pointerEvents: "none",
-          }} />
-          {/* Floor reflection fade */}
-          <div style={{
-            position: "absolute",
-            bottom: 0, left: 0, right: 0, height: "30%",
-            background: "linear-gradient(0deg, rgba(212,175,55,0.07) 0%, transparent 100%)",
-            pointerEvents: "none",
-          }} />
-          <CigarHero wrapperTone="corojo" />
-        </div>
+          position:   "absolute",
+          top: 0, left: 0, bottom: 0,
+          width:      3,
+          background: `linear-gradient(180deg, ${GOLD}DD 0%, ${GOLD}55 55%, transparent 100%)`,
+          boxShadow:  `4px 0 24px rgba(212,175,55,0.18)`,
+        }} />
 
-        {/* ── Wordmark — lower 48% ── */}
+        {/* Gold right divider */}
         <div style={{
-          position: "relative",
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-end",
-          padding: "0 64px 56px",
-          zIndex: 2,
+          position:   "absolute",
+          top: 0, right: 0, bottom: 0,
+          width:      1,
+          background: `linear-gradient(180deg, transparent, ${GOLD}55 35%, ${GOLD}44 65%, transparent)`,
+        }} />
+
+        {/* ── Wordmark — anchored bottom-left ── */}
+        <div style={{
+          position:      "absolute",
+          bottom:        0,
+          left:          0,
+          right:         0,
+          padding:       "0 56px 52px",
         }}>
-          {/* Vignette bridge */}
+          {/* Gradient fade above text */}
           <div style={{
-            position: "absolute", top: "-56px", left: 0, right: 0, height: 72,
-            background: "linear-gradient(180deg, transparent, rgba(7,5,2,0.72))",
+            position:   "absolute",
+            bottom:     "100%",
+            left:       0,
+            right:      0,
+            height:     120,
+            background: "linear-gradient(0deg, rgba(5,3,1,0.90) 0%, transparent 100%)",
             pointerEvents: "none",
           }} />
+
           <div style={{
             fontSize:      11,
-            letterSpacing: "0.60em",
+            letterSpacing: "0.65em",
             textTransform: "uppercase",
             fontWeight:    800,
-            color:         `${GOLD}70`,
-            marginBottom:  22,
+            color:         `${GOLD}80`,
+            marginBottom:  20,
+            fontFamily:    "'Inter', sans-serif",
           }}>
             SmokeCraft 360
           </div>
 
           <h1 style={{
             fontFamily:    "'Cormorant Garamond', Georgia, serif",
-            fontSize:      "clamp(68px, 9vw, 120px)",
+            fontSize:      "clamp(72px, 9.5vw, 130px)",
             fontWeight:    300,
             color:         "#F0E8D4",
-            margin:        "0 0 28px",
-            letterSpacing: "0.04em",
-            lineHeight:    0.94,
-            textShadow:    `0 0 100px rgba(212,175,55,0.20), 0 4px 60px rgba(0,0,0,0.90)`,
+            margin:        "0 0 20px",
+            letterSpacing: "0.03em",
+            lineHeight:    0.92,
+            textShadow:    `0 0 80px rgba(212,175,55,0.22), 0 4px 60px rgba(0,0,0,0.95)`,
           }}>
             The<br />Lounge
           </h1>
 
-          {/* Gold rule */}
           <div style={{
-            width:      100,
+            width:      110,
             height:     2,
             background: `linear-gradient(90deg, ${GOLD}, transparent)`,
-            boxShadow:  `0 0 14px ${GOLD}55`,
-            marginBottom: 24,
+            boxShadow:  `0 0 16px ${GOLD}66`,
+            marginBottom: 20,
           }} />
 
           <p style={{
-            fontSize:   18,
-            color:      "rgba(240,232,212,0.36)",
-            lineHeight: 1.65,
+            fontSize:   20,
+            color:      "rgba(240,232,212,0.42)",
+            lineHeight: 1.60,
             margin:     0,
-            maxWidth:   400,
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 300,
           }}>
-            A 4-session luxury cigar science journey. Build your blend, earn your rank, and claim your place on tonight's wall display.
+            A 4-session luxury cigar science journey.<br />
+            Build your blend, earn your rank.
           </p>
+
+          {/* Unit badge */}
+          <div style={{
+            marginTop:     28,
+            fontSize:      10,
+            letterSpacing: "0.45em",
+            color:         `${GOLD}44`,
+            fontFamily:    "'Inter', sans-serif",
+            textTransform: "uppercase",
+          }}>
+            KIOSK UNIT · SC360-01
+          </div>
         </div>
 
-        {/* Kiosk ID bottom-left */}
+        {/* Gold divider right edge */}
         <div style={{
           position:   "absolute",
-          bottom:     20, left: 72,
-          fontSize:   9,
-          letterSpacing: "0.40em",
-          color:      "rgba(255,255,255,0.14)",
-          textTransform: "uppercase",
-          fontWeight: 700,
-          zIndex:     2,
-        }}>
-          KIOSK UNIT · SC360-01
-        </div>
+          top:        0,
+          right:      0,
+          bottom:     0,
+          width:      1,
+          background: `linear-gradient(180deg, transparent, ${GOLD}44 30%, ${GOLD}55 55%, ${GOLD}33 80%, transparent)`,
+        }} />
       </div>
 
-      {/* ════════════ RIGHT — Action panel ════════════ */}
+      {/* ═══════════ RIGHT — ACTION PANEL ═══════════ */}
       <div style={{
         position:       "relative",
         display:        "flex",
         flexDirection:  "column",
         justifyContent: "center",
-        padding:        "72px 64px",
-        background:     "rgba(255,255,255,0.016)",
-        backdropFilter: "blur(32px)",
-        WebkitBackdropFilter: "blur(32px)",
+        padding:        "64px 64px",
+        background:     "rgba(8,5,2,0.92)",
         overflow:       "hidden",
       }}>
-        {/* Right panel inner depth gradient */}
+
+        {/* Subtle texture */}
         <div style={{
-          position: "absolute", inset: 0,
-          background: "radial-gradient(ellipse 80% 60% at 60% 30%, rgba(212,175,55,0.05) 0%, transparent 55%)",
+          position:   "absolute",
+          inset:      0,
+          opacity:    0.025,
+          backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, rgba(255,255,255,0.7) 1px, transparent 2px, transparent 14px)",
           pointerEvents: "none",
         }} />
 
-        {/* Gold top rim — right panel */}
+        {/* Gold top rim right panel */}
         <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: 3,
-          background: `linear-gradient(90deg, ${GOLD}55 0%, ${GOLD}CC 100%)`,
-          boxShadow: `0 0 24px 4px rgba(212,175,55,0.22)`,
+          position:   "absolute",
+          top:        0,
+          left:       0,
+          right:      0,
+          height:     3,
+          background: `linear-gradient(90deg, transparent 0%, ${GOLD}88 50%, ${GOLD}CC 100%)`,
+          boxShadow:  `0 0 28px 3px rgba(212,175,55,0.22)`,
+          zIndex:     6,
         }} />
 
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 480, width: "100%" }}>
+        {/* Status badge top-right */}
+        <div style={{
+          position:   "absolute",
+          top:        18,
+          right:      28,
+          display:    "flex",
+          alignItems: "center",
+          gap:        8,
+          fontSize:   10,
+          letterSpacing: "0.35em",
+          color:      "rgba(255,255,255,0.22)",
+          fontFamily: "'Inter', sans-serif",
+          textTransform: "uppercase",
+        }}>
+          TABLE KIOSK · ACTIVE
+          <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 10px #32B45A" }} />
+        </div>
 
-          {/* ── New Session ── */}
-          <div style={{ marginBottom: 48 }}>
-            <div style={{
-              fontSize: 10, letterSpacing: "0.52em", textTransform: "uppercase",
-              fontWeight: 800, color: `${GOLD}66`, marginBottom: 14,
-            }}>
-              First Visit
-            </div>
-            <h2 style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: 46, fontWeight: 300, color: "#F0E8D4",
-              margin: "0 0 8px", letterSpacing: "0.04em", lineHeight: 1.05,
-            }}>
-              Begin Your Journey
-            </h2>
-            <p style={{ color: "rgba(240,232,212,0.35)", fontSize: 17, margin: "0 0 28px", lineHeight: 1.55 }}>
-              New session — 4 stages, fully tracked, with live scoring on the room display.
-            </p>
-
-            <motion.button type="button" onPointerDown={handleNew} whileTap={{ scale: 0.97 }}
-              style={{
-                width:         "100%",
-                padding:       "26px",
-                background:    `linear-gradient(135deg, ${GOLD} 0%, #BF9800 52%, #9A7A14 100%)`,
-                border:        "none",
-                borderRadius:  14,
-                color:         "#060400",
-                fontSize:      20,
-                fontWeight:    900,
-                letterSpacing: "0.28em",
-                textTransform: "uppercase",
-                cursor:        "pointer",
-                fontFamily:    "'Inter', sans-serif",
-                boxShadow:     `0 0 56px rgba(212,175,55,0.32), 0 10px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.24)`,
-                position:      "relative",
-                overflow:      "hidden",
-              }}>
-              <div style={{
-                position: "absolute", top: 0, left: 0, right: 0, height: "52%",
-                background: "linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 100%)",
-                borderRadius: "14px 14px 0 0",
-              }} />
-              BEGIN NEW SESSION
-            </motion.button>
+        {/* ── FIRST VISIT ── */}
+        <div style={{ marginBottom: 52 }}>
+          <div style={{
+            fontSize:      11,
+            letterSpacing: "0.55em",
+            textTransform: "uppercase",
+            fontWeight:    800,
+            color:         `${GOLD}77`,
+            marginBottom:  18,
+            fontFamily:    "'Inter', sans-serif",
+          }}>
+            First Visit
           </div>
 
-          {/* Divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 36 }}>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
-            <span style={{ fontSize: 10, letterSpacing: "0.36em", textTransform: "uppercase", color: "rgba(255,255,255,0.18)", fontWeight: 700 }}>
-              RETURNING GUEST
-            </span>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
-          </div>
+          <h2 style={{
+            fontFamily:    "'Cormorant Garamond', Georgia, serif",
+            fontSize:      "clamp(42px, 5vw, 64px)",
+            fontWeight:    300,
+            color:         "#F0E8D4",
+            margin:        "0 0 14px",
+            letterSpacing: "0.03em",
+            lineHeight:    1.05,
+          }}>
+            Begin Your Journey
+          </h2>
 
-          {/* ── Return ── */}
-          <div style={{ marginBottom: 14 }}>
-            <h2 style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: 36, fontWeight: 300, color: "#F0E8D4",
-              margin: "0 0 22px", letterSpacing: "0.04em", lineHeight: 1.05,
-            }}>
-              Resume Session
-            </h2>
+          <p style={{
+            fontSize:   20,
+            color:      "rgba(240,232,212,0.38)",
+            margin:     "0 0 28px",
+            lineHeight: 1.55,
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            New session — 4 stages, fully tracked,<br />with live scoring on the room display.
+          </p>
 
-            <motion.div
-              animate={shake ? { x: [-12, 12, -9, 9, -4, 4, 0] } : { x: 0 }}
-              transition={{ duration: 0.44 }}
-              style={{ display: "flex", flexDirection: "column", gap: 12 }}
-            >
-              {[
-                { val: lastName, set: setLastName, ph: "LAST NAME",    extra: {} },
-                { val: phone4, set: (v: string) => setPhone4(v.replace(/\D/g,"").slice(0,4)), ph: "LAST 4 DIGITS", extra: { letterSpacing: "0.32em" }, max: 4 },
-              ].map(f => (
-                <input key={f.ph} type="text" value={f.val}
-                  onChange={e => { f.set(e.target.value); setError(""); }}
-                  maxLength={(f as { max?: number }).max}
-                  placeholder={f.ph}
-                  style={{
-                    padding:      "22px 24px",
-                    background:   "rgba(255,255,255,0.042)",
-                    border:       `1.5px solid ${error ? "rgba(200,50,42,0.60)" : "rgba(212,175,55,0.22)"}`,
-                    borderRadius: 13,
-                    color:        "#F0E8D4",
-                    fontSize:     24,
-                    fontWeight:   700,
-                    fontFamily:   "'Inter', sans-serif",
-                    outline:      "none",
-                    boxShadow:    "inset 0 2px 8px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.04)",
-                    transition:   "border-color 0.22s",
-                    width:        "100%",
-                    boxSizing:    "border-box",
-                    ...f.extra,
-                  }}
-                />
-              ))}
+          <motion.button
+            type="button"
+            onPointerDown={beginNew}
+            whileTap={{ scale: 0.97 }}
+            style={{
+              width:         "100%",
+              padding:       "26px 32px",
+              background:    `linear-gradient(135deg, ${GOLD}EE, #B8900A)`,
+              border:        "none",
+              borderRadius:  4,
+              cursor:        "pointer",
+              fontFamily:    "'Inter', sans-serif",
+              fontSize:      18,
+              fontWeight:    800,
+              letterSpacing: "0.20em",
+              textTransform: "uppercase",
+              color:         "#0A0700",
+              boxShadow:     `0 8px 48px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.12) inset`,
+            }}
+          >
+            BEGIN NEW SESSION
+          </motion.button>
+        </div>
 
-              <AnimatePresence>
-                {error && (
-                  <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    style={{ color: "#C8322A", fontSize: 14, margin: "0", letterSpacing: "0.04em" }}>
-                    {error}
-                  </motion.p>
-                )}
-              </AnimatePresence>
+        {/* Divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 40 }}>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
+          <span style={{
+            fontSize:      10,
+            letterSpacing: "0.45em",
+            textTransform: "uppercase",
+            color:         "rgba(255,255,255,0.22)",
+            fontFamily:    "'Inter', sans-serif",
+          }}>
+            Returning Guest
+          </span>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
+        </div>
 
-              <motion.button type="button" onPointerDown={handleReturn} whileTap={{ scale: 0.97 }}
+        {/* ── RETURNING GUEST ── */}
+        <div>
+          <h2 style={{
+            fontFamily:    "'Cormorant Garamond', Georgia, serif",
+            fontSize:      "clamp(36px, 4vw, 52px)",
+            fontWeight:    300,
+            color:         "#F0E8D4",
+            margin:        "0 0 24px",
+            letterSpacing: "0.03em",
+          }}>
+            Resume Session
+          </h2>
+
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 style={{
-                  marginTop:     4,
-                  padding:       "22px",
-                  background:    "rgba(212,175,55,0.06)",
-                  border:        `1.5px solid rgba(212,175,55,0.35)`,
-                  borderRadius:  13,
-                  color:         GOLD,
-                  fontSize:      18,
-                  fontWeight:    800,
-                  letterSpacing: "0.24em",
-                  textTransform: "uppercase",
-                  cursor:        "pointer",
-                  fontFamily:    "'Inter', sans-serif",
-                  boxShadow:     "inset 0 1px 0 rgba(255,255,255,0.06)",
+                  marginBottom: 16,
+                  padding:      "14px 20px",
+                  background:   "rgba(180,40,40,0.18)",
+                  border:       "1px solid rgba(200,50,50,0.35)",
+                  borderRadius: 4,
+                  fontSize:     16,
+                  color:        "#FF8080",
+                  fontFamily:   "'Inter', sans-serif",
+                }}
+              >
+                Last name + 4-digit code required to resume.
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>
+            {[
+              { ph: "LAST NAME", val: lastName, fn: setLastName, type: "text" },
+              { ph: "LAST 4 DIGITS", val: pin, fn: (v: string) => setPin(v.replace(/\D/,"").slice(0,4)), type: "tel" },
+            ].map(({ ph, val, fn, type }) => (
+              <input
+                key={ph}
+                type={type}
+                placeholder={ph}
+                value={val}
+                onChange={e => fn(e.target.value)}
+                style={{
                   width:         "100%",
-                }}>
-                RETURN TO MY SESSION →
-              </motion.button>
-            </motion.div>
+                  padding:       "22px 24px",
+                  background:    "rgba(255,255,255,0.05)",
+                  border:        "1px solid rgba(212,175,55,0.18)",
+                  borderRadius:  4,
+                  fontFamily:    "'Inter', sans-serif",
+                  fontSize:      22,
+                  fontWeight:    600,
+                  color:         "#F0E8D4",
+                  letterSpacing: "0.12em",
+                  outline:       "none",
+                  boxSizing:     "border-box",
+                }}
+              />
+            ))}
           </div>
+
+          <motion.button
+            type="button"
+            onPointerDown={returnGuest}
+            whileTap={{ scale: 0.97 }}
+            style={{
+              width:         "100%",
+              padding:       "22px 32px",
+              background:    "transparent",
+              border:        `1px solid ${GOLD}66`,
+              borderRadius:  4,
+              cursor:        "pointer",
+              fontFamily:    "'Inter', sans-serif",
+              fontSize:      16,
+              fontWeight:    700,
+              letterSpacing: "0.20em",
+              textTransform: "uppercase",
+              color:         GOLD,
+            }}
+          >
+            RETURN TO MY SESSION →
+          </motion.button>
         </div>
       </div>
-
-      {/* Bottom hardware bar */}
-      <div style={{
-        position:   "fixed",
-        bottom:     0, left: 0, right: 0,
-        height:     2,
-        background: `linear-gradient(90deg, ${GOLD}CC 50%, ${GOLD}55 100%)`,
-        zIndex:     50,
-      }} />
     </div>
   );
 }
