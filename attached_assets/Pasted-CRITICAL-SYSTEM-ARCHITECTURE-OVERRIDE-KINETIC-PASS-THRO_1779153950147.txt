@@ -1,0 +1,43 @@
+CRITICAL SYSTEM ARCHITECTURE OVERRIDE, KINETIC PASS-THROUGH & TOTAL VISUAL OVERHAUL: The Environment (ENV) floor designer, Asset Vault, and Transaction (TRAN) views are flat, static, text-heavy, and non-responsive. Left sidebar elements do not engage drag metrics, the asset ledger has defaulted to unstyled spreadsheet lists, and there is no direct pass-through pipeline between the modules. 
+
+Immediately refactor App.tsx, EnvironmentControl.tsx, TransactionTerminal.tsx, and AssetVault.tsx to inject absolute high-fidelity graphics, animated asset tiles, fluid touchscreen canvas tracking, and a direct interconnected pass-through layer. Ensure 'tsc --noEmit' passes with exit code 0.
+
+=========================================
+1. THE PRESTIGE DRAG-AND-DROP VENUE PLANNER OVERHUAL [ ENV ]
+=========================================
+- Active Drag & Drop Canvas Mechanics:
+  * Re-architect the left blueprint component drawer. The blocks ([ Circular Table ], [ Square Booth ], [ VIP Lounge Couch ], [ Main Bar Module ]) must be large, high-contrast obsidian glass touchscreen tiles.
+  * Inject an active CSS micro-shimmer glow and breathing animation on all draggable cards. When a card is touched or dragged, trigger a 100ms haptic scale transformation ('scale-105') and emit live glowing gold trajectory vectors across the underlying grid canvas.
+  * Dropping an item onto the geometric grid matrix must execute an instantaneous fluid bounce animation, fire a haptic sound pulse (playClick()), and stamp a giant, neon-amber digital label (e.g., "TABLE 01").
+- Direct Cross-Module Pass-Through Layer:
+  * Tapping any placed table on the room map canvas must illuminate its border with a brilliant, pulsing golden halo ring and instantly pull up a high-tech glassmorphic split drawer containing a direct shortcut target:
+    -> [ RUN IMMEDIATE TABLE TRANSACTION ] 
+  * Pressing this action target must immediately slide the operator directly into the Transaction Terminal view for that specific table coordinate without dropping session state, resetting memory caches, or forcing a tedious back-button menu route navigation loop.
+
+=========================================
+2. THE HIGH-FIDELITY VISUAL ASSET VAULT [ ASSET ]
+=========================================
+- High-Tech Saturated Inventory Realization:
+  * Completely erase all unstyled spreadsheet tables, flat data columns, and plain white text lists from the ledger views.
+  * Turn the ledger into a highly premium grid display utilizing deep smoky obsidian glass backdrops and heavy brushed-titanium framing borders.
+  * Hard-bind every inventory count line to authentic, ultra-realistic product imagery catching low amber ambient lighting:
+    - Premium Cigar Row: Show a jaw-dropping macro photograph of authentic luxury cedar cigar box faces (e.g., Padrón 1926 Serie or Arturo Fuente Fuente Opus X) showing visible manufacturing origin data labels, texture grain loops, and holographic tax seals.
+    - Premium Spirits Row: Render flawless cinematic portrait photos of actual crystal-cut heavy decanters filled with deep amber single-malt scotch and fine aged bourbon labels sitting behind an illuminated, ultra-luxury backbar frame.
+
+=========================================
+3. THE MULTI-MODULE INTERCONNECTED PORTAL SPEEDWAY [ TRANSACTION ]
+=========================================
+- Cross-Navigation Passthrough: 
+  * Add a dedicated, highly visible touchscreen navigation tab on the Right Live Invoice sheet inside the Transaction terminal reading exactly:
+    -> [ SWAP TO VENUE FLOOR PLAN MAP ]
+  * This acts as an instant architectural bridge, allowing staff to jump freely back and forth between active guest checkout totals and physical floor coordinates instantly.
+- 45+ Visibility & Telemetry: All interface typography scales, item pricing arrays, table tracking rows, and total calculations must be magnified by an additional 50% using high-contrast neon-amber DIGITAL segment fonts, guaranteeing flawless legibility in the darkest lounge layout.
+
+=========================================
+4. RE-RESTORE THE ULTIMATE VISUAL MASTERCLASS (SESSION 1 ENDPOINT)
+=========================================
+- Visual Flow Enforcement: Protect the visual progression for Vitola Science and Precision Cuts. All selections must trigger active 3D rotation shifts and realistic tool imagery (Guillotine, V-Cut, Punch) with live amber airflow trace animations.
+- Session 1 Closing Summary Overlay: Hard-stop progression cleanly at the end of Part 1. Background displays a jaw-dropping cinematic shot of a physical premium cigar burning next to a crystal whiskey tumbler on an obsidian counter bar. Center a pulsing gold summary block tracking your Intelligence Score, and anchor an oversized neon footer banner stating exactly:
+  "STATUS: MASTERCLASS PART 1 LOCKOUT ACTIVE. Your custom tobacco blend matrix is officially resting inside the fermentation vault. In Session 2, we take the floor. Get ready to step up to the wooden bench, calibrate your binding glue, slice the wrapper anatomy, and manually roll your physical masterwork. Review your pairing notes above—your mentor awaits you at the rolling bench next session."
+
+Execute this comprehensive entry re-architecture, replace the dead assets with active, glowing touchscreen panels, and establish the direct cross-module pass-through speedway immediately. Let it compile completely clean.
