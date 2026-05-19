@@ -806,6 +806,15 @@ function PinModal({ onClose }: { onClose: () => void }) {
   async function submit(fullPin: string) {
     if (submitting) return;
     setSubmitting(true); setError(false);
+
+    // ── Dev bypass: universal PIN active in development builds only ───────────
+    if (import.meta.env.DEV && fullPin === "2501") {
+      localStorage.setItem("axiom_token", "dev_token_2501");
+      setFlashGreen(true);
+      setTimeout(() => { onClose(); navigate("/operations"); }, 300);
+      return;
+    }
+
     try {
       const res = await fetch("/api/auth/pin-login", {
         method: "POST",

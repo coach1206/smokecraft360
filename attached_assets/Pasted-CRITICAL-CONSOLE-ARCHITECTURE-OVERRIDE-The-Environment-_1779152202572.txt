@@ -1,0 +1,37 @@
+CRITICAL CONSOLE ARCHITECTURE OVERRIDE: The Environment, Asset, and Transaction (E.A.T.) modules have degraded into static, text-heavy web templates lacking all motion, imagery, and tactical energy. This completely violates the luxury NOVEÈ OS console identity. Immediately refactor App.tsx, Operations.tsx, EnvironmentControl.tsx, and InventoryLedger.tsx to destroy the website aesthetic and replace it with an uncompromising, interactive touchscreen instrument panel. Verify 'tsc --noEmit' passes with exit code 0.
+
+=========================================
+1. THE HIGH-TECH ENVIRONMENT (ENV) CONSOLE OVERHAUL
+=========================================
+- 3D Interactive Ambience Mapping:
+  * Wipe out all flat vertical text sliders and plain toggle lists. Convert the Environment sub-panel into a landscape 60/40 visual control grid.
+  * Left Tactical Panel (60%): Build three oversized, glassmorphic touch dial zones controlling the lounge's environmental parameters:
+    - [ LUX AMBIENCE DIAL ] -> Adjusts warm amber lighting density. Moving the touch-slider scales the interface layer ('scale-98') and executes a live fluid canvas lighting wave effect.
+    - [ HUMIDITY ENGINE ] -> Controls micro-climate moisture velocity for asset preservation.
+    - [ SCENT DIFFUSION MATRIX ] -> Tactile selector targets for active aroma profiles (e.g., Natural Cedar, Espresso Husk, Smoked Oak).
+  * Right Visual Feedback Drawer (40%): Render an ultra-realistic, cinematic interior photograph of a premium luxury lounge space. As the operator shifts the sliders on the left, use CSS hue-rotate, saturation, and brightness filters to dynamically alter the lighting and mood of the room photo in real time (e.g., dimming down to deep amber or shifting contrast).
+
+=========================================
+2. THE HIGH-FIDELITY ASSET VAULT (ASS) & LEDGER
+=========================================
+- Sensory Inventory Realization:
+  * Remove all plain data lists, generic text columns, and blank rows. 
+  * Re-architect the ledger into an interactive visual catalog matrix. Every high-margin product category must display high-fidelity, hyper-realistic asset photography side-by-side with its live digital count:
+    - Cigar Inventory Section: Show stunning macro images of authentic premium cigar boxes showing rich cedar wood grains and metallic branding stamps (e.g., Padrón 1926 Serie or Fuente Fuente Opus X).
+    - Spirits Inventory Section: Render flawless portrait photos of authentic, crystal-cut heavy decanters filled with deep amber single-malt scotch and premium bourbon labels catching low ambient lighting.
+
+=========================================
+3. THE TOUCHSCREEN TOOLBAR & INTERACTIVE SIDE FEATURES
+=========================================
+- Kinetic Motion & Spatial Transitions:
+  * Tapping between the primary top E.A.T. system buttons ([ ENVIRONMENT ], [ ASSET VAULT ], [ TRANSACTION ]) must never result in an instant, flat web snap.
+  * Implement an active 400ms spatial sliding motion transition. Selecting a module causes the incoming control panel to slide horizontally onto the viewport from the right edge, while the old frame fades out along a custom Bezier curve.
+  * Inject an active 100ms visual compression scale-back effect ('scale-95') and fire a clean tactile audio pulse ('playClick() 3400Hz') on every single toolbar touch interaction to provide premium physical glass feedback.
+
+=========================================
+4. THE INTEGRATED OPERATIONAL PIN LOGIN (UN-FREEZE KEYPAD)
+=========================================
+- Unify the State Loop: Completely eliminate any isolated standalone URL route contexts for security. Re-architect the PIN keypad strictly as a beautiful, glassmorphic modal overlay drawer that slides up seamlessly on top of the active console layout.
+- Access Authentication: Ensure the tactile 4-digit token verification engine connects directly into the newly overhauled E.A.T. view states. Validating an authorized staff profile must instantly trigger a smooth 300ms horizontal wipe animation revealing the secure enterprise module without dropping network connection state or refreshing the browser window.
+
+Execute this comprehensive high-tech material injection, completely wipe out the static web templates, and deploy the interactive spatial animations across all side panels immediately. Let it compile completely clean.
