@@ -1699,7 +1699,7 @@ function CraftHubInner() {
             isPrimary
             onTrigger={() => {
               ExperienceFlowEngine.startCraft(CRAFT_MODULES[0]!.id);
-              setArtOfCigar(true);
+              navigate("/master-blender");
             }}
           />
         </div>
@@ -1723,7 +1723,7 @@ function CraftHubInner() {
                 onTrigger={() => {
                   ExperienceFlowEngine.startCraft(mod.id);
                   if (mod.id === "pour" || mod.id === "brew" || mod.id === "wine") {
-                    setCraftOverlay({ genreKey: mod.id, route: mod.route, color: mod.color });
+                    navigate(mod.route);
                   } else {
                     setPortal({ route: mod.route, color: mod.color });
                   }
