@@ -31,49 +31,13 @@ function PageLoader() {
   );
 }
 
-function Router() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <Switch>
-        {/* Default entry: immediate cinematic launch into the blending chamber */}
-        <Route path="/"                  component={SmokeCraftGateway} />
-        <Route path="/smokecraft"        component={SmokeCraftGateway} />
-        {/* Craft collection preserved for multi-craft navigation */}
-        <Route path="/craft-collection"  component={CraftPortalHome} />
-        <Route path="/pourcraft"     component={() => <CraftComingSoon craft="pourcraft" />} />
-        <Route path="/beercraft"     component={() => <CraftComingSoon craft="beercraft" />} />
-        <Route path="/winecraft"     component={() => <CraftComingSoon craft="winecraft" />} />
-
-        <Route path="/sovereign"     component={OSShell} />
-        <Route path="/admin"         component={OSShell} />
-        <Route path="/ops"           component={OSShell} />
-        <Route path="/eat-engine"    component={EATDashboard} />
-        <Route path="/kernel"        component={EATDashboard} />
-        <Route path="/eeie"          component={EATDashboard} />
-
-        {/* Autonomous Intelligence Command Center */}
-        <Route path="/command-center" component={CommandCenter} />
-        <Route path="/intelligence"   component={CommandCenter} />
-        <Route path="/eeis"           component={CommandCenter} />
-
-        {/* Slug resolver — handles current and historical module slugs with redirect */}
-        <Route path="/modules/:slug"  component={SlugRedirect} />
-
-        <Route component={() => <Redirect to="/" />} />
-      </Switch>
-    </Suspense>
-  );
-}
-
-function App() {
+// Bypassing the router to force render the SmokeCraftGateway page directly
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-        <EATTransitionOverlay />
-        <Router />
-      </WouterRouter>
+      <Suspense fallback={<PageLoader />}>
+        <SmokeCraftGateway />
+      </Suspense>
     </QueryClientProvider>
   );
 }
-
-export default App;
