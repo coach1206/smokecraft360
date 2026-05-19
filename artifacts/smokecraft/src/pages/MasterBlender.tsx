@@ -6284,7 +6284,7 @@ export default function MasterBlender() {
   const { guestProfile, evolveMastery } = useGuestProfile();
 
   // ── Gateway state ────────────────────────────────────────────────────────
-  const [bootDone, setBootDone] = useState(false);
+  const [bootDone, setBootDone] = useState(true);
   const [mentorAcknowledged, setMentorAcknowledged] = useState(false);
   const [gateway,        setGateway]        = useState<GatewayPhase>("cockpit");
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
@@ -6323,11 +6323,11 @@ export default function MasterBlender() {
     if ((OVERLAY_PHASES as string[]).includes(gateway)) setMentorAcknowledged(false);
   }, [gateway]);
 
-  // ── Force Stage 1 on every fresh mount — prevents HMR state bleed ────────
-  // Also wipes all legacy localStorage/sessionStorage keys so no prior session
-  // can surface a returning-user state or bypass the gateway intro.
+  // ── Force priming_matrix on every fresh mount — direct panel access ────────
+  // Bypasses cockpit/orientation/mentor/terroir/seed/harvest/curing/rolling_bench
+  // so LeafBlendPanel is the first visible element on screen.
   useLayoutEffect(() => {
-    setGateway("cockpit");
+    setGateway("priming_matrix");
     setStep(0 as 0);
     setSel({});
     setReveal(false);

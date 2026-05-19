@@ -394,8 +394,8 @@ const BASE_CONFIG: CraftFlowConfig = {
 };
 
 export default function PourCraft() {
-  const [showPresence,       setShowPresence]       = useState(true);
-  const [showPlayground,     setShowPlayground]     = useState(() => !hasSeenPlayground("pour"));
+  const [showPresence,       setShowPresence]       = useState(false);
+  const [showPlayground,     setShowPlayground]     = useState(false);
   const [showSpiritPanel,    setShowSpiritPanel]    = useState(true);
 
   const aiImages = useCraftImages("pour", STYLE_IDS as unknown as string[]);
