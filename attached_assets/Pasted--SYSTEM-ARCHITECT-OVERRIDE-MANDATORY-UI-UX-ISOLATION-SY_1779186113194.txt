@@ -1,0 +1,42 @@
+[SYSTEM ARCHITECT OVERRIDE: MANDATORY UI/UX & ISOLATION SYSTEM]
+
+You are instructed to completely purge and overwrite all legacy layout caches, stacked home screens, old imagery, and previous template instructions. Realign the entire codebase to the following absolute, high-end, premium design standards. There are no exceptions to these rules.
+
+=========================================
+1. GLOBAL PREMIUM UI/UX CORE PLATFORM
+=========================================
+- ACCESSIBLE & BOLD TYPOGRAPHY: All body text, buttons, and interaction elements MUST be a minimum baseline font size of 20px / 1.25rem. Headers must be 32px+. Fonts must be ultra-crisp, high-contrast, and optimized for immediate readability in dimly lit luxury environments by users aged 45+ with low visibility.
+- VIEWPORT LAYOUT & DESIGN SYSTEM: Absolutely FORBID vertical stacking of sections or cluttered text blocks. Implement a spacious, fluid, dynamic grid. The interface must look and feel like an "Apple-level" cinematic, tactile touchscreen tablet. Use premium dark-mode aesthetics: obsidian glass textures, blurred backdrops, and rich, breathing whitespace.
+- CINEMATIC MOTION & ANIMATION: The interface must have life and motion. Integrate weighted cinematic animations, smooth organic transitions, digital glowing number elements, and fluid hover/click micro-interactions. Elements must fade, slide, or scale elegantly—never snap or pop instantly.
+- FALLBACK INTEGRITY: Completely delete and ban all old imagery. If a specific premium image path fails to load, the system must dynamically generate a high-end, stylized CSS frosted-glass gradient matching the module's specific genre accent color. It must never default to legacy layouts.
+- INTERACTIVE VENUE ENGINE: Include a drag-and-drop spatial layout environment. Staff must be able to fluidly draw, scale, drag, and drop a digital diagram of the venue, assign table layouts, and number them dynamically with large digital typography.
+
+=========================================
+2. STRICT GENRE-ISOLATED MODULES
+=========================================
+Each module must follow the global UI structure above but must be rigorously locked into its own distinct, premium genre. You are strictly forbidden from bleeding terminology, metadata, assets, or descriptions across modules.
+
+--- [MODULE 01: SMOKECRAFT 360] ---
+- INTENT: Exclusively dedicated to the luxury cigar ritual experience, leaf profile mapping, humidor monitoring, and lounge table assignments.
+- VISUAL ACCENTS: Deep obsidian glass, soft warm amber, and premium gold micro-glow accent lighting.
+- EXCLUSION FILTER: Absolutely ZERO references, terminology, or imagery related to spirits, liquor, beer, or wine.
+
+--- [MODULE 02: POURCRAFT] ---
+- INTENT: Exclusively dedicated to high-end spirits, master-level mixology, premium liquor curation, and spirit aging charts.
+- VISUAL ACCENTS: Crystal-clear glass aesthetics, deep copper tones, and liquid gold glow accents.
+- EXCLUSION FILTER: Absolutely ZERO references, terminology, or imagery related to cigars, tobacco, beer, or wine.
+
+--- [MODULE 03: BEERCRAFT] ---
+- INTENT: Exclusively dedicated to artisanal craft brewing, taproom management grids, carbonation/temperature metrics, and draft profiles.
+- VISUAL ACCENTS: Frosted glass textures, rich warm brass, and deep caramel-amber glow accents.
+- EXCLUSION FILTER: Absolutely ZERO references, terminology, or imagery related to cigars, tobacco, spirits, or wine.
+
+--- [MODULE 04: WINECRAFT] ---
+- INTENT: Exclusively dedicated to fine wines, sommelier curation, cellar inventory tracking, and vintage comparison matrices.
+- VISUAL ACCENTS: Sleek velvet-dark backdrops, deep burgundy crimson, and soft champagne glow accents.
+- EXCLUSION FILTER: Absolutely ZERO references, terminology, or imagery related to cigars, tobacco, spirits, or beer.
+
+=========================================
+3. COMPILING EXECUTION
+=========================================
+Initialize a hard reset of the interface wrapper. Enforce the font sizes, inject the drag-and-drop venue grid engine, clean out the old image paths, and compile the isolated modules into their precise category genres now. Do not reference legacy templates. Proceed with generation.

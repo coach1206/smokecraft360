@@ -31,6 +31,36 @@ These laws apply across ALL sub-interfaces, modules, and generated code. Functio
 - Map all contextual system outputs, voice updates, and interface state-changes to the ElevenLabs Voice ID streaming endpoint.
 - Audio playback triggers automatically on layout execution or state transitions — no explicit re-initialization required.
 
+### 5. Fallback Integrity
+- Delete and ban all old/broken image paths. If a premium image fails to load, dynamically generate a high-end CSS frosted-glass gradient matching the module's genre accent color. Never fall back to legacy layouts or placeholder boxes.
+
+### 6. Interactive Venue Engine
+- Include a drag-and-drop spatial layout environment. Staff must be able to draw, scale, drag, and drop a digital diagram of the venue, assign table layouts, and number them dynamically with large digital typography.
+
+## Strict Genre-Isolated Modules (DO NOT CROSS-CONTAMINATE)
+
+Each craft module is rigorously locked into its own genre. ZERO bleed of terminology, metadata, assets, or descriptions across modules.
+
+### SmokeCraft 360
+- **Intent**: Exclusively luxury cigar ritual — leaf profile mapping, humidor monitoring, lounge table assignments.
+- **Visual accents**: Deep obsidian glass, soft warm amber, premium gold micro-glow (`#D4AF37`).
+- **Exclusion**: ZERO references to spirits, liquor, beer, or wine.
+
+### PourCraft
+- **Intent**: Exclusively high-end spirits — master mixology, premium liquor curation, spirit aging charts.
+- **Visual accents**: Crystal-clear glass, deep copper tones, liquid gold glow.
+- **Exclusion**: ZERO references to cigars, tobacco, beer, or wine.
+
+### BeerCraft
+- **Intent**: Exclusively artisanal craft brewing — taproom management, carbonation/temperature metrics, draft profiles.
+- **Visual accents**: Frosted glass, warm brass, deep caramel-amber glow.
+- **Exclusion**: ZERO references to cigars, tobacco, spirits, or wine.
+
+### WineCraft
+- **Intent**: Exclusively fine wines — sommelier curation, cellar inventory, vintage comparison matrices.
+- **Visual accents**: Velvet-dark backdrop, deep burgundy crimson, soft champagne glow.
+- **Exclusion**: ZERO references to cigars, tobacco, spirits, or beer.
+
 # System Architecture
 
 ## Monorepo Structure
