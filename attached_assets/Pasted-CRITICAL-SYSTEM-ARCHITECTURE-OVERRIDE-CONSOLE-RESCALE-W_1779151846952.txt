@@ -1,0 +1,89 @@
+CRITICAL SYSTEM ARCHITECTURE OVERRIDE, CONSOLE RESCALE & WORKSPACE REALIGNMENT: The platform is experiencing critical routing disconnects, static web-template degradation, and legibility failures across both guest and enterprise layers. The /pin-login view is an isolated, broken standalone route that freezes on touch. The /inventory layout crashes to a white screen. The /operations workspace has incorrectly defaulted to an administrative IT dashboard ('ENGINE HEALTH'). The top E.A.T. system status banner is microscopic, overlapping, and illegible. 
+
+Immediately execute a total repository refactor of App.tsx, MasterBlender.tsx, CraftHub.tsx, Operations.tsx, and SecurityProvider.tsx. Rebuild the interface into an uncompromising, high-energy landscape tablet console following the exact chronological flow and specifications mapped below. Ensure 'tsc --noEmit' passes flawlessly with exit code 0.
+
+=========================================
+1. INITIALIZATION, PORTFOLIO COCKPIT & RADIANT LOGO (DELETE VERTICAL GATE)
+=========================================
+- Level 0 & 1 (Power Up & Core Launch): 
+  * Initialize on an absolute black (#000000) canvas featuring a deep, pulsing warm amber glow. 
+  * Centrally render 'Profound Innovations LLC' in tracking-spaced gold typography.
+  * Layer the HTML5 SmokeCanvas globally at z-index 9996 with active drifting smoke trails. Underneath the central action block, render an ultra-realistic, continuously burning premium cigar with shimmering animated ash embers.
+- Level 2 & 3 (Direct Dashboard Fork): 
+  * Tapping the opening block runs a smooth 1.2-second horizontal slide transition directly into 'NOVEÈ OS' / 'CraftHub'. 
+  * ABSOLUTELY ELIMINATE the generic vertical-stack text screen from the routing tree entirely.
+- Cockpit Portfolio Grid: 
+  * Structure the 4 brand pillars as massive, edge-to-edge touchscreen glass blocks across the landscape viewport.
+  * SMOKECRAFT 360 (Top Section): Positioned prominently at the absolute top of the layout, spanning the full horizontal width of the workspace.
+  * POURCRAFT 360, BEERCRAFT 360, WINECRAFT 360 (Bottom Row): Grouped side-by-side neatly directly beneath SmokeCraft 360 to anchor the interface.
+- Experiential Fork: 
+  * Tapping 'SMOKECRAFT 360' fires a playClick() 3400Hz audio burst, running a 1.9s sensory dissolve directly into "The Art of the Cigar" landing layer. 
+  * Target A: "BEGIN JOURNEY" -> Bypasses all onboarding barriers directly to Step 2.
+  * Target B: "RETURNING MASTERCLASS GUEST" -> Slides up a smooth, glassmorphic profile drawer for phone/last-name capture.
+
+=========================================
+2. THE UN-FROZEN OPERATIONAL PIN AUTHENTICATION LAYERING
+=========================================
+- Overlay Architecture: 
+  * Completely eliminate the standalone '/pin-login' URL route. Re-architect the PIN entry exclusively as a beautiful, glassmorphic modal overlay drawer that slides up on top of the active view state.
+- Keypad Touch Mechanics: 
+  * Scale up the touch boundaries of the physical glass keys. Inject an active 100ms visual compression effect ('scale-95') and fire a crisp audio pulse on every digit strike.
+- Token Logic: 
+  * Bind the keypad buttons directly to the central security state controller. Upon striking the 4th digit entry, the state machine must instantly process the authentication token locally. If valid, trigger a 300ms horizontal wipe animation revealing the secure enterprise module without dropping connection state or refreshing the browser window.
+
+=========================================
+3. THE RADICAL E.A.T. TOP BANNER RESCALE
+=========================================
+- Aesthetic & Height: 
+  * Force the top status banner to a permanent height of 76px. Apply a premium dark obsidian glass backdrop with a solid brushed-titanium lower boundary line. 
+  * Typography Scale: Elevate the font size of the entire top system across the board by a minimum of 45%. Eliminate all microscopic subtext and overlapping frames.
+- Three-Zone Spatial Separation Grid:
+  * Left Console Zone: Render the "NOVEÈ OS // REVENUE COMMAND" signature in bold neon-amber typography, flanked by a live pulsing green indicator dot labeled "REVENUE ENGINE: ACTIVE".
+  * Central E.A.T. Gateway Zone: Build three distinctive, heavily padded, highly visible interactive touchscreen badges:
+    - [ ENVIRONMENT ] -> Tactical Ambience & Lighting Control
+    - [ ASSET VAULT ] -> Live Cigar/Spirit Inventory Ledger
+    - [ TRANSACTION ] -> Table-Side Sommelier Up-Sell Entry
+  * Right Console Zone: Render "SOVEREIGN SECURE // ONLINE" fully justified to the far right edge to prevent layout collision on physical tablet glass hardware.
+
+=========================================
+4. MANDATORY CONTEXTUAL NARRATIVE SEQUENCE & MOTION OVERHAUL
+=========================================
+Every view must enforce a landscape-optimized side-by-side split layout. No plain text pages allowed:
+- STEP 2 (The Overview): Left Panel displays "The Blueprint of Craftsmanship" master narrative. Right Panel renders a high-fidelity, atmospheric wide-angle cinematic shot of a misty sunrise over a historic premium tobacco plantation.
+- STEP 3 & 4 (Master Mentors & Philosophy): Render 3 massive glassmorphic card columns with national flags and dark-filtered cinematic portraits: Don Manuel (Dominican Republic 🇩🇴), Alejandro (Nicaragua 🇳🇮), Doña Rosa (Ecuador 🇪🇨). Include ElevenLabs audio toggle tracking with upper-right 'MUTE / VOICE OFF' targets. Selected Mentor slides up to deliver their core philosophy.
+- STEP 5 (Heritage Seed Biology): The canvas transitions into an active, pulsing deep obsidian viewport with a glass-blur micro-shimmer layout. Tapping a seed card dynamically scales it ('scale-105') and fires a horizontal slide transition ('translate-x-[12px]'). 
+  * Instruction Typography: Drop a glowing amber ribbon beneath the header title reading: "CONSOLE ACTION REQUIRED: Touch a genetic seed lineage card to initialize vascular cloning. Your choice alters structural oil density and flavor baseline profile."
+  * Real/AI Asset Continuity: Render absolute hyper-realistic macro imagery matching the exact genetic strain:
+    - Criollo: Macro shot of raw, deeply veined heirloom seeds resting on dark, damp organic nutrient blocks.
+    - Corojo: High-contrast close-up of amber-tinged, oil-glistening seed pod clusters catching warm light.
+    - Connecticut Shade: Ultra-clean, bright-macro shot of delicate seed strands sheltered inside a pristine white translucent nursery canopy.
+- STEP 6 (Terroir Soil Chemistry): Guest must pick soil composition layers. Tapping a soil tile triggers a 3D tilt-shift matrix change and an active chemical shift overlay. Selecting a soil profile that conflicts with the chosen Mentor's regional philosophy triggers a dynamic Master Mentor Intervention overlay, flashing a red penalty chip and deducting points (-2 PTS) from the live score. Persistent floating glass dialogue frames feature the mentor giving real-time tactical commentary.
+- STEP 7 (The Filler Matrix): Top progress bar displays a horizontal cinematic indicator tracking: Filler Leaf → Wrapper → Shape & Size → Cut → Pairing. 60/40 Split Layout:
+  * Left Panel (60%): Luxury glassmorphic dashboard housing 3 large touch cards side-by-side: CARD 1: SECO (Light Body • Smooth Burn), CARD 2: VISO (Medium Body • Aromatic Balance), CARD 3: LIGERO (Full Body • Slow Burn). Adjusting integrated tactile sliders alters the percentage mix, executes a 100ms hardware tactility animation (scale-96, translate-y-[2px]), and fires a audio pulse. Matrix inputs must total exactly 100% to ignite and unlock the fixed 'CONFIRM BLEND' gold action button in the lower right footer.
+  * Right Panel (40%): Live Leaf Texture Matrix panel. Dynamically updates high-fidelity macro graphics of raw tobacco leaves showing precise vein density and oil saturation alongside real humidor product photos (Padrón 1926 or Fuente Opus X) and parallel drink pairings available at the bar counter.
+  * Accordions: Tuck "Bunching Protocol" and "Leaf Anatomy" inside smooth collapsible disclosure accordions neatly anchored at the bottom of the left panel.
+
+=========================================
+5. LEAF HARVESTING, FERMENTATION & HARDWARE VITOLA & PRECISION CUTS VISUALIZATION
+=========================================
+- Leaf Harvesting: High-contrast, realistic leaf photos tracking the canvas (Volado, Seco, Ligero) with crisp oil saturation details. Embed an active on-screen reader instruction pane: "CRITICAL THINKING CHECKPOINT: Consider leaf canopy physics. Top leaves (Ligero) absorb direct sunlight, producing thick, heavy nicotine oils that delay burn rates but amplify power. Your blend matrix must seamlessly orchestrate these layers; a wrapper cannot save a suffocating internal core."
+- Curing & Fermentation: Present two distinct luxury selector targets: "Traditional Barn Air-Curing" vs "Controlled Thermal Fermentation". Display a persistent floating dialogue ring featuring your active Mentor delivering key insights to help the user choose: "Choose wisely. Air-curing protects the subtle, delicate top notes of a milder blend, while deep fermentation strips away harsh impurities to let full-bodied wrappers shine without biting the palate."
+- Vitola Science & Sizing: Rebuild into an expansive landscape side-by-side 50/50 split viewport. Left Panel displays vitola names (Robusto, Churchill, Torpedo, Gordo, Lancero) in bold, glowing gold text with tech metrics scaled down slightly to let the glass breathe. Right Panel displays stunning, hyper-realistic images matching each shape (e.g., sharp tapered-head point for Torpedo, rich toothy wrapper texture for Robusto) that shift with a smooth 300ms 3D rotation and sliding motion animation on touch.
+- Precision Cuts Module: No plain text descriptions. Render three massive touchscreen action blocks mapping realistic close-ups of a premium cigar's cap after a precision cut is made, paired with the tool: The Straight Cut (Guillotine), The V-Cut (Wedge), or The Punch Cut (Bullet Blade). Tapping a cut profile triggers a mechanical sound pulse, a quick visual "slice" flash effect, and scales the chosen profile forward with an amber wind-trace overlay detailing the altered airflow physics.
+
+=========================================
+6. THE MASTERCLASS VERDICT & REAL LUXURY PAIRING FINALE (SESSION 1 HARD HARD-STOP)
+=========================================
+- Re-Architecture: Wipe out all empty layouts, administrative tables, or mixed technical information from this view. Build a spectacular, high-energy summary HUD.
+- Asset Background Layer: Render a jaw-dropping, cinematic portrait photo of a physical, flawless premium cigar showing rich toothy wrapper leaf texture and a perfectly glowing white-ash foot, resting on an obsidian counter next to a crystal-cut tumbler of single-malt whiskey and its premium bottle under warm amber ambient lighting.
+- Central Scoreboard Overlay HUD: Build a clean, glowing, centralized HUD overlay mapping clearly separated data fields:
+  * Title: "SESSION 1 COMPLETE: THE SOVEREIGN MATRIX IS LOCKED"
+  * Center Left Widget: Large, pulsing gold typography displaying: "INTELLIGENCE SCORE: [Insert Dynamic Score Tracking Matrix] PTS"
+  * Center Right Widget: Custom profile badge mapping Selected Mentor + Genetic Seed Strain + Soil Composition + Chosen Vitola Shape.
+- Hard Lockout Footer Block: Remove all generic next buttons. Implement an oversized gold-neon action block centered at the absolute bottom of the display window reading exactly:
+  "STATUS: MASTERCLASS PART 1 LOCKOUT ACTIVE. Your custom tobacco blend matrix is officially resting inside the fermentation vault. In Session 2, we take the floor. Get ready to step up to the wooden bench, calibrate your binding glue, slice the wrapper anatomy, and manually roll your physical masterwork. Review your pairing notes above—your mentor awaits you at the rolling bench next session."
+
+=========================================
+7. HARDWARE NAVIGATION SECURITY LAYER
+=========================================
+- Force the gold-bordered 'BACK' button container row to absolute top-layer precedence ('position: fixed; z-index: 999999; pointer-events: auto;') to guarantee flawless touch responsiveness on physical tablet glass hardware, ensuring transparent parent layout elements cannot intercept touch input events.

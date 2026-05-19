@@ -780,6 +780,161 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
   );
 }
 
+// ── Glassmorphic PIN authentication modal overlay ────────────────────────────
+
+function PinModal({ onClose }: { onClose: () => void }) {
+  const [, navigate] = useLocation();
+  const [pin,        setPin]        = useState("");
+  const [error,      setError]      = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [flashGreen, setFlashGreen] = useState(false);
+  const MAX = 4;
+
+  function playKey() {
+    try {
+      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = 3400; o.type = "sine";
+      g.gain.setValueAtTime(0, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.10, ctx.currentTime + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.09);
+    } catch { /* silent */ }
+  }
+
+  async function submit(fullPin: string) {
+    if (submitting) return;
+    setSubmitting(true); setError(false);
+    try {
+      const res = await fetch("/api/auth/pin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin: fullPin }),
+      });
+      const data = await res.json() as { ok: boolean; token?: string; name?: string; role?: string; dest?: string };
+      if (data.ok && data.token) {
+        localStorage.setItem("axiom_token", data.token);
+        setFlashGreen(true);
+        setTimeout(() => { onClose(); navigate(data.dest ?? "/operations"); }, 300);
+      } else {
+        setError(true); setPin(""); setSubmitting(false);
+        setTimeout(() => setError(false), 900);
+      }
+    } catch { setError(true); setPin(""); setSubmitting(false); setTimeout(() => setError(false), 900); }
+  }
+
+  function pressDigit(d: string) {
+    if (submitting || pin.length >= MAX) return;
+    playKey();
+    const next = pin + d;
+    setPin(next);
+    if (next.length === MAX) void submit(next);
+  }
+
+  function backspace() {
+    if (submitting) return;
+    setPin(p => p.slice(0, -1));
+  }
+
+  const KEYS = ["1","2","3","4","5","6","7","8","9","*","0","⌫"];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      onClick={onClose}
+      style={{ position: "fixed", inset: 0, zIndex: 9990, background: "rgba(0,0,0,0.78)", backdropFilter: "blur(14px)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}
+    >
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", stiffness: 340, damping: 34 }}
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: "100%", maxWidth: 440, background: "rgba(14,10,4,0.97)", backdropFilter: "blur(28px)",
+          border: "1px solid rgba(212,175,55,0.28)", borderRadius: "22px 22px 0 0",
+          padding: "32px 28px 44px", display: "flex", flexDirection: "column", alignItems: "center", gap: 0,
+          boxShadow: "0 -12px 48px rgba(212,175,55,0.12), 0 0 0 1px rgba(255,255,255,0.04) inset",
+        }}
+      >
+        {/* Header */}
+        <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 9, letterSpacing: "0.36em", color: "rgba(212,175,55,0.45)", textTransform: "uppercase" }}>NOVEE OS · Enterprise</p>
+            <h3 style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.10em", textTransform: "uppercase" }}>[ TRANSACTION ] ACCESS</h3>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "1px solid rgba(255,255,255,0.10)", borderRadius: 8, padding: "8px 10px", cursor: "pointer", color: "rgba(255,255,255,0.35)" }}>
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* PIN dots */}
+        <motion.div
+          animate={error ? { x: [-8, 8, -6, 6, -4, 4, 0] } : flashGreen ? { scale: [1, 1.06, 1] } : {}}
+          transition={{ duration: 0.35 }}
+          style={{ display: "flex", gap: 18, marginBottom: 32 }}
+        >
+          {Array.from({ length: MAX }).map((_, i) => (
+            <div key={i} style={{
+              width: 18, height: 18, borderRadius: "50%",
+              background: flashGreen ? "#4ade80" : error ? "#ef4444" : i < pin.length ? "#D4AF37" : "transparent",
+              border: `2px solid ${flashGreen ? "#4ade80" : error ? "#ef4444" : i < pin.length ? "#D4AF37" : "rgba(212,175,55,0.28)"}`,
+              transition: "background 0.15s, border-color 0.15s",
+              boxShadow: i < pin.length ? `0 0 10px ${flashGreen ? "#4ade8066" : "#D4AF3766"}` : "none",
+            }} />
+          ))}
+        </motion.div>
+
+        {/* Keypad */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, width: "100%" }}>
+          {KEYS.map(k => (
+            <KeyPad key={k} label={k} onPress={() => k === "⌫" ? backspace() : k === "*" ? {} : pressDigit(k)} disabled={submitting} />
+          ))}
+        </div>
+
+        {submitting && (
+          <p style={{ marginTop: 20, fontSize: 11, letterSpacing: "0.22em", color: "rgba(212,175,55,0.60)", textTransform: "uppercase" }}>Authenticating…</p>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function KeyPad({ label, onPress, disabled }: { label: string; onPress: () => void; disabled: boolean }) {
+  const [pressed, setPressed] = useState(false);
+  function handle() {
+    if (disabled || label === "*") return;
+    setPressed(true); onPress();
+    setTimeout(() => setPressed(false), 100);
+  }
+  return (
+    <motion.button
+      animate={{ scale: pressed ? 0.92 : 1 }}
+      transition={{ duration: 0.08 }}
+      onClick={handle}
+      style={{
+        height: 66, borderRadius: 12, border: "1px solid rgba(212,175,55,0.22)",
+        background: pressed ? "rgba(212,175,55,0.22)" : "rgba(212,175,55,0.05)",
+        cursor: label === "*" ? "default" : "pointer",
+        color: label === "⌫" ? "rgba(212,175,55,0.70)" : "#F0E8D4",
+        fontSize: 22, fontWeight: 700, fontFamily: "inherit",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        touchAction: "manipulation", userSelect: "none",
+        boxShadow: pressed ? "0 0 18px rgba(212,175,55,0.28)" : "none",
+        transition: "background 0.08s, box-shadow 0.08s",
+        opacity: label === "*" ? 0 : 1,
+        pointerEvents: label === "*" ? "none" : "auto",
+      }}
+    >
+      {label}
+    </motion.button>
+  );
+}
+
 // ── Main hub page ─────────────────────────────────────────────────────────────
 
 function CraftHubInner() {
@@ -790,6 +945,7 @@ function CraftHubInner() {
   const [portal,       setPortal]      = useState<{ route: string; color: string } | null>(null);
   const [artOfCigar,   setArtOfCigar]  = useState(false);
   const [mood,         setMood]        = useState("deep");
+  const [showPinModal, setShowPinModal] = useState(false);
 
   // ── Kiosk Lock — disables context menu, F-keys, Ctrl shortcuts, back-nav ────
   useKioskLock(true);
@@ -883,108 +1039,109 @@ function CraftHubInner() {
         zIndex:         10,
         display:        "flex",
         alignItems:     "center",
-        minHeight:      72,
+        minHeight:      76,
         padding:        "0 22px",
-        borderBottom:   "1.5px solid rgba(212,175,55,0.22)",
-        background:     "rgba(6,4,2,0.94)",
-        backdropFilter: "blur(22px)",
+        borderBottom:   "2px solid rgba(212,175,55,0.28)",
+        background:     "rgba(5,3,1,0.96)",
+        backdropFilter: "blur(24px)",
         gap:            0,
         pointerEvents:  "none",
       }}>
 
-        {/* ── Left Console Zone: NOVEE OS brand + Revenue Engine status ── */}
+        {/* ── Left Console Zone: NOVEÈ OS REVENUE COMMAND + live engine dot ── */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, gap: 3, pointerEvents: "auto", paddingRight: 24, borderRight: "1px solid rgba(255,255,255,0.06)", marginRight: 20 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, gap: 4, pointerEvents: "auto", paddingRight: 28, borderRight: "1px solid rgba(255,255,255,0.07)", marginRight: 24 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <motion.div
-              animate={{ opacity: [1, 0.25, 1], scale: [1, 1.3, 1] }}
-              transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
-              style={{ width: 9, height: 9, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 10px #4ade8099", flexShrink: 0 }}
+              animate={{ opacity: [1, 0.22, 1], scale: [1, 1.35, 1] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              style={{ width: 11, height: 11, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 13px #4ade80aa", flexShrink: 0 }}
             />
-            <span style={{ color: "#D48B00", fontSize: 16, fontWeight: 900, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap", fontFamily: "inherit" }}>
-              NOVEE OS <span style={{ color: "rgba(212,175,55,0.42)", fontWeight: 400 }}>//</span> CORE ENTERPRISE
+            <span style={{ color: "#D48B00", fontSize: 23, fontWeight: 900, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap", fontFamily: "inherit" }}>
+              NOVEÈ OS <span style={{ color: "rgba(212,175,55,0.40)", fontWeight: 400 }}>//</span> REVENUE COMMAND
             </span>
           </div>
-          <span style={{ color: "#4ade80", fontSize: 10, letterSpacing: "0.24em", textTransform: "uppercase" as const, fontWeight: 700, paddingLeft: 17, whiteSpace: "nowrap" }}>
+          <span style={{ color: "#4ade80", fontSize: 14, letterSpacing: "0.22em", textTransform: "uppercase" as const, fontWeight: 700, paddingLeft: 21, whiteSpace: "nowrap" }}>
             REVENUE ENGINE: ACTIVE
           </span>
         </motion.div>
 
-        {/* ── Center E.A.T. System Gateway — 3 interactive touchscreen badges ── */}
+        {/* ── Central E.A.T. Gateway — 3 large touchscreen command badges ── */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.42 }}
-          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, pointerEvents: "auto" }}>
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 14, pointerEvents: "auto" }}>
           {([
-            { code: "E.N.V.", label: "Environment Adaptation Control", route: "/operations" },
-            { code: "A.S.S.E.T.", label: "Inventory Ledger & Vault Scan", route: "/inventory" },
-            { code: "T.R.A.N.S.A.C.T.", label: "Table-Side Sommelier Up-Sell", route: "/pin-login" },
-          ] as Array<{ code: string; label: string; route: string }>).map(badge => (
+            { code: "ENVIRONMENT",  label: "TACTICAL AMBIENCE & LIGHTING",    action: () => navigate("/operations")       },
+            { code: "ASSET VAULT",  label: "LIVE INVENTORY LEDGER",           action: () => navigate("/inventory")        },
+            { code: "TRANSACTION",  label: "TABLE-SIDE SOMMELIER UP-SELL",    action: () => setShowPinModal(true)         },
+          ] as Array<{ code: string; label: string; action: () => void }>).map(badge => (
             <motion.button
               key={badge.code}
-              whileHover={{ scale: 1.03, background: "rgba(212,175,55,0.12)" }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => { playTactile(); navigate(badge.route); }}
+              whileHover={{ scale: 1.03, background: "rgba(212,175,55,0.14)" }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => { playTactile(); badge.action(); }}
               style={{
-                background: "rgba(212,175,55,0.05)",
-                border: "1px solid rgba(212,175,55,0.32)",
-                borderRadius: 8,
-                padding: "10px 20px",
+                background: "rgba(212,175,55,0.06)",
+                border: "1.5px solid rgba(212,175,55,0.38)",
+                borderRadius: 10,
+                padding: "14px 28px",
                 cursor: "pointer",
                 display: "flex",
                 flexDirection: "column" as const,
                 alignItems: "center",
-                gap: 3,
-                minWidth: 108,
+                gap: 5,
+                minWidth: 130,
                 fontFamily: "inherit",
                 touchAction: "manipulation",
+                boxShadow: "0 0 18px rgba(212,175,55,0.06)",
               }}>
-              <span style={{ color: "#D48B00", fontSize: 14, fontWeight: 900, letterSpacing: "0.10em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
+              <span style={{ color: "#D4AF37", fontSize: 20, fontWeight: 900, letterSpacing: "0.09em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
                 [ {badge.code} ]
               </span>
-              <span style={{ color: "rgba(245,235,215,0.38)", fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
+              <span style={{ color: "rgba(245,235,215,0.42)", fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
                 {badge.label}
               </span>
             </motion.button>
           ))}
         </motion.div>
 
-        {/* ── Right Console Zone: Sovereign Status + identity + gate ── */}
+        {/* ── Right Console Zone: status + identity + gate ── */}
         <motion.div
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
-          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "flex-end", gap: 3, paddingLeft: 24, borderLeft: "1px solid rgba(255,255,255,0.06)", marginLeft: 20, pointerEvents: "auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "flex-end", gap: 4, paddingLeft: 28, borderLeft: "1px solid rgba(255,255,255,0.07)", marginLeft: 24, pointerEvents: "auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {guestProfile ? (
               <SovereignLogoutBadge guestProfile={guestProfile} accent={C.gold} />
             ) : (
               <motion.button
                 whileTap={{ scale: 0.96 }}
                 onClick={() => setShowReturn(true)}
-                style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid rgba(212,139,0,0.18)`, borderRadius: 6, padding: "4px 9px", color: C.dim, fontSize: 10, letterSpacing: "0.10em", textTransform: "uppercase" as const, cursor: "pointer", fontFamily: "inherit" }}>
-                <RotateCcw size={9} color={C.goldDim} />
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid rgba(212,139,0,0.20)`, borderRadius: 7, padding: "6px 12px", color: C.dim, fontSize: 14, letterSpacing: "0.10em", textTransform: "uppercase" as const, cursor: "pointer", fontFamily: "inherit" }}>
+                <RotateCcw size={12} color={C.goldDim} />
                 Returning?
               </motion.button>
             )}
             <button
               onClick={() => navigate("/gate")}
-              style={{ background: "rgba(212,175,55,0.09)", border: "1px solid rgba(212,175,55,0.48)", borderRadius: 7, cursor: "pointer", fontSize: 12, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.10em", textTransform: "uppercase" as const, padding: "7px 13px", fontFamily: "inherit", whiteSpace: "nowrap", touchAction: "manipulation" }}>
+              style={{ background: "rgba(212,175,55,0.10)", border: "1.5px solid rgba(212,175,55,0.52)", borderRadius: 8, cursor: "pointer", fontSize: 17, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.09em", textTransform: "uppercase" as const, padding: "9px 16px", fontFamily: "inherit", whiteSpace: "nowrap", touchAction: "manipulation" }}>
               ⬡ GATE
             </button>
             <AudioWaveToggle />
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <motion.div
-              animate={{ opacity: [1, 0.35, 1] }}
-              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-              style={{ width: 7, height: 7, borderRadius: "50%", background: "#D48B00", flexShrink: 0 }}
+              animate={{ opacity: [1, 0.32, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              style={{ width: 9, height: 9, borderRadius: "50%", background: "#D48B00", flexShrink: 0, boxShadow: "0 0 8px rgba(212,139,0,0.55)" }}
             />
-            <span style={{ color: "rgba(245,235,215,0.50)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase" as const, fontWeight: 700, whiteSpace: "nowrap" }}>
+            <span style={{ color: "rgba(245,235,215,0.55)", fontSize: 14, letterSpacing: "0.20em", textTransform: "uppercase" as const, fontWeight: 700, whiteSpace: "nowrap" }}>
               SOVEREIGN STATUS // ONLINE
             </span>
           </div>
@@ -1060,6 +1217,11 @@ function CraftHubInner() {
       {/* ── Fast Return Modal ── */}
       <AnimatePresence>
         {showReturn && <FastReturnModal onClose={() => setShowReturn(false)} />}
+      </AnimatePresence>
+
+      {/* ── PIN Authentication modal — fires on [TRANSACTION] badge tap ── */}
+      <AnimatePresence>
+        {showPinModal && <PinModal onClose={() => setShowPinModal(false)} />}
       </AnimatePresence>
 
       {/* ── Art of the Cigar overlay — fires on SMOKECRAFT 360 tap ── */}
