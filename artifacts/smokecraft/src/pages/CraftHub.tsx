@@ -747,24 +747,26 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
           The Art of the Cigar
         </motion.h1>
 
-        {/* BEGIN JOURNEY — oversized primary gold action block */}
+        {/* BEGIN MASTERCLASS JOURNEY — oversized primary gold action block */}
         <motion.button
           initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.8 }}
+          whileHover={{ scale: 1.02, boxShadow: "0 0 56px rgba(212,175,55,0.38),0 4px 24px rgba(0,0,0,0.5)" }}
           whileTap={{ scale: 0.97, y: 2 }}
-          onClick={onBegin}
-          style={{ display: "block", width: "100%", padding: "22px 40px", marginBottom: 18, background: "linear-gradient(135deg,rgba(212,175,55,0.22) 0%,rgba(212,139,0,0.14) 100%)", border: "1.5px solid rgba(212,175,55,0.65)", borderRadius: 12, cursor: "pointer", fontSize: 15, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: "inherit", boxShadow: "0 0 32px rgba(212,175,55,0.22),0 4px 16px rgba(0,0,0,0.4)", minHeight: 72, touchAction: "manipulation" }}
+          onClick={() => { playTactile(); onBegin(); }}
+          style={{ display: "block", width: "100%", padding: "26px 40px", marginBottom: 16, background: "linear-gradient(135deg,rgba(212,175,55,0.24) 0%,rgba(212,139,0,0.16) 100%)", border: "2px solid rgba(212,175,55,0.75)", borderRadius: 14, cursor: "pointer", fontSize: 17, fontWeight: 900, color: "#D4AF37", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "inherit", boxShadow: "0 0 40px rgba(212,175,55,0.28),0 4px 18px rgba(0,0,0,0.45)", minHeight: 82, touchAction: "manipulation" }}
         >
-          BEGIN JOURNEY
+          BEGIN MASTERCLASS JOURNEY
         </motion.button>
 
         {/* RETURNING MASTERCLASS GUEST */}
         <motion.button
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.8 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           onClick={onReturning}
-          style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 0", fontSize: 10, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(240,232,212,0.38)", fontFamily: "inherit", textDecoration: "underline", textDecorationColor: "rgba(212,175,55,0.18)", touchAction: "manipulation" }}
+          style={{ display: "block", width: "100%", padding: "16px 32px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.28)", borderRadius: 10, cursor: "pointer", fontSize: 12, fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(240,232,212,0.58)", fontFamily: "inherit", touchAction: "manipulation" }}
         >
-          Returning Masterclass Guest
+          RETURNING MASTERCLASS GUEST
         </motion.button>
       </div>
 
@@ -872,7 +874,7 @@ function CraftHubInner() {
       {/* ── Floating particles ── */}
       <AmbientParticles />
 
-      {/* ── Top OS header — floating overlay, zero layout cost ── */}
+      {/* ── Top OS header — 3-Zone E.A.T. Command Bar ── */}
       <header style={{
         position:       "absolute",
         top:            0,
@@ -881,131 +883,116 @@ function CraftHubInner() {
         zIndex:         10,
         display:        "flex",
         alignItems:     "center",
-        padding:        "10px 24px",
-        borderBottom:   `1px solid ${C.border}`,
-        background:     "rgba(8,6,4,0.82)",
-        backdropFilter: "blur(16px)",
-        gap:            16,
+        minHeight:      72,
+        padding:        "0 22px",
+        borderBottom:   "1.5px solid rgba(212,175,55,0.22)",
+        background:     "rgba(6,4,2,0.94)",
+        backdropFilter: "blur(22px)",
+        gap:            0,
         pointerEvents:  "none",
       }}>
-        {/* Left — returning guest or identity badge */}
+
+        {/* ── Left Console Zone: NOVEE OS brand + Revenue Engine status ── */}
         <motion.div
-          initial={{ opacity: 0, x: -8 }}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-          style={{ pointerEvents: "auto" }}
-        >
-          {guestProfile ? (
-            <SovereignLogoutBadge guestProfile={guestProfile} accent={C.gold} />
-          ) : (
-            <motion.button
-              whileTap={{ scale: 0.96 }}
-              onClick={() => setShowReturn(true)}
-              style={{
-                display:       "flex",
-                alignItems:    "center",
-                gap:           6,
-                background:    "none",
-                border:        `1px solid rgba(212,139,0,0.18)`,
-                borderRadius:  8,
-                padding:       "5px 10px",
-                color:         C.dim,
-                fontSize:      10,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                cursor:        "pointer",
-              }}
-            >
-              <RotateCcw size={10} color={C.goldDim} />
-              Returning?
-            </motion.button>
-          )}
+          transition={{ delay: 0.3 }}
+          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, gap: 3, pointerEvents: "auto", paddingRight: 24, borderRight: "1px solid rgba(255,255,255,0.06)", marginRight: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <motion.div
+              animate={{ opacity: [1, 0.25, 1], scale: [1, 1.3, 1] }}
+              transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
+              style={{ width: 9, height: 9, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 10px #4ade8099", flexShrink: 0 }}
+            />
+            <span style={{ color: "#D48B00", fontSize: 16, fontWeight: 900, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap", fontFamily: "inherit" }}>
+              NOVEE OS <span style={{ color: "rgba(212,175,55,0.42)", fontWeight: 400 }}>//</span> CORE ENTERPRISE
+            </span>
+          </div>
+          <span style={{ color: "#4ade80", fontSize: 10, letterSpacing: "0.24em", textTransform: "uppercase" as const, fontWeight: 700, paddingLeft: 17, whiteSpace: "nowrap" }}>
+            REVENUE ENGINE: ACTIVE
+          </span>
         </motion.div>
 
-        {/* Brand identity — center: Craft Hub logo */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <motion.img
-            src={craftHubLogo}
-            alt="Craft Hub"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            style={{
-              height:      "clamp(36px, 4.5vh, 52px)",
-              width:       "auto",
-              objectFit:   "contain",
-              display:     "block",
-            }}
-          />
-        </div>
-
-        {/* Right — nav buttons (flexShrink:0 so they never get squeezed) */}
+        {/* ── Center E.A.T. System Gateway — 3 interactive touchscreen badges ── */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.42 }}
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, pointerEvents: "auto" }}>
+          {([
+            { code: "E.N.V.", label: "Environment Adaptation Control", route: "/operations" },
+            { code: "A.S.S.E.T.", label: "Inventory Ledger & Vault Scan", route: "/inventory" },
+            { code: "T.R.A.N.S.A.C.T.", label: "Table-Side Sommelier Up-Sell", route: "/pin-login" },
+          ] as Array<{ code: string; label: string; route: string }>).map(badge => (
+            <motion.button
+              key={badge.code}
+              whileHover={{ scale: 1.03, background: "rgba(212,175,55,0.12)" }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => { playTactile(); navigate(badge.route); }}
+              style={{
+                background: "rgba(212,175,55,0.05)",
+                border: "1px solid rgba(212,175,55,0.32)",
+                borderRadius: 8,
+                padding: "10px 20px",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column" as const,
+                alignItems: "center",
+                gap: 3,
+                minWidth: 108,
+                fontFamily: "inherit",
+                touchAction: "manipulation",
+              }}>
+              <span style={{ color: "#D48B00", fontSize: 14, fontWeight: 900, letterSpacing: "0.10em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
+                [ {badge.code} ]
+              </span>
+              <span style={{ color: "rgba(245,235,215,0.38)", fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
+                {badge.label}
+              </span>
+            </motion.button>
+          ))}
+        </motion.div>
+
+        {/* ── Right Console Zone: Sovereign Status + identity + gate ── */}
+        <motion.div
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
-          style={{
-            display:    "flex",
-            alignItems: "center",
-            gap:        10,
-            flexShrink: 0,
-            pointerEvents: "auto",
-          }}
-        >
-          <button
-            onClick={() => navigate("/gate")}
-            style={{
-              background:    "rgba(212,175,55,0.10)",
-              border:        "1px solid rgba(212,175,55,0.65)",
-              borderRadius:  10,
-              cursor:        "pointer",
-              fontSize:      13,
-              fontWeight:    800,
-              color:         "#D4AF37",
-              letterSpacing: "0.10em",
-              textTransform: "uppercase",
-              padding:       "11px 16px",
-              fontFamily:    "inherit",
-              minHeight:     48,
-              whiteSpace:    "nowrap",
-              boxShadow:     "0 0 18px rgba(212,175,55,0.22)",
-              touchAction:   "manipulation",
-            }}
-          >
-            ⬡ SOVEREIGN GATE
-          </button>
-          <button
-            onClick={() => navigate("/pin-login")}
-            style={{
-              background:    "rgba(212,139,0,0.14)",
-              border:        "1px solid rgba(212,139,0,0.55)",
-              borderRadius:  10,
-              cursor:        "pointer",
-              fontSize:      13,
-              fontWeight:    800,
-              color:         C.gold,
-              letterSpacing: "0.10em",
-              textTransform: "uppercase",
-              padding:       "11px 16px",
-              fontFamily:    "inherit",
-              minHeight:     48,
-              whiteSpace:    "nowrap",
-              boxShadow:     "0 0 14px rgba(212,139,0,0.18)",
-              touchAction:   "manipulation",
-            }}
-          >
-            <img
-              src={eatLogo}
-              alt="E.A.T. System"
-              style={{ height: 22, width: "auto", objectFit: "contain", display: "block" }}
+          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "flex-end", gap: 3, paddingLeft: 24, borderLeft: "1px solid rgba(255,255,255,0.06)", marginLeft: 20, pointerEvents: "auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {guestProfile ? (
+              <SovereignLogoutBadge guestProfile={guestProfile} accent={C.gold} />
+            ) : (
+              <motion.button
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setShowReturn(true)}
+                style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid rgba(212,139,0,0.18)`, borderRadius: 6, padding: "4px 9px", color: C.dim, fontSize: 10, letterSpacing: "0.10em", textTransform: "uppercase" as const, cursor: "pointer", fontFamily: "inherit" }}>
+                <RotateCcw size={9} color={C.goldDim} />
+                Returning?
+              </motion.button>
+            )}
+            <button
+              onClick={() => navigate("/gate")}
+              style={{ background: "rgba(212,175,55,0.09)", border: "1px solid rgba(212,175,55,0.48)", borderRadius: 7, cursor: "pointer", fontSize: 12, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.10em", textTransform: "uppercase" as const, padding: "7px 13px", fontFamily: "inherit", whiteSpace: "nowrap", touchAction: "manipulation" }}>
+              ⬡ GATE
+            </button>
+            <AudioWaveToggle />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <motion.div
+              animate={{ opacity: [1, 0.35, 1] }}
+              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+              style={{ width: 7, height: 7, borderRadius: "50%", background: "#D48B00", flexShrink: 0 }}
             />
-          </button>
-          <AudioWaveToggle />
+            <span style={{ color: "rgba(245,235,215,0.50)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase" as const, fontWeight: 700, whiteSpace: "nowrap" }}>
+              SOVEREIGN STATUS // ONLINE
+            </span>
+          </div>
         </motion.div>
       </header>
 
       {/* ── AI intelligence status bar — floating strip below header ── */}
-      <div style={{ position: "absolute", top: 70, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", top: 74, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
         <IntelStatusBar />
       </div>
 
@@ -1013,7 +1000,7 @@ function CraftHubInner() {
       <div
         style={{
           position:      "absolute",
-          top:           118,
+          top:           126,
           bottom:        52,
           left:          0,
           right:         0,

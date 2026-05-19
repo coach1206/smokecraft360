@@ -5990,7 +5990,7 @@ export default function MasterBlender() {
       {/* ── Cockpit — solid top-layer portal, rendered independently ── */}
       {gateway === "cockpit" && (
         <div style={{ position: "fixed", inset: 0, background: "#000000", zIndex: 99998, display: "flex", flexDirection: "column" }}>
-          <CockpitIdleView onSmokeCraft={() => setGateway("intro")} />
+          <CockpitIdleView onSmokeCraft={() => setGateway("orientation")} />
         </div>
       )}
 
@@ -6018,7 +6018,7 @@ export default function MasterBlender() {
                 <GatewayOrientation
                   key="orientation"
                   onNext={() => setGateway("mentor")}
-                  onBack={() => setGateway("intro")}
+                  onBack={() => setGateway("cockpit")}
                 />
               )}
               {gateway === "mentor" && (
@@ -6187,7 +6187,7 @@ export default function MasterBlender() {
               setStep(0 as 0);
               setSel({});
               setXp(0);
-              setGateway("intro");
+              setGateway("orientation");
               setSelectedMentor(null);
               setPrimingVolado(30);
               setPrimingSecoViso(50);
