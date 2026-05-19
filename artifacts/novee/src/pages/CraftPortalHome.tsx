@@ -18,58 +18,7 @@ function playTactile() {
   } catch { /* non-blocking */ }
 }
 
-// ── Verified luxury asset database ───────────────────────────────────────────
-const CRAFT_ASSETS = {
-  smokecraft: [
-    { url: "/novee/images/smokecraft-card.jpg",  desc: "Diverse connoisseurs — luxury cigar lounge" },
-    { url: "/novee/images/smoke-verified-3.jpg", desc: "Premium cigar selection" },
-    { url: "/novee/images/smoke-home-1.jpg",     desc: "Cigar humidor ritual" },
-  ],
-  pourcraft: [
-    { url: "/novee/images/pourcraft-card.png",  desc: "Premium whiskey and bourbon selection" },
-    { url: "/novee/images/pour-verified-1.jpg", desc: "Macallan 18 — single malt scotch" },
-    { url: "/novee/images/pour-1.jpg",          desc: "Whiskey bottle wall" },
-  ],
-  beercraft: [
-    { url: "/novee/images/brewcraft-card.png",  desc: "Artisanal craft beer — perfect pour" },
-    { url: "/novee/images/beer-verified-1.jpg", desc: "Guinness Draught — dark stout" },
-    { url: "/novee/images/beer-verified-2.jpg", desc: "Artisanal craft pour" },
-  ],
-  winecraft: [
-    { url: "/novee/images/wine-1.jpg", desc: "Sommelier decanter aeration" },
-  ],
-} as const;
-
-type CraftKey = keyof typeof CRAFT_ASSETS;
-
-// ── Staggered background image rotator ───────────────────────────────────────
-function CardBackground({ craft, offset }: { craft: CraftKey; offset: number }) {
-  const images = CRAFT_ASSETS[craft];
-  const [idx, setIdx] = useState(0);
-
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    const timeout = setTimeout(() => {
-      interval = setInterval(() => setIdx(prev => (prev + 1) % images.length), 9000);
-    }, offset);
-    return () => { clearTimeout(timeout); clearInterval(interval); };
-  }, [images.length, offset]);
-
-  return (
-    <AnimatePresence>
-      <motion.img
-        key={idx}
-        src={images[idx].url}
-        alt={images[idx].desc}
-        initial={{ opacity: 0, scale: 1.04 }}
-        animate={{ opacity: 0.72, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.97 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", zIndex: 1, pointerEvents: "none" }}
-      />
-    </AnimatePresence>
-  );
-}
+type CraftKey = "smokecraft" | "pourcraft" | "beercraft" | "winecraft";
 
 // ── HTML5 SmokeCanvas — z-index 9996 ─────────────────────────────────────────
 function SmokeCanvas() {
@@ -235,8 +184,7 @@ export default function CraftPortalHome() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          <CardBackground craft={smoke.id} offset={smoke.offset} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg,rgba(212,175,55,0.06) 0%,transparent 40%,rgba(0,0,0,0.75) 100%)", zIndex: 2, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(212,175,55,0.10) 0%,rgba(10,8,4,0.96) 55%,#030201 100%)", zIndex: 2, pointerEvents: "none" }} />
 
           {/* Content */}
           <div style={{ position: "absolute", inset: 0, zIndex: 3, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "32px 44px" }}>
@@ -283,8 +231,7 @@ export default function CraftPortalHome() {
                 WebkitTapHighlightColor: "transparent",
               }}
             >
-              <CardBackground craft={portal.id} offset={portal.offset} />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.28) 45%,rgba(0,0,0,0.72) 100%)", zIndex: 2, pointerEvents: "none" }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(60,45,20,0.12) 0%,rgba(8,6,2,0.97) 55%,#030201 100%)", zIndex: 2, pointerEvents: "none" }} />
               <div style={{ position: "absolute", inset: 0, zIndex: 3, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "20px 24px" }}>
                 <h3 style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: "clamp(16px, 2.2vw, 26px)", fontWeight: 300, letterSpacing: "0.06em", margin: "0 0 6px", color: "#D4AF37", lineHeight: 1.1 }}>
                   {portal.title}

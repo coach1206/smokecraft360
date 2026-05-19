@@ -1,0 +1,46 @@
+CRITICAL SYSTEM ARCHITECTURE OVERRIDE, CONSOLE RESCALE & WORKSPACE REALIGNMENT: The platform is experiencing critical routing disconnects, static web-template degradation, and legibility failures across both guest and enterprise layers. The /pin-login view is an isolated, broken standalone route that freezes on touch. The /inventory layout crashes to a white screen. The /operations workspace has incorrectly defaulted to an administrative IT dashboard ('ENGINE HEALTH'). The top E.A.T. system status banner is microscopic, overlapping, and illegible. 
+
+Immediately execute a total repository refactor of App.tsx, MasterBlender.tsx, CraftHub.tsx, Operations.tsx, and SecurityProvider.tsx. Rebuild the interface into an uncompromising, high-energy landscape tablet console following the exact chronological flow and specifications mapped below. Ensure 'tsc --noEmit' passes flawlessly with exit code 0.
+
+=========================================
+1. INITIALIZATION, PORTFOLIO COCKPIT & RADIANT LOGO (DELETE VERTICAL GATE)
+=========================================
+- Level 0 & 1 (Power Up & Core Launch): 
+  * Initialize on an absolute black (#000000) canvas featuring a deep, pulsing warm amber glow. 
+  * Centrally render 'Profound Innovations LLC' in tracking-spaced gold typography.
+  * Layer the HTML5 SmokeCanvas globally at z-index 9996 with active drifting smoke trails. Underneath the central action block, render an ultra-realistic, continuously burning premium cigar with shimmering animated ash embers.
+- Level 2 & 3 (Direct Dashboard Fork): 
+  * Tapping the opening block runs a smooth 1.2-second horizontal slide transition directly into 'NOVEÈ OS' / 'CraftHub'. 
+  * ABSOLUTELY ELIMINATE the generic vertical-stack text screen from the routing tree entirely.
+- Cockpit Portfolio Grid: 
+  * Structure the 4 brand pillars as massive, edge-to-edge touchscreen glass blocks across the landscape viewport.
+  * SMOKECRAFT 360 (Top Section): Positioned prominently at the absolute top of the layout, spanning the full horizontal width of the workspace.
+  * POURCRAFT 360, BEERCRAFT 360, WINECRAFT 360 (Bottom Row): Grouped side-by-side neatly directly beneath SmokeCraft 360 to anchor the interface.
+- Experiential Fork: 
+  * Tapping 'SMOKECRAFT 360' fires a playClick() 3400Hz audio burst, running a 1.9s sensory dissolve directly into "The Art of the Cigar" landing layer. 
+  * Target A: "BEGIN JOURNEY" -> Bypasses all onboarding barriers directly to Step 2.
+  * Target B: "RETURNING MASTERCLASS GUEST" -> Slides up a smooth, glassmorphic profile drawer for phone/last-name capture.
+
+=========================================
+2. THE UN-FROZEN OPERATIONAL PIN AUTHENTICATION LAYERING
+=========================================
+- Overlay Architecture: 
+  * Completely eliminate the standalone '/pin-login' URL route. Re-architect the PIN entry exclusively as a beautiful, glassmorphic modal overlay drawer that slides up on top of the active view state.
+- Keypad Touch Mechanics: 
+  * Scale up the touch boundaries of the physical glass keys. Inject an active 100ms visual compression effect ('scale-95') and fire a crisp audio pulse on every digit strike.
+- Token Logic: 
+  * Bind the keypad buttons directly to the central security state controller. Upon striking the 4th digit entry, the state machine must instantly process the authentication token locally. If valid, trigger a 300ms horizontal wipe animation revealing the secure enterprise module without dropping connection state or refreshing the browser window.
+
+=========================================
+3. THE RADICAL E.A.T. TOP BANNER RESCALE
+=========================================
+- Aesthetic & Height: 
+  * Force the top status banner to a permanent height of 76px. Apply a premium dark obsidian glass backdrop with a solid brushed-titanium lower boundary line. 
+  * Typography Scale: Elevate the font size of the entire top system across the board by a minimum of 45%. Eliminate all microscopic subtext and overlapping frames.
+- Three-Zone Spatial Separation Grid:
+  * Left Console Zone: Render the "NOVEÈ OS // REVENUE COMMAND" signature in bold neon-amber typography, flanked by a live pulsing green indicator dot labeled "REVENUE ENGINE: ACTIVE".
+  * Central E.A.T. Gateway Zone: Build three distinctive, heavily padded, highly visible interactive touchscreen badges:
+    - [ ENVIRONMENT ] -> Tactical Ambience & Lighting Control
+    - [ ASSET VAULT ] -> Live Cigar/Spirit Inventory Ledger
+    - [ TRANSACTION ] -> Table-Side Sommelier Up-Sell Entry
+  * Right Console Zone: Render

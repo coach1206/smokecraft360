@@ -847,11 +847,11 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
       o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.08);
     } catch {}
   }
-  const crafts: { id: string; label: string; sub: string; active: boolean; img: string }[] = [
-    { id: "smoke", label: "SMOKECRAFT 360", sub: "The Art of the Cigar",   active: true,  img: "/images/scenes/smokecraft-card.jpg" },
-    { id: "pour",  label: "POURCRAFT 360",  sub: "The Craft of the Pour",  active: false, img: "/images/scenes/pourcraft-card.jpg" },
-    { id: "beer",  label: "BEERCRAFT 360",  sub: "The Craft of the Brew",  active: false, img: "/images/scenes/brewcraft-card.jpg" },
-    { id: "wine",  label: "WINECRAFT 360",  sub: "The Craft of the Vine",  active: false, img: "/images/scenes/vapecraft-card.jpg" },
+  const crafts: { id: string; label: string; sub: string; active: boolean; accent: string }[] = [
+    { id: "smoke", label: "SMOKECRAFT 360", sub: "The Art of the Cigar",   active: true,  accent: "rgba(212,175,55,0.18)" },
+    { id: "pour",  label: "POURCRAFT 360",  sub: "The Craft of the Pour",  active: false, accent: "rgba(120,100,60,0.10)"  },
+    { id: "beer",  label: "BEERCRAFT 360",  sub: "The Craft of the Brew",  active: false, accent: "rgba(100,80,40,0.10)"   },
+    { id: "wine",  label: "WINECRAFT 360",  sub: "The Craft of the Vine",  active: false, accent: "rgba(90,50,50,0.10)"    },
   ];
   return (
     <div
@@ -909,19 +909,14 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
             borderBottom: i < crafts.length - 1 ? "1px solid rgba(212,175,55,0.07)" : "none",
             outline: "none" }}
         >
-          {/* Background scene image */}
-          <img
-            src={c.img} alt={c.label}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%",
-              objectFit: "cover",
-              opacity: c.active ? 0.68 : 0.22,
-              filter: c.active ? "saturate(1.1) brightness(0.78)" : "saturate(0.25) brightness(0.45)" }}
-          />
-          {/* Glassmorphic dark overlay */}
+          {/* Pure cinematic gradient — no photo backgrounds */}
           <div style={{ position: "absolute", inset: 0,
             background: c.active
-              ? "linear-gradient(90deg, rgba(5,3,0,0.85) 0%, rgba(14,10,0,0.48) 55%, rgba(5,3,0,0.20) 100%)"
-              : "linear-gradient(90deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0.30) 100%)" }} />
+              ? `linear-gradient(110deg, rgba(212,175,55,0.09) 0%, rgba(6,4,2,0.96) 60%, #000000 100%)`
+              : `linear-gradient(110deg, ${c.accent} 0%, rgba(4,3,1,0.98) 55%, #000000 100%)` }} />
+          {/* Vertical separator highlight */}
+          <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 2,
+            background: c.active ? "linear-gradient(to bottom,transparent,rgba(212,175,55,0.35),transparent)" : "none" }} />
           {/* Strip content — horizontal layout */}
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
             padding: "0 56px", justifyContent: "space-between" }}>
