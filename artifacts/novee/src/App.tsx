@@ -31,13 +31,26 @@ function PageLoader() {
   );
 }
 
-// Bypassing the router to force render the SmokeCraftGateway page directly
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<PageLoader />}>
-        <SmokeCraftGateway />
-      </Suspense>
+      <WouterRouter base="/novee">
+        <EATTransitionOverlay />
+        <Suspense fallback={<PageLoader />}>
+          <Switch>
+            <Route path="/"               component={SmokeCraftGateway} />
+            <Route path="/craft-collection" component={CraftPortalHome} />
+            <Route path="/craft-collection/:slug" component={SlugRedirect} />
+            <Route path="/coming-soon"    component={CraftComingSoon} />
+            <Route path="/eat"            component={EATDashboard} />
+            <Route path="/command"        component={CommandCenter} />
+            <Route path="/os"             component={OSShell} />
+            <Route>
+              <Redirect to="/" />
+            </Route>
+          </Switch>
+        </Suspense>
+      </WouterRouter>
     </QueryClientProvider>
   );
 }
