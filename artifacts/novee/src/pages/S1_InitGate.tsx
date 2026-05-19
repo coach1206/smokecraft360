@@ -1034,150 +1034,405 @@ export function S1_InitGate() {
         )}
 
         {/* ══════════════ SEED CANVAS ══════════════ */}
-        {step === "seed_canvas" && (
+        {step === "seed_canvas" && (() => {
+          const INTEL: Record<string, {
+            telemetry: { k: string; v: string; b: number }[];
+            notes: string[];
+            pairings: { icon: string; label: string }[];
+            warning: string;
+            masterNote: string;
+            descLong: string;
+            meta: { origin: string; seedType: string; crop: string; aging: string };
+            comparison: { strength: string; sb: number; complexity: string; cb: number; spice: string; pb: number };
+          }> = {
+            criollo: {
+              telemetry: [
+                { k: "Body",      v: "Medium-Full",      b: 72 },
+                { k: "Nicotine",  v: "High",             b: 78 },
+                { k: "Burn Rate", v: "Slow / Even",      b: 38 },
+                { k: "Aroma",     v: "Earth · Spice · Cedar", b: 80 },
+                { k: "Finish",    v: "Long · Cocoa · Pepper", b: 75 },
+              ],
+              notes: ["Dark Chocolate","Cedar","Leather","Espresso","Black Pepper","Roasted Earth","Aged Oak"],
+              pairings: [{ icon: "🥃", label: "Aged Bourbon" }, { icon: "🥃", label: "Rye Whiskey" }, { icon: "☕", label: "Espresso" }, { icon: "🍷", label: "Dark Rum" }],
+              warning: "Avoid overly sweet citrus pairings that suppress spice complexity.",
+              masterNote: "Criollo '98 rewards patience. The second third reveals the true spice architecture beneath the earth-toned opening.",
+              descLong: "A premium Cuban-seed wrapper grown in the rich soils of the Dominican Republic. Known for its powerful yet refined character, deep complexity, and bold spice transitions.",
+              meta: { origin: "D.R.", seedType: "Cuban", crop: "Priming", aging: "18–24 Months" },
+              comparison: { strength: "High", sb: 75, complexity: "High", cb: 80, spice: "Heavy", pb: 85 },
+            },
+            corojo: {
+              telemetry: [
+                { k: "Body",      v: "Full",             b: 95 },
+                { k: "Nicotine",  v: "Very High",        b: 94 },
+                { k: "Burn Rate", v: "Medium",           b: 55 },
+                { k: "Aroma",     v: "Pepper · Oak · Spice", b: 90 },
+                { k: "Finish",    v: "Long · Pepper · Oak",  b: 88 },
+              ],
+              notes: ["Black Pepper","Cedar","Oak","Clove","Espresso","Dark Earth","Tobacco"],
+              pairings: [{ icon: "🥃", label: "Single Malt" }, { icon: "🍷", label: "Aged Rum" }, { icon: "☕", label: "Black Coffee" }, { icon: "🥃", label: "Cognac" }],
+              warning: "Pair with robust spirits only — mild pairings are overwhelmed by intensity.",
+              masterNote: "Corojo demands a palate that can take the heat. The pepper never relents — but beneath it lies extraordinary oil complexity.",
+              descLong: "A highly robust, oil-dense Vuelta Abajo cultivar. Renowned for intense peppery finishes and maximum natural oil yield — the benchmark of full-strength construction.",
+              meta: { origin: "Cuba/HN", seedType: "Corojo", crop: "Priming", aging: "24–36 Months" },
+              comparison: { strength: "Very High", sb: 95, complexity: "Medium", cb: 55, spice: "Aggressive", pb: 95 },
+            },
+            connecticut: {
+              telemetry: [
+                { k: "Body",      v: "Mild",             b: 22 },
+                { k: "Nicotine",  v: "Low-Medium",       b: 28 },
+                { k: "Burn Rate", v: "Fast / Smooth",    b: 78 },
+                { k: "Aroma",     v: "Cream · Hay · Floral", b: 45 },
+                { k: "Finish",    v: "Smooth · Cream · Vanilla", b: 40 },
+              ],
+              notes: ["Cream","Hay","Vanilla","Floral","Cedar","Light Toast","Butter"],
+              pairings: [{ icon: "🥂", label: "Champagne" }, { icon: "🥃", label: "Light Bourbon" }, { icon: "🍵", label: "Green Tea" }, { icon: "☕", label: "Milk Coffee" }],
+              warning: "Avoid bold spirits — they will obliterate the delicate creaminess.",
+              masterNote: "Connecticut Shade is deceptive in its subtlety. What seems simple reveals layers of creaminess, floral notes, and a seamless burn.",
+              descLong: "Grown under cheesecloth shade canopies in the Connecticut River Valley. Prized for near-invisible veins, ultra-smooth draw, and the gold standard for premium wrapper aesthetics.",
+              meta: { origin: "CT, USA", seedType: "Shade", crop: "Shade", aging: "12–18 Months" },
+              comparison: { strength: "Mild", sb: 20, complexity: "Smooth", cb: 35, spice: "Low", pb: 10 },
+            },
+          };
+          const intel = INTEL[seedId] || INTEL.criollo;
+          return (
           <motion.div key="seed_canvas" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
             style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-            {/* Seed tab bar */}
+            {/* ── Header ── */}
             <div style={{
-              flexShrink: 0, display: "flex", alignItems: "stretch",
-              background: "rgba(0,0,0,0.55)", backdropFilter: "blur(20px)",
-              borderBottom: "1px solid rgba(212,175,55,0.12)",
+              flexShrink: 0, background: "rgba(0,0,0,0.70)", backdropFilter: "blur(20px)",
+              borderBottom: "1px solid rgba(212,175,55,0.16)",
+              display: "flex", alignItems: "stretch",
             }}>
-              <div style={{ padding: "20px 40px", borderRight: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <Eyebrow style={{ margin: "0 0 2px" }}>Step 1.5</Eyebrow>
-                <SectionTitle style={{ margin: 0, fontSize: 22 }}>Leaf Recognition Matrix</SectionTitle>
+              {/* Left: title block */}
+              <div style={{ flex: 1, padding: "12px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 9, letterSpacing: "0.55em", color: "rgba(212,175,55,0.50)", textTransform: "uppercase", fontWeight: 800, marginBottom: 2 }}>
+                  SmokeCraft 360 · Kiosk Edition
+                </div>
+                <h1 style={{
+                  fontFamily: "'Cormorant Garamond',Georgia,serif",
+                  fontSize: 36, fontWeight: 700, color: GOLD,
+                  margin: 0, letterSpacing: "0.18em", textTransform: "uppercase",
+                  textShadow: `0 0 40px ${GOLD}55`, lineHeight: 1,
+                }}>Leaf Recognition Matrix</h1>
+                <div style={{ fontSize: 12, color: "rgba(240,232,212,0.32)", letterSpacing: "0.18em", marginTop: 3, fontStyle: "italic" }}>
+                  Study the leaf. Understand the blend. Build your palate.
+                </div>
               </div>
-              {SEEDS.map(s => (
-                <motion.button key={s.id} type="button" onPointerDown={() => setSeedId(s.id)}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    flex: 1, border: "none", borderRight: "1px solid rgba(255,255,255,0.05)",
-                    background: seedId === s.id ? "rgba(212,175,55,0.10)" : "transparent",
-                    cursor: "pointer", padding: "18px 28px",
-                    borderBottom: seedId === s.id ? `3px solid ${GOLD}` : "3px solid transparent",
-                    fontFamily: "'Inter', sans-serif", textAlign: "left",
-                    transition: "all 0.22s",
-                  }}>
-                  <div style={{ fontSize: 24, fontWeight: 700, color: seedId === s.id ? GOLD : "rgba(240,232,212,0.55)", marginBottom: 4, transition: "color 0.22s" }}>
-                    {s.name}
-                  </div>
-                  <div style={{ fontSize: 14, color: "rgba(240,232,212,0.35)", letterSpacing: "0.10em" }}>{s.tagline}</div>
-                </motion.button>
-              ))}
+              {/* Right: status + active dot */}
+              <div style={{ padding: "0 28px", display: "flex", alignItems: "center", gap: 10, borderLeft: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(240,232,212,0.28)", textTransform: "uppercase" }}>Table Kiosk · Active</div>
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
+              </div>
             </div>
 
-            {/* Main split */}
+            {/* ── Seed Tab Bar ── */}
+            <div style={{
+              flexShrink: 0, display: "flex",
+              background: "rgba(0,0,0,0.50)", backdropFilter: "blur(12px)",
+              borderBottom: "1px solid rgba(212,175,55,0.10)",
+            }}>
+              {SEEDS.map(s => {
+                const active = seedId === s.id;
+                return (
+                  <motion.button key={s.id} type="button" onPointerDown={() => setSeedId(s.id)}
+                    whileTap={{ scale: 0.98 }}
+                    style={{
+                      flex: 1, border: "none",
+                      borderRight: "1px solid rgba(255,255,255,0.05)",
+                      borderBottom: active ? `2px solid ${GOLD}` : "2px solid transparent",
+                      background: active ? "rgba(212,175,55,0.10)" : "transparent",
+                      cursor: "pointer", padding: "12px 24px",
+                      display: "flex", alignItems: "center", gap: 14,
+                      fontFamily: "'Inter',sans-serif", textAlign: "left",
+                      transition: "all 0.20s",
+                    }}>
+                    <div style={{
+                      width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
+                      background: active ? `radial-gradient(circle at 35% 30%, ${GOLD}33, rgba(0,0,0,0.60))` : "rgba(255,255,255,0.05)",
+                      border: active ? `1.5px solid ${GOLD}66` : "1px solid rgba(255,255,255,0.08)",
+                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
+                      boxShadow: active ? `0 0 18px ${GOLD}33` : "none",
+                      transition: "all 0.20s",
+                    }}>🍃</div>
+                    <div>
+                      <div style={{ fontSize: 18, fontWeight: 800, color: active ? GOLD : "rgba(240,232,212,0.50)", letterSpacing: "0.12em", textTransform: "uppercase", transition: "color 0.20s" }}>
+                        {s.name}
+                      </div>
+                      <div style={{ fontSize: 12, color: "rgba(240,232,212,0.32)", letterSpacing: "0.08em", marginTop: 2 }}>{s.tagline}</div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+
+            {/* ── Main body ── */}
             <AnimatePresence mode="wait">
               <motion.div key={seedId}
-                initial={{ opacity: 0, x: 24 }}
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -18 }}
+                exit={{ opacity: 0, x: -16 }}
                 transition={{ type: "spring", mass: 0.7, stiffness: 320, damping: 28 }}
-                style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}
-              >
-                {/* LEFT — Real tobacco leaf photograph */}
-                <div style={{ position: "relative", overflow: "hidden", borderRight: "1px solid rgba(255,255,255,0.07)" }}>
-                  <img
-                    src={IMG(SEED_PHOTOS[seedId] || "tobacco_criollo.png")}
-                    alt={seed.name}
-                    style={{
-                      position: "absolute", inset: 0,
-                      width: "100%", height: "100%",
-                      objectFit: "cover", objectPosition: "center",
-                    }}
-                    onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
-                  {/* Dark vignette overlay */}
-                  <div style={{
-                    position: "absolute", inset: 0,
-                    background: "linear-gradient(170deg, rgba(4,2,0,0.35) 0%, rgba(4,2,0,0.55) 100%)",
-                  }} />
-                  {/* Bottom fade for label */}
-                  <div style={{
-                    position: "absolute", bottom: 0, left: 0, right: 0, height: 120,
-                    background: "linear-gradient(0deg, rgba(4,2,0,0.88) 0%, transparent 100%)",
-                  }} />
-                  {/* Amber top glow */}
-                  <div style={{
-                    position: "absolute", top: 0, left: 0, right: 0, height: "40%",
-                    background: `radial-gradient(ellipse at 40% 0%, ${seed.cs}30 0%, transparent 65%)`,
-                    pointerEvents: "none",
-                  }} />
-                  {/* Specimen label bottom-left */}
-                  <div style={{ position: "absolute", bottom: 28, left: 32, display: "flex", flexDirection: "column", gap: 6 }}>
-                    <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-                      <div style={{ width: 32, height: 1, background: `${GOLD}66` }} />
-                      <span style={{ fontSize: 10, letterSpacing: "0.44em", color: `${GOLD}BB`, textTransform: "uppercase", fontWeight: 800, fontFamily: "'Inter',sans-serif" }}>
-                        MACRO SPECIMEN
-                      </span>
+                style={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
+
+                {/* LEFT — Macro leaf photo */}
+                <div style={{ flex: "0 0 54%", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+                    <img
+                      src={IMG(SEED_PHOTOS[seedId] || "tobacco_criollo.png")}
+                      alt={seed.name}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                    {/* Dark overlay */}
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 60%, rgba(0,0,0,0.80) 100%)" }} />
+                    {/* Bottom content overlay */}
+                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 32px 24px" }}>
+                      {/* Bottom gradient */}
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 220, background: "linear-gradient(0deg, rgba(2,1,0,0.96) 0%, transparent 100%)", zIndex: 0 }} />
+                      <div style={{ position: "relative", zIndex: 1 }}>
+                        <div style={{ fontSize: 10, letterSpacing: "0.55em", color: `${GOLD}88`, textTransform: "uppercase", fontWeight: 800, marginBottom: 6 }}>
+                          Macro Specimen
+                        </div>
+                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 48, fontWeight: 600, color: "#F0E8D4", lineHeight: 1, textShadow: "0 2px 24px rgba(0,0,0,0.95)", marginBottom: 4 }}>
+                          {seed.name}
+                        </div>
+                        <div style={{ fontSize: 13, letterSpacing: "0.28em", color: "rgba(240,232,212,0.45)", textTransform: "uppercase", marginBottom: 10 }}>{seed.origin}</div>
+                        <p style={{ fontSize: 15, color: "rgba(240,232,212,0.52)", lineHeight: 1.60, margin: "0 0 16px", maxWidth: 380 }}>
+                          {intel.descLong}
+                        </p>
+                        {/* Metadata row */}
+                        <div style={{ display: "flex", gap: 20 }}>
+                          {[
+                            { label: "Origin", val: intel.meta.origin },
+                            { label: "Seed Type", val: intel.meta.seedType },
+                            { label: "Crop", val: intel.meta.crop },
+                            { label: "Aging", val: intel.meta.aging },
+                          ].map(m => (
+                            <div key={m.label} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                              <div style={{ width: 4, height: 4, borderRadius: "50%", background: GOLD, opacity: 0.6 }} />
+                              <div>
+                                <div style={{ fontSize: 9, letterSpacing: "0.28em", color: "rgba(240,232,212,0.30)", textTransform: "uppercase", fontWeight: 700 }}>{m.label}</div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: "rgba(240,232,212,0.75)" }}>{m.val}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 42, fontWeight: 300, color: "#F0E8D4", lineHeight: 1, textShadow: "0 2px 20px rgba(0,0,0,0.90)" }}>
-                      {seed.name}
+                  </div>
+
+                  {/* ── Leaf Comparison Intelligence bar ── */}
+                  <div style={{
+                    flexShrink: 0,
+                    background: "rgba(0,0,0,0.85)", backdropFilter: "blur(20px)",
+                    borderTop: "1px solid rgba(212,175,55,0.14)",
+                    padding: "14px 20px",
+                  }}>
+                    <div style={{ fontSize: 9, letterSpacing: "0.52em", color: `${GOLD}66`, textTransform: "uppercase", fontWeight: 800, textAlign: "center", marginBottom: 12 }}>
+                      ─── Leaf Comparison Intelligence ───
                     </div>
-                    <div style={{ fontSize: 13, letterSpacing: "0.20em", color: "rgba(240,232,212,0.45)", fontFamily: "'Inter',sans-serif" }}>
-                      {seed.origin}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12 }}>
+                      {[
+                        { id: "criollo",     name: "Criollo '98",       icon: "🍃", s: "High",     sb: 75, c: "High",   cb: 80, p: "Heavy",     pb: 85 },
+                        { id: "corojo",      name: "Corojo",            icon: "🌿", s: "Very High", sb: 95, c: "Medium", cb: 55, p: "Aggressive", pb: 95 },
+                        { id: "connecticut", name: "Connecticut Shade", icon: "🍀", s: "Mild",      sb: 20, c: "Smooth", cb: 35, p: "Low",        pb: 10 },
+                      ].map(cs => (
+                        <div key={cs.id} style={{
+                          background: cs.id === seedId ? "rgba(212,175,55,0.10)" : "rgba(255,255,255,0.03)",
+                          border: `1px solid ${cs.id === seedId ? GOLD + "44" : "rgba(255,255,255,0.07)"}`,
+                          borderRadius: 10, padding: "10px 14px",
+                          display: "flex", gap: 10, alignItems: "flex-start",
+                        }}>
+                          <div style={{
+                            width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+                            background: `radial-gradient(circle at 35% 30%, ${GOLD}28, rgba(0,0,0,0.55))`,
+                            border: `1.5px solid ${GOLD}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
+                          }}>{cs.icon}</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 800, color: cs.id === seedId ? GOLD : "#F0E8D4", marginBottom: 6 }}>{cs.name}</div>
+                            {[{ l: "Strength", v: cs.s, b: cs.sb }, { l: "Complexity", v: cs.c, b: cs.cb }, { l: "Spice", v: cs.p, b: cs.pb }].map(row => (
+                              <div key={row.l} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                                <span style={{ fontSize: 10, color: "rgba(240,232,212,0.35)", width: 64, flexShrink: 0, letterSpacing: "0.06em" }}>{row.l}</span>
+                                <div style={{ display: "flex", gap: 2 }}>
+                                  {[1,2,3,4,5].map(d => (
+                                    <div key={d} style={{
+                                      width: 8, height: 8, borderRadius: 2,
+                                      background: (row.b / 20) >= d ? GOLD : "rgba(255,255,255,0.10)",
+                                      boxShadow: (row.b / 20) >= d ? `0 0 4px ${GOLD}88` : "none",
+                                    }} />
+                                  ))}
+                                </div>
+                                <span style={{ fontSize: 10, color: "rgba(240,232,212,0.42)", marginLeft: 2 }}>{row.v}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      {/* Expert insight */}
+                      <div style={{ background: "rgba(212,175,55,0.05)", border: `1px solid ${GOLD}22`, borderRadius: 10, padding: "10px 14px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <div style={{ fontSize: 10, letterSpacing: "0.30em", color: `${GOLD}80`, textTransform: "uppercase", fontWeight: 800, marginBottom: 6 }}>Expert Insight</div>
+                        <p style={{ fontSize: 12, color: "rgba(240,232,212,0.45)", lineHeight: 1.55, margin: 0 }}>
+                          {seedId === "criollo"
+                            ? "Criollo '98 is ideal for those who appreciate bold transitions, deep earth character, and a long, satisfying finish."
+                            : seedId === "corojo"
+                            ? "Corojo is for the serious palate — high strength, aggressive spice, and a finish that commands your full attention."
+                            : "Connecticut Shade suits those who value finesse over force — elegance, creaminess, and seamless construction."}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* RIGHT — Telemetry */}
+                {/* RIGHT — Leaf Intelligence Panel */}
                 <div style={{
-                  background: "rgba(8,6,3,0.70)",
-                  backdropFilter: "blur(24px)",
-                  padding: "40px 44px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 24,
-                  overflowY: "auto",
+                  flex: 1, display: "flex", flexDirection: "column", overflow: "hidden",
+                  borderLeft: "1px solid rgba(212,175,55,0.10)",
+                  background: "rgba(4,3,1,0.80)", backdropFilter: "blur(24px)",
                 }}>
-                  <div>
-                    <div style={{ fontSize: 10, letterSpacing: "0.44em", color: `${GOLD}80`, textTransform: "uppercase", fontWeight: 700, marginBottom: 10 }}>
-                      {seed.origin}
-                    </div>
-                    <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 44, fontWeight: 400, color: "#F0E8D4", margin: "0 0 14px", letterSpacing: "0.04em", lineHeight: 1.05 }}>
-                      {seed.name}
-                    </h2>
-                    <p style={{ fontSize: 22, color: "rgba(240,232,212,0.55)", lineHeight: 1.65, margin: 0 }}>{seed.profile}</p>
+                  {/* Panel header */}
+                  <div style={{
+                    flexShrink: 0, padding: "10px 24px",
+                    borderBottom: "1px solid rgba(212,175,55,0.10)",
+                    display: "flex", alignItems: "center", gap: 10,
+                  }}>
+                    <div style={{ width: 18, height: 1, background: `${GOLD}44` }} />
+                    <span style={{ fontSize: 10, letterSpacing: "0.50em", color: `${GOLD}70`, fontWeight: 800, textTransform: "uppercase" }}>Leaf Intelligence Panel</span>
+                    <div style={{ flex: 1, height: 1, background: `${GOLD}22` }} />
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                    <div style={{ fontSize: 11, letterSpacing: "0.38em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", fontWeight: 800, marginBottom: 2 }}>
-                      Profile Telemetry
-                    </div>
-                    {seed.specs.map(sp => (
-                      <div key={sp.k}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                          <span style={{ fontSize: 20, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(240,232,212,0.42)", fontWeight: 700 }}>{sp.k}</span>
-                          <span style={{ fontSize: 24, fontWeight: 800, color: "#F0E8D4" }}>{sp.v}</span>
+                  <div style={{ flex: 1, overflowY: "auto", padding: "0 24px 16px" }}>
+
+                    {/* Origin Profile */}
+                    <div style={{ padding: "14px 0 12px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 10, letterSpacing: "0.38em", color: GOLD, textTransform: "uppercase", fontWeight: 800, marginBottom: 4 }}>
+                            🌍 Origin Profile
+                          </div>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 34, fontWeight: 600, color: "#F0E8D4", lineHeight: 1, marginBottom: 3 }}>
+                            {seed.name}
+                          </div>
+                          <div style={{ fontSize: 11, letterSpacing: "0.26em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 10 }}>
+                            {seed.origin}
+                          </div>
+                          <p style={{ fontSize: 14, color: "rgba(240,232,212,0.48)", lineHeight: 1.60, margin: 0 }}>{seed.profile}</p>
                         </div>
-                        <div style={{ height: 9, background: "rgba(255,255,255,0.07)", borderRadius: 5, boxShadow: "inset 0 1px 3px rgba(0,0,0,0.50)" }}>
-                          <motion.div key={seedId + sp.k}
-                            initial={{ width: 0 }} animate={{ width: `${sp.b}%` }}
-                            transition={{ duration: 0.60, ease: [0.22, 1, 0.36, 1] }}
-                            style={{ height: "100%", background: `linear-gradient(90deg, ${GOLD}88, ${GOLD})`, borderRadius: 5, boxShadow: `0 0 14px ${GOLD}66` }} />
+                        {/* Mini region map placeholder */}
+                        <div style={{
+                          width: 70, height: 52, flexShrink: 0, marginLeft: 16, borderRadius: 6,
+                          background: "radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.18), rgba(0,0,0,0.55))",
+                          border: "1px solid rgba(212,175,55,0.20)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 22, opacity: 0.75,
+                        }}>🗺</div>
+                      </div>
+                    </div>
+
+                    {/* Profile Telemetry */}
+                    <div style={{ padding: "12px 0 12px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <div style={{ fontSize: 10, letterSpacing: "0.38em", color: GOLD, textTransform: "uppercase", fontWeight: 800, marginBottom: 12 }}>
+                        📊 Profile Telemetry
+                      </div>
+                      {intel.telemetry.map((sp, ti) => (
+                        <div key={sp.k} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 9 }}>
+                          <span style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(240,232,212,0.35)", textTransform: "uppercase", fontWeight: 700, width: 70, flexShrink: 0 }}>{sp.k}</span>
+                          <div style={{ flex: 1, height: 7, background: "rgba(255,255,255,0.06)", borderRadius: 4 }}>
+                            <motion.div key={seedId + sp.k}
+                              initial={{ width: 0 }} animate={{ width: `${sp.b}%` }}
+                              transition={{ duration: 0.55, delay: ti * 0.06, ease: [0.22,1,0.36,1] }}
+                              style={{ height: "100%", background: `linear-gradient(90deg, ${GOLD}66, ${GOLD})`, borderRadius: 4, boxShadow: `0 0 10px ${GOLD}55` }} />
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#F0E8D4", textAlign: "right", minWidth: 130, flexShrink: 0 }}>{sp.v}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Detectable Notes + Pairing Intelligence side-by-side */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      {/* Detectable Notes */}
+                      <div>
+                        <div style={{ fontSize: 10, letterSpacing: "0.38em", color: GOLD, textTransform: "uppercase", fontWeight: 800, marginBottom: 10 }}>
+                          🍫 Detectable Notes
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                          {intel.notes.map(n => (
+                            <div key={n} style={{
+                              padding: "5px 10px", borderRadius: 6,
+                              background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.18)",
+                              fontSize: 12, color: "rgba(240,232,212,0.65)", fontWeight: 600,
+                            }}>{n}</div>
+                          ))}
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  <div style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.22)", borderRadius: 14, padding: "22px 24px" }}>
-                    <div style={{ fontSize: 12, letterSpacing: "0.32em", color: `${GOLD}90`, textTransform: "uppercase", fontWeight: 800, marginBottom: 12 }}>
-                      Vein Architecture
+                      {/* Pairing Intelligence */}
+                      <div>
+                        <div style={{ fontSize: 10, letterSpacing: "0.38em", color: GOLD, textTransform: "uppercase", fontWeight: 800, marginBottom: 6 }}>
+                          🍾 Pairing Intelligence
+                        </div>
+                        <div style={{ fontSize: 9, letterSpacing: "0.26em", color: "rgba(240,232,212,0.28)", textTransform: "uppercase", marginBottom: 8 }}>Recommended Pairings</div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
+                          {intel.pairings.map(p => (
+                            <div key={p.label} style={{
+                              display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                              padding: "8px 10px", borderRadius: 8,
+                              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                              minWidth: 52,
+                            }}>
+                              <span style={{ fontSize: 18 }}>{p.icon}</span>
+                              <span style={{ fontSize: 10, color: "rgba(240,232,212,0.45)", textAlign: "center", lineHeight: 1.3 }}>{p.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div style={{ display: "flex", gap: 6, alignItems: "flex-start", padding: "8px 10px", borderRadius: 7, background: "rgba(200,50,42,0.07)", border: "1px solid rgba(200,50,42,0.20)" }}>
+                          <span style={{ fontSize: 13, color: "#C8322A", flexShrink: 0, marginTop: 1 }}>⚠</span>
+                          <span style={{ fontSize: 12, color: "rgba(240,232,212,0.45)", lineHeight: 1.50 }}>
+                            <span style={{ color: "#C8322A", fontWeight: 700 }}>Pairing Warning: </span>
+                            {intel.warning}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <p style={{ fontSize: 20, color: "rgba(240,232,212,0.65)", lineHeight: 1.62, margin: 0 }}>
-                      {seed.veinDesc}
-                    </p>
-                  </div>
 
-                  <div style={{ marginTop: "auto" }}>
-                    <GoldBtn onClick={() => go("quiz")} fullWidth>BEGIN BLIND IDENTIFICATION TEST →</GoldBtn>
+                    {/* Master Notes */}
+                    <div style={{ padding: "12px 0 0" }}>
+                      <div style={{ fontSize: 10, letterSpacing: "0.38em", color: GOLD, textTransform: "uppercase", fontWeight: 800, marginBottom: 10 }}>
+                        📝 Master Notes
+                      </div>
+                      <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                        <div style={{
+                          flex: 1, padding: "14px 18px",
+                          background: "rgba(212,175,55,0.05)", border: `1px solid ${GOLD}22`,
+                          borderLeft: `3px solid ${GOLD}66`, borderRadius: "0 8px 8px 0",
+                        }}>
+                          <span style={{ fontSize: 22, color: `${GOLD}55`, fontFamily: "Georgia,serif", lineHeight: 1 }}>"</span>
+                          <p style={{ fontSize: 16, color: "rgba(240,232,212,0.65)", lineHeight: 1.65, margin: "-8px 0 0", fontStyle: "italic" }}>
+                            {intel.masterNote.split(/(\*\*.*?\*\*)/).map((part, i) =>
+                              part.startsWith("**") ? <strong key={i} style={{ color: "#F0E8D4", fontStyle: "normal" }}>{part.replace(/\*\*/g,"")}</strong> : part
+                            )}
+                          </p>
+                        </div>
+                        <div style={{
+                          width: 60, height: 60, flexShrink: 0, borderRadius: 8, overflow: "hidden",
+                          background: "radial-gradient(circle at 35% 30%, rgba(212,175,55,0.22), rgba(0,0,0,0.60))",
+                          border: "1px solid rgba(212,175,55,0.22)",
+                          display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28,
+                        }}>🚬</div>
+                      </div>
+                    </div>
+
+                    {/* CTA */}
+                    <div style={{ paddingTop: 16 }}>
+                      <GoldBtn onClick={() => go("quiz")} fullWidth>BEGIN BLIND IDENTIFICATION TEST →</GoldBtn>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             </AnimatePresence>
           </motion.div>
-        )}
+          );
+        })()}
 
         {/* ══════════════ QUIZ ══════════════ */}
         {step === "quiz" && (
