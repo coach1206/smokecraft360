@@ -1,0 +1,42 @@
+REFACTOR COMPLETE APP ARCHITECTURE FOR NATIVE HIGH-END TOUCHSCREEN KIOSK (1920x1080 FIERCD-BOUND LANDSCAPE)
+
+1. HARDWARE-LEVEL TACTILE FEEDBACK LOOP:
+- SOUND STIMULATION: Initialize a permanent Web Audio API Context pool at the root. On EVERY pointerDown event (buttons, input focuses, slider grabs), execute a 3400Hz mechanical oscillator synthetic tone burst (0.04 gain, exponential decay to 0 over 0.08s) to mimic a high-end solid physical hardware click.
+- HAPTIC VIBRATION: Attach navigator.vibrate() to touch nodes. Trigger a tight, crisp 40ms buzz on slider adjustments, a dual-pulse 150ms-50ms-150ms vibration pattern on milestone success/cheat-code validation, and a heavy 400ms physical jolt on error/mentor penalty states.
+- IMMERSION & MOTION: Eliminate ALL hover states and mouse cursor animations. Implement heavy, weighted spring transitions (0.3s duration, low bounce mass) on view-state slides. Text must be oversized and high-contrast, optimized for 40-60 age cohorts reading in a dim, upscale lounge environment.
+
+2. STATE METRICS & FULL-STACK CHASSIS STANDARDS:
+- Maintain root React Context for GuestProfile with explicit local storage serialization. 
+- EVERY page/state view MUST feature a dedicated, operational top-left Back Button anchor linked to a clean linear state-history router. Back transitions must play the 3400Hz click and haptic pulse.
+- Implement a 2-Step Handshake re-entry screen allowing drop-out users to type their Last Name + Last 4 Digits of their phone number to skip straight to their persistent phase checkpoint.
+
+3. S1 THROUGH S4 EXPANDED JOURNEY MATRIX:
+
+- SESSION 1 // INITIALIZATION GATE:
+  * Capture demographic data profiles.
+  * Render the Live Lounge Leaderboard ticker displaying table high-scores (e.g., "Table 4 is holding 185 PTS").
+  * Select a Digital Mentor Guide. Execute the "Seed Priming Blind Test" (Criollo '98, Corojo, Connecticut Shade quiz). A wrong answer applies a -5 PTS penalty.
+  * POS Gate: Lock progression with a high-contrast modal requesting receipt code validation to "ferment seeds" for Session 2.
+
+- SESSION 2 // TERROIR MATRIX & HUMIDOR MATCHING:
+  * Load interactive Soil Chemistry sliders (Nitrogen, Potassium, pH balances) with a dynamic mini-game. 
+  * Play a high-fidelity cinematic video framing their soil profile selection, instantly matching it to live point-of-sale inventory stock in the physical humidor (e.g., Davidoff Nicaragua, Arturo Fuente Opus X).
+  * Lock progress at session completion with a premium appetizer voucher code.
+
+- SESSION 3 // FORMULATION & LIQUOR PAIRING MASTERCLASS:
+  * Build the advanced Whiskey, Bourbon, and Scotch chemical alignment engine. Formulate interactive taste quizzes mapping peat, smoke, and sugars to tobacco leaves.
+  * SENSORY TRAP: If a quiz is failed, block progress and flash an explicit menu callout: "Order the SmokeCraft Flight from your table server right now to taste this exact chemical harmony and unlock a +20 XP recovery bonus."
+  * Wire up the 3-Tier Leaf Morphology Sliders (Volado for burn physics, Seco for aroma, Ligero for strength). Total allocation must equal exactly 100%. Frame a live texture rendering window showing leaf thickness, veins, and oil sheen variations in real time based on slider ratios.
+
+- SESSION 4 // DESIGN REALIZATION & LEADERBOARD PUSH:
+  * Renders Vitola Architecture (Robusto, Toro, Churchill, Figurado) paired with cap cutting mechanics (Straight, V-Cut, Punch) displaying aerodynamic smoke temperature projections.
+  * THE DESIGN COMPETITION STUDIO: Build an interactive layout canvas for the Bespoke Box & Band Challenge. Include rich wood grain texture pickers, gold foil embossing toggles, custom stamps, and a mandatory "Ronnie Felder" signature branding logo asset. 
+  * Calculate aesthetic design synergy points and sum total journey scores. Push final table metrics live to the lounge wall display and print a hardware receipt token.
+
+4. TRANSACTIONAL RECOVERY CHEAT CODES:
+Integrate an explicit coupon/receipt verification function into the scoring engine tracking three states:
+- CHEAT CODE 1 (2x Multiplier): Triggered when pairing a venue cigar + single drink. Doubles current session points, erases 1 mentor penalty.
+- CHEAT CODE 2 (3x Multiplier): Triggered by ordering 2 premium drinks simultaneously. Triples session points, updates loyalty score tier.
+- CHEAT CODE 3 (5x Ultimate Multiplier): The "Grand Slam Sovereign" triggered by ordering 1 Cigar + 1 Drink + 1 Food item. Multiplies total session points by 5x and COMPLETELY purges all accumulated point losses from prior rounds.
+
+Ensure zero broken component references, zero empty stubs, and full compliance with Tailwind full-bleed viewport box-sizing layouts.
