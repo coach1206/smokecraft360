@@ -1520,6 +1520,28 @@ function CraftHubInner() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
           style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, gap: 5, pointerEvents: "auto", paddingRight: 32, borderRight: "1px solid rgba(255,255,255,0.08)", marginRight: 28 }}>
+          {/* SMOKECRAFT 360 — cockpit wordmark */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+            <div style={{
+              width:        6,
+              height:       6,
+              borderRadius: "50%",
+              background:   C.gold,
+              flexShrink:   0,
+              boxShadow:    `0 0 8px ${C.goldDim}`,
+            }} />
+            <span style={{
+              color:         C.gold,
+              fontSize:      17,
+              fontWeight:    900,
+              letterSpacing: "0.30em",
+              textTransform: "uppercase" as const,
+              fontFamily:    "inherit",
+              whiteSpace:    "nowrap" as const,
+            }}>
+              SMOKECRAFT 360
+            </span>
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {/* Primary brand mark — CraftHub logo asset */}
             <motion.div
