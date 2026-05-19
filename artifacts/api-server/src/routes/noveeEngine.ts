@@ -92,7 +92,8 @@ const frictionSchema = z.object({
   // Spec field names are dwellTime / interactionLoopCount / biometricEnergyState
   dwellTime:              z.number().min(0).optional(),
   interactionLoopCount:   z.number().int().min(0).optional(),
-  biometricEnergyState:   z.enum(["LOW", "NORMAL", "HIGH"]).optional(),
+  // "STABLE" maps to NORMAL per spec control panel
+  biometricEnergyState:   z.enum(["LOW", "NORMAL", "HIGH", "STABLE"]).optional(),
   // Legacy aliases from initial implementation
   dwellTimeSeconds:       z.number().min(0).optional(),
   interactionLoopsCount:  z.number().int().min(0).optional(),
@@ -106,7 +107,9 @@ router.post("/novee/friction", requireAuth, async (req: AuthRequest, res: Respon
 
   const dwell  = parsed.data.dwellTime         ?? parsed.data.dwellTimeSeconds         ?? 0;
   const loops  = parsed.data.interactionLoopCount ?? parsed.data.interactionLoopsCount ?? 0;
-  const energy = parsed.data.biometricEnergyState;
+  // Normalise STABLE → NORMAL so the service layer only handles LOW/NORMAL/HIGH
+  const rawEnergy = parsed.data.biometricEnergyState;
+  const energy    = rawEnergy === "STABLE" ? "NORMAL" : rawEnergy;
 
   try {
     const tier   = await getVenueTier(req);
