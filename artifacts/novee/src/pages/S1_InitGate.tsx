@@ -607,32 +607,286 @@ export function S1_InitGate() {
           </motion.div>
         )}
 
-        {/* ══════════════ LEADERBOARD ══════════════ */}
+        {/* ══════════════ LEADERBOARD — THE GOLDEN BOX ══════════════ */}
         {step === "leaderboard" && (
-          <Split key="leaderboard"
-            leftFr="0.8fr" rightFr="1.2fr"
-            left={
-              <LeftPanel
-                eyebrow="Step 1.2 · Live Competition"
-                headline={`Tonight's\nRankings`}
-                sub={`Welcome, ${firstName}. Your session is now tracked and visible on the wall display.`}
-              />
-            }
-            right={
-              <RightPanel>
-                <Eyebrow>Live Table Standings</Eyebrow>
-                <SectionTitle style={{ marginBottom: 18 }}>Current Leaderboard</SectionTitle>
-                <div style={{
-                  background: "rgba(255,255,255,0.025)", border: "1px solid rgba(212,175,55,0.14)",
-                  borderRadius: 14, padding: "20px", marginBottom: 24,
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
-                }}>
-                  <LeaderboardTicker />
+          <motion.div key="leaderboard" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", overflow: "hidden" }}>
+
+            {/* ── LEFT PANEL ── */}
+            <div style={{
+              width: 420, flexShrink: 0, display: "flex", flexDirection: "column",
+              borderRight: "1px solid rgba(212,175,55,0.14)",
+              background: "rgba(0,0,0,0.60)", backdropFilter: "blur(20px)",
+              overflowY: "auto",
+            }}>
+              {/* Header area with golden box photo */}
+              <div style={{ position: "relative", height: 160, flexShrink: 0, overflow: "hidden" }}>
+                <img src={IMG("golden_box.png")} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }}
+                  onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.85) 100%)" }} />
+                <div style={{ position: "absolute", bottom: 14, left: 0, right: 0, textAlign: "center" }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 32, fontWeight: 700, color: GOLD, letterSpacing: "0.14em", textTransform: "uppercase", textShadow: `0 0 40px ${GOLD}66` }}>
+                    The Golden Box
+                  </div>
+                  <div style={{ fontSize: 11, letterSpacing: "0.44em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", marginTop: 2 }}>
+                    Compete. Learn. Ascend.
+                  </div>
                 </div>
-                <GoldBtn onClick={() => go("mentor")}>SELECT YOUR MENTOR →</GoldBtn>
-              </RightPanel>
-            }
-          />
+              </div>
+
+              {/* Tagline text */}
+              <div style={{ padding: "16px 24px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <p style={{ fontSize: 15, color: "rgba(240,232,212,0.45)", lineHeight: 1.60, margin: 0, textAlign: "center" }}>
+                  The Golden Box is SmokeCraft 360's elite challenge system.<br />
+                  Every decision you make affects your rank, reputation, and rewards.<br />
+                  <span style={{ color: GOLD, fontStyle: "italic" }}>Study the leaf. Build wisely. Earn your place.</span>
+                </p>
+              </div>
+
+              {/* Rules of Play */}
+              <div style={{ padding: "16px 24px 0" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <div style={{ width: 20, height: 1, background: `${GOLD}55` }} />
+                  <span style={{ fontSize: 11, letterSpacing: "0.44em", color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Rules of Play</span>
+                  <div style={{ flex: 1, height: 1, background: `${GOLD}22` }} />
+                </div>
+                {[
+                  { icon: "◎", label: "Score Points", body: "Complete challenges, tasting rounds, mentor quizzes, and pairing decisions to earn XP." },
+                  { icon: "📈", label: "Climb the Ranks", body: "Advance through the four official SmokeCraft stages and prove your mastery." },
+                  { icon: "⬡", label: "Earn Badges", body: "Unlock exclusive achievement badges that represent your knowledge, skill, and prestige." },
+                  { icon: "⬡", label: "Unlock Rewards", body: "Higher ranks unlock rare blends, VIP experiences, exclusive events, and premium gear." },
+                  { icon: "⚠", label: "Penalties", body: "Poor decisions and incorrect selections may reduce your points. Not every move earns respect." },
+                ].map((r, i) => (
+                  <div key={r.label} style={{ display: "flex", gap: 12, marginBottom: 14, alignItems: "flex-start" }}>
+                    <span style={{ fontSize: 18, color: i === 4 ? "#C8322A" : GOLD, flexShrink: 0, marginTop: 1 }}>{r.icon}</span>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.10em", textTransform: "uppercase", marginBottom: 3 }}>{r.label}</div>
+                      <div style={{ fontSize: 14, color: "rgba(240,232,212,0.42)", lineHeight: 1.55 }}>{r.body}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Contest Levels compact list */}
+              <div style={{ padding: "12px 24px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <div style={{ width: 20, height: 1, background: `${GOLD}55` }} />
+                  <span style={{ fontSize: 11, letterSpacing: "0.44em", color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Contest Levels</span>
+                  <div style={{ flex: 1, height: 1, background: `${GOLD}22` }} />
+                </div>
+                {[
+                  { badge: "🔥", name: "Novice",       sub: "The Beginning",      xp: "0 – 999 XP",          color: "#C8322A", desc: "Learn cigar basics, flavor recognition, and foundational pairing techniques." },
+                  { badge: "🕯", name: "Enthusiast",   sub: "Fueled by Passion",  xp: "1,000 – 4,999 XP",   color: GOLD,      desc: "Understand regions, wrappers, construction, and pairing synergy." },
+                  { badge: "💎", name: "Connoisseur",  sub: "Refined & Focused",  xp: "5,000 – 14,999 XP",  color: "#9B59B6", desc: "Recognize flavor transitions, aging, fermentation, and advanced blend structure." },
+                  { badge: "♛",  name: "Aficionado",  sub: "The Ultimate Status", xp: "15,000+ XP",          color: "#D4820A", desc: "Master sensory analysis, pairing intelligence, cigar culture, and strategic competition." },
+                ].map(t => (
+                  <div key={t.name} style={{
+                    display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 14,
+                    padding: "12px 14px", borderRadius: 10,
+                    background: "rgba(255,255,255,0.025)",
+                    border: `1px solid ${t.color}22`,
+                  }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
+                      background: `radial-gradient(circle at 35% 30%, ${t.color}33, rgba(0,0,0,0.60))`,
+                      border: `1.5px solid ${t.color}55`,
+                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20,
+                    }}>{t.badge}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+                        <span style={{ fontSize: 16, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.08em", textTransform: "uppercase" }}>{t.name}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: t.color }}>{t.xp}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: t.color, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>{t.sub}</div>
+                      <div style={{ fontSize: 13, color: "rgba(240,232,212,0.40)", lineHeight: 1.45 }}>{t.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Golden Box Prize */}
+              <div style={{
+                margin: "12px 24px 24px",
+                background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.28)",
+                borderRadius: 12, padding: "14px 18px",
+                display: "flex", gap: 14, alignItems: "center",
+              }}>
+                <span style={{ fontSize: 28, flexShrink: 0 }}>🏆</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: GOLD, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>The Golden Box Prize</div>
+                  <div style={{ fontSize: 13, color: "rgba(240,232,212,0.45)", lineHeight: 1.55 }}>
+                    Reserved for top-ranking competitors. Inside: rare blends, exclusive gear, and experiences that can't be bought.
+                  </div>
+                </div>
+                <motion.button type="button" onPointerDown={() => go("mentor")}
+                  whileTap={{ scale: 0.97 }}
+                  style={{
+                    flexShrink: 0, padding: "10px 16px",
+                    background: "rgba(212,175,55,0.14)", border: `1px solid ${GOLD}55`,
+                    borderRadius: 8, color: GOLD, fontSize: 13, fontWeight: 800,
+                    letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",
+                    fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap",
+                  }}>
+                  View Prize Pool →
+                </motion.button>
+              </div>
+            </div>
+
+            {/* ── RIGHT PANEL ── */}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+
+              {/* Rank status top bar */}
+              <div style={{
+                flexShrink: 0, display: "flex", alignItems: "stretch",
+                background: "rgba(0,0,0,0.65)", backdropFilter: "blur(20px)",
+                borderBottom: "1px solid rgba(212,175,55,0.14)",
+              }}>
+                {/* Your rank */}
+                <div style={{ padding: "16px 28px", borderRight: "1px solid rgba(255,255,255,0.07)", display: "flex", gap: 14, alignItems: "center" }}>
+                  <div style={{
+                    width: 50, height: 50, borderRadius: "50%", flexShrink: 0,
+                    background: "radial-gradient(circle at 35% 30%, rgba(212,175,55,0.38), rgba(0,0,0,0.70))",
+                    border: `2px solid ${GOLD}55`,
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
+                  }}>🎩</div>
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: "0.36em", color: "rgba(240,232,212,0.35)", textTransform: "uppercase", marginBottom: 2 }}>Your Rank</div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, letterSpacing: "0.06em" }}>ENTHUSIAST</div>
+                    <div style={{ fontSize: 16, color: "rgba(240,232,212,0.60)", fontWeight: 600 }}>{profile.points.toLocaleString()} XP</div>
+                  </div>
+                </div>
+                {/* Next rank */}
+                <div style={{ padding: "16px 28px", borderRight: "1px solid rgba(255,255,255,0.07)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                  <div style={{ fontSize: 10, letterSpacing: "0.36em", color: "rgba(240,232,212,0.32)", textTransform: "uppercase", marginBottom: 4 }}>Next Rank</div>
+                  <div style={{ fontSize: 20, fontWeight: 900, color: "#9B59B6", letterSpacing: "0.06em" }}>CONNOISSEUR</div>
+                  <div style={{ fontSize: 14, color: "rgba(240,232,212,0.40)" }}>{Math.max(0, 5000 - profile.points).toLocaleString()} XP to go</div>
+                  <div style={{ marginTop: 6, height: 3, width: 140, background: "rgba(255,255,255,0.08)", borderRadius: 2 }}>
+                    <div style={{ height: "100%", width: `${Math.min(100, (profile.points / 5000) * 100)}%`, background: "#9B59B6", borderRadius: 2 }} />
+                  </div>
+                </div>
+                {/* Rewards */}
+                <div style={{ padding: "16px 24px", borderRight: "1px solid rgba(255,255,255,0.07)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🎁</div>
+                  <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(240,232,212,0.35)", textTransform: "uppercase" }}>Rewards</div>
+                </div>
+                {/* Badges */}
+                <div style={{ padding: "16px 24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⭐</div>
+                  <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(240,232,212,0.35)", textTransform: "uppercase" }}>Badges</div>
+                </div>
+                {/* Spacer + CTA */}
+                <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 24px" }}>
+                  <GoldBtn onClick={() => go("mentor")} style={{ padding: "14px 28px", fontSize: 16 }}>
+                    SELECT MENTOR →
+                  </GoldBtn>
+                </div>
+              </div>
+
+              {/* Live Leaderboard table */}
+              <div style={{ flex: 1, overflowY: "auto", padding: "0 0 24px" }}>
+                {/* Table header */}
+                <div style={{
+                  position: "sticky", top: 0, zIndex: 10,
+                  background: "rgba(8,5,2,0.95)", backdropFilter: "blur(12px)",
+                  padding: "14px 28px 12px",
+                  borderBottom: "1px solid rgba(212,175,55,0.12)",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A", flexShrink: 0 }} />
+                    <span style={{ fontSize: 22, fontWeight: 900, color: "#F0E8D4", letterSpacing: "0.18em", textTransform: "uppercase" }}>Live Leaderboard</span>
+                    <span style={{ fontSize: 12, color: "rgba(240,232,212,0.32)", letterSpacing: "0.18em", textTransform: "uppercase" }}>· Updated Just Now</span>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "52px 1fr 130px 110px 120px", gap: 0, padding: "0 4px" }}>
+                    {["Rank","Contestant","Level","XP","Badges"].map(h => (
+                      <div key={h} style={{ fontSize: 11, letterSpacing: "0.32em", color: "rgba(240,232,212,0.28)", textTransform: "uppercase", fontWeight: 800 }}>{h}</div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Rows */}
+                {[
+                  { rank: 1,  handle: "TheCigarLion",   real: "Alex Martinez",      xp: 18750, tier: "Aficionado",  badge: "♛",  tColor: "#D4820A", badges: ["♛","💎","🔥"], extra: "+3" },
+                  { rank: 2,  handle: "Aficionado_D",   real: "Darnell Washington", xp: 16420, tier: "Connoisseur", badge: "💎", tColor: "#9B59B6", badges: ["💎","🕯","🔥"], extra: "+2" },
+                  { rank: 3,  handle: "SmoothDraws",    real: "Marcus Tate",         xp: 14980, tier: "Connoisseur", badge: "💎", tColor: "#9B59B6", badges: ["💎","🕯","🔥"], extra: "+4" },
+                  { rank: 4,  handle: "Ash&Oak",        real: "Brandon Hill",        xp: 13250, tier: "Connoisseur", badge: "💎", tColor: "#9B59B6", badges: ["💎","🕯"],       extra: "+1" },
+                  { rank: 5,  handle: "LeafScholar",    real: "Jasmine Cole",        xp: 12760, tier: "Connoisseur", badge: "💎", tColor: "#9B59B6", badges: ["♛","💎"],       extra: "+2" },
+                  { rank: 6,  handle: "BourbonLeaf",    real: "Tyler Bennett",       xp: 10850, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛","🔥"],       extra: "+1" },
+                  { rank: 7,  handle: "CigarSensei",    real: "Ethan Reynolds",      xp:  9430, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["💎","🔥"],       extra: "+2" },
+                  { rank: 8,  handle: "PuffProfessor",  real: "Daniel Cooper",       xp:  8910, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["🔥","⭐"],       extra: "+1" },
+                  { rank: 9,  handle: "VintageVisions", real: "Robert King",         xp:  7650, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛","🔥"],       extra: "+2" },
+                  { rank: 10, handle: "CedarRoomKing",  real: "Kevin Brooks",        xp:  6980, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["🔥"],            extra: "+1" },
+                ].map((row, i) => {
+                  const isTop3 = row.rank <= 3;
+                  const rankColor = row.rank === 1 ? GOLD : row.rank === 2 ? "#C0C0C0" : row.rank === 3 ? "#CD7F32" : "rgba(240,232,212,0.30)";
+                  return (
+                    <motion.div key={row.rank}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.32, ease: [0.22,1,0.36,1] }}
+                      style={{
+                        display: "grid", gridTemplateColumns: "52px 1fr 130px 110px 120px",
+                        alignItems: "center", gap: 0,
+                        padding: "12px 28px",
+                        borderBottom: "1px solid rgba(255,255,255,0.04)",
+                        background: isTop3 ? `rgba(212,175,55,${0.04 - i*0.01})` : "transparent",
+                        transition: "background 0.2s",
+                      }}>
+                      {/* Rank */}
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <div style={{
+                          width: 32, height: 32, borderRadius: "50%",
+                          background: isTop3 ? `radial-gradient(circle at 35% 30%, ${rankColor}44, rgba(0,0,0,0.60))` : "rgba(255,255,255,0.05)",
+                          border: isTop3 ? `2px solid ${rankColor}88` : "1px solid rgba(255,255,255,0.08)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: isTop3 ? 15 : 14, fontWeight: 900, color: rankColor,
+                          boxShadow: isTop3 ? `0 0 16px ${rankColor}44` : "none",
+                        }}>{row.rank}</div>
+                      </div>
+                      {/* Contestant */}
+                      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                        <div style={{
+                          width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+                          background: `radial-gradient(circle at 35% 30%, ${row.tColor}33, rgba(0,0,0,0.55))`,
+                          border: `1.5px solid ${row.tColor}44`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 16,
+                        }}>🎩</div>
+                        <div>
+                          <div style={{ fontSize: 17, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.02em" }}>{row.handle}</div>
+                          <div style={{ fontSize: 13, color: "rgba(240,232,212,0.35)" }}>{row.real}</div>
+                        </div>
+                      </div>
+                      {/* Level */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{
+                          width: 30, height: 30, borderRadius: "50%",
+                          background: `radial-gradient(circle at 35% 30%, ${row.tColor}33, rgba(0,0,0,0.55))`,
+                          border: `1.5px solid ${row.tColor}55`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 14,
+                        }}>{row.badge}</div>
+                      </div>
+                      {/* XP */}
+                      <div style={{ fontSize: 17, fontWeight: 800, color: row.tColor, letterSpacing: "0.04em" }}>
+                        {row.xp.toLocaleString()} XP
+                      </div>
+                      {/* Badges */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        {row.badges.map((b, bi) => (
+                          <div key={bi} style={{
+                            width: 26, height: 26, borderRadius: "50%", fontSize: 12,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)",
+                          }}>{b}</div>
+                        ))}
+                        <span style={{ fontSize: 13, color: row.tColor, fontWeight: 700, marginLeft: 2 }}>{row.extra}</span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
         )}
 
         {/* ══════════════ MENTOR ══════════════ */}
