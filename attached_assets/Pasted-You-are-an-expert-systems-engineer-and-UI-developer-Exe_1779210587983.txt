@@ -1,0 +1,18 @@
+You are an expert systems engineer and UI developer. Execute a total structural and visual refactor of the application layout to resolve the active routing, branding, and input loop bugs. You must keep all existing state management, validation logic, and event submit handlers intact, but completely re-architect the presentation layer.
+
+Implement these three critical structural engineering updates immediately:
+
+1. BRING BACK LOGO ASSETS IN HEADER:
+Locate the dead imports for 'craftHubLogo' and 'eatLogo' at the top of the file. Place them dynamically within the left console header header zone. Render 'craftHubLogo' as a crisp 52px brand mark wrapped in a champagne gold drop-shadow ambient glow. Place a thin vertical gold hairline separator right after it, then mount 'eatLogo' cleanly alongside the green pulsing engine-status connectivity dot. Ensure both assets use a clean, staggered fade-in transition on boot.
+
+2. CONVERT DEMOGRAPHIC FORM TO PRESTIGE ENROLLMENT WIZARD:
+Completely destroy and delete the standard slide-up HTML <input> and <select> sidebar sheets. When a user clicks "BEGIN JOURNEY", you must launch a pristine, full-screen 4-step cinematic initialization wizard overlaid on a pure obsidian black canvas. Maintain a step-dot progress bar at the top, a back arrow, and an escape close button. Build the steps exactly as follows:
+- Step 0 (Identity): A single, massive, elegant centered typography text input field over an obsidian canvas. Animate a gold glowing underline into view the millisecond the name becomes valid. Allow the Enter key to automatically push the state forward.
+- Step 1 (Experience Tier): Render four distinct, large vertical tile cards mapping to age demographic brackets. Give each tile an exclusive prestige sub-label (e.g., "The Emerging Connoisseur", "The Cultivated Palate"). Affix an elegant gold checkmark seal when a tile is selected.
+- Step 2 (Profile): Render three refined, wide salutation tiles labeled "Sir", "Madam", and "Guest" utilizing the same glassmorphic visual layout.
+- Step 3 (Contact & Location): Build gold-ruled, completely borderless high-contrast input modules for phone, email, and city. For the US State selection, you are strictly forbidden from using a standard dropdown <select> menu. Construct a responsive 51-button pill grid matrix where tapping the pill binds the location state directly.
+
+3. ROUTING MATRIX AUDIT:
+Enforce absolute boundaries across the core layout lifecycle. Ensure the transition path runs flawlessly from the root route (/) through RootRedirect, into the main /craft-hub launch environment, up through the ArtOfCigarOverlay, and directly down into the specialized /master-blender engine. Guarantee there are zero component leaks, zero visual crosstalk, and that 'tsc --noEmit' passes with absolute exit code 0.
+
+Deliver the complete, uncompromised, production-ready code file now. Do not use placeholders or write shorthand notes.
