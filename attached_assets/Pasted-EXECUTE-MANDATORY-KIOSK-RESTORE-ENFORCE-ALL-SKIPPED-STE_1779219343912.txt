@@ -1,0 +1,33 @@
+EXECUTE MANDATORY KIOSK RESTORE: ENFORCE ALL SKIPPED STEPS, DEEP AGRONOMY CONTENT, AND HIGH-END VISUAL IMAGERY
+
+1. FORCE ALL SKIPPED WORKFLOW PHASES (NO SHORTCUTS):
+- STEP 1.3: THE GOLDEN BOX RULES DISCLOSURE: Immediately after registration, insert a mandatory full-bleed hardware screen detailing "The Rules of the Golden Box." The interface must explicitly teach the user how points are scored and lost:
+  * Base Visual Accuracy & Structural Synergy: Unlocks +10 XP.
+  * Mentor Blind Quiz Failures: Deducts -2 PTS.
+  * Volatile Blend Mechanics (e.g., locking in too much Ligero causing zero airflow draw): Deducts -5 PTS.
+  * Spend-Based Recovery: Explicitly explain that points lost can be fully redeemed and multiplied by activating table-side "Cheat Codes" (2x for Cigar+Drink, 3x for Double Pour, 5x for Grand Slam Trifecta).
+  * Must include a prominent "ACCEPT & INITIALIZE" action button to progress.
+- STEP 1.4: REALISTIC MENTOR SELECTION PORTFOLIO: Build an immersive card matrix displaying highly realistic visual portraits of the master blenders alongside their country flags framed in obsidian glass:
+  * Mentor 1: "The Dominican Maestro" (Displays Dominican Republic Flag). Profile: Smooth, multi-leaf complexity and old-world aging metrics from the Cibao Valley.
+  * Mentor 2: "The Nicaraguan Puro Boss" (Displays Nicaragua Flag). Profile: Full-bodied volcanic soil optimization and heavy, high-strength Ligero processing from Estelí.
+  * Mentor 3: "The Traditionalist Wrapper" (Displays Honduras Flag). Profile: Flawless sun-grown wrapper selection, vein concealment, and aerodynamic draw precision from the Jamastran Valley.
+
+2. DEEP AGRONOMY DATA COCHING & REALISTIC IMAGERY:
+- STEP 1.5: SEED QUALITY TEXTURE CANVAS: Replace empty text fields with an interactive split-screen. The left pane must stream a highly realistic, high-resolution close-up texture image of the raw tobacco leaves. The right pane must display deep, uncompromised educational specs on touch:
+  * Criollo '98: Traditional Cuban-seed lineage. Delivers deep, earth-toned transitions and heavy spice tracking.
+  * Corojo: Highly robust, oil-dense leaf producing intense, peppery finishes and maximum palate strength.
+  * Connecticut Shade: Ultra-smooth, delicate wrapper leaf. Delivers creamy tasting notes, mild body, and seamless aesthetics with nearly invisible veins.
+- STEP 1.6: SOIL MENTOR CHEMISTRY MATRIX: Moving the Nitrogen, Potassium, and pH sliders must instantly trigger dynamic cross-fading telemetry cards showing realistic images of the dark, rich volcanic soils and explaining the exact chemical outcomes:
+  * High Nitrogen Balance: Drastically deepens leaf oil saturation, forcing a dark Maduro format with thick texture and high nicotine strength.
+  * High Potassium Balance: Optimizes combustion elasticity and ash structure stability, preventing tunneling, canoeing, or wrapper splitting.
+
+3. HARDWARE-CLASS ANIMATIONS & STEP-BY-STEP NAV:
+- UNIVERSAL BACK ROUTING: Every single page, modal, and studio canvas view must feature a dedicated, functional, top-left Back Button anchor that preserves form state.
+- THE IMMERSIVE TRANSITION ENGINE: Wire up smooth view-state animations. When moving forward or utilizing the back button, the active screen must smoothly dissolve its opacity (1 to 0) and slide horizontally off-screen (-50px). The incoming view must slide into the chassis, scale up smoothly from 0.95 to 1.0, and lock into place with a heavy, weighted spring mass animation (0.35s duration).
+- Maintain the 3400Hz mechanical oscillator synthetic tone burst and physical touch vibration pulses on all pointerDown actions. Remove all hover styles.
+
+4. KEEP DUAL-COUNTRY LOOP, CHOSEN MENTOR DIALOGUES, AND PACKAGING CANVAS:
+- Retain the 4-session persistent local storage architecture with the Last Name + Last 4 Phone Number re-entry handshake.
+- Retain the 3-tier leaf morphology balance criteria (Volado, Seco, Ligero totaling 100%) paired with the dynamic leaf visual rendering window.
+- Retain the Session 4 premium custom packaging studio utilizing the name "Ronnie Felder" with custom wood grains and gold foil embossing.
+- Retain all 2x, 3x, and 5x receipt-scanning "Cheat Code" point multipliers tied directly to the live table leaderboard. Enforce strict full-bleed 1920x1080 landscape boundaries.

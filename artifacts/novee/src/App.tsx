@@ -11,8 +11,10 @@ const queryClient = new QueryClient();
 
 const S1_PHASES = new Set([
   "s1_demo",
+  "s1_rules",
   "s1_leaderboard",
   "s1_mentor",
+  "s1_seed",
   "s1_quiz",
   "s1_posgate",
 ]);

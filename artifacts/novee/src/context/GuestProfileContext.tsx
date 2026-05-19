@@ -3,8 +3,10 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 export type Phase =
   | "reentry"
   | "s1_demo"
+  | "s1_rules"
   | "s1_leaderboard"
   | "s1_mentor"
+  | "s1_seed"
   | "s1_quiz"
   | "s1_posgate"
   | "s2_terroir"
@@ -68,7 +70,7 @@ const DEFAULT_PROFILE: GuestProfile = {
   quizScore: 0,
 };
 
-const STORAGE_KEY = "novee_guest_profile_v3";
+const STORAGE_KEY = "novee_guest_profile_v4";
 
 interface GuestProfileCtx {
   profile: GuestProfile;
