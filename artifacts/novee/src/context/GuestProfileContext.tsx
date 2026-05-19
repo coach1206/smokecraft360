@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 export type Phase =
+  | "crafthub"
   | "reentry"
   | "s1_demo"
   | "s1_rules"
@@ -54,7 +55,7 @@ const DEFAULT_PROFILE: GuestProfile = {
   penalties: 0,
   multiplier: 1,
   cheatCodesUsed: [],
-  phase: "reentry",
+  phase: "crafthub",
   soilN: 40,
   soilK: 35,
   soilPH: 6,
@@ -70,7 +71,7 @@ const DEFAULT_PROFILE: GuestProfile = {
   quizScore: 0,
 };
 
-const STORAGE_KEY = "novee_guest_profile_v4";
+const STORAGE_KEY = "novee_guest_profile_v5";
 
 interface GuestProfileCtx {
   profile: GuestProfile;

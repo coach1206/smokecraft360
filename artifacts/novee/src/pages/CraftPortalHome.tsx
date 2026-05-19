@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import type React from "react";
-import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGuest } from "@/context/GuestProfileContext";
 
 // ── 3 400 Hz tactile audio burst ─────────────────────────────────────────────
 function playTactile() {
@@ -111,22 +111,11 @@ const bottomPortals = PORTALS.slice(1);
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function CraftPortalHome() {
-  const [, navigate] = useLocation();
+  const { setPhase } = useGuest();
   const [comingSoon,  setComingSoon]  = useState<string | null>(null);
   const [dissolving,  setDissolving]  = useState(false);
   const [artOfCigar,  setArtOfCigar]  = useState(false);
   const [showReturn,  setShowReturn]  = useState(false);
-
-  useEffect(() => {
-    try {
-      sessionStorage.removeItem("smokecraft_guest");
-      sessionStorage.removeItem("axiom_eeis_journey");
-      sessionStorage.removeItem("axiom_experience_level");
-      sessionStorage.removeItem("axiom_craft_build");
-      localStorage.removeItem("NOVEE_SC_RITUAL_v1");
-      localStorage.removeItem("titan_ritual_complete");
-    } catch { /* ignore */ }
-  }, []);
 
   function handleSmokeTap() {
     playTactile();
@@ -137,7 +126,7 @@ export default function CraftPortalHome() {
   function handlePortalClick(portal: typeof PORTALS[number], e?: React.MouseEvent) {
     e?.stopPropagation();
     if (portal.id === "smokecraft") { handleSmokeTap(); return; }
-    if (portal.active) navigate(portal.route);
+    if (portal.active) setPhase("reentry");
     else setComingSoon(portal.title);
   }
 
@@ -153,12 +142,10 @@ export default function CraftPortalHome() {
       {/* Ambient glow */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 1, background: "radial-gradient(ellipse at 50% 0%,rgba(255,176,0,0.04) 0%,transparent 55%)" }} />
 
-      {/* Sovereign access */}
+      {/* Sovereign access — hidden tap target (admin-only) */}
       <button
-        onClick={() => navigate("/sovereign")}
+        onClick={() => {/* sovereign panel reserved */}}
         style={{ position: "fixed", top: 22, right: 32, background: "none", border: "none", fontSize: 8, letterSpacing: "0.40em", textTransform: "uppercase", color: "rgba(255,255,255,0.18)", cursor: "pointer", zIndex: 50, padding: 0, transition: "color 0.3s" }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.44)"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.18)"; }}
       >
         Sovereign Access
       </button>
@@ -310,7 +297,7 @@ export default function CraftPortalHome() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.8 }}
                 whileTap={{ scale: 0.97, y: 2 }}
-                onClick={() => { setArtOfCigar(false); navigate("/smokecraft"); }}
+                onClick={() => { setArtOfCigar(false); setPhase("reentry"); }}
                 style={{ display: "block", width: "100%", padding: "22px 40px", marginBottom: 18, background: "linear-gradient(135deg,rgba(212,175,55,0.22) 0%,rgba(212,139,0,0.14) 100%)", border: "1.5px solid rgba(212,175,55,0.65)", borderRadius: 12, cursor: "pointer", fontSize: 15, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: "inherit", boxShadow: "0 0 32px rgba(212,175,55,0.22),0 4px 16px rgba(0,0,0,0.4)", minHeight: 72, touchAction: "manipulation" }}
               >
                 BEGIN JOURNEY
@@ -365,7 +352,7 @@ export default function CraftPortalHome() {
               <input placeholder="First name" style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.20)", borderRadius: 6, padding: "14px 16px", color: "#F0E8D4", fontSize: 14, letterSpacing: "0.06em", outline: "none", boxSizing: "border-box", marginBottom: 12 }} />
               <input placeholder="Last 4 digits of phone" maxLength={4} style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.20)", borderRadius: 6, padding: "14px 16px", color: "#F0E8D4", fontSize: 14, letterSpacing: "0.06em", outline: "none", boxSizing: "border-box", marginBottom: 20 }} />
               <button
-                onClick={() => { setShowReturn(false); navigate("/smokecraft"); }}
+                onClick={() => { setShowReturn(false); setPhase("reentry"); }}
                 style={{ width: "100%", padding: "16px", background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.45)", borderRadius: 6, color: "#D4AF37", fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer" }}
               >
                 Find My Session →
