@@ -80,6 +80,7 @@ const FounderControlCenter  = lazy(() => import('@/pages/FounderControlCenter'))
 const FinanceReconciliation = lazy(() => import('@/pages/FinanceReconciliation'));
 const AxiomReceipt          = lazy(() => import('@/pages/AxiomReceipt'));
 const InventoryModule       = lazy(() => import('@/pages/InventoryModule'));
+const AssetVault            = lazy(() => import('@/pages/AssetVault'));
 const RevenueEngine         = lazy(() => import('@/pages/RevenueEngine'));
 const CompetitionModule     = lazy(() => import('@/pages/CompetitionModule'));
 const EstablishmentSetupPage= lazy(() => import('@/pages/EstablishmentSetupPage'));
@@ -1055,7 +1056,7 @@ export default function App() {
             <SubPageProviders><FinanceReconciliation /></SubPageProviders>
           </Route>
           <Route path="/inventory">
-            <SubPageProviders><InventoryModule /></SubPageProviders>
+            <AssetVault />
           </Route>
           <Route path="/revenue">
             <SubPageProviders><RevenueEngine /></SubPageProviders>
