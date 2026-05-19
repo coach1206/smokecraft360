@@ -35,16 +35,52 @@ import TitanEngine                from "@/engines/titan_engine";
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const C = {
-  bg:       "#080604",
+  bg:       "#000000",
   surface:  "rgba(255,255,255,0.04)",
   border:   "rgba(255,255,255,0.07)",
-  gold:     "#D48B00",
-  goldDim:  "rgba(212,139,0,0.55)",
-  goldGlow: "rgba(212,139,0,0.14)",
+  gold:     "#D4AF37",
+  goldDim:  "rgba(212,175,55,0.55)",
+  goldGlow: "rgba(212,175,55,0.18)",
   text:     "#F0E8D4",
-  muted:    "rgba(245,235,215,0.38)",
-  dim:      "rgba(245,235,215,0.22)",
+  muted:    "rgba(245,235,215,0.55)",
+  dim:      "rgba(245,235,215,0.32)",
 };
+
+// ── Per-genre accent palettes (genre-isolated, no cross-bleed) ────────────────
+const GENRE = {
+  smoke: {
+    accent:    "#D4AF37",         // warm amber gold
+    accentDim: "rgba(212,175,55,0.22)",
+    accentGlow:"rgba(212,175,55,0.30)",
+    border:    "rgba(212,175,55,0.55)",
+    bg:        "rgba(212,175,55,0.06)",
+    label:     "CIGAR RITUAL",
+  },
+  pour: {
+    accent:    "#C8762A",         // deep copper
+    accentDim: "rgba(200,118,42,0.22)",
+    accentGlow:"rgba(200,118,42,0.30)",
+    border:    "rgba(200,118,42,0.55)",
+    bg:        "rgba(200,118,42,0.06)",
+    label:     "SPIRITS",
+  },
+  brew: {
+    accent:    "#B8882A",         // warm brass
+    accentDim: "rgba(184,136,42,0.22)",
+    accentGlow:"rgba(184,136,42,0.30)",
+    border:    "rgba(184,136,42,0.55)",
+    bg:        "rgba(184,136,42,0.06)",
+    label:     "CRAFT BEER",
+  },
+  wine: {
+    accent:    "#9B2335",         // burgundy crimson
+    accentDim: "rgba(155,35,53,0.22)",
+    accentGlow:"rgba(155,35,53,0.30)",
+    border:    "rgba(155,35,53,0.60)",
+    bg:        "rgba(155,35,53,0.06)",
+    label:     "FINE WINE",
+  },
+} as const;
 
 // ── Global tactility: 100ms micro-compression + 3 400 Hz acoustic burst ──────
 function playTactile() {
@@ -62,32 +98,64 @@ function playTactile() {
   } catch { /* non-blocking */ }
 }
 
-// ── Time-gated cinematic video background ─────────────────────────────────────
-function CinematicVideo() {
+// ── Cinematic background: high-res image + 70% dark overlay + breathing video ─
+function CinematicBackground() {
   const hour = new Date().getHours();
   const src  = hour >= 6 && hour < 17  ? "/videos/lounge-day.mp4"
              : hour >= 17 && hour < 22 ? "/videos/lounge-evening.mp4"
              :                           "/videos/lounge-night.mp4";
   return (
-    <video
-      key={src}
-      autoPlay
-      muted
-      loop
-      playsInline
-      style={{
-        position:      "absolute",
-        inset:         0,
-        width:         "100%",
-        height:        "100%",
-        objectFit:     "cover",
-        zIndex:        0,
-        opacity:       0.18,
+    <>
+      {/* Layer 0 — pure black base */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 0, background: "#000000" }} />
+
+      {/* Layer 1 — high-res lounge photograph */}
+      <div style={{
+        position:           "absolute",
+        inset:              0,
+        zIndex:             1,
+        backgroundImage:    "url('/images/scenes/craft-hub.jpg')",
+        backgroundSize:     "cover",
+        backgroundPosition: "center 30%",
+        backgroundRepeat:   "no-repeat",
+      }} />
+
+      {/* Layer 2 — 72% dark gradient overlay (keeps text legible) */}
+      <div style={{
+        position:  "absolute",
+        inset:     0,
+        zIndex:    2,
+        background: "linear-gradient(160deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.65) 50%, rgba(0,0,0,0.82) 100%)",
         pointerEvents: "none",
-      }}
-    >
-      <source src={src} type="video/mp4" />
-    </video>
+      }} />
+
+      {/* Layer 3 — time-gated atmosphere video at low opacity over the photo */}
+      <video
+        key={src}
+        autoPlay muted loop playsInline
+        style={{
+          position:      "absolute",
+          inset:         0,
+          width:         "100%",
+          height:        "100%",
+          objectFit:     "cover",
+          zIndex:        3,
+          opacity:       0.12,
+          pointerEvents: "none",
+        }}
+      >
+        <source src={src} type="video/mp4" />
+      </video>
+
+      {/* Layer 4 — gold ambient top glow */}
+      <div style={{
+        position:  "absolute",
+        inset:     0,
+        zIndex:    4,
+        background: "radial-gradient(ellipse 80% 30% at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 60%)",
+        pointerEvents: "none",
+      }} />
+    </>
   );
 }
 
@@ -151,41 +219,41 @@ const AI_NODES = [
 function IntelStatusBar() {
   return (
     <div style={{
-      display:        "flex",
-      alignItems:     "center",
-      gap:            24,
-      padding:        "12px 28px",
-      borderTop:      `1px solid ${C.border}`,
-      borderBottom:   `1px solid ${C.border}`,
-      background:     "rgba(26,26,27,0.08)",
-      backdropFilter: "blur(10px)",
-      overflowX:      "auto",
-      flexShrink:     0,
+      display:              "flex",
+      alignItems:           "center",
+      gap:                  28,
+      padding:              "10px 28px",
+      borderBottom:         "1px solid rgba(212,175,55,0.18)",
+      background:           "rgba(0,0,0,0.72)",
+      backdropFilter:       "blur(16px)",
+      WebkitBackdropFilter: "blur(16px)",
+      overflowX:            "auto",
+      flexShrink:           0,
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
-        <Cpu size={14} color={C.goldDim} />
-        <span style={{ fontSize: 12, letterSpacing: "0.18em", color: C.dim, textTransform: "uppercase", fontWeight: 600 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <Cpu size={15} color={C.goldDim} />
+        <span style={{ fontSize: 14, letterSpacing: "0.18em", color: C.dim, textTransform: "uppercase", fontWeight: 700 }}>
           NOVEE Intelligence
         </span>
       </div>
       {AI_NODES.map(n => (
-        <div key={n.label} style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
+        <div key={n.label} style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <motion.div
-            style={{ width: 8, height: 8, borderRadius: "50%", background: n.color }}
+            style={{ width: 9, height: 9, borderRadius: "50%", background: n.color, boxShadow: `0 0 6px ${n.color}88` }}
             animate={{ opacity: [1, 0.35, 1], scale: [1, 1.4, 1] }}
             transition={{ duration: 2.4 + Math.random(), repeat: Infinity, ease: "easeInOut" }}
           />
-          <span style={{ fontSize: 12, color: C.dim, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+          <span style={{ fontSize: 14, color: C.dim, letterSpacing: "0.12em", textTransform: "uppercase" }}>
             {n.label}
           </span>
-          <span style={{ fontSize: 12, color: n.color, letterSpacing: "0.08em", fontWeight: 700 }}>
+          <span style={{ fontSize: 14, color: n.color, letterSpacing: "0.08em", fontWeight: 800 }}>
             {n.state}
           </span>
         </div>
       ))}
-      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
-        <Activity size={13} color={C.goldDim} />
-        <span style={{ fontSize: 12, color: C.dim, letterSpacing: "0.10em" }}>
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <Activity size={14} color={C.goldDim} />
+        <span style={{ fontSize: 14, color: C.dim, letterSpacing: "0.10em" }}>
           {CRAFT_MODULES.reduce((s, m) => s + m.scenes.length, 0)} curated scenes
         </span>
       </div>
@@ -193,34 +261,41 @@ function IntelStatusBar() {
   );
 }
 
-// ── Per-craft background image pool ──────────────────────────────────────────
+// ── Per-genre scene image pools — strictly isolated, no cross-bleed ──────────
 
 const TILE_BG: Record<string, string[]> = {
+  // SmokeCraft: cigar, humidor, lounge atmosphere only
   smoke: [
     "/images/craft/smoke-1.png",
     "/images/craft/smoke-2.png",
     "/images/craft/smoke-3.png",
   ],
+  // PourCraft: spirits, bar, glassware only
   pour: [
     "/images/craft/pour-1.png",
     "/images/craft/pour-2.png",
     "/images/craft/pour-3.png",
   ],
+  // BeerCraft: taproom, drafts, craft brewery only
   brew: [
     "/images/craft/brew-1.png",
     "/images/craft/brew-2.png",
     "/images/craft/brew-3.png",
   ],
-  vape: [
-    "/images/craft/pour-1.png",
-    "/images/craft/pour-2.png",
-    "/images/craft/pour-3.png",
-  ],
+  // WineCraft: cellar, vineyard, crystal service only
   wine: [
     "/images/craft/wine-1.png",
     "/images/craft/wine-2.png",
     "/images/craft/wine-3.png",
   ],
+};
+
+// CSS gradient fallback per genre — renders when image fails to load
+const TILE_FALLBACK: Record<string, string> = {
+  smoke: "linear-gradient(145deg, #1a0f00 0%, #3d2000 40%, #0d0800 100%)",
+  pour:  "linear-gradient(145deg, #1a0a00 0%, #3d1800 40%, #0d0500 100%)",
+  brew:  "linear-gradient(145deg, #12100000 0%, #2e2000 40%, #090700 100%)",
+  wine:  "linear-gradient(145deg, #1a0005 0%, #3d0011 40%, #0d0005 100%)",
 };
 
 const KB_MOVES = [
@@ -231,7 +306,7 @@ const KB_MOVES = [
 ];
 
 function LiquidTileBg({ craftId, color }: { craftId: string; color: string }) {
-  const pool     = TILE_BG[craftId] ?? TILE_BG.smoke;
+  const pool     = TILE_BG[craftId] ?? TILE_BG.smoke!;
   const seed     = useMemo(() => Math.floor(Math.random() * pool.length), [pool.length]);
   const [idx, setIdx] = useState(seed);
   const kbRef    = useRef(0);
@@ -293,158 +368,240 @@ const MOOD_OPTIONS = [
   { id: "social",  label: "Social",       icon: "🎭" },
 ];
 
-// ── CraftCard — full-bleed 2×2 grid card with scene rotation ─────────────────
+// ── CraftCard — premium genre-isolated portal tile ───────────────────────────
 
 function CraftCard({
   mod,
+  isPrimary = false,
   onTrigger,
 }: {
-  mod:       { id: string; title: string; tagline: string; badge: string; route: string; color: string };
-  onTrigger: () => void;
+  mod:        { id: string; title: string; tagline: string; badge: string; route: string; color: string };
+  isPrimary?: boolean;
+  onTrigger:  () => void;
 }) {
   const [pressed,  setPressed]  = useState(false);
-  const pool      = TILE_BG[mod.id] ?? TILE_BG.smoke;
+  const [imgError, setImgError] = useState(false);
+  const pool      = TILE_BG[mod.id] ?? TILE_BG.smoke!;
   const [sceneIdx, setSceneIdx] = useState(0);
   const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const genre     = GENRE[mod.id as keyof typeof GENRE] ?? GENRE.smoke;
+  const fallback  = TILE_FALLBACK[mod.id] ?? TILE_FALLBACK.smoke!;
 
   useEffect(() => {
-    timerRef.current = setInterval(() => setSceneIdx(i => (i + 1) % pool.length), 5000);
+    timerRef.current = setInterval(() => {
+      setSceneIdx(i => (i + 1) % pool.length);
+      setImgError(false);
+    }, 5500);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [pool.length]);
 
   return (
-    <div
+    <motion.div
       style={{
-        position:                   "relative",
-        height:                     "100%",
-        minHeight:                  0,
-        borderRadius:               0,
-        overflow:                   "hidden",
-        cursor:                     "pointer",
-        border:                     "none",
-        background:                 "#0a0807",
-        transform:                  pressed ? "scale(0.99)" : "scale(1)",
-        transition:                 "transform 0.12s ease",
-        touchAction:                "manipulation",
-        userSelect:                 "none",
-        WebkitTapHighlightColor:    "transparent",
+        position:                "relative",
+        height:                  "100%",
+        minHeight:               0,
+        overflow:                "hidden",
+        cursor:                  "pointer",
+        touchAction:             "manipulation",
+        userSelect:              "none",
+        WebkitTapHighlightColor: "transparent",
+        background:              "#000000",
       }}
+      animate={{ scale: pressed ? 0.985 : 1 }}
+      transition={{ duration: 0.12, ease: "easeOut" }}
       onPointerDown={() => { setPressed(true); playTactile(); }}
       onPointerUp={() => { setPressed(false); onTrigger(); }}
       onPointerLeave={() => setPressed(false)}
       onPointerCancel={() => setPressed(false)}
     >
-      {/* Cinematic background — scene rotation every 5s */}
+      {/* ── Background: high-res scene image with CSS gradient fallback ── */}
       <AnimatePresence mode="popLayout">
         <motion.div
-          key={sceneIdx}
+          key={`${mod.id}-${sceneIdx}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.1, ease: "easeInOut" }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
           style={{ position: "absolute", inset: 0, zIndex: 0 }}
         >
-          <motion.div
-            animate={{ scale: [1.04, 1.10], x: ["0%", "-2%"], y: ["0%", "-2%"] }}
-            transition={{ duration: 6, ease: "linear" }}
-            style={{
-              width: "110%", height: "110%",
-              position: "absolute", top: "-5%", left: "-5%",
-              backgroundImage:    `url(${pool[sceneIdx]})`,
-              backgroundSize:     "cover",
-              backgroundPosition: "center 30%",
-            }}
-          />
+          {imgError ? (
+            /* Graceful CSS gradient fallback when image is missing */
+            <div style={{
+              position:   "absolute",
+              inset:      0,
+              background: fallback,
+            }} />
+          ) : (
+            <motion.div
+              animate={{ scale: [1.04, 1.10], x: ["0%", "-2%"], y: ["0%", "-2%"] }}
+              transition={{ duration: 7, ease: "linear" }}
+              style={{
+                width: "112%", height: "112%",
+                position: "absolute", top: "-6%", left: "-6%",
+                backgroundImage:    `url(${pool[sceneIdx]})`,
+                backgroundSize:     "cover",
+                backgroundPosition: "center 30%",
+              }}
+              onError={() => setImgError(true)}
+            />
+          )}
         </motion.div>
       </AnimatePresence>
 
-      {/* Craft-color tinted gradient overlay */}
+      {/* ── Genre-tinted dark overlay (60–75%) ── */}
       <div style={{
         position:      "absolute",
         inset:         0,
         zIndex:        2,
-        background:    `linear-gradient(160deg, ${mod.color}18 0%, transparent 40%, rgba(0,0,0,0.80) 100%)`,
+        background:    `linear-gradient(170deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.48) 45%, rgba(0,0,0,0.78) 100%)`,
         pointerEvents: "none",
       }} />
 
-      {/* Top-left: craft badge chip */}
+      {/* ── Genre accent glow — bottom edge ── */}
       <div style={{
-        position:              "absolute",
-        top:                   14,
-        left:                  14,
-        zIndex:                5,
-        display:               "flex",
-        alignItems:            "center",
-        background:            "rgba(0,0,0,0.70)",
-        backdropFilter:        "blur(10px)",
-        WebkitBackdropFilter:  "blur(10px)",
-        borderRadius:          20,
-        padding:               "4px 11px",
-        border:                `1px solid ${mod.color}44`,
+        position:   "absolute",
+        bottom:     0, left: 0, right: 0,
+        height:     "50%",
+        zIndex:     3,
+        background: `linear-gradient(0deg, ${genre.accentGlow} 0%, transparent 100%)`,
+        pointerEvents: "none",
+      }} />
+
+      {/* ── Top-left: Obsidian Glass genre badge chip ── */}
+      <div style={{
+        position:             "absolute",
+        top:                  18,
+        left:                 18,
+        zIndex:               6,
+        display:              "flex",
+        alignItems:           "center",
+        gap:                  7,
+        background:           "rgba(0,0,0,0.72)",
+        backdropFilter:       "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderRadius:         24,
+        padding:              "6px 16px",
+        border:               `1px solid ${genre.border}`,
+        boxShadow:            `0 0 14px ${genre.accentDim}`,
       }}>
+        <motion.div
+          animate={{ opacity: [1, 0.3, 1], scale: [1, 1.4, 1] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            width: 7, height: 7, borderRadius: "50%",
+            background: genre.accent,
+            boxShadow: `0 0 8px ${genre.accent}`,
+            flexShrink: 0,
+          }}
+        />
         <span style={{
-          fontSize:      9,
-          color:         mod.color,
-          fontWeight:    700,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          fontFamily:    "'Space Mono', monospace",
+          fontSize:      14,
+          color:         genre.accent,
+          fontWeight:    800,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase" as const,
+          fontFamily:    "inherit",
+          whiteSpace:    "nowrap",
         }}>
-          {mod.badge}
+          {genre.label}
         </span>
       </div>
 
-      {/* Top-right: scene rotation dot indicators */}
+      {/* ── Scene progress dots — top right ── */}
       <div style={{
-        position:  "absolute",
-        top:       16,
-        right:     14,
-        zIndex:    5,
-        display:   "flex",
-        gap:       4,
+        position:   "absolute",
+        top:        24,
+        right:      18,
+        zIndex:     6,
+        display:    "flex",
+        gap:        5,
         alignItems: "center",
       }}>
         {pool.map((_, i) => (
-          <div
+          <motion.div
             key={i}
+            animate={{ width: i === sceneIdx ? 20 : 6, opacity: i === sceneIdx ? 1 : 0.35 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
             style={{
-              width:      i === sceneIdx ? 16 : 5,
-              height:     5,
+              height:       5,
               borderRadius: 3,
-              background: i === sceneIdx ? mod.color : "rgba(255,255,255,0.28)",
-              transition: "width 0.35s ease, background 0.35s ease",
+              background:   genre.accent,
             }}
           />
         ))}
       </div>
 
-      {/* Bottom: craft title + tagline */}
-      <div style={{ position: "absolute", bottom: 18, left: 18, right: 18, zIndex: 5 }}>
+      {/* ── Bottom: Obsidian Glass content panel ── */}
+      <div style={{
+        position:             "absolute",
+        bottom:               0,
+        left:                 0,
+        right:                0,
+        zIndex:               6,
+        padding:              isPrimary ? "28px 28px 32px" : "20px 20px 24px",
+        background:           "rgba(0,0,0,0.68)",
+        backdropFilter:       "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderTop:            `1px solid ${genre.border}`,
+      }}>
         <h3 style={{
           margin:        0,
           fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
-          fontSize:      "clamp(15px, 2vw, 22px)",
-          fontWeight:    700,
-          color:         C.gold,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          lineHeight:    1.1,
+          fontSize:      isPrimary ? "clamp(36px, 4vw, 52px)" : "clamp(28px, 2.8vw, 38px)",
+          fontWeight:    600,
+          color:         genre.accent,
+          letterSpacing: "0.10em",
+          textTransform: "uppercase" as const,
+          lineHeight:    1.05,
+          textShadow:    `0 0 28px ${genre.accentDim}`,
         }}>
           {mod.title}
         </h3>
         <p style={{
-          margin:        "5px 0 0",
-          fontSize:      10,
+          margin:        "10px 0 0",
+          fontSize:      isPrimary ? 20 : 16,
           color:         C.muted,
           letterSpacing: "0.03em",
-          lineHeight:    1.4,
+          lineHeight:    1.45,
+          fontWeight:    400,
         }}>
           {mod.tagline}
         </p>
+        {isPrimary && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            style={{
+              display:       "inline-flex",
+              alignItems:    "center",
+              gap:           10,
+              marginTop:     18,
+              padding:       "12px 24px",
+              background:    genre.bg,
+              border:        `1px solid ${genre.border}`,
+              borderRadius:  8,
+              backdropFilter:"blur(12px)",
+            }}
+          >
+            <Sparkles size={16} color={genre.accent} />
+            <span style={{
+              fontSize:      16,
+              fontWeight:    700,
+              color:         genre.accent,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase" as const,
+            }}>
+              BEGIN EXPERIENCE
+            </span>
+          </motion.div>
+        )}
       </div>
 
-      <GlowRing color={mod.color} />
-    </div>
+      {/* ── Razor-thin genre accent border ring ── */}
+      <GlowRing color={genre.accent} />
+    </motion.div>
   );
 }
 
@@ -1035,30 +1192,13 @@ function CraftHubInner() {
       position:        "fixed",
       inset:           0,
       overflow:        "hidden",
-      backgroundColor: "#05070b",
+      backgroundColor: "#000000",
       color:           C.text,
       fontFamily:      "var(--app-font-sans, system-ui, sans-serif)",
     }}>
 
-      {/* ── Ambient background radial glow ── */}
-      <motion.div
-        animate={glowCtrl}
-        style={{
-          position:     "absolute",
-          top:          "40%",
-          left:         "50%",
-          transform:    "translate(-50%, -50%)",
-          width:        "70vw",
-          height:       "50vh",
-          borderRadius: "50%",
-          background:   `radial-gradient(ellipse, ${C.goldGlow} 0%, transparent 70%)`,
-          pointerEvents: "none",
-          zIndex:       0,
-        }}
-      />
-
-      {/* ── Cinematic lounge atmosphere — time-gated .mp4 ── */}
-      <CinematicVideo />
+      {/* ── Cinematic background stack: black base + photo + 72% overlay + video ── */}
+      <CinematicBackground />
 
       {/* ── Floating particles ── */}
       <AmbientParticles />
@@ -1072,11 +1212,12 @@ function CraftHubInner() {
         zIndex:         10,
         display:        "flex",
         alignItems:     "center",
-        minHeight:      76,
-        padding:        "0 22px",
-        borderBottom:   "2px solid rgba(212,175,55,0.28)",
-        background:     "rgba(5,3,1,0.96)",
-        backdropFilter: "blur(24px)",
+        minHeight:      90,
+        padding:        "0 28px",
+        borderBottom:   "1px solid rgba(212,175,55,0.35)",
+        background:     "rgba(0,0,0,0.88)",
+        backdropFilter: "blur(28px)",
+        WebkitBackdropFilter: "blur(28px)",
         gap:            0,
         pointerEvents:  "none",
       }}>
@@ -1086,18 +1227,18 @@ function CraftHubInner() {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, gap: 4, pointerEvents: "auto", paddingRight: 28, borderRight: "1px solid rgba(255,255,255,0.07)", marginRight: 24 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, gap: 5, pointerEvents: "auto", paddingRight: 32, borderRight: "1px solid rgba(255,255,255,0.08)", marginRight: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <motion.div
               animate={{ opacity: [1, 0.22, 1], scale: [1, 1.35, 1] }}
               transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              style={{ width: 11, height: 11, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 13px #4ade80aa", flexShrink: 0 }}
+              style={{ width: 12, height: 12, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 14px #4ade80cc", flexShrink: 0 }}
             />
-            <span style={{ color: "#D48B00", fontSize: 23, fontWeight: 900, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap", fontFamily: "inherit" }}>
-              NOVEÈ OS <span style={{ color: "rgba(212,175,55,0.40)", fontWeight: 400 }}>//</span> REVENUE COMMAND
+            <span style={{ color: C.gold, fontSize: 26, fontWeight: 900, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap", fontFamily: "inherit" }}>
+              NOVEÈ OS <span style={{ color: "rgba(212,175,55,0.38)", fontWeight: 300 }}>//</span> REVENUE COMMAND
             </span>
           </div>
-          <span style={{ color: "#4ade80", fontSize: 14, letterSpacing: "0.22em", textTransform: "uppercase" as const, fontWeight: 700, paddingLeft: 21, whiteSpace: "nowrap" }}>
+          <span style={{ color: "#4ade80", fontSize: 16, letterSpacing: "0.22em", textTransform: "uppercase" as const, fontWeight: 700, paddingLeft: 24, whiteSpace: "nowrap" }}>
             REVENUE ENGINE: ACTIVE
           </span>
         </motion.div>
@@ -1107,36 +1248,36 @@ function CraftHubInner() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.42 }}
-          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 14, pointerEvents: "auto" }}>
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 16, pointerEvents: "auto" }}>
           {([
-            { code: "ENVIRONMENT",  label: "TACTICAL AMBIENCE & LIGHTING",    action: () => navigate("/environment")      },
-            { code: "ASSET VAULT",  label: "LIVE INVENTORY LEDGER",           action: () => navigate("/inventory")        },
-            { code: "TRANSACTION",  label: "TABLE-SIDE SOMMELIER UP-SELL",    action: () => setShowPinModal(true)         },
+            { code: "ENVIRONMENT",  label: "AMBIENCE & LIGHTING",    action: () => navigate("/environment")  },
+            { code: "ASSET VAULT",  label: "INVENTORY LEDGER",        action: () => navigate("/inventory")    },
+            { code: "TRANSACTION",  label: "SOMMELIER UP-SELL",       action: () => setShowPinModal(true)     },
           ] as Array<{ code: string; label: string; action: () => void }>).map(badge => (
             <motion.button
               key={badge.code}
-              whileHover={{ scale: 1.03, background: "rgba(212,175,55,0.14)" }}
+              whileHover={{ scale: 1.04, background: "rgba(212,175,55,0.16)", boxShadow: "0 0 28px rgba(212,175,55,0.18)" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => { playTactile(); badge.action(); }}
               style={{
-                background: "rgba(212,175,55,0.06)",
-                border: "1.5px solid rgba(212,175,55,0.38)",
-                borderRadius: 10,
-                padding: "14px 28px",
-                cursor: "pointer",
-                display: "flex",
+                background:    "rgba(212,175,55,0.07)",
+                border:        "1px solid rgba(212,175,55,0.45)",
+                borderRadius:  12,
+                padding:       "16px 32px",
+                cursor:        "pointer",
+                display:       "flex",
                 flexDirection: "column" as const,
-                alignItems: "center",
-                gap: 5,
-                minWidth: 130,
-                fontFamily: "inherit",
-                touchAction: "manipulation",
-                boxShadow: "0 0 18px rgba(212,175,55,0.06)",
+                alignItems:    "center",
+                gap:           6,
+                minWidth:      150,
+                fontFamily:    "inherit",
+                touchAction:   "manipulation",
+                boxShadow:     "0 0 14px rgba(212,175,55,0.06)",
               }}>
-              <span style={{ color: "#D4AF37", fontSize: 20, fontWeight: 900, letterSpacing: "0.09em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
+              <span style={{ color: C.gold, fontSize: 22, fontWeight: 900, letterSpacing: "0.09em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
                 [ {badge.code} ]
               </span>
-              <span style={{ color: "rgba(245,235,215,0.42)", fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
+              <span style={{ color: C.muted, fontSize: 14, letterSpacing: "0.14em", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
                 {badge.label}
               </span>
             </motion.button>
@@ -1148,33 +1289,36 @@ function CraftHubInner() {
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
-          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "flex-end", gap: 4, paddingLeft: 28, borderLeft: "1px solid rgba(255,255,255,0.07)", marginLeft: 24, pointerEvents: "auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "flex-end", gap: 5, paddingLeft: 32, borderLeft: "1px solid rgba(255,255,255,0.08)", marginLeft: 28, pointerEvents: "auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {guestProfile ? (
               <SovereignLogoutBadge guestProfile={guestProfile} accent={C.gold} />
             ) : (
               <motion.button
                 whileTap={{ scale: 0.96 }}
+                whileHover={{ background: "rgba(212,175,55,0.10)" }}
                 onClick={() => setShowReturn(true)}
-                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid rgba(212,139,0,0.20)`, borderRadius: 7, padding: "6px 12px", color: C.dim, fontSize: 14, letterSpacing: "0.10em", textTransform: "uppercase" as const, cursor: "pointer", fontFamily: "inherit" }}>
-                <RotateCcw size={12} color={C.goldDim} />
+                style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: `1px solid ${C.goldDim}`, borderRadius: 8, padding: "10px 18px", color: C.muted, fontSize: 16, letterSpacing: "0.10em", textTransform: "uppercase" as const, cursor: "pointer", fontFamily: "inherit" }}>
+                <RotateCcw size={14} color={C.goldDim} />
                 Returning?
               </motion.button>
             )}
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ boxShadow: "0 0 28px rgba(212,175,55,0.30)" }}
               onClick={() => navigate("/gate")}
-              style={{ background: "rgba(212,175,55,0.10)", border: "1.5px solid rgba(212,175,55,0.52)", borderRadius: 8, cursor: "pointer", fontSize: 17, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.09em", textTransform: "uppercase" as const, padding: "9px 16px", fontFamily: "inherit", whiteSpace: "nowrap", touchAction: "manipulation" }}>
+              style={{ background: "rgba(212,175,55,0.12)", border: "1.5px solid rgba(212,175,55,0.60)", borderRadius: 10, cursor: "pointer", fontSize: 20, fontWeight: 900, color: C.gold, letterSpacing: "0.09em", textTransform: "uppercase" as const, padding: "10px 20px", fontFamily: "inherit", whiteSpace: "nowrap", touchAction: "manipulation" }}>
               ⬡ GATE
-            </button>
+            </motion.button>
             <AudioWaveToggle />
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <motion.div
               animate={{ opacity: [1, 0.32, 1] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              style={{ width: 9, height: 9, borderRadius: "50%", background: "#D48B00", flexShrink: 0, boxShadow: "0 0 8px rgba(212,139,0,0.55)" }}
+              style={{ width: 10, height: 10, borderRadius: "50%", background: C.gold, flexShrink: 0, boxShadow: `0 0 10px ${C.goldDim}` }}
             />
-            <span style={{ color: "rgba(245,235,215,0.55)", fontSize: 14, letterSpacing: "0.20em", textTransform: "uppercase" as const, fontWeight: 700, whiteSpace: "nowrap" }}>
+            <span style={{ color: C.muted, fontSize: 16, letterSpacing: "0.20em", textTransform: "uppercase" as const, fontWeight: 700, whiteSpace: "nowrap" }}>
               SOVEREIGN STATUS // ONLINE
             </span>
           </div>
@@ -1182,7 +1326,7 @@ function CraftHubInner() {
       </header>
 
       {/* ── AI intelligence status bar — floating strip below header ── */}
-      <div style={{ position: "absolute", top: 74, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", top: 90, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
         <IntelStatusBar />
       </div>
 
@@ -1190,19 +1334,20 @@ function CraftHubInner() {
       <div
         style={{
           position:      "absolute",
-          top:           126,
-          bottom:        52,
+          top:           140,
+          bottom:        48,
           left:          0,
           right:         0,
           display:       "flex",
           flexDirection: "column",
-          zIndex:        1,
+          zIndex:        5,
         }}
       >
-        {/* SMOKECRAFT 360 — full width (~55%) */}
-        <div style={{ flex: "0 0 55%", position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        {/* SMOKECRAFT 360 — full width, primary hero (~56%) */}
+        <div style={{ flex: "0 0 56%", position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(212,175,55,0.20)" }}>
           <CraftCard
             mod={CRAFT_MODULES[0]!}
+            isPrimary
             onTrigger={() => {
               ExperienceFlowEngine.startCraft(CRAFT_MODULES[0]!.id);
               setArtOfCigar(true);
@@ -1210,8 +1355,8 @@ function CraftHubInner() {
           />
         </div>
 
-        {/* POURCRAFT · BEERCRAFT · WINECRAFT — bottom row (~45%) */}
-        <div style={{ flex: "0 0 45%", display: "flex", flexDirection: "row" }}>
+        {/* POURCRAFT · BEERCRAFT · WINECRAFT — bottom row (~44%) */}
+        <div style={{ flex: "0 0 44%", display: "flex", flexDirection: "row" }}>
           {CRAFT_MODULES.slice(1).map((mod, i) => (
             <div
               key={mod.id}
@@ -1219,7 +1364,9 @@ function CraftHubInner() {
                 flex:        "1 1 0",
                 position:    "relative",
                 overflow:    "hidden",
-                borderRight: i < CRAFT_MODULES.slice(1).length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                borderRight: i < CRAFT_MODULES.slice(1).length - 1
+                  ? `1px solid rgba(212,175,55,0.12)`
+                  : "none",
               }}
             >
               <CraftCard
@@ -1274,32 +1421,34 @@ function CraftHubInner() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
         whileTap={{ scale: 0.93 }}
+        whileHover={{ boxShadow: "0 0 40px rgba(212,175,55,0.40), 0 4px 20px rgba(0,0,0,0.6)" }}
         onClick={() => navigate("/gate")}
         style={{
-          position:     "fixed",
-          bottom:       72,
-          right:        20,
-          zIndex:       120,
-          background:   "linear-gradient(135deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.06) 100%)",
-          border:       "1.5px solid rgba(212,175,55,0.65)",
-          borderRadius: 14,
-          cursor:       "pointer",
-          padding:      "12px 18px",
-          display:      "flex",
-          flexDirection:"column",
-          alignItems:   "center",
-          gap:           3,
-          backdropFilter: "blur(12px)",
-          boxShadow:    "0 0 24px rgba(212,175,55,0.22), 0 2px 8px rgba(0,0,0,0.4)",
+          position:             "fixed",
+          bottom:               80,
+          right:                24,
+          zIndex:               120,
+          background:           "rgba(0,0,0,0.82)",
+          border:               "1.5px solid rgba(212,175,55,0.72)",
+          borderRadius:         16,
+          cursor:               "pointer",
+          padding:              "16px 22px",
+          display:              "flex",
+          flexDirection:        "column" as const,
+          alignItems:           "center",
+          gap:                  5,
+          backdropFilter:       "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          boxShadow:            "0 0 28px rgba(212,175,55,0.24), 0 4px 14px rgba(0,0,0,0.55)",
         }}
       >
-        <span style={{ fontSize: 18, lineHeight: 1 }}>⬡</span>
+        <span style={{ fontSize: 22, lineHeight: 1 }}>⬡</span>
         <span style={{
-          fontSize:      9,
+          fontSize:      14,
           fontWeight:    800,
-          color:         "#D4AF37",
+          color:         C.gold,
           letterSpacing: "0.18em",
-          textTransform: "uppercase",
+          textTransform: "uppercase" as const,
           fontFamily:    "inherit",
           whiteSpace:    "nowrap",
         }}>
