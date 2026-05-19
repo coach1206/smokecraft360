@@ -1,0 +1,382 @@
+import React, { useState } from 'react';
+
+// ==========================================
+// TYPES & SYSTEM INTERFACES
+// ==========================================
+interface AssetProduct {
+  id: string;
+  name: string;
+  maker: string;
+  origin: string;
+  price: number;
+  stock: number;
+  par: number;
+  category: 'CIGAR' | 'SPIRIT' | 'WINE';
+  status: 'OK' | 'LOW STOCK';
+  details?: string;
+}
+
+interface DesignElement {
+  id: string;
+  type: 'CIRCULAR TABLE' | 'SQUARE BOOTH' | 'VIP LOUNGE COUCH' | 'MAIN BAR MODULE';
+  x: number;
+  y: number;
+}
+
+// ==========================================
+// LUXURY APP CONSOLE EXPERT COMPONENT
+// ==========================================
+export default function App() {
+  const [activeModule, setActiveModule] = useState<'ASSET' | 'ENVIRONMENT' | 'TRANSACTION'>('ASSET');
+  
+  // --- STATE SEED DATA ---
+  const [products, setProducts] = useState<AssetProduct[]>( [
+    { id: 'p1', name: '1926 Serie No. 6', maker: 'PADRÓN', origin: 'Jalapa, Nicaragua', price: 45.00, stock: 24, par: 48, category: 'CIGAR', status: 'OK', details: 'Maduro wrapper • Full body • Cedar finish' },
+    { id: 'p2', name: 'Fuente Fuente Opus X', maker: 'ARTURO FUENTE', origin: 'Chateau de la Fuente, D.R.', price: 65.00, stock: 11, par: 36, category: 'CIGAR', status: 'LOW STOCK', details: 'Ecuador Rosado • Ultra-premium • Limited reserve' },
+    { id: 'p3', name: 'Macallan 18yr Sherry Oak', maker: 'THE MACALLAN', origin: 'Speyside, Scotland', price: 55.00, stock: 6, par: 12, category: 'SPIRIT', status: 'OK', details: 'Highland • Sherry cask • Vanilla & dried fruit' },
+    { id: 'p4', name: 'Pappy Van Winkle 23yr', maker: 'OLD RIP VAN WINKLE', origin: 'Buffalo Trace, Kentucky', price: 75.00, stock: 3, par: 6, category: 'SPIRIT', status: 'OK', details: 'Kentucky straight • 23yr • Batch #07' }
+  ]);
+
+  const [placedElements, setPlacedElements] = useState<DesignElement[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<'ALL' | 'CIGAR' | 'SPIRIT' | 'WINE'>('ALL');
+  const [checkoutCart, setCheckoutCart] = useState<AssetProduct[]>([]);
+  const [activeTable, setActiveTable] = useState<string>('01');
+
+  // --- HANDLERS & LOGIC ---
+  const addToCart = (product: AssetProduct) => {
+    setCheckoutCart([...checkoutCart, product]);
+  };
+
+  const clearCart = () => setCheckoutCart([]);
+
+  const subtotal = checkoutCart.reduce((sum, item) => sum + item.price, 0);
+  const tax = subtotal * 0.0875;
+  const totalDue = subtotal + tax;
+
+  return (
+    <div className="fixed inset-0 w-screen h-screen bg-[#070709] text-[#E3E3E8] flex flex-col font-sans overflow-hidden antialiased select-none">
+      
+      {/* ==========================================
+          SYSTEM HEADER CONSOLE
+         ========================================== */}
+      <header className="h-16 bg-[#0B0B0E]/90 border-b border-[#23232A] px-6 flex items-center justify-between backdrop-blur-md z-50">
+        <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-3">
+            <div className="h-2.5 w-2.5 rounded-full bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]" />
+            <span className="text-sm font-black uppercase tracking-[0.3em] text-[#D4AF37]">SMOKECRAFT 360</span>
+          </div>
+          
+          {/* NAVIGATION CONSOLE TABS */}
+          <nav className="flex space-x-1 bg-black/40 p-1 rounded-lg border border-[#1C1C22]">
+            {(['ASSET', 'ENVIRONMENT', 'TRANSACTION'] as const).map((mod) => (
+              <button
+                key={mod}
+                onClick={() => setActiveModule(mod)}
+                className={`px-5 py-1.5 text-xs font-bold tracking-widest rounded-md uppercase transition-all duration-300 ${
+                  activeModule === mod 
+                    ? 'bg-[#1C1C24] text-[#D4AF37] border border-[#32323D] shadow-lg' 
+                    : 'text-[#8E8E9A] hover:text-white border border-transparent'
+                }`}
+              >
+                {mod} {mod === 'ASSET' ? 'VAULT' : mod === 'ENVIRONMENT' ? 'DESIGNER' : 'TERMINAL'}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <span className="text-xs font-mono text-[#62626F] tracking-wider">SYSTEM CONNECTED // NODE.01</span>
+          <button className="px-3 py-1 bg-[#1C1C22] border border-[#2D2D37] hover:bg-[#252530] text-xs font-bold tracking-wider rounded transition-all text-[#C5C5D2]">
+            ← BACK
+          </button>
+        </div>
+      </header>
+
+      {/* ==========================================
+          DYNAMIC SUB-INTERFACE MATRIX WORKSPACE
+         ========================================== */}
+      <main className="flex-1 flex overflow-hidden relative">
+        
+        {/* -------------------------------------------------------------
+            SUB-INTERFACE 1: ASSET VAULT (LIVE INVENTORY)
+           ------------------------------------------------------------- */}
+        {activeModule === 'ASSET' && (
+          <div className="flex-1 flex overflow-hidden animate-fadeIn">
+            {/* LEFT MAIN GRID DISPLAY AREA */}
+            <div className="flex-1 p-6 overflow-y-auto space-y-6">
+              <div className="flex justify-between items-center border-b border-[#1C1C22] pb-4">
+                <div>
+                  <h1 className="text-lg font-bold tracking-widest text-white uppercase">[ ASSET VAULT ]</h1>
+                  <p className="text-xs text-[#787885] tracking-wide mt-0.5">Live luxury asset inventory ledger allocation profiles.</p>
+                </div>
+                {/* FILTER CONTROLS */}
+                <div className="flex bg-[#0E0E12] border border-[#1E1E26] rounded-lg p-0.5">
+                  {(['ALL', 'CIGAR', 'SPIRIT', 'WINE'] as const).map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setSelectedFilter(f)}
+                      className={`px-4 py-1.5 text-[10px] font-bold tracking-widest rounded-md transition-all ${
+                        selectedFilter === f ? 'bg-[#1C1C24] text-[#D4AF37] border border-[#2D2D3A]' : 'text-[#6C6C7A] hover:text-[#A9A9B5]'
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* PRODUCT CARDS REFACTOR */}
+              <div className="grid grid-cols-2 gap-5">
+                {products
+                  .filter(p => selectedFilter === 'ALL' || p.category === selectedFilter)
+                  .map(product => (
+                    <div key={product.id} className="group bg-gradient-to-b from-[#111116] to-[#0A0A0D] border border-[#1E1E26] hover:border-[#383847] rounded-xl p-5 relative transition-all duration-300 shadow-xl flex flex-col justify-between overflow-hidden">
+                      {/* AMBIENT BACKGROUND GLOW GLYPH */}
+                      <div className="absolute right-[-20px] top-[-10px] w-40 h-40 bg-gradient-to-br from-[#D4AF37]/5 to-transparent rounded-full blur-2xl pointer-events-none group-hover:from-[#D4AF37]/10 transition-all duration-500" />
+                      
+                      <div>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="text-[10px] font-bold tracking-widest text-[#9A8148] block mb-0.5">{product.maker}</span>
+                            <h3 className="text-base font-bold tracking-wide text-white">{product.name}</h3>
+                            <p className="text-xs text-[#5C5C66] mt-0.5">{product.origin}</p>
+                          </div>
+                          
+                          <div className="text-right">
+                            <span className={`inline-block px-2 py-0.5 text-[9px] font-mono tracking-widest font-black rounded ${
+                              product.status === 'LOW STOCK' ? 'bg-[#3A1414] text-[#F36B6B] border border-[#5E1E1E]' : 'bg-[#112415] text-[#5BE37D] border border-[#1B3D22]'
+                            }`}>
+                              {product.status}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* SKEUOMORPHIC ARTISTIC PRESET VEHICLE SILHOUETTES */}
+                        <div className="my-5 h-24 bg-black/40 border border-[#16161E] rounded-lg flex items-center justify-center relative overflow-hidden group-hover:bg-black/60 transition-all">
+                          {product.category === 'CIGAR' && (
+                            <div className="flex space-x-1.5 opacity-60 group-hover:opacity-90 transition-all">
+                              {[1, 2, 3, 4, 5].map(i => (
+                                <div key={i} style={{ height: `${55 + i * 4}px` }} className="w-2 rounded-sm bg-gradient-to-t from-[#422815] via-[#8A5A34] to-[#C4956D] shadow-[0_2px_6px_rgba(138,90,52,0.4)]" />
+                              ))}
+                            </div>
+                          )}
+                          {product.category === 'SPIRIT' && (
+                            <div className="w-10 h-20 flex flex-col items-center opacity-60 group-hover:opacity-90 transition-all">
+                              <div className="w-3 h-5 bg-[#D4AF37]/40 border border-[#D4AF37]/60 rounded-t-sm" />
+                              <div className="w-4 h-3 bg-gradient-to-b from-transparent to-[#9A8148]/60" />
+                              <div className="w-9 h-12 bg-gradient-to-b from-[#5C3A21] to-[#201107] border border-[#422613] rounded-b-md relative shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+                                <div className="absolute inset-x-1 top-2 bottom-2 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-sm" />
+                              </div>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+                          <button className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] font-bold tracking-widest text-[#D4AF37] transition-all backdrop-blur-[2px]">
+                            ⚡ INTERACT / DETACH VISUAL
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* DATA MATRIX PANEL */}
+                      <div className="border-t border-[#1C1C22] pt-4 mt-2 grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-black/30 p-2 rounded border border-[#16161C]">
+                          <span className="text-[9px] font-mono tracking-widest text-[#52525F] block uppercase">Unit Price</span>
+                          <span className="text-sm font-mono font-bold text-[#D4AF37]">${product.price.toFixed(2)}</span>
+                        </div>
+                        <div className="bg-black/30 p-2 rounded border border-[#16161C]">
+                          <span className="text-[9px] font-mono tracking-widest text-[#52525F] block uppercase">Allocation</span>
+                          <span className="text-sm font-mono font-bold text-white">{product.stock} <span className="text-[#444450]/80">/ {product.par}</span></span>
+                        </div>
+                        <div className="bg-black/30 p-2 rounded border border-[#16161C]">
+                          <span className="text-[9px] font-mono tracking-widest text-[#52525F] block uppercase">Ledger Value</span>
+                          <span className="text-sm font-mono font-bold text-white">${(product.price * product.stock).toFixed(0)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* RIGHT SIDEBAR VISUAL TELEMETRY DOCK */}
+            <div className="w-80 bg-[#0B0B0D] border-l border-[#1C1C22] p-5 flex flex-col justify-between overflow-y-auto">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-xs font-bold tracking-[0.2em] text-[#8E8E9A] uppercase mb-4">📈 CORE VAULT TELEMETRY</h4>
+                  {/* REALTIME SPARK CURVE */}
+                  <div className="bg-black/50 border border-[#1C1C22] rounded-xl p-4 h-32 flex flex-col justify-between relative overflow-hidden">
+                    <span className="text-[10px] font-bold tracking-widest text-[#62626F] uppercase">SALES ACCRUAL VELOCITY</span>
+                    <div className="absolute bottom-4 inset-x-4 h-12 flex items-end space-x-1">
+                      {[30, 45, 35, 60, 40, 75, 50, 90, 65, 85, 100].map((h, i) => (
+                        <div key={i} style={{ height: `${h}%` }} className="flex-1 bg-gradient-to-t from-[#9A8148]/30 to-[#D4AF37] rounded-t-sm shadow-[0_0_8px_rgba(212,175,55,0.3)]" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* MATRIX DONUT ALTERNATIVE CHART COMPONENT */}
+                <div>
+                  <h4 className="text-xs font-bold tracking-[0.2em] text-[#8E8E9A] uppercase mb-3">🍁 LEAF VELOCITY DISTRIBUTION</h4>
+                  <div className="bg-black/50 border border-[#1C1C22] rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between text-xs font-mono">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                        <span className="text-[#8E8E9A]">SECO (MILD)</span>
+                      </div>
+                      <span className="font-bold text-white">40%</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-mono border-t border-[#16161C] pt-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 rounded-full bg-[#A3802B]" />
+                        <span className="text-[#8E8E9A]">VISO (MEDIUM)</span>
+                      </div>
+                      <span className="font-bold text-white">35%</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-mono border-t border-[#16161C] pt-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 rounded-full bg-[#5C4513]" />
+                        <span className="text-[#8E8E9A]">LIGERO (STRONG)</span>
+                      </div>
+                      <span className="font-bold text-white">25%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* LOWER FOOTER STATS */}
+              <div className="border-t border-[#1C1C22] pt-4 mt-6 flex justify-between items-center text-xs font-mono">
+                <span className="text-[#52525F] tracking-widest uppercase">TOTAL SUITE SKUS</span>
+                <span className="text-base font-bold text-white">06 UNLOCKS</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------
+            SUB-INTERFACE 2: ENVIRONMENT BLUEPRINT DESIGNER
+           ------------------------------------------------------------- */}
+        {activeModule === 'ENVIRONMENT' && (
+          <div className="flex-1 flex overflow-hidden animate-fadeIn">
+            {/* COMPONENT GENERATION MATRIX BAR */}
+            <div className="w-80 bg-[#0B0B0D] border-r border-[#1C1C22] p-5 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-xs font-bold tracking-[0.2em] text-[#D4AF37] uppercase">[ ENV DESIGNER ]</h2>
+                  <p className="text-xs text-[#62626F] mt-1">Calibrate lounge structures down onto active system blueprint grid lines.</p>
+                </div>
+                
+                {/* COMPONENT SPAWN LIST */}
+                <div className="space-y-2.5 pt-2">
+                  {(['CIRCULAR TABLE', 'SQUARE BOOTH', 'VIP LOUNGE COUCH', 'MAIN BAR MODULE'] as const).map(type => (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        setPlacedElements([...placedElements, { id: `el-${Date.now()}`, type, x: 120, y: 150 }]);
+                      }}
+                      className="w-full bg-gradient-to-r from-[#121217] to-[#0A0A0D] border border-[#1E1E26] hover:border-[#D4AF37]/40 p-4 rounded-xl flex items-center justify-between text-left group transition-all"
+                    >
+                      <div className="flex items-center space-x-3.5">
+                        <div className={`w-3.5 h-3.5 border border-[#9A8148] group-hover:bg-[#D4AF37]/20 transition-all ${type.includes('CIRCULAR') ? 'rounded-full' : 'rounded-sm'}`} />
+                        <div>
+                          <span className="text-xs font-bold tracking-wider text-white block">{type}</span>
+                          <span className="text-[10px] font-mono text-[#52525F] uppercase tracking-widest">DRAG OR CLICK MODULE</span>
+                        </div>
+                      </div>
+                      <span className="text-[#444452] group-hover:text-[#D4AF37] text-sm font-bold transition-all">+</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setPlacedElements([])}
+                className="w-full py-2.5 bg-[#1C1C22] border border-[#2D2D37] text-xs font-mono tracking-widest text-[#F36B6B] uppercase font-bold rounded-lg hover:bg-[#2A1E1E] transition-all"
+              >
+                CLEAR BLUEPRINT CONFIG
+              </button>
+            </div>
+
+            {/* INTERACTIVE VENUE BLUEPRINT GRID LAYER */}
+            <div className="flex-1 bg-[#050507] p-6 flex flex-col relative overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(#181822_1px,transparent_1px)] bg-[size:24px_24px] opacity-60" />
+              <div className="absolute top-4 right-4 z-10 bg-black/60 px-3 py-1.5 border border-[#1C1C22] rounded text-[10px] font-mono tracking-widest text-[#8E8E9A]">
+                {placedElements.length} DESIGN MATRIX ELEMENTS SAVED LIVE
+              </div>
+
+              <div className="flex-1 border border-dashed border-[#22222D] rounded-2xl flex items-center justify-center relative bg-gradient-to-b from-[#09090C]/50 to-transparent">
+                {placedElements.length > 0 ? (
+                  <div className="absolute inset-0">
+                    {placedElements.map(el => (
+                      <div
+                        key={el.id}
+                        style={{ left: `${el.x}px`, top: `${el.y}px` }}
+                        className="absolute p-4 bg-[#14141A] border-2 border-[#9A8148] shadow-[0_4px_15px_rgba(0,0,0,0.6)] rounded-lg text-center cursor-move"
+                      >
+                        <span className="text-[10px] font-mono text-[#D4AF37] font-bold tracking-wider">{el.type}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center space-y-2 pointer-events-none z-10 max-w-sm">
+                    <p className="text-sm font-bold text-[#8E8E9A] uppercase tracking-[0.2em]">VENUE BLUEPRINT GRID</p>
+                    <p className="text-xs text-[#52525F] leading-relaxed">No elements placed on physical grid layout. Select items from side dashboard to calibrate system space coordinates.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------
+            SUB-INTERFACE 3: TRANSACTION PORTAL (SOMMELIER TERMINAL)
+           ------------------------------------------------------------- */}
+        {activeModule === 'TRANSACTION' && (
+          <div className="flex-1 flex overflow-hidden animate-fadeIn">
+            {/* INVENTORY QUICK TAPPING SPEEDWAY PANEL */}
+            <div className="flex-1 p-6 overflow-y-auto space-y-4">
+              <div>
+                <h2 className="text-xs font-bold tracking-[0.2em] text-[#8E8E9A] uppercase">[ QUICK ALLOCATION SELECT ]</h2>
+                <p className="text-xs text-[#52525F] mt-0.5">Tap active catalog entries to directly build checkout manifest invoice files.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {products.map(product => (
+                  <button
+                    key={product.id}
+                    onClick={() => addToCart(product)}
+                    className="bg-[#0E0E12] border border-[#1E1E26] hover:border-[#D4AF37]/50 p-4 rounded-xl flex items-center justify-between text-left group transition-all"
+                  >
+                    <div>
+                      <span className="text-[9px] font-mono text-[#9A8148] tracking-widest block uppercase">{product.maker}</span>
+                      <span className="text-sm font-bold text-white block mt-0.5">{product.name}</span>
+                      <span className="inline-block mt-2 text-xs font-mono text-[#D4AF37]">${product.price.toFixed(2)}</span>
+                    </div>
+                    <div className="h-8 w-8 rounded-full bg-black/40 border border-[#23232D] group-hover:border-[#D4AF37]/40 flex items-center justify-center text-xs text-[#8E8E9A] group-hover:text-white transition-all">
+                      +
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* LIVE DIGITAL CHECKOUT RECEIPT CONSOLE */}
+            <div className="w-[420px] bg-[#0B0B0D] border-l border-[#1C1C22] flex flex-col justify-between">
+              {/* TOP TERMINAL HEAD */}
+              <div className="p-5 border-b border-[#1C1C22] flex justify-between items-center bg-black/20">
+                <div>
+                  <h3 className="text-xs font-bold tracking-widest text-white uppercase">LIVE INVOICE SUMMARY</h3>
+                  <p className="text-[10px] font-mono text-[#62626F] mt-0.5">ROUTING SYSTEM LINK: TERMINAL_01</p>
+                </div>
+                <div className="flex items-center space-x-1.5 bg-black px-2.5 py-1 rounded border border-[#1C1C22]">
+                  <span className="text-[9px] font-mono text-[#62626F] tracking-widest uppercase">TABLE</span>
+                  <span className="text-xs font-mono font-bold text-[#D4AF37]">{activeTable}</span>
+                </div>
+              </div>
+
+              {/* MID MANIFEST LISTING CONTAINER */}
+              <div className="flex-1 p-5 overflow-y-auto space-y-3">
+                {checkoutCart.length > 0 ? (
+                  checkoutCart.map((item, idx) => (
+                    <div key={idx} className="bg-black/30 border border-[#16161D] p-3 rounded-lg flex justify-between items-center animate-slideUp">
+                      <div>
+                        <span className="text-xs font-bold text-white block">{item.name}</span>
+                        <span className="text-[9px] font-mono text-[#52525F] tracking-widest uppercase">{item.category}</span>
+                      </div>

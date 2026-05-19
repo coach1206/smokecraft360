@@ -81,6 +81,7 @@ const FinanceReconciliation = lazy(() => import('@/pages/FinanceReconciliation')
 const AxiomReceipt          = lazy(() => import('@/pages/AxiomReceipt'));
 const InventoryModule       = lazy(() => import('@/pages/InventoryModule'));
 const AssetVault            = lazy(() => import('@/pages/AssetVault'));
+const EATConsole            = lazy(() => import('@/pages/EATConsole'));
 const RevenueEngine         = lazy(() => import('@/pages/RevenueEngine'));
 const CompetitionModule     = lazy(() => import('@/pages/CompetitionModule'));
 const EstablishmentSetupPage= lazy(() => import('@/pages/EstablishmentSetupPage'));
@@ -1056,7 +1057,7 @@ export default function App() {
             <SubPageProviders><FinanceReconciliation /></SubPageProviders>
           </Route>
           <Route path="/inventory">
-            <AssetVault />
+            <EATConsole defaultTab="ASSET" />
           </Route>
           <Route path="/revenue">
             <SubPageProviders><RevenueEngine /></SubPageProviders>
@@ -1205,10 +1206,10 @@ export default function App() {
             <SubPageProviders><DevicesModule /></SubPageProviders>
           </Route>
           <Route path="/environment">
-            <EnvironmentControl />
+            <EATConsole defaultTab="ENVIRONMENT" />
           </Route>
           <Route path="/transaction">
-            <TransactionTerminal />
+            <EATConsole defaultTab="TRANSACTION" />
           </Route>
           <Route path="/enterprise-intelligence">
             <SubPageProviders><SovereignRoute featureName="Enterprise Intelligence"><EnterpriseIntelligence /></SovereignRoute></SubPageProviders>
