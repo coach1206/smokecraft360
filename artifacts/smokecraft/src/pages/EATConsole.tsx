@@ -142,6 +142,60 @@ function SalesChart() {
 
 // ── Main console ───────────────────────────────────────────────────────────────
 
+// ── Ambient background layer ───────────────────────────────────────────────────
+
+function AmbientBG() {
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+      {/* Deep scan-line overlay */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: "repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 4px)",
+        backgroundSize: "100% 4px",
+      }} />
+      {/* Primary amber orb — top-right */}
+      <motion.div
+        animate={{ scale:[1,1.2,1], opacity:[0.55,0.82,0.55], x:[0,30,0], y:[0,-22,0] }}
+        transition={{ duration:9, repeat:Infinity, ease:"easeInOut" }}
+        className="absolute"
+        style={{ right:"-6%", top:"-14%", width:700, height:700,
+          background:"radial-gradient(circle, rgba(212,155,10,0.70) 0%, rgba(180,100,5,0.30) 40%, transparent 72%)",
+          filter:"blur(55px)", mixBlendMode:"screen" }}
+      />
+      {/* Deep ember orb — bottom-left */}
+      <motion.div
+        animate={{ scale:[1,1.25,1], opacity:[0.45,0.70,0.45], x:[0,-34,0], y:[0,28,0] }}
+        transition={{ duration:12, repeat:Infinity, ease:"easeInOut", delay:3.2 }}
+        className="absolute"
+        style={{ left:"-12%", bottom:"-16%", width:800, height:800,
+          background:"radial-gradient(circle, rgba(200,80,5,0.55) 0%, rgba(140,50,0,0.25) 45%, transparent 72%)",
+          filter:"blur(60px)", mixBlendMode:"screen" }}
+      />
+      {/* Mid-field whisper — centre */}
+      <motion.div
+        animate={{ opacity:[0.20,0.40,0.20], scale:[1,1.08,1] }}
+        transition={{ duration:7, repeat:Infinity, ease:"easeInOut", delay:1.5 }}
+        className="absolute inset-0"
+        style={{ background:"radial-gradient(ellipse 55% 40% at 52% 50%, rgba(212,155,10,0.28) 0%, transparent 78%)" }}
+      />
+      {/* Soft third orb — top-left accent */}
+      <motion.div
+        animate={{ scale:[1,1.15,1], opacity:[0.25,0.42,0.25], x:[0,18,0] }}
+        transition={{ duration:11, repeat:Infinity, ease:"easeInOut", delay:5 }}
+        className="absolute"
+        style={{ left:"-5%", top:"15%", width:450, height:450,
+          background:"radial-gradient(circle, rgba(255,180,30,0.35) 0%, transparent 68%)",
+          filter:"blur(45px)", mixBlendMode:"screen" }}
+      />
+      {/* Dot grid */}
+      <div className="absolute inset-0 opacity-[0.10]"
+        style={{ backgroundImage:"radial-gradient(rgba(212,175,55,0.9) 1px, transparent 1px)", backgroundSize:"30px 30px" }} />
+      {/* Vertical column lines — lounge panelling */}
+      <div className="absolute inset-0 opacity-[0.05]"
+        style={{ backgroundImage:"repeating-linear-gradient(90deg, #d4af37 0px, #d4af37 1px, transparent 1px, transparent 110px)" }} />
+    </div>
+  );
+}
+
 export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab }) {
   const [, navigate]      = useLocation();
   const [tab,             setTab]           = useState<Tab>(defaultTab);
@@ -233,13 +287,14 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
 
   return (
     <div className="fixed inset-0 flex flex-col bg-[#060607] text-white overflow-hidden select-none">
+      <AmbientBG />
 
       {/* ── Header ── */}
-      <header className="flex items-center justify-between px-6 border-b-2 border-[#181820] bg-[#08080B]"
+      <header className="flex items-center justify-between px-6 border-b-2 border-[#181820] bg-[#08080B]/95 backdrop-blur-md relative z-10"
         style={{ minHeight: 70, flexShrink: 0 }}>
         <div className="flex items-center gap-6">
           {/* Back */}
-          <button onClick={() => navigate("/")}
+          <button onClick={() => navigate("/craft-hub")}
             className="flex items-center gap-2 text-[#d4af37] font-mono font-black text-lg tracking-widest border border-[#d4af37]/30 rounded-xl px-5 py-2.5 hover:bg-[#d4af37]/08 transition-all active:scale-95">
             <ArrowLeft size={18}/> BACK
           </button>
@@ -268,7 +323,7 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
       </header>
 
       {/* ── Module workspace ── */}
-      <main className="flex-1 flex overflow-hidden relative">
+      <main className="flex-1 flex overflow-hidden relative z-10">
 
         {/* ════════════════════════════════════════════
             TAB 1 — ASSET VAULT
@@ -409,7 +464,7 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
             </div>
 
             {/* Sidebar charts */}
-            <div className="w-80 border-l-2 border-[#121218] bg-[#070709] flex flex-col overflow-y-auto">
+            <div className="w-80 border-l-2 border-[#121218] bg-[#070709]/80 flex flex-col overflow-y-auto backdrop-blur-sm">
               <div className="p-6 border-b border-[#121218]">
                 <div className="flex items-center gap-2 mb-3">
                   <TrendingUp size={20} className="text-[#ffb300]"/>
@@ -462,7 +517,7 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
           <div className="flex-1 flex overflow-hidden">
 
             {/* Component drawer */}
-            <aside className="w-[34%] flex flex-col border-r-2 border-[#141418] bg-[#07070A] overflow-y-auto">
+            <aside className="w-[34%] flex flex-col border-r-2 border-[#141418] bg-[#07070A]/80 overflow-y-auto backdrop-blur-sm">
               <div className="p-6 border-b border-[#141418]">
                 <h2 className="text-[#d4af37] font-mono font-black text-4xl tracking-widest mb-2">ENV DESIGNER</h2>
                 <p className="text-[#444] font-mono text-lg leading-relaxed">Drag components onto the grid · tap a placed table to open the passthrough drawer.</p>
@@ -640,7 +695,7 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
             </div>
 
             {/* Invoice */}
-            <div className="w-[40%] flex flex-col bg-[#070709]">
+            <div className="w-[40%] flex flex-col bg-[#070709]/80 backdrop-blur-sm">
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-5 border-b border-[#141418]">
                 <h2 className="text-[#ffb300] font-mono font-black text-2xl tracking-widest">
