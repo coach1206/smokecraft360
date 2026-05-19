@@ -6,6 +6,31 @@ SmokeCraft is a luxury cigar and spirits recommendation platform designed for up
 
 I prefer concise and direct communication. When making changes, prioritize core functionality and architectural integrity. For any significant architectural decisions or major feature implementations, please ask for approval before proceeding. I prefer that you do not make changes to files related to changelogs or update logs.
 
+## Global Design Constants (DO NOT DEROGATE)
+
+These laws apply across ALL sub-interfaces, modules, and generated code. Functional logic must never overwrite or deprioritize this aesthetic layer.
+
+### 1. Typography & Readability (low-light / 45+ age target)
+- Body text and functional UI labels: strict minimum **24px**.
+- Headers and major structural indicators: strict minimum **36px–48px**.
+- Heavy-weight, high-legibility sans-serif fonts with enhanced letter-spacing to prevent bleeding on dim digital displays.
+- Never scale text down using fluid browser defaults.
+
+### 2. Cinematic Visual System & Textures
+- Base layer: solid pure deep-black (`#000000`) canvas — prevents light-wash in venue environments.
+- All panels: "Obsidian Glass" — highly blurred `backdrop-filter` glassmorphic texture, bounded by razor-thin 1px gold accents (`#D4AF37`).
+- Every screen background must use a high-resolution contextual image asset, masked with a **60%–80% dark gradient overlay**. Background image must remain visible but anchored deep in the z-index so text never loses crisp readability.
+
+### 3. Motion, Kinetics & Touch Interaction
+- Full high-fidelity touch support including fluent drag-and-drop for spatial layouts.
+- Continuous weighted micro-animations (Framer Motion / CSS keyframes) on all transitions, state changes, and selections.
+- Components must feel tactile and heavy — fluid kinetic motion, never flat instantaneous cuts.
+
+### 4. ElevenLabs Audio Runtime
+- Maintain an active ElevenLabs TTS connection lifecycle via the existing `useVoice` hook.
+- Map all contextual system outputs, voice updates, and interface state-changes to the ElevenLabs Voice ID streaming endpoint.
+- Audio playback triggers automatically on layout execution or state transitions — no explicit re-initialization required.
+
 # System Architecture
 
 ## Monorepo Structure
