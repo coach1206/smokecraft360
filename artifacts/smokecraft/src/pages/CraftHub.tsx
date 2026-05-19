@@ -35,49 +35,49 @@ import TitanEngine                from "@/engines/titan_engine";
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const C = {
-  bg:       "#000000",
-  surface:  "rgba(255,255,255,0.04)",
-  border:   "rgba(255,255,255,0.07)",
+  bg:       "#0D0D11",
+  surface:  "rgba(255,255,255,0.025)",
+  border:   "rgba(255,255,255,0.06)",
   gold:     "#D4AF37",
-  goldDim:  "rgba(212,175,55,0.55)",
-  goldGlow: "rgba(212,175,55,0.18)",
+  goldDim:  "rgba(212,175,55,0.42)",
+  goldGlow: "rgba(212,175,55,0.12)",
   text:     "#F0E8D4",
-  muted:    "rgba(245,235,215,0.55)",
-  dim:      "rgba(245,235,215,0.32)",
+  muted:    "rgba(245,235,215,0.42)",
+  dim:      "rgba(245,235,215,0.24)",
 };
 
 // ── Per-genre accent palettes (genre-isolated, no cross-bleed) ────────────────
 const GENRE = {
   smoke: {
-    accent:    "#D4AF37",         // warm amber gold
-    accentDim: "rgba(212,175,55,0.22)",
-    accentGlow:"rgba(212,175,55,0.30)",
-    border:    "rgba(212,175,55,0.55)",
-    bg:        "rgba(212,175,55,0.06)",
+    accent:    "#D4AF37",
+    accentDim: "rgba(212,175,55,0.16)",
+    accentGlow:"rgba(212,175,55,0.22)",
+    border:    "rgba(212,175,55,0.10)",
+    bg:        "rgba(212,175,55,0.05)",
     label:     "CIGAR RITUAL",
   },
   pour: {
-    accent:    "#C8762A",         // deep copper
-    accentDim: "rgba(200,118,42,0.22)",
-    accentGlow:"rgba(200,118,42,0.30)",
-    border:    "rgba(200,118,42,0.55)",
-    bg:        "rgba(200,118,42,0.06)",
+    accent:    "#C8762A",
+    accentDim: "rgba(200,118,42,0.16)",
+    accentGlow:"rgba(200,118,42,0.22)",
+    border:    "rgba(200,118,42,0.10)",
+    bg:        "rgba(200,118,42,0.05)",
     label:     "SPIRITS",
   },
   brew: {
-    accent:    "#B8882A",         // warm brass
-    accentDim: "rgba(184,136,42,0.22)",
-    accentGlow:"rgba(184,136,42,0.30)",
-    border:    "rgba(184,136,42,0.55)",
-    bg:        "rgba(184,136,42,0.06)",
+    accent:    "#B8882A",
+    accentDim: "rgba(184,136,42,0.16)",
+    accentGlow:"rgba(184,136,42,0.22)",
+    border:    "rgba(184,136,42,0.10)",
+    bg:        "rgba(184,136,42,0.05)",
     label:     "CRAFT BEER",
   },
   wine: {
-    accent:    "#9B2335",         // burgundy crimson
-    accentDim: "rgba(155,35,53,0.22)",
-    accentGlow:"rgba(155,35,53,0.30)",
-    border:    "rgba(155,35,53,0.60)",
-    bg:        "rgba(155,35,53,0.06)",
+    accent:    "#9B2335",
+    accentDim: "rgba(155,35,53,0.16)",
+    accentGlow:"rgba(155,35,53,0.22)",
+    border:    "rgba(155,35,53,0.10)",
+    bg:        "rgba(155,35,53,0.05)",
     label:     "FINE WINE",
   },
 } as const;
