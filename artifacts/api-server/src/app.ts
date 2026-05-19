@@ -534,6 +534,7 @@ import { startHealthMonitor }             from "./integrations/services/posHealt
 import { startEdgeSyncReplay }            from "./integrations/services/edgeSync";
 import { platformAdminRouter }           from "./routes/platformAdmin";
 import deploymentRouter                  from "./routes/deployment";
+import noveeEngineRouter                 from "./routes/noveeEngine";
 app.use("/api/mentor",        aiLimiter, mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
@@ -605,6 +606,7 @@ app.use("/api/experience", experienceLayerRouter);
 // data retention, self-healing workers, simulation/sandbox
 app.use("/api",           platformAdminRouter);
 app.use("/api",           deploymentRouter);
+app.use("/api",           noveeEngineRouter);
 
 // ── Universal POS Integration Layer ───────────────────────────────────────────
 // Connections CRUD, credential vault, OAuth flow, on-demand sync

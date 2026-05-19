@@ -112,6 +112,7 @@ const SovereignCommand      = lazy(() => import('@/pages/SovereignCommand'));
 const LaunchReadiness       = lazy(() => import('@/pages/LaunchReadiness'));
 const Legal                 = lazy(() => import('@/pages/Legal'));
 const DeploymentScreen      = lazy(() => import('@/pages/DeploymentScreen'));
+const NoveeEnginePage       = lazy(() => import('@/pages/NoveeEnginePage'));
 const SystemValidation      = lazy(() => import('@/pages/SystemValidation'));
 const StaffFloorCockpit     = lazy(() => import('@/pages/StaffFloorCockpit'));
 const DevicesModule         = lazy(() => import('@/pages/DevicesModule'));
@@ -1199,6 +1200,9 @@ export default function App() {
           </Route>
           <Route path="/deployment">
             <SubPageProviders><DeploymentScreen /></SubPageProviders>
+          </Route>
+          <Route path="/novee-engine">
+            <SubPageProviders><NoveeEnginePage /></SubPageProviders>
           </Route>
           <Route path="/system-validation">
             <SubPageProviders><SystemValidation /></SubPageProviders>
