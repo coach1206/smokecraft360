@@ -306,8 +306,8 @@ export default function CraftPortalHome() {
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", zIndex: 0 }}
               onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
             />
-            {/* Deep cinematic dark overlay — 75% */}
-            <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.82) 50%, rgba(0,0,0,0.92) 100%)" }} />
+            {/* Cinematic dark overlay — 40% */}
+            <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0.65) 100%)" }} />
             <SmokeCanvas />
             <AmbientCigar />
 
