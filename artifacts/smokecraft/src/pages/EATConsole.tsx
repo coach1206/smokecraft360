@@ -351,110 +351,99 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-2 gap-6">
                 <AnimatePresence mode="popLayout">
                   {(filter === "ALL" ? STOCK : STOCK.filter(s => s.category === filter)).map(item => {
-                    const pct  = item.qty / item.par;
-                    const low  = pct < 0.35;
-                    const open = expandedId === item.id;
+                    const low  = item.qty / item.par < 0.35;
                     const img  = uploadedImages[item.id];
-                    const hov  = imgHover === item.id;
+                    const ledger = item.price * item.qty;
                     return (
                       <motion.div key={item.id} layout
-                        initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
+                        initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:8 }}
+                        whileHover={{ borderColor:`${item.accentColor}40` }}
                         transition={{ type:"spring", stiffness:320, damping:28 }}
-                        onClick={() => setExpandedId(open ? null : item.id)}
-                        className="rounded-2xl border-2 overflow-hidden cursor-pointer"
-                        style={{ background:item.gradient, borderColor:open ? item.accentColor:"#222",
-                          boxShadow:open ? `0 0 30px ${item.accentColor}44`:"none" }}
+                        className="rounded-2xl overflow-hidden relative"
+                        style={{ background:"#0C0C10", border:"1px solid #16161F",
+                          boxShadow:"0 4px 24px rgba(0,0,0,0.55)", transition:"border-color 0.3s" }}
                       >
-                        {/* Image zone */}
-                        <div className="relative overflow-hidden flex items-center justify-center"
-                          style={{ height:148, background:img ? "transparent" : item.presetBg }}
-                          onMouseEnter={() => setImgHover(item.id)}
-                          onMouseLeave={() => setImgHover(null)}>
-                          {img
-                            ? <img src={img} alt={item.name} className="absolute inset-0 w-full h-full object-cover" style={{ filter:"brightness(0.88) contrast(1.08)" }} />
-                            : <div className="relative z-0 flex items-center justify-center w-full h-full">
-                                {item.category==="CIGAR"  && <CigarSVG  c={item.accentColor}/>}
-                                {item.category==="SPIRIT" && <SpiritSVG c={item.accentColor}/>}
-                                {item.category==="WINE"   && <WineSVG   c={item.accentColor}/>}
-                              </div>
-                          }
-                          {!img && (
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                              <span className="font-mono font-black text-sm tracking-widest opacity-20" style={{ color:item.accentColor }}>{item.brand}</span>
-                            </div>
-                          )}
-                          <AnimatePresence>
-                            {(hov || !img) && (
-                              <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} transition={{ duration:0.15 }}
-                                className="absolute inset-0 flex flex-col items-center justify-center gap-2"
-                                style={{ background: img ? "rgba(0,0,0,0.65)" : "rgba(0,0,0,0.30)" }}>
-                                <motion.button onClick={e => triggerUpload(e,item.id)} whileTap={{ scale:0.94 }}
-                                  className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-mono font-black text-base tracking-widest"
-                                  style={{ borderColor:item.accentColor, color:item.accentColor, background:"rgba(0,0,0,0.72)",
-                                    boxShadow:hov ? `0 0 18px ${item.accentColor}55`:"none" }}>
-                                  {img ? <><Upload size={15}/> REPLACE IMAGE</> : <><Camera size={15}/> UPLOAD IMAGE</>}
-                                </motion.button>
-                                {img && (
-                                  <button onClick={e => clearImg(e,item.id)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-mono font-black text-sm text-red-500 border-red-800/50 bg-black/60 hover:bg-red-900/25">
-                                    <X size={13}/> CLEAR
-                                  </button>
-                                )}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                          {low && (
-                            <motion.div animate={{ opacity:[1,0.35,1] }} transition={{ duration:0.8, repeat:Infinity }}
-                              className="absolute top-2 right-2 z-10 bg-red-900/85 border border-red-600/60 text-red-400 font-mono font-black text-sm tracking-widest px-2.5 py-1 rounded-lg pointer-events-none">
-                              LOW STOCK
-                            </motion.div>
-                          )}
-                          <input type="file" accept="image/*" className="hidden"
-                            ref={el => { fileRefs.current[item.id] = el; }}
-                            onChange={e => handleFile(e, item.id)} />
-                        </div>
+                        {/* Ambient glow corner */}
+                        <div className="absolute top-0 right-0 w-28 h-28 pointer-events-none"
+                          style={{ background:`radial-gradient(circle at top right, ${item.accentColor}08 0%, transparent 70%)` }} />
 
-                        {/* Card body */}
                         <div className="p-5">
-                          <div className="flex items-start justify-between mb-3">
+                          {/* Header: brand + status */}
+                          <div className="flex items-start justify-between mb-4">
                             <div>
-                              <span className="font-mono font-black text-sm tracking-widest" style={{ color:item.accentColor }}>{item.brand}</span>
-                              <h3 className="text-white font-black text-2xl leading-tight mt-1">{item.name}</h3>
-                              <p className="text-[#3a3a3a] font-mono text-base mt-1">{item.origin}</p>
+                              <span className="block font-mono font-bold text-[9px] tracking-[0.22em] mb-1"
+                                style={{ color:"rgba(212,175,55,0.55)", textTransform:"uppercase" }}>{item.brand}</span>
+                              <h3 className="font-bold text-white leading-tight" style={{ fontSize:14, letterSpacing:"0.04em" }}>{item.name}</h3>
+                              <p className="mt-0.5" style={{ fontSize:11, color:"#525261" }}>{item.origin}</p>
                             </div>
-                            <div className="text-right">
-                              <span className="font-mono font-black text-4xl" style={{ color:"#ffb300" }}>{item.qty}</span>
-                              <p className="text-[#444] font-mono text-base">/ {item.par} par</p>
-                            </div>
+                            <span className="font-mono text-[9px] px-2 py-0.5 rounded flex-shrink-0 mt-0.5"
+                              style={{
+                                letterSpacing:"0.14em",
+                                border:`1px solid ${low?"#441C1C":"#1C3A24"}`,
+                                background:low?"#2A1212":"#122417",
+                                color:low?"#F46C6C":"#61E27F",
+                              }}>
+                              {low ? "LOW STOCK" : "OK"}
+                            </span>
                           </div>
-                          <div className="w-full bg-[#181818] rounded-full h-2.5 overflow-hidden">
-                            <motion.div initial={{ width:0 }} animate={{ width:`${pct*100}%`}} transition={{ duration:0.9, ease:"easeOut" }}
-                              className="h-full rounded-full"
-                              style={{ background:low?"#c0250a":item.accentColor, boxShadow:`0 0 10px ${item.accentColor}88` }} />
+
+                          {/* Silhouette box */}
+                          <div className="relative rounded-xl overflow-hidden flex items-center justify-center mb-4"
+                            style={{ height:112, background:"rgba(0,0,0,0.40)", border:"1px solid #16161F" }}>
+                            {img
+                              ? <img src={img} alt={item.name} className="absolute inset-0 w-full h-full object-cover"
+                                  style={{ filter:"brightness(0.85) contrast(1.08)" }} />
+                              : <motion.div animate={{ opacity:[0.7,1,0.7] }} transition={{ duration:3.5, repeat:Infinity, ease:"easeInOut" }}
+                                  className="flex items-end justify-center gap-1.5 pb-2">
+                                  {item.category==="CIGAR"  && <CigarSVG  c={item.accentColor}/>}
+                                  {item.category==="SPIRIT" && <SpiritSVG c={item.accentColor}/>}
+                                  {item.category==="WINE"   && <WineSVG   c={item.accentColor}/>}
+                                </motion.div>
+                            }
+                            <span className="absolute bottom-1.5 left-0 right-0 text-center font-mono"
+                              style={{ fontSize:8, color:"#3A3A47", letterSpacing:"0.20em", textTransform:"uppercase" }}>
+                              MICROCLIMATE MATRIX CORE
+                            </span>
+                            {/* Tiny upload corner */}
+                            <button onClick={e => triggerUpload(e, item.id)}
+                              className="absolute top-1.5 right-1.5 font-mono"
+                              style={{ background:"rgba(0,0,0,0.72)", border:"1px solid #1A1A22", borderRadius:6,
+                                padding:"2px 7px", cursor:"pointer", fontSize:8, color:"#444452",
+                                letterSpacing:"0.12em", textTransform:"uppercase" }}>
+                              {img ? "SWAP" : "UPLOAD"}
+                            </button>
+                            <input type="file" accept="image/*" className="hidden"
+                              ref={el => { fileRefs.current[item.id] = el; }}
+                              onChange={e => handleFile(e, item.id)} />
                           </div>
-                          <AnimatePresence>
-                            {open && (
-                              <motion.div initial={{ height:0, opacity:0 }} animate={{ height:"auto", opacity:1 }}
-                                exit={{ height:0, opacity:0 }} transition={{ duration:0.22 }}
-                                className="mt-5 pt-5 border-t grid grid-cols-3 gap-2 overflow-hidden"
-                                style={{ borderColor:`${item.accentColor}30` }}>
-                                {[
-                                  { l:"UNIT PRICE",   v:`$${item.price.toFixed(2)}` },
-                                  { l:"LEDGER VALUE", v:`$${(item.price*item.qty).toFixed(2)}` },
-                                  { l:"STATUS",       v:low?"REORDER":"OK", cls:low?"text-red-500":"text-emerald-400" },
-                                ].map(m => (
-                                  <div key={m.l} className="text-center">
-                                    <p className="text-[#444] font-mono text-xs tracking-widest mb-1">{m.l}</p>
-                                    <p className={`font-mono font-black text-2xl ${m.cls??""}`}
-                                      style={!m.cls?{color:"#ffb300"}:{}}>{m.v}</p>
-                                  </div>
-                                ))}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
+
+                          {/* Origin / specifications */}
+                          <p className="font-mono italic mb-4" style={{ fontSize:11, color:"#6C6C7D", lineHeight:1.5 }}>
+                            {item.category === "CIGAR"  ? "Premium leaf · Aged reserve · Hand-rolled"   :
+                             item.category === "SPIRIT" ? "Single cask · Master distillery selection"   :
+                                                          "Grand cru · Estate bottled · Limited vintage"}
+                          </p>
+
+                          {/* Data blocks */}
+                          <div className="grid grid-cols-3 gap-1.5 pt-3" style={{ borderTop:"1px solid #14141A" }}>
+                            {[
+                              { label:"VALUATION", value:`$${item.price.toFixed(2)}`, gold:true  },
+                              { label:"STOCKS",    value:`${item.qty} / ${item.par}`, gold:false },
+                              { label:"LEDGER",    value:`$${ledger.toFixed(0)}`,     gold:false },
+                            ].map(b => (
+                              <div key={b.label} className="text-center rounded" style={{
+                                background:"rgba(0,0,0,0.30)", padding:"7px 4px", border:"1px solid #121217" }}>
+                                <span className="block font-mono text-[8px] mb-1"
+                                  style={{ letterSpacing:"0.18em", color:"#444452", textTransform:"uppercase" }}>{b.label}</span>
+                                <span className="font-mono font-bold" style={{ fontSize:12, color:b.gold?"#D4AF37":"#FFFFFF" }}>
+                                  {b.value}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </motion.div>
                     );

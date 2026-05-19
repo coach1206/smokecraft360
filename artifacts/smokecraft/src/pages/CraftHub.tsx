@@ -292,10 +292,93 @@ const TILE_BG: Record<string, string[]> = {
 
 // CSS gradient fallback per genre — renders when image fails to load
 const TILE_FALLBACK: Record<string, string> = {
-  smoke: "linear-gradient(145deg, #1a0f00 0%, #3d2000 40%, #0d0800 100%)",
-  pour:  "linear-gradient(145deg, #1a0a00 0%, #3d1800 40%, #0d0500 100%)",
-  brew:  "linear-gradient(145deg, #12100000 0%, #2e2000 40%, #090700 100%)",
-  wine:  "linear-gradient(145deg, #1a0005 0%, #3d0011 40%, #0d0005 100%)",
+  smoke: "linear-gradient(145deg, #0d0d11 0%, #1a1200 60%, #0d0d11 100%)",
+  pour:  "linear-gradient(145deg, #0d0d11 0%, #1a1000 60%, #0d0d11 100%)",
+  brew:  "linear-gradient(145deg, #0d0d11 0%, #181200 60%, #0d0d11 100%)",
+  wine:  "linear-gradient(145deg, #0d0d11 0%, #180008 60%, #0d0d11 100%)",
+};
+
+// ── Per-genre SVG silhouettes (shown when no photo loads) ─────────────────────
+
+function SilhouetteCigar({ color }: { color: string }) {
+  const bars = [52, 64, 72, 68, 56];
+  return (
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 7, opacity: 0.22, padding: "0 4px" }}>
+      {bars.map((h, i) => (
+        <div key={i} style={{
+          width: 7, height: h, borderRadius: "3px 3px 1px 1px",
+          background: `linear-gradient(to top, #3A2213, #7A4E2A, ${color}99)`,
+          boxShadow: `0 0 6px ${color}22`,
+        }} />
+      ))}
+      {/* ember tip */}
+      <div style={{ width: 4, height: 8, borderRadius: "50% 50% 40% 40%",
+        background: "radial-gradient(circle,#ff6a00,#ff450066)", marginLeft: -2 }} />
+    </div>
+  );
+}
+
+function SilhouetteDecanter({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 48 84" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ width: 38, height: 66, opacity: 0.22 }}>
+      {/* stopper */}
+      <rect x="19" y="0" width="10" height="6" rx="2" stroke={color} strokeWidth="1.2" />
+      {/* neck */}
+      <rect x="21" y="6" width="6" height="14" rx="1" stroke={color} strokeWidth="1.2" />
+      {/* shoulder */}
+      <path d="M21 20 Q12 28 10 42 L10 78 Q10 82 24 82 Q38 82 38 78 L38 42 Q36 28 27 20 Z"
+        stroke={color} strokeWidth="1.2" fill={`${color}14`} />
+      {/* liquid line */}
+      <path d="M12 55 Q24 58 36 55" stroke={color} strokeWidth="0.8" opacity="0.5" />
+      {/* label rect */}
+      <rect x="14" y="58" width="20" height="14" rx="2"
+        stroke={color} strokeWidth="0.8" fill={`${color}0A`} />
+    </svg>
+  );
+}
+
+function SilhouetteBeerGlass({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 40 76" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ width: 32, height: 62, opacity: 0.22 }}>
+      {/* foam */}
+      <ellipse cx="20" cy="8" rx="16" ry="7" stroke={color} strokeWidth="1.2" fill={`${color}28`} />
+      {/* body */}
+      <path d="M6 14 L10 72 Q10 74 20 74 Q30 74 30 72 L34 14 Z"
+        stroke={color} strokeWidth="1.2" fill={`${color}10`} />
+      {/* bubbles */}
+      <circle cx="14" cy="45" r="2" stroke={color} strokeWidth="0.7" opacity="0.5" />
+      <circle cx="22" cy="34" r="1.5" stroke={color} strokeWidth="0.7" opacity="0.5" />
+      <circle cx="18" cy="57" r="1" stroke={color} strokeWidth="0.7" opacity="0.5" />
+    </svg>
+  );
+}
+
+function SilhouetteWineGlass({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 44 88" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ width: 34, height: 70, opacity: 0.22 }}>
+      {/* bowl */}
+      <path d="M8 4 Q4 26 16 40 Q20 46 22 46 Q24 46 28 40 Q40 26 36 4 Z"
+        stroke={color} strokeWidth="1.2" fill={`${color}12`} />
+      {/* wine fill */}
+      <path d="M12 26 Q14 34 22 38 Q30 34 32 26 Q22 30 12 26 Z"
+        fill={`${color}28`} />
+      {/* stem */}
+      <line x1="22" y1="46" x2="22" y2="76" stroke={color} strokeWidth="1.2" />
+      {/* base */}
+      <path d="M10 76 Q10 80 22 80 Q34 80 34 76 Z"
+        stroke={color} strokeWidth="1.2" fill={`${color}18`} />
+    </svg>
+  );
+}
+
+const SILHOUETTES: Record<string, (color: string) => React.ReactNode> = {
+  smoke: (c) => <SilhouetteCigar color={c} />,
+  pour:  (c) => <SilhouetteDecanter color={c} />,
+  brew:  (c) => <SilhouetteBeerGlass color={c} />,
+  wine:  (c) => <SilhouetteWineGlass color={c} />,
 };
 
 const KB_MOVES = [
@@ -426,12 +509,19 @@ function CraftCard({
           style={{ position: "absolute", inset: 0, zIndex: 0 }}
         >
           {imgError ? (
-            /* Graceful CSS gradient fallback when image is missing */
+            /* Genre silhouette — elegant minimal outline on deep obsidian */
             <div style={{
-              position:   "absolute",
-              inset:      0,
+              position: "absolute", inset: 0,
               background: fallback,
-            }} />
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <motion.div
+                animate={{ opacity: [0.8, 1, 0.8] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              >
+                {(SILHOUETTES[mod.id] ?? SILHOUETTES.smoke)!(genre.accent)}
+              </motion.div>
+            </div>
           ) : (
             <motion.div
               animate={{ scale: [1.04, 1.10], x: ["0%", "-2%"], y: ["0%", "-2%"] }}
@@ -539,32 +629,33 @@ function CraftCard({
         left:                 0,
         right:                0,
         zIndex:               6,
-        padding:              isPrimary ? "28px 28px 32px" : "20px 20px 24px",
-        background:           "rgba(0,0,0,0.68)",
-        backdropFilter:       "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderTop:            `1px solid ${genre.border}`,
+        padding:              isPrimary ? "28px 28px 32px" : "18px 20px 22px",
+        background:           "linear-gradient(to top, rgba(8,8,12,0.90) 0%, rgba(8,8,12,0.62) 100%)",
+        backdropFilter:       "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderTop:            "1px solid rgba(255,255,255,0.06)",
       }}>
         <h3 style={{
           margin:        0,
           fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
-          fontSize:      isPrimary ? "clamp(36px, 4vw, 52px)" : "clamp(28px, 2.8vw, 38px)",
-          fontWeight:    600,
+          fontSize:      isPrimary ? "clamp(32px, 3.6vw, 46px)" : "clamp(22px, 2.4vw, 32px)",
+          fontWeight:    300,
           color:         genre.accent,
-          letterSpacing: "0.10em",
+          letterSpacing: "0.22em",
           textTransform: "uppercase" as const,
           lineHeight:    1.05,
-          textShadow:    `0 0 28px ${genre.accentDim}`,
+          textShadow:    `0 0 40px ${genre.accentGlow}`,
         }}>
           {mod.title}
         </h3>
         <p style={{
-          margin:        "10px 0 0",
-          fontSize:      isPrimary ? 20 : 16,
-          color:         C.muted,
-          letterSpacing: "0.03em",
-          lineHeight:    1.45,
+          margin:        "8px 0 0",
+          fontSize:      isPrimary ? 16 : 13,
+          color:         "rgba(245,235,215,0.32)",
+          letterSpacing: "0.18em",
+          lineHeight:    1.5,
           fontWeight:    400,
+          textTransform: "uppercase" as const,
         }}>
           {mod.tagline}
         </p>
@@ -613,14 +704,14 @@ function GlowRing({ color }: { color: string }) {
     <motion.div
       style={{
         position:    "absolute",
-        inset:       -1,
-        borderRadius: 24,
-        border:       `1px solid ${color}`,
+        inset:       0,
+        borderRadius: 0,
+        border:       `1px solid ${color}18`,
         pointerEvents: "none",
         zIndex:       10,
       }}
-      animate={{ opacity: [0.15, 0.45, 0.15] }}
-      transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+      animate={{ opacity: [0.4, 0.9, 0.4] }}
+      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
     />
   );
 }
@@ -1545,7 +1636,7 @@ function CraftHubInner() {
         }}
       >
         {/* SMOKECRAFT 360 — full width, primary hero (~56%) */}
-        <div style={{ flex: "0 0 56%", position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(212,175,55,0.20)" }}>
+        <div style={{ flex: "0 0 56%", position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <CraftCard
             mod={CRAFT_MODULES[0]!}
             isPrimary
