@@ -71,7 +71,7 @@ const DEFAULT_PROFILE: GuestProfile = {
   quizScore: 0,
 };
 
-const STORAGE_KEY = "novee_guest_profile_v5";
+const STORAGE_KEY = "novee_guest_profile_v6";
 
 interface GuestProfileCtx {
   profile: GuestProfile;
