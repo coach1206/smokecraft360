@@ -299,6 +299,15 @@ export default function CraftPortalHome() {
             transition={{ duration: 0.8 }}
             style={{ position: "fixed", inset: 0, zIndex: 9995, background: "#000000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
           >
+            {/* Lounge background photo */}
+            <img
+              src={IMG("lounge_bg.png")}
+              alt=""
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", zIndex: 0 }}
+              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+            {/* Deep cinematic dark overlay — 75% */}
+            <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.82) 50%, rgba(0,0,0,0.92) 100%)" }} />
             <SmokeCanvas />
             <AmbientCigar />
 
