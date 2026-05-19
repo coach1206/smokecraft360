@@ -332,54 +332,279 @@ export function S1_InitGate() {
           />
         )}
 
-        {/* ══════════════ RULES ══════════════ */}
+        {/* ══════════════ RULES — THE GOLDEN BOX ══════════════ */}
         {step === "rules" && (
-          <Split key="rules"
-            leftFr="0.75fr" rightFr="1.25fr"
-            left={
-              <LeftPanel
-                eyebrow="Step 1.3 · The Golden Box"
-                headline={`Rules\nof Play`}
-                sub="Every action is scored. Learn the system before you build your blend."
-              />
-            }
-            right={
-              <RightPanel>
-                <Eyebrow>Scoring Mechanics</Eyebrow>
-                <SectionTitle style={{ marginBottom: 20 }}>The Golden Box</SectionTitle>
-                <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 28 }}>
+          <motion.div key="rules" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+
+            {/* ── Top Header Bar ── */}
+            <div style={{
+              flexShrink: 0, textAlign: "center", padding: "18px 48px 14px",
+              background: "rgba(0,0,0,0.55)", backdropFilter: "blur(20px)",
+              borderBottom: "1px solid rgba(212,175,55,0.18)",
+            }}>
+              <div style={{ fontSize: 11, letterSpacing: "0.55em", color: "rgba(212,175,55,0.65)", fontWeight: 800, textTransform: "uppercase", marginBottom: 4 }}>
+                SmokeCraft 360 · Kiosk Edition
+              </div>
+              <h1 style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontSize: 48, fontWeight: 700, color: GOLD,
+                margin: "0 0 4px", letterSpacing: "0.12em", textTransform: "uppercase",
+                textShadow: `0 0 60px ${GOLD}55, 0 2px 16px rgba(0,0,0,0.90)`,
+                lineHeight: 1,
+              }}>The Golden Box</h1>
+              <div style={{ fontSize: 16, letterSpacing: "0.38em", color: "rgba(240,232,212,0.45)", fontWeight: 400, fontStyle: "italic" }}>
+                Compete. Learn. Ascend.
+              </div>
+            </div>
+
+            {/* ── 3-Column Body ── */}
+            <div style={{ flex: 1, display: "grid", gridTemplateColumns: "220px 1fr 260px", overflow: "hidden" }}>
+
+              {/* ── LEFT: Rules of Play ── */}
+              <div style={{
+                borderRight: "1px solid rgba(212,175,55,0.12)",
+                background: "rgba(0,0,0,0.50)", backdropFilter: "blur(16px)",
+                padding: "28px 22px", display: "flex", flexDirection: "column", gap: 0,
+                overflowY: "auto",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
+                  <div style={{ width: 28, height: 1, background: `${GOLD}55` }} />
+                  <span style={{ fontSize: 12, letterSpacing: "0.40em", color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Rules of Play</span>
+                </div>
+                <p style={{ fontSize: 16, color: "rgba(240,232,212,0.42)", lineHeight: 1.6, margin: "0 0 24px" }}>
+                  Every action is scored. Learn the system before you build your blend.
+                </p>
+                {[
+                  { icon: "◎", label: "Score Points",   sub: "Complete actions & challenges" },
+                  { icon: "▲", label: "Climb Ranks",    sub: "Earn XP to level up" },
+                  { icon: "⬡", label: "Unlock Rewards", sub: "Badges, blends, gear & more" },
+                  { icon: "♛", label: "Earn Respect",   sub: "Compete. Be recognized. Lead." },
+                ].map(r => (
+                  <div key={r.label} style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 20 }}>
+                    <span style={{ fontSize: 20, color: GOLD, flexShrink: 0, marginTop: 2, opacity: 0.85 }}>{r.icon}</span>
+                    <div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: "#F0E8D4", marginBottom: 2 }}>{r.label}</div>
+                      <div style={{ fontSize: 14, color: "rgba(240,232,212,0.40)", lineHeight: 1.4 }}>{r.sub}</div>
+                    </div>
+                  </div>
+                ))}
+                <div style={{
+                  marginTop: "auto", background: "rgba(212,175,55,0.07)",
+                  border: "1px solid rgba(212,175,55,0.22)", borderRadius: 10, padding: "14px 16px",
+                }}>
+                  <div style={{ fontSize: 11, letterSpacing: "0.36em", color: `${GOLD}90`, fontWeight: 800, marginBottom: 8, textTransform: "uppercase" }}>💡 Tip</div>
+                  <p style={{ fontSize: 15, color: "rgba(240,232,212,0.55)", lineHeight: 1.55, margin: 0 }}>
+                    The better your decisions, the higher you climb.
+                  </p>
+                </div>
+              </div>
+
+              {/* ── CENTER: Contest Levels + Bottom Progress ── */}
+              <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                {/* Contest Levels heading */}
+                <div style={{
+                  flexShrink: 0, padding: "20px 32px 14px",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  background: "rgba(0,0,0,0.30)",
+                }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 26, fontWeight: 900, letterSpacing: "0.26em", color: "#F0E8D4", textTransform: "uppercase", marginBottom: 4 }}>Contest Levels</div>
+                    <div style={{ fontSize: 14, color: "rgba(240,232,212,0.38)", letterSpacing: "0.16em" }}>Progress through the ranks. Master the leaf.</div>
+                  </div>
+                </div>
+
+                {/* 4 Tier Cards */}
+                <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, overflow: "hidden" }}>
                   {[
-                    { icon: "✦", t: "Visual Accuracy & Synergy",      badge: "+10 XP", body: "Each correct architecture decision earns +10 XP.", gain: true },
-                    { icon: "⚠", t: "Mentor Blind Quiz Failures",     badge: "−2 PTS", body: "Each wrong Seed Priming answer deducts 2 pts.",    gain: false },
-                    { icon: "💨", t: "Volatile Blend · Draw Collapse", badge: "−5 PTS", body: "Excess Ligero collapses airflow — −5 PTS each.",    gain: false },
-                    { icon: "🔁", t: "Table Orders · Cheat Codes",    badge: "2× 3× 5×", body: "Cigar+Drink (2×) · Double Pour (3×) · Grand Slam (5× — wipes all penalties).", gain: true },
-                  ].map(r => (
-                    <div key={r.t} style={{
-                      display: "flex", gap: 18, alignItems: "flex-start",
-                      background: r.gain ? "rgba(212,175,55,0.06)" : "rgba(200,50,42,0.06)",
-                      border: `1px solid ${r.gain ? "rgba(212,175,55,0.28)" : "rgba(200,50,42,0.28)"}`,
-                      borderRadius: 14, padding: "20px 22px",
+                    {
+                      num: 1, name: "Novice", sub: "The Beginning",
+                      xp: "0 – 999 XP", color: "#C8322A", glow: "rgba(200,50,42,0.28)",
+                      badge: "🔥", desc: "You're learning the basics. Every decision builds your foundation.",
+                      skills: ["Learn cigar basics", "Identify simple flavors", "Complete intro challenges"],
+                    },
+                    {
+                      num: 2, name: "Enthusiast", sub: "Fueled by Passion",
+                      xp: "1,000 – 4,999 XP", color: GOLD, glow: "rgba(212,175,55,0.28)",
+                      badge: "🕯", desc: "You understand more. Your palate is growing. Your choices matter.",
+                      skills: ["Understand regions", "Master pairings", "Score higher to climb"],
+                    },
+                    {
+                      num: 3, name: "Connoisseur", sub: "Refined & Focused",
+                      xp: "5,000 – 14,999 XP", color: "#9B59B6", glow: "rgba(155,89,182,0.28)",
+                      badge: "💎", desc: "You appreciate complexity. You see what others overlook.",
+                      skills: ["Identify flavor transitions", "Know aging & construction", "Compete at a higher level"],
+                    },
+                    {
+                      num: 4, name: "Aficionado", sub: "The Ultimate Status",
+                      xp: "15,000+ XP", color: "#D4820A", glow: "rgba(212,130,10,0.28)",
+                      badge: "♛", desc: "You live the culture. You don't just smoke — you understand the leaf.",
+                      skills: ["Master sensory analysis", "Lead & mentor others", "Top of the leaderboard"],
+                    },
+                  ].map((tier, i) => (
+                    <div key={tier.name} style={{
+                      display: "flex", flexDirection: "column",
+                      borderRight: i < 3 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                      background: "rgba(0,0,0,0.22)",
+                      padding: "20px 18px",
+                      position: "relative", overflow: "hidden",
                     }}>
-                      <span style={{ fontSize: 28, flexShrink: 0, lineHeight: 1, marginTop: 4 }}>{r.icon}</span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 8 }}>
-                          <span style={{ fontSize: 24, fontWeight: 700, color: "#F0E8D4", lineHeight: 1.2 }}>{r.t}</span>
-                          <span style={{
-                            background: r.gain ? "rgba(212,175,55,0.18)" : "rgba(200,50,42,0.18)",
-                            border: `1px solid ${r.gain ? GOLD + "66" : "rgba(200,50,42,0.66)"}`,
-                            borderRadius: 8, padding: "6px 14px", fontSize: 18, fontWeight: 900,
-                            color: r.gain ? GOLD : "#C8322A", letterSpacing: "0.08em", flexShrink: 0,
-                          }}>{r.badge}</span>
+                      {/* Top glow accent */}
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${tier.color}AA, transparent)` }} />
+
+                      {/* Badge circle */}
+                      <div style={{ textAlign: "center", marginBottom: 12 }}>
+                        <div style={{
+                          display: "inline-flex", alignItems: "center", justifyContent: "center",
+                          width: 64, height: 64, borderRadius: "50%",
+                          background: `radial-gradient(circle at 35% 30%, ${tier.color}44, rgba(0,0,0,0.70))`,
+                          border: `2px solid ${tier.color}66`,
+                          boxShadow: `0 0 28px ${tier.glow}, inset 0 1px 0 rgba(255,255,255,0.12)`,
+                          fontSize: 28, position: "relative",
+                        }}>
+                          <span style={{ position: "absolute", top: -10, right: -10, width: 22, height: 22, borderRadius: "50%", background: tier.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color: "#000", fontFamily: "'Inter',sans-serif" }}>{tier.num}</span>
+                          {tier.badge}
                         </div>
-                        <p style={{ fontSize: 20, color: "rgba(240,232,212,0.55)", margin: 0, lineHeight: 1.55 }}>{r.body}</p>
+                      </div>
+
+                      {/* Name */}
+                      <div style={{ textAlign: "center", marginBottom: 8 }}>
+                        <div style={{ fontSize: 22, fontWeight: 900, color: "#F0E8D4", letterSpacing: "0.10em", textTransform: "uppercase", marginBottom: 2 }}>{tier.name}</div>
+                        <div style={{ fontSize: 12, letterSpacing: "0.22em", color: tier.color, fontWeight: 700, textTransform: "uppercase" }}>{tier.sub}</div>
+                      </div>
+
+                      {/* Desc */}
+                      <p style={{ fontSize: 15, color: "rgba(240,232,212,0.48)", lineHeight: 1.55, textAlign: "center", margin: "0 0 14px" }}>{tier.desc}</p>
+
+                      {/* Skills checklist */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+                        {tier.skills.map(sk => (
+                          <div key={sk} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                            <span style={{ color: tier.color, fontSize: 14, marginTop: 1, flexShrink: 0 }}>✓</span>
+                            <span style={{ fontSize: 15, color: "rgba(240,232,212,0.58)", lineHeight: 1.4 }}>{sk}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* XP range badge */}
+                      <div style={{
+                        marginTop: 16, textAlign: "center",
+                        background: `${tier.color}18`,
+                        border: `1px solid ${tier.color}44`,
+                        borderRadius: 8, padding: "8px 10px",
+                        fontSize: 16, fontWeight: 900, color: tier.color,
+                        letterSpacing: "0.06em", fontFamily: "'Inter',sans-serif",
+                      }}>
+                        {tier.xp}
                       </div>
                     </div>
                   ))}
                 </div>
-                <GoldBtn onClick={() => go("leaderboard")}>ACCEPT & INITIALIZE →</GoldBtn>
-              </RightPanel>
-            }
-          />
+
+                {/* ── Bottom Progress Bar ── */}
+                <div style={{
+                  flexShrink: 0,
+                  background: "rgba(0,0,0,0.65)", backdropFilter: "blur(20px)",
+                  borderTop: "1px solid rgba(212,175,55,0.14)",
+                  padding: "14px 24px",
+                  display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr auto",
+                  gap: 20, alignItems: "center",
+                }}>
+                  {/* Your Progress */}
+                  <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: "50%",
+                      background: "radial-gradient(circle at 35% 30%, rgba(212,175,55,0.40), rgba(0,0,0,0.70))",
+                      border: `2px solid ${GOLD}55`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 20,
+                    }}>🎩</div>
+                    <div>
+                      <div style={{ fontSize: 10, letterSpacing: "0.30em", color: "rgba(240,232,212,0.35)", textTransform: "uppercase", marginBottom: 2 }}>Your Progress</div>
+                      <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, letterSpacing: "0.04em" }}>ENTHUSIAST</div>
+                      <div style={{ fontSize: 15, color: "rgba(240,232,212,0.55)" }}>{profile.points} XP</div>
+                    </div>
+                  </div>
+                  {/* Next Milestone */}
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(240,232,212,0.32)", textTransform: "uppercase", marginBottom: 4 }}>Next Milestone</div>
+                    <div style={{ fontSize: 26, fontWeight: 900, color: "#F0E8D4" }}>
+                      {Math.max(0, 1000 - profile.points)} <span style={{ fontSize: 14, color: "rgba(240,232,212,0.38)", fontWeight: 400 }}>XP</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "rgba(240,232,212,0.35)", letterSpacing: "0.12em", textTransform: "uppercase" }}>to reach Connoisseur</div>
+                    <div style={{ marginTop: 6, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2 }}>
+                      <div style={{ height: "100%", width: `${Math.min(100, (profile.points / 1000) * 100)}%`, background: GOLD, borderRadius: 2, boxShadow: `0 0 8px ${GOLD}` }} />
+                    </div>
+                  </div>
+                  {/* Earn Badges */}
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(240,232,212,0.32)", textTransform: "uppercase", marginBottom: 8 }}>Earn Badges</div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {["🔥","🕯","💎","♛"].map((b, i) => (
+                        <div key={i} style={{
+                          width: 36, height: 36, borderRadius: "50%", fontSize: 18,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          background: i === 0 ? "rgba(200,50,42,0.20)" : "rgba(255,255,255,0.06)",
+                          border: i === 0 ? "1px solid rgba(200,50,42,0.50)" : "1px solid rgba(255,255,255,0.10)",
+                          boxShadow: i === 0 ? "0 0 14px rgba(200,50,42,0.30)" : "none",
+                        }}>{b}</div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Unlock Rewards */}
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(240,232,212,0.32)", textTransform: "uppercase", marginBottom: 6 }}>Unlock Rewards</div>
+                    <div style={{ fontSize: 14, color: "rgba(240,232,212,0.45)", lineHeight: 1.5 }}>Exclusive blends,<br />gear, and experiences<br />await...</div>
+                  </div>
+                  {/* CTA button */}
+                  <motion.button type="button"
+                    onPointerDown={() => go("leaderboard")}
+                    whileTap={{ scale: 0.97 }}
+                    style={{
+                      padding: "16px 28px",
+                      background: `linear-gradient(135deg, ${GOLD} 0%, #B8920A 100%)`,
+                      border: "none", borderRadius: 10,
+                      color: "#080502", fontSize: 16, fontWeight: 900,
+                      letterSpacing: "0.18em", textTransform: "uppercase",
+                      cursor: "pointer", fontFamily: "'Inter',sans-serif",
+                      boxShadow: `0 0 28px rgba(212,175,55,0.35), 0 6px 20px rgba(0,0,0,0.60)`,
+                      whiteSpace: "nowrap",
+                    }}>
+                    📊 View Leaderboard
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* ── RIGHT: The Golden Cigar Box ── */}
+              <div style={{
+                borderLeft: "1px solid rgba(212,175,55,0.12)",
+                background: "rgba(0,0,0,0.55)", backdropFilter: "blur(16px)",
+                display: "flex", flexDirection: "column", overflow: "hidden",
+              }}>
+                <div style={{ padding: "20px 20px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ fontSize: 11, letterSpacing: "0.44em", color: `${GOLD}80`, fontWeight: 800, textTransform: "uppercase", marginBottom: 4 }}>The Golden</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.12em", textTransform: "uppercase" }}>Cigar Box</div>
+                </div>
+                <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+                  <img
+                    src={IMG("golden_box.png")}
+                    alt="The Golden Cigar Box"
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
+                    onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  {/* Bottom fade */}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(0deg, rgba(0,0,0,0.80), transparent)" }} />
+                  {/* Gold rim */}
+                  <div style={{ position: "absolute", inset: 0, border: `1px solid ${GOLD}22`, pointerEvents: "none" }} />
+                </div>
+                <div style={{ padding: "14px 20px", borderTop: "1px solid rgba(212,175,55,0.10)" }}>
+                  <div style={{ fontSize: 13, color: "rgba(240,232,212,0.38)", lineHeight: 1.55, fontStyle: "italic" }}>
+                    SmokeCraft 360 — Collector's Kiosk Edition
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         )}
 
         {/* ══════════════ LEADERBOARD ══════════════ */}
