@@ -168,11 +168,11 @@ export default function TransactionTerminal() {
           {/* SWAP TO FLOOR MAP button */}
           <button
             onClick={() => { playTap(); navigate("/environment"); }}
-            className="flex items-center justify-center gap-3 mx-5 mt-4 py-4 bg-[#0c0c0c] border-2 border-[#d4af37]/30 rounded-2xl hover:bg-[#d4af37]/08 hover:border-[#d4af37]/60 transition-all active:scale-[0.98] group"
+            className="flex items-center justify-center gap-3 mx-5 mt-4 py-4 bg-[#0c0c0c] border-2 border-[#d4af37]/30 rounded-2xl hover:border-[#d4af37]/60 transition-all active:scale-[0.98] group whitespace-nowrap"
           >
-            <Map size={22} className="text-[#d4af37] group-hover:scale-110 transition-transform" />
-            <span className="text-[#d4af37] font-mono font-black text-xl tracking-widest">
-              [ SWAP TO VENUE FLOOR PLAN MAP ]
+            <Map size={20} className="text-[#d4af37] flex-shrink-0" />
+            <span className="text-[#d4af37] font-mono font-black text-lg tracking-widest truncate">
+              [ VENUE FLOOR MAP ]
             </span>
           </button>
 
