@@ -1,0 +1,165 @@
+/**
+ * NOVEE OS - CORE ENGINE PRODUCTION LAYER
+ * IMPLEMENTS: PILLARS 1, 2, 3 WITH LIVE TIER ENFORCEMENT & CONTROL PANEL
+ * SYSTEMS: CRAFT HUB / E.A.T. REGISTERED API
+ */
+
+const express = require('express');
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// =========================================================================
+// PRODUCTION STATE ENGINE (Simulating venue_inventory & demand_events)
+// =========================================================================
+let venue_inventory = {
+  "MACALLAN_25": { id: "MACALLAN_25", name: "Macallan 25 Year Single Malt", stock: 15, plan: "premium" },
+  "COHIBA_SIGLO_VI": { id: "COHIBA_SIGLO_VI", name: "Cohiba Siglo VI Cigar", stock: 24, plan: "mid" },
+  "OPUS_ONE_2019": { id: "OPUS_ONE_2019", name: "Opus One Napa Valley 2019", stock: 5, plan: "basic" }
+};
+
+// Simulated historical log representing order events from demand_events over the last 30 days
+let demand_events = [
+  { assetId: "MACALLAN_25", qty: 2, date: "2026-05-01" },
+  { assetId: "MACALLAN_25", qty: 3, date: "2026-05-10" },
+  { assetId: "COHIBA_SIGLO_VI", qty: 12, date: "2026-05-05" },
+  { assetId: "COHIBA_SIGLO_VI", qty: 18, date: "2026-05-12" },
+  { assetId: "OPUS_ONE_2019", qty: 2, date: "2026-05-15" }
+];
+
+// =========================================================================
+// PILLAR 1: DEMAND VELOCITY (POST /api/novee/demand)
+// =========================================================================
+app.post('/api/novee/demand', (req, res) => {
+  const { assetId } = req.body;
+  const asset = venue_inventory[assetId];
+  
+  if (!asset) {
+    return res.status(404).json({ error: "Asset not found in venue_inventory database." });
+  }
+
+  const tier = asset.plan.toLowerCase();
+  
+  // Calculate historical consumption velocity (total qty over trailing 30 days)
+  const past30DaysEvents = demand_events.filter(e => e.assetId === assetId);
+  const totalOrdered = past30DaysEvents.reduce((sum, current) => sum + current.qty, 0);
+  
+  // Usage rate per day (fallback to 0.1 minimum to avoid division by zero)
+  const usageRatePerDay = totalOrdered > 0 ? totalOrdered / 30 : 0.1;
+  const daysRemaining = asset.stock / usageRatePerDay;
+
+  let executionResponse = {
+    assetId: assetId,
+    currentStock: asset.stock,
+    calculatedUsageRatePerDay: parseFloat(usageRatePerDay.toFixed(2)),
+    daysRemaining: parseFloat(daysRemaining.toFixed(1)),
+    enforcedTier: tier.toUpperCase(),
+    timestamp: new Date().toISOString()
+  };
+
+  // Tier Enforcement Logic
+  if (tier === 'premium') {
+    if (daysRemaining <= 30) {
+      executionResponse.action = "AUTONOMOUS_REORDER_PAYLOAD";
+      executionResponse.payload = {
+        intent: "DISTRIBUTOR_PO_AUTOMATION",
+        targetVolume: Math.ceil(usageRatePerDay * 30),
+        routingNode: "GLOBAL_LUXURY_LOGISTICS_HUB",
+        mcpSecureToken: "MCP_AUTH_SECURE_TOKEN_2026_LIVE"
+      };
+    } else {
+      executionResponse.action = "MONITORING_STOCK_OPTIMAL";
+    }
+  } else if (tier === 'mid') {
+    if (daysRemaining <= 14) {
+      executionResponse.action = "PROACTIVE_DASHBOARD_ALERT";
+      executionResponse.message = `Warning: ${asset.name} tracking critical at ${daysRemaining.toFixed(1)} days left. Immediate manual reorder required.`;
+    } else {
+      executionResponse.action = "MONITORING_STOCK_OPTIMAL";
+    }
+  } else {
+    // Basic Tier
+    executionResponse.action = "LOG_REACTIVE_ONLY";
+    executionResponse.message = "Telemetry compiled. Upgrade to Mid/Premium for automated inventory forecasting loops.";
+  }
+
+  res.json(executionResponse);
+});
+
+// =========================================================================
+// PILLAR 2: FRICTION & DISENGAGEMENT (POST /api/novee/friction)
+// =========================================================================
+app.post('/api/novee/friction', (req, res) => {
+  const { tier, dwellTime, interactionLoopCount, biometricEnergyState } = req.body;
+  const activeTier = (tier || 'basic').toLowerCase();
+  
+  let frictionResponse = {
+    enforcedTier: activeTier.toUpperCase(),
+    metricsEvaluated: { dwellTime, interactionLoopCount, biometricEnergyState },
+    timestamp: new Date().toISOString()
+  };
+
+  const thresholdBreached = parseInt(dwellTime) > 45 || parseInt(interactionLoopCount) > 3;
+
+  if (activeTier === 'premium') {
+    if (biometricEnergyState === 'LOW' || thresholdBreached) {
+      frictionResponse.action = "DYNAMIC_INTERFACE_STATE_MUTATION";
+      frictionResponse.uiDirective = "FORCE_MINIMALIST_HIGH_CONVERSION_UI";
+      frictionResponse.hardwareRouting = "ACTIVATE_AMBIENT_AUDIO_PROMPT";
+      frictionResponse.voiceCadenceModifier = "REDUCE_CADENCE_MATCH_USER_LOW_ENERGY";
+    } else {
+      frictionResponse.action = "INTERFACE_STABLE";
+    }
+  } else if (activeTier === 'mid') {
+    if (thresholdBreached) {
+      frictionResponse.action = "DYNAMIC_INTERFACE_STATE_MUTATION";
+      frictionResponse.uiDirective = "SWAP_TO_MINIMALIST_LAYOUT";
+    } else {
+      frictionResponse.action = "INTERFACE_STABLE";
+    }
+  } else {
+    // Basic Tier
+    frictionResponse.action = "READ_ONLY_TELEMETRY";
+    frictionResponse.message = "Friction logged into analytics node. Dynamic UI mutation locked for Basic accounts.";
+  }
+
+  res.json(frictionResponse);
+});
+
+// =========================================================================
+// PILLAR 3: SNIPER DAEMON (POST /api/novee/sniper)
+// =========================================================================
+app.post('/api/novee/sniper', (req, res) => {
+  const { tier, internalPrice, competitorAverage } = req.body;
+  const activeTier = (tier || 'basic').toLowerCase();
+
+  const intPrice = parseFloat(internalPrice);
+  const compPrice = parseFloat(competitorAverage);
+  const priceDeltaPercent = ((compPrice - intPrice) / intPrice) * 100;
+
+  let sniperResponse = {
+    enforcedTier: activeTier.toUpperCase(),
+    calculatedDeltaPercent: parseFloat(priceDeltaPercent.toFixed(2)),
+    timestamp: new Date().toISOString()
+  };
+
+  if (activeTier === 'basic') {
+    sniperResponse.action = "ACCESS_DENIED";
+    sniperResponse.message = "Live Sniper Benchmarking locked. Upgrade to Mid or Premium tiers to deploy market countermeasures.";
+    return res.json(sniperResponse);
+  }
+
+  if (activeTier === 'premium') {
+    if (Math.abs(priceDeltaPercent) > 8) {
+      sniperResponse.action = "EXECUTE_COUNTERMEASURE";
+      sniperResponse.suggestedAdjustedPrice = parseFloat((compPrice * 0.95).toFixed(2));
+      sniperResponse.automatedOverrideReady = true;
+    } else {
+      sniperResponse.action = "MARKET_POSITION_OPTIMAL";
+    }
+  } else if (activeTier === 'mid') {
+    sniperResponse.action = "SURFACE_RECOMMENDATION_CARD";
+    sniperResponse.message = `Market discrepancy observed. Competitor variance is ${priceDeltaPercent.toFixed(1)}%. Recommend manual adjustment parameters.`;
+  }
+
+  res.json(

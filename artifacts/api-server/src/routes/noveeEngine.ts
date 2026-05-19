@@ -56,7 +56,11 @@ router.get("/novee/status", requireAuth, async (req: AuthRequest, res: Response)
 // ── POST /api/novee/demand ────────────────────────────────────────────────────
 
 const demandSchema = z.object({
-  productId: z.string().min(1),
+  // Spec field name is "assetId"; also accept "productId" for compatibility
+  assetId:   z.string().min(1).optional(),
+  productId: z.string().min(1).optional(),
+}).refine(d => d.assetId ?? d.productId, {
+  message: "assetId (or productId) is required",
 });
 
 router.post("/novee/demand", requireAuth, async (req: AuthRequest, res: Response) => {
@@ -70,9 +74,11 @@ router.post("/novee/demand", requireAuth, async (req: AuthRequest, res: Response
     return res.status(400).json({ error: "No venueId associated with this account" });
   }
 
+  const assetId = (parsed.data.assetId ?? parsed.data.productId)!;
+
   try {
     const tier   = await getVenueTier(req);
-    const result = await processDemandVelocity(venueId ?? "demo", parsed.data.productId, tier);
+    const result = await processDemandVelocity(venueId ?? "demo", assetId, tier);
     return res.json({ success: true, result });
   } catch (err) {
     logger.error({ err }, "novee/demand failed");
@@ -83,12 +89,13 @@ router.post("/novee/demand", requireAuth, async (req: AuthRequest, res: Response
 // ── POST /api/novee/friction ──────────────────────────────────────────────────
 
 const frictionSchema = z.object({
-  dwellTimeSeconds:      z.number().min(0),
-  interactionLoopsCount: z.number().int().min(0),
-  biometricStream:       z.object({
-    energyState: z.enum(["LOW", "NORMAL", "HIGH"]).optional(),
-    heartRateBpm: z.number().optional(),
-  }).optional(),
+  // Spec field names are dwellTime / interactionLoopCount / biometricEnergyState
+  dwellTime:              z.number().min(0).optional(),
+  interactionLoopCount:   z.number().int().min(0).optional(),
+  biometricEnergyState:   z.enum(["LOW", "NORMAL", "HIGH"]).optional(),
+  // Legacy aliases from initial implementation
+  dwellTimeSeconds:       z.number().min(0).optional(),
+  interactionLoopsCount:  z.number().int().min(0).optional(),
 });
 
 router.post("/novee/friction", requireAuth, async (req: AuthRequest, res: Response) => {
@@ -97,14 +104,13 @@ router.post("/novee/friction", requireAuth, async (req: AuthRequest, res: Respon
     return res.status(400).json({ error: "Validation failed", issues: parsed.error.issues });
   }
 
+  const dwell  = parsed.data.dwellTime         ?? parsed.data.dwellTimeSeconds         ?? 0;
+  const loops  = parsed.data.interactionLoopCount ?? parsed.data.interactionLoopsCount ?? 0;
+  const energy = parsed.data.biometricEnergyState;
+
   try {
     const tier   = await getVenueTier(req);
-    const result = evaluateUserFriction(
-      tier,
-      parsed.data.dwellTimeSeconds,
-      parsed.data.interactionLoopsCount,
-      parsed.data.biometricStream,
-    );
+    const result = evaluateUserFriction(tier, dwell, loops, energy);
     return res.json({ success: true, result });
   } catch (err) {
     logger.error({ err }, "novee/friction failed");
@@ -115,8 +121,14 @@ router.post("/novee/friction", requireAuth, async (req: AuthRequest, res: Respon
 // ── POST /api/novee/sniper ────────────────────────────────────────────────────
 
 const sniperSchema = z.object({
-  internalAssetPrice:     z.number().positive(),
-  competitorAveragePrice: z.number().positive(),
+  // Spec field names
+  internalPrice:       z.number().positive().optional(),
+  competitorAverage:   z.number().positive().optional(),
+  // Legacy aliases
+  internalAssetPrice:     z.number().positive().optional(),
+  competitorAveragePrice: z.number().positive().optional(),
+}).refine(d => (d.internalPrice ?? d.internalAssetPrice) && (d.competitorAverage ?? d.competitorAveragePrice), {
+  message: "internalPrice and competitorAverage are required",
 });
 
 router.post("/novee/sniper", requireAuth, async (req: AuthRequest, res: Response) => {
@@ -125,13 +137,12 @@ router.post("/novee/sniper", requireAuth, async (req: AuthRequest, res: Response
     return res.status(400).json({ error: "Validation failed", issues: parsed.error.issues });
   }
 
+  const internal    = (parsed.data.internalPrice    ?? parsed.data.internalAssetPrice)!;
+  const competitor  = (parsed.data.competitorAverage ?? parsed.data.competitorAveragePrice)!;
+
   try {
     const tier   = await getVenueTier(req);
-    const result = executeSniperDaemon(
-      tier,
-      parsed.data.internalAssetPrice,
-      parsed.data.competitorAveragePrice,
-    );
+    const result = executeSniperDaemon(tier, internal, competitor);
     return res.json({ success: true, result });
   } catch (err) {
     logger.error({ err }, "novee/sniper failed");

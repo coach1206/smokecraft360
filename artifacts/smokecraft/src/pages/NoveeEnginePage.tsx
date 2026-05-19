@@ -79,18 +79,18 @@ const PILLARS = [
     accent:   T.copper,
     accentSoft: T.copperSoft,
     accentDim:  "rgba(200,118,42,0.28)",
-    description: "Evaluates dwell time and interaction loops. Mid/Premium simplify the UI layout on threshold breach. Premium additionally processes wearable energy state.",
+    description: "Evaluates dwell time and interaction loops. Mid/Premium simplify the UI layout on threshold breach. Premium also triggers on wearable energy state LOW.",
     endpoint: "/api/novee/friction",
     fields: [
-      { id: "dwellTimeSeconds",      label: "Dwell Time (seconds)", placeholder: "e.g. 60",  type: "number" },
-      { id: "interactionLoopsCount", label: "Interaction Loops",    placeholder: "e.g. 4",   type: "number" },
-      { id: "energyState",           label: "Biometric Energy State (optional)", placeholder: "LOW | NORMAL | HIGH", type: "text" },
+      { id: "dwellTime",            label: "Dwell Time (seconds)", placeholder: "e.g. 60",          type: "number" },
+      { id: "interactionLoopCount", label: "Interaction Loops",    placeholder: "e.g. 4",            type: "number" },
+      { id: "biometricEnergyState", label: "Biometric Energy State (optional)", placeholder: "LOW | NORMAL | HIGH", type: "text" },
     ],
     buildBody: (vals: Record<string, string>) => ({
-      dwellTimeSeconds:      Number(vals["dwellTimeSeconds"] ?? 0),
-      interactionLoopsCount: Number(vals["interactionLoopsCount"] ?? 0),
-      ...(vals["energyState"]
-        ? { biometricStream: { energyState: vals["energyState"].toUpperCase() } }
+      dwellTime:            Number(vals["dwellTime"] ?? 0),
+      interactionLoopCount: Number(vals["interactionLoopCount"] ?? 0),
+      ...(vals["biometricEnergyState"]?.trim()
+        ? { biometricEnergyState: vals["biometricEnergyState"].toUpperCase() }
         : {}),
     }),
   },
@@ -105,12 +105,12 @@ const PILLARS = [
     description: "Live competitive price delta analysis. Mid surfaces a recommendation card. Premium executes an automated countermeasure payload when delta exceeds 8%.",
     endpoint: "/api/novee/sniper",
     fields: [
-      { id: "internalAssetPrice",     label: "Internal Asset Price ($)", placeholder: "e.g. 45.00", type: "number" },
-      { id: "competitorAveragePrice", label: "Competitor Avg Price ($)",  placeholder: "e.g. 52.00", type: "number" },
+      { id: "internalPrice",     label: "Internal Asset Price ($)", placeholder: "e.g. 45.00", type: "number" },
+      { id: "competitorAverage", label: "Competitor Avg Price ($)",  placeholder: "e.g. 52.00", type: "number" },
     ],
     buildBody: (vals: Record<string, string>) => ({
-      internalAssetPrice:     Number(vals["internalAssetPrice"] ?? 0),
-      competitorAveragePrice: Number(vals["competitorAveragePrice"] ?? 0),
+      internalPrice:     Number(vals["internalPrice"] ?? 0),
+      competitorAverage: Number(vals["competitorAverage"] ?? 0),
     }),
   },
 ] as const;

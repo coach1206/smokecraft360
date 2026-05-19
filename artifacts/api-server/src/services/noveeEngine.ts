@@ -1,7 +1,7 @@
 /**
  * NoveeEngine — CRAFT HUB & E.A.T. SYSTEM INTEGRATION ENGINE
  *
- * Three-pillar tier-gated intelligence layer:
+ * Three-pillar tier-gated intelligence layer matching the NOVEE OS spec:
  *   1. processDemandVelocity   — inventory burn-rate + autonomous reorder
  *   2. evaluateUserFriction    — dwell/loop telemetry + biometric adaptation
  *   3. executeSniperDaemon     — competitive pricing benchmarking
@@ -16,37 +16,32 @@ import { db, venueInventoryTable, demandEventsTable } from "@workspace/db";
 
 export type NoveeTier = "basic" | "mid" | "premium";
 
-export interface BiometricStream {
-  energyState?: "LOW" | "NORMAL" | "HIGH";
-  heartRateBpm?: number;
-  [key: string]: unknown;
-}
-
 // ── Pillar 1: Demand Velocity ─────────────────────────────────────────────────
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+const MIN_USAGE_RATE  = 0.1; // floor to avoid division-by-zero
 
 export interface DemandVelocityResult {
-  status:         "AUTONOMOUS_TRIGGERED" | "ALERT_DISPATCHED" | "LOGGED_REACTIVE_ONLY";
-  tier:           NoveeTier;
-  productId:      string;
-  currentStock:   number;
-  usageRatePerDay: number;
-  daysRemaining:  number;
-  payload?:       {
-    intent:             string;
-    productId:          string;
-    targetVolume:       number;
-    routingProtocol:    string;
-    timestamp:          string;
+  assetId:                  string;
+  currentStock:             number;
+  calculatedUsageRatePerDay: number;
+  daysRemaining:            number;
+  enforcedTier:             string;
+  action:                   string;
+  timestamp:                string;
+  message?:                 string;
+  payload?: {
+    intent:          string;
+    targetVolume:    number;
+    routingNode:     string;
+    mcpSecureToken:  string;
   };
-  message?: string;
 }
 
 export async function processDemandVelocity(
-  venueId:   string,
-  productId: string,
-  tier:      NoveeTier,
+  venueId:  string,
+  assetId:  string,
+  tier:     NoveeTier,
 ): Promise<DemandVelocityResult> {
   // ── Fetch current stock ───────────────────────────────────────────────────
   const [inv] = await db
@@ -55,7 +50,7 @@ export async function processDemandVelocity(
     .where(
       and(
         eq(venueInventoryTable.venueId,   venueId),
-        eq(venueInventoryTable.productId, productId),
+        eq(venueInventoryTable.productId, assetId),
       ),
     )
     .limit(1);
@@ -69,141 +64,179 @@ export async function processDemandVelocity(
     .where(
       and(
         eq(demandEventsTable.venueId,    venueId),
-        eq(demandEventsTable.productId,  productId),
+        eq(demandEventsTable.productId,  assetId),
         eq(demandEventsTable.eventType,  "order"),
         gte(demandEventsTable.createdAt, new Date(Date.now() - THIRTY_DAYS_MS)),
       ),
     );
 
-  const ordersLast30 = Number(usageResult?.count ?? 0);
-  const usageRatePerDay = ordersLast30 / 30;
-  const daysRemaining = usageRatePerDay > 0
-    ? Math.round((currentStock / usageRatePerDay) * 10) / 10
-    : Infinity;
+  const ordersLast30     = Number(usageResult?.count ?? 0);
+  const rawRate          = ordersLast30 > 0 ? ordersLast30 / 30 : MIN_USAGE_RATE;
+  const usageRatePerDay  = parseFloat(rawRate.toFixed(2));
+  const daysRemaining    = parseFloat((currentStock / usageRatePerDay).toFixed(1));
 
-  const base = { tier, productId, currentStock, usageRatePerDay: Math.round(usageRatePerDay * 100) / 100, daysRemaining };
+  const base: DemandVelocityResult = {
+    assetId,
+    currentStock,
+    calculatedUsageRatePerDay: usageRatePerDay,
+    daysRemaining,
+    enforcedTier: tier.toUpperCase(),
+    action:       "MONITORING_STOCK_OPTIMAL",
+    timestamp:    new Date().toISOString(),
+  };
 
   // ── Tier-gated response ───────────────────────────────────────────────────
-  if (tier === "premium" && daysRemaining <= 30) {
-    return {
-      ...base,
-      status: "AUTONOMOUS_TRIGGERED",
-      payload: {
-        intent:          "DISTRIBUTOR_REORDER",
-        productId,
-        targetVolume:    Math.ceil(usageRatePerDay * 30),
-        routingProtocol: "MCP_AUTOMATION_NODE",
-        timestamp:       new Date().toISOString(),
-      },
-    };
+  if (tier === "premium") {
+    if (daysRemaining <= 30) {
+      return {
+        ...base,
+        action: "AUTONOMOUS_REORDER_PAYLOAD",
+        payload: {
+          intent:         "DISTRIBUTOR_PO_AUTOMATION",
+          targetVolume:   Math.ceil(usageRatePerDay * 30),
+          routingNode:    "GLOBAL_LUXURY_LOGISTICS_HUB",
+          mcpSecureToken: "MCP_AUTH_SECURE_TOKEN_2026_LIVE",
+        },
+      };
+    }
+    return base; // MONITORING_STOCK_OPTIMAL
   }
 
-  if (tier === "mid" && daysRemaining <= 14) {
-    return {
-      ...base,
-      status:  "ALERT_DISPATCHED",
-      message: `Warning: asset ${productId} will exhaust stock within 14 days. Suggest immediate manual reorder.`,
-    };
+  if (tier === "mid") {
+    if (daysRemaining <= 14) {
+      return {
+        ...base,
+        action:  "PROACTIVE_DASHBOARD_ALERT",
+        message: `Warning: asset ${assetId} tracking critical at ${daysRemaining} days left. Immediate manual reorder required.`,
+      };
+    }
+    return base; // MONITORING_STOCK_OPTIMAL
   }
 
-  return { ...base, status: "LOGGED_REACTIVE_ONLY" };
+  // basic
+  return {
+    ...base,
+    action:  "LOG_REACTIVE_ONLY",
+    message: "Telemetry compiled. Upgrade to Mid/Premium for automated inventory forecasting loops.",
+  };
 }
 
 // ── Pillar 2: Interface Friction & Disengagement ──────────────────────────────
 
 export interface FrictionResult {
-  tier:              NoveeTier;
-  frictionDetected:  boolean;
-  uiAction:          string;
-  voiceCadence?:     string;
-  hardwareRouting?:  string;
-  reason?:           string;
-  status?:           string;
+  enforcedTier:            string;
+  metricsEvaluated:        {
+    dwellTime:              number;
+    interactionLoopCount:   number;
+    biometricEnergyState?:  string;
+  };
+  action:                  string;
+  timestamp:               string;
+  uiDirective?:            string;
+  hardwareRouting?:        string;
+  voiceCadenceModifier?:   string;
+  message?:                string;
 }
 
 export function evaluateUserFriction(
   tier:                  NoveeTier,
-  dwellTimeSeconds:      number,
-  interactionLoopsCount: number,
-  biometricStream?:      BiometricStream,
+  dwellTime:             number,
+  interactionLoopCount:  number,
+  biometricEnergyState?: string,
 ): FrictionResult {
-  const frictionDetected = dwellTimeSeconds > 45 || interactionLoopsCount > 3;
-  const base = { tier, frictionDetected };
+  const thresholdBreached = dwellTime > 45 || interactionLoopCount > 3;
+
+  const base: FrictionResult = {
+    enforcedTier:     tier.toUpperCase(),
+    metricsEvaluated: { dwellTime, interactionLoopCount, biometricEnergyState },
+    action:           "INTERFACE_STABLE",
+    timestamp:        new Date().toISOString(),
+  };
 
   if (tier === "premium") {
-    if (biometricStream?.energyState === "LOW") {
+    // Premium triggers on LOW biometric energy OR threshold breach
+    if (biometricEnergyState === "LOW" || thresholdBreached) {
       return {
         ...base,
-        uiAction:        "ADAPT_INTERFACE_STREAMLINE",
-        voiceCadence:    "DYNAMIC_REDUCTION",
-        hardwareRouting: "ACTIVATE_AMBIENT_PROMPT",
-        reason:          "Biometric and telemetry alignment indicates critical disengagement.",
+        action:               "DYNAMIC_INTERFACE_STATE_MUTATION",
+        uiDirective:          "FORCE_MINIMALIST_HIGH_CONVERSION_UI",
+        hardwareRouting:      "ACTIVATE_AMBIENT_AUDIO_PROMPT",
+        voiceCadenceModifier: "REDUCE_CADENCE_MATCH_USER_LOW_ENERGY",
       };
     }
+    return base; // INTERFACE_STABLE
   }
 
-  if ((tier === "mid" || tier === "premium") && frictionDetected) {
-    return {
-      ...base,
-      uiAction: "SWAP_TO_MINIMALIST_LAYOUT",
-      reason:   "Interface dwell time threshold breached. Reducing cognitive overhead.",
-    };
+  if (tier === "mid") {
+    if (thresholdBreached) {
+      return {
+        ...base,
+        action:      "DYNAMIC_INTERFACE_STATE_MUTATION",
+        uiDirective: "SWAP_TO_MINIMALIST_LAYOUT",
+      };
+    }
+    return base; // INTERFACE_STABLE
   }
 
-  return { ...base, uiAction: "NO_ACTION", status: "LEGACY_LOGGING" };
+  // basic
+  return {
+    ...base,
+    action:  "READ_ONLY_TELEMETRY",
+    message: "Friction logged into analytics node. Dynamic UI mutation locked for Basic accounts.",
+  };
 }
 
 // ── Pillar 3: Competitor Benchmarking (Sniper Daemon) ─────────────────────────
 
 export interface SniperResult {
-  tier:                    NoveeTier;
-  action:                  string;
-  priceDeltaPercent:       number;
-  delta:                   string;
-  suggestedPricingAdjustment?: number;
+  enforcedTier:           string;
+  calculatedDeltaPercent: number;
+  action:                 string;
+  timestamp:              string;
+  suggestedAdjustedPrice?: number;
   automatedOverrideReady?: boolean;
-  message?:                string;
-  notice?:                 string;
+  message?:               string;
 }
 
 export function executeSniperDaemon(
-  tier:                  NoveeTier,
-  internalAssetPrice:    number,
-  competitorAveragePrice: number,
+  tier:                NoveeTier,
+  internalPrice:       number,
+  competitorAverage:   number,
 ): SniperResult {
-  const priceDeltaPercent =
-    ((competitorAveragePrice - internalAssetPrice) / internalAssetPrice) * 100;
-  const delta = `${priceDeltaPercent.toFixed(2)}%`;
-  const base  = { tier, priceDeltaPercent: Math.round(priceDeltaPercent * 100) / 100, delta };
+  const priceDeltaPercent = ((competitorAverage - internalPrice) / internalPrice) * 100;
+
+  const base: SniperResult = {
+    enforcedTier:           tier.toUpperCase(),
+    calculatedDeltaPercent: parseFloat(priceDeltaPercent.toFixed(2)),
+    action:                 "MARKET_POSITION_OPTIMAL",
+    timestamp:              new Date().toISOString(),
+  };
+
+  if (tier === "basic") {
+    return {
+      ...base,
+      action:  "ACCESS_DENIED",
+      message: "Live Sniper Benchmarking locked. Upgrade to Mid or Premium tiers to deploy market countermeasures.",
+    };
+  }
 
   if (tier === "premium") {
     if (Math.abs(priceDeltaPercent) > 8) {
       return {
         ...base,
-        action:                    "EXECUTE_COUNTERMEASURE",
-        suggestedPricingAdjustment: Math.round(competitorAveragePrice * 0.95 * 100) / 100,
-        automatedOverrideReady:    true,
+        action:                "EXECUTE_COUNTERMEASURE",
+        suggestedAdjustedPrice: parseFloat((competitorAverage * 0.95).toFixed(2)),
+        automatedOverrideReady: true,
       };
     }
-    return {
-      ...base,
-      action:  "MONITOR_STABLE",
-      message: "Price delta within acceptable range. Monitoring active.",
-    };
+    return base; // MARKET_POSITION_OPTIMAL
   }
 
-  if (tier === "mid") {
-    return {
-      ...base,
-      action:  "SURFACE_RECOMMENDATION_CARD",
-      message: `Competitor price shifting. Local market delta is currently ${priceDeltaPercent.toFixed(1)}%.`,
-    };
-  }
-
+  // mid
   return {
     ...base,
-    action: "ACCESS_DENIED",
-    notice: "Upgrade to Mid or Premium to unlock Live Sniper Benchmarking.",
+    action:  "SURFACE_RECOMMENDATION_CARD",
+    message: `Market discrepancy observed. Competitor variance is ${priceDeltaPercent.toFixed(1)}%. Recommend manual adjustment parameters.`,
   };
 }
 
@@ -214,27 +247,27 @@ export function resolveCapabilityMatrix(tier: NoveeTier) {
     tier,
     pillars: {
       demandVelocity: {
-        available:   true,
+        available: true,
         level: tier === "premium"
-          ? "AUTONOMOUS — auto-generates distributor reorder payloads at ≤30 days stock"
+          ? "AUTONOMOUS — auto-generates distributor PO at ≤30 days stock"
           : tier === "mid"
             ? "PROACTIVE — dispatches alert at ≤14 days stock"
-            : "REACTIVE — baseline logging only",
+            : "REACTIVE — baseline telemetry logging only",
       },
       userFriction: {
-        available:   tier !== "basic",
+        available: tier !== "basic",
         level: tier === "premium"
-          ? "BIOMETRIC — processes wearable energy state + dwell/loop telemetry"
+          ? "BIOMETRIC — triggers on wearable energy LOW or dwell/loop breach → minimalist UI + ambient audio"
           : tier === "mid"
             ? "ADAPTIVE — swaps to minimalist layout on dwell/loop threshold breach"
-            : "DISABLED — upgrade to Mid or Premium",
+            : "LOCKED — upgrade to Mid or Premium",
       },
       sniperDaemon: {
-        available:   tier !== "basic",
+        available: tier !== "basic",
         level: tier === "premium"
-          ? "EXECUTE — auto-countermeasure payload when delta >8%"
+          ? "EXECUTE — auto-countermeasure when delta >8%; suggested price + override payload"
           : tier === "mid"
-            ? "OBSERVE — surfaces recommendation card with live delta"
+            ? "OBSERVE — surfaces recommendation card with live market delta"
             : "LOCKED — upgrade to Mid or Premium",
       },
     },

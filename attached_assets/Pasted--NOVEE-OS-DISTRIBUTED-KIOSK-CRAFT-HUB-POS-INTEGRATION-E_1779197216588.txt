@@ -1,0 +1,244 @@
+/**
+ * NOVEE OS - DISTRIBUTED KIOSK, CRAFT HUB, & POS INTEGRATION ENGINE
+ * FOR TABLET, KIOSK, AND REMOTE DEPLOYMENT VIA QR WIRELESS LINK
+ */
+
+const express = require('express');
+const http = require('http');
+const app = express();
+const server = http.createServer(app);
+
+app.use(express.json());
+
+// ==========================================
+// 1. CORE SUBSCRIPTION MATRIX & CORE DATA
+// ==========================================
+const TIER_LEVELS = { BASIC: 'basic', MID: 'mid', PREMIUM: 'premium' };
+
+// Active venue state simulation
+let venueInventory = {
+  "MACALLAN_25": { id: "MACALLAN_25", name: "Macallan 25 Year Single Malt", stock: 12, usageRate: 0.8, price: 250 },
+  "COHIBA_SIGLO_VI": { id: "COHIBA_SIGLO_VI", name: "Cohiba Siglo VI Cigar", stock: 8, usageRate: 1.2, price: 90 },
+  "OPUS_ONE_2019": { id: "OPUS_ONE_2019", name: "Opus One Napa Valley 2019", stock: 4, usageRate: 0.4, price: 380 }
+};
+
+// Simulated Competitor API data for the Live Sniper Daemon
+const competitorMarketRates = { "MACALLAN_25": 290, "COHIBA_SIGLO_VI": 95, "OPUS_ONE_2019": 420 };
+
+// ==========================================
+// 2. POS INTEGRATION & LOGISTIC BACKEND
+// ==========================================
+class NoveeCoreEngine {
+  constructor(tier) {
+    this.tier = tier || TIER_LEVELS.PREMIUM; 
+  }
+
+  // POS Inventory Sync Link
+  syncWithExistingPOS(assetId, transactionQty) {
+    if (venueInventory[assetId]) {
+      venueInventory[assetId].stock -= transactionQty;
+      console.log(`[POS SYNC] Subtracted ${transactionQty} from ${assetId}. Live Stock: ${venueInventory[assetId].stock}`);
+      return this.evaluateDemandLogistics(assetId);
+    }
+    return { status: "POS_ASSET_NOT_FOUND" };
+  }
+
+  evaluateDemandLogistics(assetId) {
+    const item = venueInventory[assetId];
+    const daysRemaining = item.stock / item.usageRate;
+
+    if (this.tier === TIER_LEVELS.PREMIUM && daysRemaining <= 30) {
+      return {
+        action: "AUTONOMOUS_REORDER_PAYLOAD",
+        tier: "PREMIUM",
+        payload: {
+          intent: "DISTRIBUTOR_PO_AUTOMATION",
+          item: item.name,
+          qtyNeeded: Math.ceil(item.usageRate * 30),
+          targetDistributor: "GLOBAL_LUXURY_ROUTING_NODE",
+          mcpToken: "MCP_AUTH_SECURE_LIVE_2026"
+        }
+      };
+    }
+    if (this.tier === TIER_LEVELS.MID && daysRemaining <= 14) {
+      return { action: "DASHBOARD_ALERT", tier: "MID", message: `Warning: ${item.name} stock low (${daysRemaining.toFixed(0)} days left).` };
+    }
+    return { action: "LOG_ONLY", tier: "BASIC", daysRemaining };
+  }
+
+  runSniperDaemon(assetId) {
+    if (this.tier === TIER_LEVELS.BASIC) return { status: "LOCKED", msg: "Upgrade Tier" };
+    
+    const internalPrice = venueInventory[assetId].price;
+    const marketPrice = competitorMarketRates[assetId];
+    const delta = ((marketPrice - internalPrice) / internalPrice) * 100;
+
+    if (this.tier === TIER_LEVELS.PREMIUM && Math.abs(delta) > 8) {
+      return { status: "EXECUTE_COUNTERMEASURE", autoAdjustPrice: marketPrice * 0.95, delta: `${delta.toFixed(1)}%` };
+    }
+    return { status: "RECOMMENDATION_ONLY", delta: `${delta.toFixed(1)}%`, msg: `Market rate is $${marketPrice}` };
+  }
+}
+
+const noveeBrain = new NoveeCoreEngine(TIER_LEVELS.PREMIUM);
+
+// ==========================================
+// 3. API ENDPOINTS FOR THE TABLET / KIOSK
+// ==========================================
+app.get('/api/inventory', (req, res) => {
+  res.json(venueInventory);
+});
+
+app.post('/api/pos-transaction', (express.json()), (req, res) => {
+  const { assetId, qty, userFrictionData } = req.body;
+  
+  // 1. Process POS Transaction
+  const logisticsResult = noveeBrain.syncWithExistingPOS(assetId, qty);
+  
+  // 2. Process Sniper Engine Data concurrently
+  const sniperResult = noveeBrain.runSniperDaemon(assetId);
+
+  // 3. Process Client-side Friction Telemetry
+  let uiAdaptation = { action: "KEEP_STANDARD_UI" };
+  if (userFrictionData && userFrictionData.dwellTime > 45) {
+    uiAdaptation = { action: "FORCE_MINIMALIST_HIGH_CONVERSION_UI", reason: "User disengagement threshold crossed." };
+  }
+
+  res.json({
+    success: true,
+    logistics: logisticsResult,
+    sniper: sniperResult,
+    uiDirective: uiAdaptation
+  });
+});
+
+// ==========================================
+// 4. EMBEDDED TABLET FRONTEND INTERFACE
+// ==========================================
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>NOVEE OS - Kiosk / Tablet Terminal</title>
+        <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0f19; color: #f3f4f6; margin: 0; padding: 20px; text-align: center; }
+            .container { max-width: 600px; margin: 0 auto; background: #111827; padding: 25px; border-radius: 16px; border: 1px solid #1f2937; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+            h1 { color: #3b82f6; font-size: 24px; margin-bottom: 5px; }
+            p.subtitle { color: #9ca3af; margin-top: 0; font-size: 14px; margin-bottom: 25px; }
+            .menu-item { background: #1f2937; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; display: flex; justify-content: space-between; align-items: center; border: 1px solid #374151; }
+            .item-details h3 { margin: 0; color: #ffffff; font-size: 16px; }
+            .item-details p { margin: 4px 0 0 0; color: #9ca3af; font-size: 13px; }
+            button { background: #3b82f6; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+            button:hover { background: #2563eb; }
+            #log-terminal { margin-top: 25px; padding: 12px; background: #000000; border-radius: 8px; font-family: monospace; text-align: left; font-size: 12px; color: #10b981; max-height: 150px; overflow-y: auto; border: 1px solid #10b981; }
+            .minimalist-mode { background: #ffffff !important; color: #000000 !important; }
+            .minimalist-mode .container { background: #ffffff !important; border: 2px solid #000000 !important; box-shadow: none !important; color: #000000 !important;}
+            .minimalist-mode .menu-item { background: #ffffff !important; border: 1px solid #000000 !important; color: #000000 !important;}
+            .minimalist-mode h3, .minimalist-mode p, .minimalist-mode h1 { color: #000000 !important; }
+            .minimalist-mode button { background: #000000 !important; color: #ffffff !important; border-radius: 0; }
+        </style>
+    </head>
+    <body>
+        <div id="app-viewport" class="container">
+            <h1>NOVEE OS</h1>
+            <p class="subtitle">Craft Hub & E.A.T Terminal Connected</p>
+            
+            <div id="menu-container"></div>
+
+            <div style="margin-top: 15px;">
+               <button onclick="triggerSimulatedFriction()" style="background: #ef4444;">Simulate Interface Friction (45s Dwell)</button>
+            </div>
+
+            <div id="log-terminal">> System Live. Ready for local/remote deployment.</div>
+        </div>
+
+        <script>
+            let currentDwellTime = 0;
+            setInterval(() => { currentDwellTime++; }, 1000);
+
+            async function loadMenu() {
+                const res = await fetch('/api/inventory');
+                const inventory = await res.json();
+                const container = document.getElementById('menu-container');
+                container.innerHTML = '';
+
+                Object.values(inventory).forEach(item => {
+                    container.innerHTML += \`
+                        <div class="menu-item">
+                            <div class="item-details">
+                                <h3>\${item.name}</h3>
+                                <p>Price: $\${item.price} | In Stock: \${item.stock}</p>
+                            </div>
+                            <button onclick="executePurchase('\${item.id}')">Purchase</button>
+                        </div>
+                    \`;
+                });
+            }
+
+            function logger(msg) {
+                const term = document.getElementById('log-terminal');
+                term.innerHTML += "<br/>" + msg;
+                term.scrollTop = term.scrollHeight;
+            }
+
+            function triggerSimulatedFriction() {
+                currentDwellTime = 50; 
+                logger("> [TELEMETRY] Simulated user disengagement criteria reached (Dwell > 45s).");
+            }
+
+            async function executePurchase(assetId) {
+                logger(\`> [POS OUTBOUND] Sending transaction event for \${assetId}...\`);
+                
+                const response = await fetch('/api/pos-transaction', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        assetId: assetId,
+                        qty: 1,
+                        userFrictionData: { dwellTime: currentDwellTime }
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Reset user tracking timer
+                currentDwellTime = 0;
+
+                if(data.success) {
+                    logger(\`> [POS SUCCESS] Transaction locked into existing registers.\`);
+                    logger(\`> [LOGISTICS STATUS] \${data.logistics.action}\`);
+                    if(data.logistics.payload) {
+                        logger(\`>> Autonomous Purchase Order Compiled: Buy \${data.logistics.payload.qtyNeeded} units.\`);
+                    }
+                    logger(\`> [SNIPER ALGORITHM] Status: \${data.sniper.status} (Delta: \${data.sniper.delta})\`);
+                    
+                    // Apply UI Adaptation dynamically based on user frustration
+                    if(data.uiDirective.action === "FORCE_MINIMALIST_HIGH_CONVERSION_UI") {
+                        logger(\`> [UI ENGINE] Swapping view to Ultra-Minimalist High-Conversion variant.\`);
+                        document.body.classList.add('minimalist-mode');
+                    } else {
+                        document.body.classList.remove('minimalist-mode');
+                    }
+
+                    loadMenu();
+                }
+            }
+
+            loadMenu();
+        </script>
+    </body>
+    </html>
+  `);
+});
+
+// Start Server Loop
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`================================================================`);
+  console.log(`[DEPLOYMENT SUCCESS] NOVEE OS Engine live on Port ${PORT}`);
+  console.log(`[WIRELESS ACCESSIBLE] Serve this address via web link or QR code.`);
+  console.log(`================================================================`);
+});
