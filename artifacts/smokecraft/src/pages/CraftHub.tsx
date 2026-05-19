@@ -885,32 +885,76 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.85 }}
-      style={{ position: "fixed", inset: 0, zIndex: 9995, background: "#000000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9995, overflow: "hidden",
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        /* Layer 0 fallback — never flat black, always textured dark amber gradient */
+        background: "linear-gradient(135deg, #050505 0%, #120e08 50%, #050505 100%)",
+      }}
     >
-      <SmokeCanvas />
-      <AmbientCigar />
+      {/* ── Layer 1: Cinematic background photo ── */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", inset: 0, zIndex: 1,
+          backgroundImage: "url(/images/craft/smoke-1.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center 30%",
+          filter: "saturate(0.85) contrast(1.05)",
+        }}
+      />
 
-      <div style={{ position: "relative", zIndex: 9998, textAlign: "center", maxWidth: 500, padding: "0 32px" }}>
+      {/* ── Layer 2: Cinematic gradient overlay (0.4 top → 0.85 bottom) ── */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.85) 100%)",
+        }}
+      />
+
+      {/* ── Layer 3: Diffused amber/gold glow core behind the typography ── */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: "50%", left: "50%",
+          transform: "translate(-50%, -52%)",
+          width: "70vw", height: "50vh",
+          background: "radial-gradient(ellipse at center, rgba(212,175,55,0.11) 0%, transparent 68%)",
+          filter: "blur(80px)",
+          zIndex: 3, pointerEvents: "none",
+        }}
+      />
+
+      {/* Particle / ambient layers sit above the depth stack */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 4 }}>
+        <SmokeCanvas />
+        <AmbientCigar />
+      </div>
+
+      {/* ── Layer 4: Interactive UI foreground ── */}
+      <div style={{ position: "relative", zIndex: 10, textAlign: "center", maxWidth: 520, padding: "0 36px" }}>
         <motion.p
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.9 }}
-          style={{ fontSize: 8, letterSpacing: "0.52em", textTransform: "uppercase", color: "rgba(212,175,55,0.48)", marginBottom: 18, fontFamily: "inherit" }}
+          style={{ fontSize: 13, letterSpacing: "0.52em", textTransform: "uppercase", color: "rgba(212,175,55,0.55)", marginBottom: 20, fontFamily: "inherit" }}
         >
           NOVEE OS · SmokeCraft 360
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
-          style={{ fontFamily: "var(--app-font-serif,'Cormorant Garamond',Georgia,serif)", fontSize: "clamp(2rem,5vw,4rem)", fontWeight: 300, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F0E8D4", margin: "0 0 44px", lineHeight: 1.1 }}
+          style={{ fontFamily: "var(--app-font-serif,'Cormorant Garamond',Georgia,serif)", fontSize: "clamp(2.4rem,5.5vw,4.4rem)", fontWeight: 300, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F0E8D4", margin: "0 0 48px", lineHeight: 1.05, textShadow: "0 2px 48px rgba(212,175,55,0.18)" }}
         >
           The Art of the Cigar
         </motion.h1>
 
-        {/* BEGIN MASTERCLASS JOURNEY — oversized primary gold action block */}
+        {/* BEGIN MASTERCLASS JOURNEY */}
         <motion.button
           initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.8 }}
-          whileHover={{ scale: 1.02, boxShadow: "0 0 56px rgba(212,175,55,0.38),0 4px 24px rgba(0,0,0,0.5)" }}
+          whileHover={{ scale: 1.02, boxShadow: "0 0 64px rgba(212,175,55,0.42),0 4px 28px rgba(0,0,0,0.6)" }}
           whileTap={{ scale: 0.97, y: 2 }}
           onClick={() => { playTactile(); onBegin(); }}
-          style={{ display: "block", width: "100%", padding: "26px 40px", marginBottom: 16, background: "linear-gradient(135deg,rgba(212,175,55,0.24) 0%,rgba(212,139,0,0.16) 100%)", border: "2px solid rgba(212,175,55,0.75)", borderRadius: 14, cursor: "pointer", fontSize: 17, fontWeight: 900, color: "#D4AF37", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "inherit", boxShadow: "0 0 40px rgba(212,175,55,0.28),0 4px 18px rgba(0,0,0,0.45)", minHeight: 82, touchAction: "manipulation" }}
+          style={{ display: "block", width: "100%", padding: "28px 40px", marginBottom: 18, background: "linear-gradient(135deg,rgba(212,175,55,0.26) 0%,rgba(212,139,0,0.18) 100%)", border: "2px solid rgba(212,175,55,0.78)", borderRadius: 14, cursor: "pointer", fontSize: 18, fontWeight: 900, color: "#D4AF37", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "inherit", boxShadow: "0 0 44px rgba(212,175,55,0.30),0 4px 20px rgba(0,0,0,0.5)", minHeight: 86, touchAction: "manipulation", backdropFilter: "blur(12px)" }}
         >
           BEGIN MASTERCLASS JOURNEY
         </motion.button>
@@ -921,7 +965,7 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           onClick={onReturning}
-          style={{ display: "block", width: "100%", padding: "16px 32px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.28)", borderRadius: 10, cursor: "pointer", fontSize: 12, fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(240,232,212,0.58)", fontFamily: "inherit", touchAction: "manipulation" }}
+          style={{ display: "block", width: "100%", padding: "18px 32px", background: "rgba(0,0,0,0.38)", border: "1px solid rgba(212,175,55,0.30)", borderRadius: 10, cursor: "pointer", fontSize: 14, fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(240,232,212,0.62)", fontFamily: "inherit", touchAction: "manipulation", backdropFilter: "blur(10px)" }}
         >
           RETURNING MASTERCLASS GUEST
         </motion.button>
@@ -929,7 +973,141 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
 
       <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
         onClick={onClose}
-        style={{ position: "absolute", top: 20, left: 20, background: "none", border: "none", color: "rgba(255,255,255,0.18)", cursor: "pointer", fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", padding: "8px 12px", zIndex: 9999 }}
+        style={{ position: "absolute", top: 22, left: 22, background: "none", border: "none", color: "rgba(255,255,255,0.35)", cursor: "pointer", fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", padding: "8px 14px", zIndex: 20 }}
+      >
+        ← Back
+      </motion.button>
+    </motion.div>
+  );
+}
+
+// ── Generic cinematic landing overlay — PourCraft / BrewCraft / WineCraft ─────
+interface CraftLandingConfig {
+  genreKey:   "pour" | "brew" | "wine";
+  title:      string;
+  subtitle:   string;
+  cta:        string;
+  bgImage:    string;
+  fallback:   string;
+  accent:     string;
+  accentRgba: string;
+  borderRgba: string;
+}
+
+const CRAFT_LANDING_CONFIG: Record<"pour" | "brew" | "wine", CraftLandingConfig> = {
+  pour: {
+    genreKey:   "pour",
+    title:      "The Craft of the Pour",
+    subtitle:   "NOVEE OS · PourCraft 360",
+    cta:        "BEGIN SPIRITS JOURNEY",
+    bgImage:    "/images/craft/pour-1.png",
+    fallback:   "linear-gradient(135deg, #050404 0%, #110907 50%, #050404 100%)",
+    accent:     "#C8762A",
+    accentRgba: "rgba(200,118,42,0.11)",
+    borderRgba: "rgba(200,118,42,0.75)",
+  },
+  brew: {
+    genreKey:   "brew",
+    title:      "The Craft of the Brew",
+    subtitle:   "NOVEE OS · BrewCraft 360",
+    cta:        "BEGIN BREW JOURNEY",
+    bgImage:    "/images/craft/brew-1.png",
+    fallback:   "linear-gradient(135deg, #040403 0%, #0f0c05 50%, #040403 100%)",
+    accent:     "#B8882A",
+    accentRgba: "rgba(184,136,42,0.11)",
+    borderRgba: "rgba(184,136,42,0.75)",
+  },
+  wine: {
+    genreKey:   "wine",
+    title:      "The Craft of the Vine",
+    subtitle:   "NOVEE OS · WineCraft 360",
+    cta:        "BEGIN WINE JOURNEY",
+    bgImage:    "/images/craft/wine-1.png",
+    fallback:   "linear-gradient(135deg, #040203 0%, #0e0407 50%, #040203 100%)",
+    accent:     "#9B2335",
+    accentRgba: "rgba(155,35,53,0.11)",
+    borderRgba: "rgba(155,35,53,0.75)",
+  },
+};
+
+function CraftLandingOverlay({ genreKey, onClose, onBegin }: { genreKey: "pour" | "brew" | "wine"; onClose: () => void; onBegin: () => void }) {
+  const cfg = CRAFT_LANDING_CONFIG[genreKey];
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9995, overflow: "hidden",
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        background: cfg.fallback,
+      }}
+    >
+      {/* Layer 1: Background photo */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", inset: 0, zIndex: 1,
+          backgroundImage: `url(${cfg.bgImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center 30%",
+          filter: "saturate(0.88) contrast(1.04)",
+        }}
+      />
+
+      {/* Layer 2: Cinematic gradient overlay */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.85) 100%)",
+        }}
+      />
+
+      {/* Layer 3: Diffused genre glow core */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: "50%", left: "50%",
+          transform: "translate(-50%, -52%)",
+          width: "70vw", height: "50vh",
+          background: `radial-gradient(ellipse at center, ${cfg.accentRgba} 0%, transparent 68%)`,
+          filter: "blur(80px)",
+          zIndex: 3, pointerEvents: "none",
+        }}
+      />
+
+      {/* Layer 4: UI foreground */}
+      <div style={{ position: "relative", zIndex: 10, textAlign: "center", maxWidth: 520, padding: "0 36px" }}>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.9 }}
+          style={{ fontSize: 13, letterSpacing: "0.52em", textTransform: "uppercase", color: cfg.accent.replace(")", ",0.55)").replace("rgb", "rgba"), marginBottom: 20, fontFamily: "inherit" }}
+        >
+          {cfg.subtitle}
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+          style={{ fontFamily: "var(--app-font-serif,'Cormorant Garamond',Georgia,serif)", fontSize: "clamp(2.4rem,5.5vw,4.4rem)", fontWeight: 300, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F0E8D4", margin: "0 0 48px", lineHeight: 1.05, textShadow: `0 2px 48px ${cfg.accentRgba}` }}
+        >
+          {cfg.title}
+        </motion.h1>
+
+        <motion.button
+          initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.8 }}
+          whileHover={{ scale: 1.02, boxShadow: `0 0 64px ${cfg.accentRgba},0 4px 28px rgba(0,0,0,0.6)` }}
+          whileTap={{ scale: 0.97, y: 2 }}
+          onClick={() => { playTactile(); onBegin(); }}
+          style={{ display: "block", width: "100%", padding: "28px 40px", marginBottom: 18, background: `linear-gradient(135deg,${cfg.accentRgba} 0%,rgba(0,0,0,0.18) 100%)`, border: `2px solid ${cfg.borderRgba}`, borderRadius: 14, cursor: "pointer", fontSize: 18, fontWeight: 900, color: cfg.accent, letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "inherit", boxShadow: `0 0 44px ${cfg.accentRgba},0 4px 20px rgba(0,0,0,0.5)`, minHeight: 86, touchAction: "manipulation", backdropFilter: "blur(12px)" }}
+        >
+          {cfg.cta}
+        </motion.button>
+      </div>
+
+      <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
+        onClick={onClose}
+        style={{ position: "absolute", top: 22, left: 22, background: "none", border: "none", color: "rgba(255,255,255,0.35)", cursor: "pointer", fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", padding: "8px 14px", zIndex: 20 }}
       >
         ← Back
       </motion.button>
@@ -1134,6 +1312,7 @@ function CraftHubInner() {
   const [showReturn,   setShowReturn]  = useState(false);
   const [portal,       setPortal]      = useState<{ route: string; color: string } | null>(null);
   const [artOfCigar,   setArtOfCigar]  = useState(false);
+  const [craftOverlay, setCraftOverlay] = useState<{ genreKey: "pour" | "brew" | "wine"; route: string; color: string } | null>(null);
   const [mood,         setMood]        = useState("deep");
   const [showPinModal, setShowPinModal] = useState(false);
 
@@ -1373,7 +1552,11 @@ function CraftHubInner() {
                 mod={mod}
                 onTrigger={() => {
                   ExperienceFlowEngine.startCraft(mod.id);
-                  setPortal({ route: mod.route, color: mod.color });
+                  if (mod.id === "pour" || mod.id === "brew" || mod.id === "wine") {
+                    setCraftOverlay({ genreKey: mod.id, route: mod.route, color: mod.color });
+                  } else {
+                    setPortal({ route: mod.route, color: mod.color });
+                  }
                 }}
               />
             </div>
@@ -1411,6 +1594,17 @@ function CraftHubInner() {
             onClose={() => setArtOfCigar(false)}
             onBegin={() => { setArtOfCigar(false); navigate("/master-blender"); }}
             onReturning={() => { setArtOfCigar(false); setShowReturn(true); }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Genre landing overlays — fire on PourCraft / BrewCraft / WineCraft tap ── */}
+      <AnimatePresence>
+        {craftOverlay && (
+          <CraftLandingOverlay
+            genreKey={craftOverlay.genreKey}
+            onClose={() => setCraftOverlay(null)}
+            onBegin={() => { setCraftOverlay(null); setPortal({ route: craftOverlay.route, color: craftOverlay.color }); }}
           />
         )}
       </AnimatePresence>

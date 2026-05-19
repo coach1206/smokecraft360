@@ -1,0 +1,19 @@
+[CRITICAL SYSTEM OVERRIDE: SCREEN IS FLAT AND VACANT — FORCE LAYERED CINEMATIC UI]
+
+Look at the SmokeCraft 360 'THE ART OF THE CIGAR' landing viewport. The current build is a flat, unstyled black background with basic floating text. This is completely unacceptable for a premium luxury OS. It lacks depth, texture, and high-end atmosphere. 
+
+Stop treating this like a generic webpage. You must immediately refactor this specific landing viewport to implement a rich, multi-layered visual depth system using the following exact specifications:
+
+1. FORCE LAYERED VISUAL DEPTH (Z-INDEX STACKING):
+   - LAYER 1 (Deepest Background): Bind a high-resolution, rich cinematic asset (premium cigar smoke texture, dark wood humidor grain, or soft-focus luxury lounge lighting).
+   - LAYER 2 (Ambient Atmosphere Overlay): A fixed CSS linear gradient overlay: 'linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.85))'. This ensures the background image has dark, cinematic weight.
+   - LAYER 3 (The Glow Core): Behind the 'THE ART OF THE CIGAR' typography, inject a soft, diffused radial amber/gold glow accent (#D4AF37 at 8% to 12% opacity, with a heavy 'filter: blur(80px)'). This must create a subtle, premium back-light effect that gives the screen immediate atmosphere.
+   - LAYER 4 (Interactive UI Foreground): The typography, 'BEGIN JOURNEY' button, and progress indicators must sit cleanly on top of this depth stack.
+
+2. FIX THE FALLBACK BACKSTOP:
+   If the specific background asset fails to resolve for even a fraction of a second, the CSS background must NEVER be flat black. It must immediately render a rich, dark, multi-stop gradient ('linear-gradient(135deg, #050505 0%, #120e08 50%, #050505 100%)') so the screen always feels intentionally designed, textured, and premium.
+
+3. APPLY TO ALL GENRES IMMEDIATELY:
+   Ensure this multi-layered depth system (Background Asset + Ambient Overlay + Blur Radial Accent Glow + Foreground) is applied right now to PourCraft (copper glow), BeerCraft (brass glow), and WineCraft (burgundy crimson glow). 
+
+Do not mark this task as complete or tell me it is working in the console logs until you have explicitly rewritten the CSS/styled-component layer stack to give this screen real visual life, weight, and depth. Execute this fix now.
