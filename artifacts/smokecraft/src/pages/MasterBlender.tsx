@@ -832,9 +832,22 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
-  const [ambering, setAmbering] = useState(false);
-  const GOLD = "#d4af37";
+// ── Per-genre palette for the CockpitIdleView strips ────────────────────────
+const COCKPIT_GENRE: Record<string, { accent: string; accentRgba: string; border: string; gradStart: string }> = {
+  smoke: { accent: "#D4AF37", accentRgba: "rgba(212,175,55,0.75)", border: "rgba(212,175,55,0.35)", gradStart: "rgba(212,175,55,0.12)" },
+  pour:  { accent: "#C8762A", accentRgba: "rgba(200,118,42,0.75)", border: "rgba(200,118,42,0.35)", gradStart: "rgba(200,118,42,0.12)" },
+  beer:  { accent: "#B8882A", accentRgba: "rgba(184,136,42,0.75)", border: "rgba(184,136,42,0.35)", gradStart: "rgba(184,136,42,0.12)" },
+  wine:  { accent: "#9B2335", accentRgba: "rgba(155,35,53,0.75)",  border: "rgba(155,35,53,0.35)",  gradStart: "rgba(155,35,53,0.12)"  },
+};
+
+function CockpitIdleView({ onCraft }: { onCraft: (id: string) => void }) {
+  const [ambering, setAmbering] = useState<string | null>(null);
+  const crafts = [
+    { id: "smoke", label: "SMOKECRAFT 360", sub: "The Art of the Cigar"   },
+    { id: "pour",  label: "POURCRAFT 360",  sub: "The Craft of the Pour"  },
+    { id: "beer",  label: "BEERCRAFT 360",  sub: "The Craft of the Brew"  },
+    { id: "wine",  label: "WINECRAFT 360",  sub: "The Craft of the Vine"  },
+  ];
   function playClick() {
     try {
       const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
@@ -845,31 +858,25 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
       g.gain.linearRampToValueAtTime(0.11, ctx.currentTime + 0.005);
       g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
       o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.08);
-    } catch {}
+    } catch { /* silent */ }
   }
-  const crafts: { id: string; label: string; sub: string; active: boolean; accent: string }[] = [
-    { id: "smoke", label: "SMOKECRAFT 360", sub: "The Art of the Cigar",   active: true,  accent: "rgba(212,175,55,0.18)" },
-    { id: "pour",  label: "POURCRAFT 360",  sub: "The Craft of the Pour",  active: false, accent: "rgba(120,100,60,0.10)"  },
-    { id: "beer",  label: "BEERCRAFT 360",  sub: "The Craft of the Brew",  active: false, accent: "rgba(100,80,40,0.10)"   },
-    { id: "wine",  label: "WINECRAFT 360",  sub: "The Craft of the Vine",  active: false, accent: "rgba(90,50,50,0.10)"    },
-  ];
   return (
     <div
       style={{ position: "absolute", inset: 0,
-        background: "radial-gradient(ellipse 65% 45% at 50% 56%, rgba(255,176,0,0.042) 0%, #000000 68%)",
+        background: "#000000",
         display: "flex", flexDirection: "column" as const }}
     >
-      {/* 1.9s amber transitional pulse */}
+      {/* Genre-tinted transitional pulse — fires on the selected craft's accent */}
       <AnimatePresence>
         {ambering && (
           <motion.div
-            key="amber-pulse"
+            key="genre-pulse"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0.65, 0] }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.9, times: [0, 0.25, 0.65, 1], ease: "easeInOut" }}
             style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 999,
-              background: "radial-gradient(circle at 50% 50%, rgba(255,176,0,0.30) 0%, rgba(212,175,55,0.12) 40%, rgba(0,0,0,0) 78%)" }}
+              background: `radial-gradient(circle at 50% 50%, ${COCKPIT_GENRE[ambering]?.gradStart ?? "rgba(212,175,55,0.20)"} 0%, transparent 72%)` }}
           />
         )}
       </AnimatePresence>
@@ -884,66 +891,76 @@ function CockpitIdleView({ onSmokeCraft }: { onSmokeCraft: () => void }) {
           onClick={() => window.location.assign("/novee/")}
           style={{ pointerEvents: "all", background: "transparent",
             border: "1px solid rgba(212,175,55,0.38)", color: "rgba(212,175,55,0.72)",
-            padding: "9px 18px", borderRadius: 4, fontSize: 10, fontWeight: 700,
+            padding: "9px 18px", borderRadius: 4, fontSize: 13, fontWeight: 700,
             letterSpacing: "0.24em", textTransform: "uppercase" as const,
             cursor: "pointer", fontFamily: "'Inter',sans-serif" }}
         >← NOVEE OS</button>
-        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.44em",
+        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, letterSpacing: "0.44em",
           color: "rgba(212,175,55,0.38)", textTransform: "uppercase" as const, margin: 0 }}>CRAFT SELECT</p>
       </div>
 
-      {/* 4 edge-to-edge landscape strips */}
-      {crafts.map((c, i) => (
-        <motion.button
-          key={c.id}
-          initial={{ opacity: 0, x: -24 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.18 + i * 0.1, duration: 0.85 }}
-          whileHover={c.active ? { backgroundColor: "rgba(212,175,55,0.04)" } : {}}
-          whileTap={c.active ? { scale: 0.995 } : {}}
-          onTouchStart={() => c.active && !ambering && playClick()}
-          onClick={() => { if (c.active && !ambering) { playClick(); setAmbering(true); setTimeout(() => onSmokeCraft(), 1900); } }}
-          style={{ flex: 1, position: "relative", border: "none", padding: 0,
-            cursor: c.active ? "pointer" : "default", display: "block",
-            overflow: "hidden", background: "transparent",
-            borderBottom: i < crafts.length - 1 ? "1px solid rgba(212,175,55,0.07)" : "none",
-            outline: "none" }}
-        >
-          {/* Pure cinematic gradient — no photo backgrounds */}
-          <div style={{ position: "absolute", inset: 0,
-            background: c.active
-              ? `linear-gradient(110deg, rgba(212,175,55,0.09) 0%, rgba(6,4,2,0.96) 60%, #000000 100%)`
-              : `linear-gradient(110deg, ${c.accent} 0%, rgba(4,3,1,0.98) 55%, #000000 100%)` }} />
-          {/* Vertical separator highlight */}
-          <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 2,
-            background: c.active ? "linear-gradient(to bottom,transparent,rgba(212,175,55,0.35),transparent)" : "none" }} />
-          {/* Strip content — horizontal layout */}
-          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
-            padding: "0 56px", justifyContent: "space-between" }}>
-            <div>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, fontWeight: 700,
-                letterSpacing: "0.38em", textTransform: "uppercase" as const,
-                color: c.active ? "rgba(212,175,55,0.75)" : "rgba(255,255,255,0.22)",
-                margin: "0 0 8px" }}>{c.active ? "ACTIVE" : "COMING SOON"}</p>
-              <h2 style={{ fontFamily: "'Cormorant Garamond',serif",
-                fontSize: "clamp(1.6rem,3.2vw,2.6rem)", fontWeight: 400,
-                color: c.active ? GOLD : "rgba(255,255,255,0.30)",
-                margin: "0 0 6px", letterSpacing: "0.06em" }}>{c.label}</h2>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, fontWeight: 400,
-                color: c.active ? "rgba(255,252,245,0.58)" : "rgba(255,255,255,0.18)",
-                margin: 0, letterSpacing: "0.18em", textTransform: "uppercase" as const }}>{c.sub}</p>
-            </div>
-            {c.active && (
+      {/* 4 fully-active edge-to-edge landscape strips */}
+      {crafts.map((c, i) => {
+        const g = COCKPIT_GENRE[c.id] ?? COCKPIT_GENRE.smoke!;
+        const isAmbering = ambering === c.id;
+        return (
+          <motion.button
+            key={c.id}
+            initial={{ opacity: 0, x: -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.18 + i * 0.1, duration: 0.85 }}
+            whileHover={{ backgroundColor: g.gradStart }}
+            whileTap={{ scale: 0.995 }}
+            onTouchStart={() => !ambering && playClick()}
+            onClick={() => {
+              if (ambering) return;
+              playClick();
+              setAmbering(c.id);
+              setTimeout(() => { setAmbering(null); onCraft(c.id); }, 1900);
+            }}
+            style={{ flex: 1, position: "relative", border: "none", padding: 0,
+              cursor: "pointer", display: "block",
+              overflow: "hidden", background: "transparent",
+              borderBottom: i < crafts.length - 1 ? `1px solid ${g.border.replace("0.35", "0.10")}` : "none",
+              outline: "none" }}
+          >
+            {/* Per-genre cinematic gradient background */}
+            <div style={{ position: "absolute", inset: 0,
+              background: isAmbering
+                ? `radial-gradient(ellipse at 30% 50%, ${g.gradStart} 0%, rgba(2,1,1,0.96) 70%)`
+                : `linear-gradient(110deg, ${g.gradStart} 0%, rgba(5,3,2,0.96) 58%, #000000 100%)`,
+              transition: "background 0.4s ease" }} />
+
+            {/* Left edge genre accent stripe */}
+            <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 3,
+              background: `linear-gradient(to bottom, transparent, ${g.border}, transparent)` }} />
+
+            {/* Strip content */}
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
+              padding: "0 56px", justifyContent: "space-between" }}>
+              <div>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, fontWeight: 700,
+                  letterSpacing: "0.38em", textTransform: "uppercase" as const,
+                  color: g.accentRgba,
+                  margin: "0 0 10px" }}>ACTIVE</p>
+                <h2 style={{ fontFamily: "'Cormorant Garamond',serif",
+                  fontSize: "clamp(1.8rem,3.4vw,2.8rem)", fontWeight: 400,
+                  color: g.accent,
+                  margin: "0 0 8px", letterSpacing: "0.06em" }}>{c.label}</h2>
+                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 400,
+                  color: "rgba(255,252,245,0.62)",
+                  margin: 0, letterSpacing: "0.18em", textTransform: "uppercase" as const }}>{c.sub}</p>
+              </div>
               <motion.span
                 animate={{ x: [0, 6, 0] }}
                 transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-                style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.4rem,2.8vw,2.2rem)",
-                  color: "rgba(212,175,55,0.50)", letterSpacing: "0.1em", display: "block" }}
+                style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.6rem,3vw,2.4rem)",
+                  color: g.border, letterSpacing: "0.1em", display: "block" }}
               >→</motion.span>
-            )}
-          </div>
-        </motion.button>
-      ))}
+            </div>
+          </motion.button>
+        );
+      })}
     </div>
   );
 }
@@ -5985,7 +6002,12 @@ export default function MasterBlender() {
       {/* ── Cockpit — solid top-layer portal, rendered independently ── */}
       {gateway === "cockpit" && (
         <div style={{ position: "fixed", inset: 0, background: "#000000", zIndex: 99998, display: "flex", flexDirection: "column" }}>
-          <CockpitIdleView onSmokeCraft={() => setGateway("orientation")} />
+          <CockpitIdleView onCraft={(id) => {
+            if (id === "smoke") { setGateway("orientation"); }
+            else if (id === "pour") { nav("/pour"); }
+            else if (id === "beer") { nav("/brew"); }
+            else if (id === "wine") { nav("/wine"); }
+          }} />
         </div>
       )}
 

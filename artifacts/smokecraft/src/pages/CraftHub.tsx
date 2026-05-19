@@ -904,23 +904,23 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
         }}
       />
 
-      {/* ── Layer 2: Cinematic gradient overlay — light at top, moderate at bottom ── */}
+      {/* ── Layer 2: Cinematic gradient overlay — max 0.25 opacity ── */}
       <div
         aria-hidden
         style={{
           position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 45%, rgba(0,0,0,0.72) 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.18) 45%, rgba(0,0,0,0.25) 100%)",
         }}
       />
 
-      {/* ── Edge vignette — adds cinematic depth without burying the photo ── */}
+      {/* ── Edge vignette — max 0.25 opacity ── */}
       <div
         aria-hidden
         style={{
           position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
           background:
-            "radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.62) 100%)",
+            "radial-gradient(ellipse at 50% 50%, transparent 42%, rgba(0,0,0,0.25) 100%)",
         }}
       />
 
@@ -1067,23 +1067,23 @@ function CraftLandingOverlay({ genreKey, onClose, onBegin }: { genreKey: "pour" 
         }}
       />
 
-      {/* Layer 2: Cinematic gradient overlay — light at top, moderate at bottom */}
+      {/* Layer 2: Cinematic gradient overlay — max 0.25 opacity */}
       <div
         aria-hidden
         style={{
           position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.42) 45%, rgba(0,0,0,0.72) 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.18) 45%, rgba(0,0,0,0.25) 100%)",
         }}
       />
 
-      {/* Edge vignette */}
+      {/* Edge vignette — max 0.25 opacity */}
       <div
         aria-hidden
         style={{
           position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
           background:
-            "radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.62) 100%)",
+            "radial-gradient(ellipse at 50% 50%, transparent 42%, rgba(0,0,0,0.25) 100%)",
         }}
       />
 
