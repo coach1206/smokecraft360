@@ -783,11 +783,13 @@ function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => v
 // ── Glassmorphic PIN authentication modal overlay ────────────────────────────
 
 function PinModal({ onClose }: { onClose: () => void }) {
-  const [, navigate] = useLocation();
-  const [pin,        setPin]        = useState("");
-  const [error,      setError]      = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [flashGreen, setFlashGreen] = useState(false);
+  const [, navigate]   = useLocation();
+  // pinRef is the authoritative value — always current, immune to stale closures
+  const pinRef         = useRef("");
+  const [pinLen,       setPinLen]    = useState(0);   // drives dot display only
+  const [error,        setError]     = useState(false);
+  const submittingRef  = useRef(false);
+  const [flashGreen,   setFlashGreen] = useState(false);
   const MAX = 4;
 
   function playKey() {
@@ -797,17 +799,15 @@ function PinModal({ onClose }: { onClose: () => void }) {
       o.connect(g); g.connect(ctx.destination);
       o.frequency.value = 3400; o.type = "sine";
       g.gain.setValueAtTime(0, ctx.currentTime);
-      g.gain.linearRampToValueAtTime(0.10, ctx.currentTime + 0.004);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
-      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.09);
+      g.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.08);
     } catch { /* silent */ }
   }
 
   async function submit(fullPin: string) {
-    if (submitting) return;
-    setSubmitting(true); setError(false);
+    submittingRef.current = true; setError(false);
 
-    // ── Dev bypass: universal PIN active in development builds only ───────────
     if (import.meta.env.DEV && fullPin === "2501") {
       localStorage.setItem("axiom_token", "dev_token_2501");
       setFlashGreen(true);
@@ -816,34 +816,47 @@ function PinModal({ onClose }: { onClose: () => void }) {
     }
 
     try {
-      const res = await fetch("/api/auth/pin-login", {
+      const res  = await fetch("/api/auth/pin-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pin: fullPin }),
       });
-      const data = await res.json() as { ok: boolean; token?: string; name?: string; role?: string; dest?: string };
+      const data = await res.json() as { ok: boolean; token?: string; dest?: string };
       if (data.ok && data.token) {
         localStorage.setItem("axiom_token", data.token);
         setFlashGreen(true);
         setTimeout(() => { onClose(); navigate(data.dest ?? "/operations"); }, 300);
       } else {
-        setError(true); setPin(""); setSubmitting(false);
+        setError(true);
+        pinRef.current = ""; setPinLen(0);
+        submittingRef.current = false;
         setTimeout(() => setError(false), 900);
       }
-    } catch { setError(true); setPin(""); setSubmitting(false); setTimeout(() => setError(false), 900); }
+    } catch {
+      setError(true);
+      pinRef.current = ""; setPinLen(0);
+      submittingRef.current = false;
+      setTimeout(() => setError(false), 900);
+    }
   }
 
-  function pressDigit(d: string) {
-    if (submitting || pin.length >= MAX) return;
+  // onPointerDown fires once per physical press (no synthetic re-fire on touch)
+  function pressDigit(e: React.PointerEvent, d: string) {
+    e.preventDefault();
+    if (submittingRef.current || pinRef.current.length >= MAX) return;
     playKey();
-    const next = pin + d;
-    setPin(next);
+    const next = pinRef.current + d;
+    pinRef.current = next;
+    setPinLen(next.length);
     if (next.length === MAX) void submit(next);
   }
 
-  function backspace() {
-    if (submitting) return;
-    setPin(p => p.slice(0, -1));
+  function pressBack(e: React.PointerEvent) {
+    e.preventDefault();
+    if (submittingRef.current) return;
+    const next = pinRef.current.slice(0, -1);
+    pinRef.current = next;
+    setPinLen(next.length);
   }
 
   const KEYS = ["1","2","3","4","5","6","7","8","9","*","0","⌫"];
@@ -853,94 +866,105 @@ function PinModal({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-      onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 9990, background: "rgba(0,0,0,0.78)", backdropFilter: "blur(14px)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}
+      transition={{ duration: 0.22 }}
+      onPointerDown={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9990,
+        background: "rgba(0,0,0,0.86)",
+        display: "flex", alignItems: "flex-end", justifyContent: "center",
+      }}
     >
       <motion.div
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", stiffness: 340, damping: 34 }}
-        onClick={e => e.stopPropagation()}
+        onPointerDown={e => e.stopPropagation()}
         style={{
-          width: "100%", maxWidth: 440, background: "rgba(14,10,4,0.97)", backdropFilter: "blur(28px)",
-          border: "1px solid rgba(212,175,55,0.28)", borderRadius: "22px 22px 0 0",
-          padding: "32px 28px 44px", display: "flex", flexDirection: "column", alignItems: "center", gap: 0,
-          boxShadow: "0 -12px 48px rgba(212,175,55,0.12), 0 0 0 1px rgba(255,255,255,0.04) inset",
+          width: "100%", maxWidth: 440,
+          background: "#0A0704",
+          border: "1px solid rgba(212,175,55,0.30)",
+          borderRadius: "22px 22px 0 0",
+          padding: "32px 28px 48px",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 0,
+          boxShadow: "0 -16px 56px rgba(0,0,0,0.72), 0 -4px 24px rgba(212,175,55,0.10)",
         }}
       >
         {/* Header */}
-        <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
           <div>
-            <p style={{ margin: 0, fontSize: 9, letterSpacing: "0.36em", color: "rgba(212,175,55,0.45)", textTransform: "uppercase" }}>NOVEE OS · Enterprise</p>
-            <h3 style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.10em", textTransform: "uppercase" }}>[ TRANSACTION ] ACCESS</h3>
+            <p style={{ margin: 0, fontSize: 9, letterSpacing: "0.36em", color: "rgba(212,175,55,0.40)", textTransform: "uppercase" }}>NOVEE OS · Enterprise</p>
+            <h3 style={{ margin: "5px 0 0", fontSize: 18, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.10em", textTransform: "uppercase" }}>[ TRANSACTION ] ACCESS</h3>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "1px solid rgba(255,255,255,0.10)", borderRadius: 8, padding: "8px 10px", cursor: "pointer", color: "rgba(255,255,255,0.35)" }}>
+          <button
+            onPointerDown={e => { e.stopPropagation(); onClose(); }}
+            style={{ background: "none", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 10px", cursor: "pointer", color: "rgba(255,255,255,0.35)" }}>
             <X size={16} />
           </button>
         </div>
 
         {/* PIN dots */}
         <motion.div
-          animate={error ? { x: [-8, 8, -6, 6, -4, 4, 0] } : flashGreen ? { scale: [1, 1.06, 1] } : {}}
-          transition={{ duration: 0.35 }}
-          style={{ display: "flex", gap: 18, marginBottom: 32 }}
+          animate={error ? { x: [-8, 8, -6, 6, -4, 4, 0] } : flashGreen ? { scale: [1, 1.05, 1] } : {}}
+          transition={{ duration: 0.32 }}
+          style={{ display: "flex", gap: 20, marginBottom: 36 }}
         >
           {Array.from({ length: MAX }).map((_, i) => (
             <div key={i} style={{
-              width: 18, height: 18, borderRadius: "50%",
-              background: flashGreen ? "#4ade80" : error ? "#ef4444" : i < pin.length ? "#D4AF37" : "transparent",
-              border: `2px solid ${flashGreen ? "#4ade80" : error ? "#ef4444" : i < pin.length ? "#D4AF37" : "rgba(212,175,55,0.28)"}`,
-              transition: "background 0.15s, border-color 0.15s",
-              boxShadow: i < pin.length ? `0 0 10px ${flashGreen ? "#4ade8066" : "#D4AF3766"}` : "none",
+              width: 20, height: 20, borderRadius: "50%",
+              background: flashGreen ? "#4ade80" : error ? "#ef4444" : i < pinLen ? "#D4AF37" : "transparent",
+              border: `2px solid ${flashGreen ? "#4ade80" : error ? "#ef4444" : i < pinLen ? "#D4AF37" : "rgba(212,175,55,0.25)"}`,
+              transition: "background 0.12s, border-color 0.12s",
+              boxShadow: i < pinLen ? `0 0 12px ${flashGreen ? "#4ade8070" : "#D4AF3760"}` : "none",
             }} />
           ))}
         </motion.div>
 
-        {/* Keypad */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, width: "100%" }}>
+        {/* Keypad — plain buttons, CSS only (no GPU compositing layers) */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, width: "100%" }}>
           {KEYS.map(k => (
-            <KeyPad key={k} label={k} onPress={() => k === "⌫" ? backspace() : k === "*" ? {} : pressDigit(k)} disabled={submitting} />
+            <KeyPad
+              key={k}
+              label={k}
+              onPointerDown={k === "⌫" ? pressBack : k === "*" ? undefined : (e) => pressDigit(e, k)}
+            />
           ))}
         </div>
 
-        {submitting && (
-          <p style={{ marginTop: 20, fontSize: 11, letterSpacing: "0.22em", color: "rgba(212,175,55,0.60)", textTransform: "uppercase" }}>Authenticating…</p>
+        {submittingRef.current && !flashGreen && (
+          <p style={{ marginTop: 22, fontSize: 11, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase" }}>Authenticating…</p>
         )}
       </motion.div>
     </motion.div>
   );
 }
 
-function KeyPad({ label, onPress, disabled }: { label: string; onPress: () => void; disabled: boolean }) {
-  const [pressed, setPressed] = useState(false);
-  function handle() {
-    if (disabled || label === "*") return;
-    setPressed(true); onPress();
-    setTimeout(() => setPressed(false), 100);
-  }
+function KeyPad({ label, onPointerDown }: {
+  label:         string;
+  onPointerDown: ((e: React.PointerEvent) => void) | undefined;
+}) {
+  const blank = label === "*";
+  if (blank) return <div style={{ height: 66 }} />;
+
   return (
-    <motion.button
-      animate={{ scale: pressed ? 0.92 : 1 }}
-      transition={{ duration: 0.08 }}
-      onClick={handle}
+    <button
+      onPointerDown={onPointerDown}
       style={{
-        height: 66, borderRadius: 12, border: "1px solid rgba(212,175,55,0.22)",
-        background: pressed ? "rgba(212,175,55,0.22)" : "rgba(212,175,55,0.05)",
-        cursor: label === "*" ? "default" : "pointer",
-        color: label === "⌫" ? "rgba(212,175,55,0.70)" : "#F0E8D4",
+        height: 66, borderRadius: 12,
+        border: "1px solid rgba(212,175,55,0.22)",
+        background: "rgba(212,175,55,0.05)",
+        cursor: "pointer",
+        color: label === "⌫" ? "rgba(212,175,55,0.75)" : "#F0E8D4",
         fontSize: 22, fontWeight: 700, fontFamily: "inherit",
         display: "flex", alignItems: "center", justifyContent: "center",
         touchAction: "manipulation", userSelect: "none",
-        boxShadow: pressed ? "0 0 18px rgba(212,175,55,0.28)" : "none",
-        transition: "background 0.08s, box-shadow 0.08s",
-        opacity: label === "*" ? 0 : 1,
-        pointerEvents: label === "*" ? "none" : "auto",
+        transition: "background 0.07s, transform 0.07s",
       }}
+      onPointerEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(212,175,55,0.14)"; }}
+      onPointerLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(212,175,55,0.05)"; }}
     >
       {label}
-    </motion.button>
+    </button>
   );
 }
 
