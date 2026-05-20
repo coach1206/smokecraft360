@@ -808,7 +808,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
 
   // ── Root render ───────────────────────────────────────────────────────────
   return (
-    <div style={{ position:"fixed", inset:0, background:CREAM, display:"flex", flexDirection:"column", overflow:"hidden", fontFamily:"'Inter','Helvetica Neue',sans-serif" }}>
+    <div style={{ position:"fixed", inset:0, zIndex:500, background:CREAM, display:"flex", flexDirection:"column", overflow:"hidden", fontFamily:"'Inter','Helvetica Neue',sans-serif" }}>
 
       <header style={{ height:64, flexShrink:0, background:ESPRESSO, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 16px", borderBottom:"1px solid rgba(180,140,80,0.18)", boxShadow:"0 2px 12px rgba(0,0,0,0.35)", zIndex:20 }}>
         <div style={{ display:"flex", alignItems:"center", gap:0, overflow:"hidden" }}>

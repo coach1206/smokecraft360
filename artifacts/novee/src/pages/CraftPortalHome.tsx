@@ -134,6 +134,7 @@ export default function CraftPortalHome() {
   const [goldenBoxSeen,  setGoldenBoxSeen]  = useState<boolean>(() => {
     try { return sessionStorage.getItem("novee_golden_box_seen") === "1"; } catch { return false; }
   });
+  const [showGoldenBox,  setShowGoldenBox]  = useState(false);
   const [showMentorPort, setShowMentorPort] = useState(false);
   const [checkpoint, setCheckpoint] = useState<SessionCheckpoint | null>(null);
 
@@ -156,12 +157,20 @@ export default function CraftPortalHome() {
     playTactile(); hapticMilestone();
     try { sessionStorage.setItem("novee_golden_box_seen", "1"); } catch { /* */ }
     setGoldenBoxSeen(true);
+    setShowGoldenBox(false);
     setShowMentorPort(true);
   }
 
-  function dismissMentorPort() { playTactile(); setShowMentorPort(false); }
+  function dismissMentorPort() { playTactile(); setShowMentorPort(false); setPhase("s1_demo"); }
 
-  function beginNew()      { playTactile(); hapticMilestone(); setPhase("s1_demo"); }
+  function beginNew() {
+    playTactile(); hapticMilestone();
+    if (!goldenBoxSeen) {
+      setShowGoldenBox(true);
+    } else {
+      setPhase("s1_demo");
+    }
+  }
   function resumeSession() { setShowReturn(true); }
 
   return (
@@ -229,18 +238,18 @@ export default function CraftPortalHome() {
         <motion.div
           initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.80, ease: [0.22, 1, 0.36, 1] }}
-          style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 5, padding: "0 52px 36px" }}
+          style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 5, padding: "0 52px 20px", maxHeight: "82%", overflowY: "auto" }}
         >
           {/* Title */}
-          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 48, fontWeight: 400, color: "#F0E8D4", lineHeight: 1.06, marginBottom: 2 }}>
+          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 40, fontWeight: 400, color: "#F0E8D4", lineHeight: 1.06, marginBottom: 2 }}>
             Welcome To
           </div>
-          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 72, fontWeight: 700, color: GOLD, lineHeight: 0.96, marginBottom: 18, textShadow: `0 0 70px ${GOLD}44` }}>
+          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 60, fontWeight: 700, color: GOLD, lineHeight: 0.96, marginBottom: 12, textShadow: `0 0 70px ${GOLD}44` }}>
             Smokecraft 360
           </div>
 
           {/* Gold ornament divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 10 }}>
             <div style={{ height: 1, width: 36, background: `linear-gradient(90deg, transparent, ${GOLD}88)` }} />
             <svg width="14" height="14" viewBox="0 0 20 20" fill={GOLD} opacity={0.70}>
               <path d="M10 2C10 2 4 6 4 12c0 2.2 1.4 3.8 3.4 4.7 0-2.2 1.1-4.4 2.6-5.5-.6 2.3-.6 4.5 0 6.3.3.1.7.3 1 .3V2z"/>
@@ -250,41 +259,40 @@ export default function CraftPortalHome() {
           </div>
 
           {/* Description */}
-          <p style={{ fontSize: 20, color: "rgba(240,232,212,0.55)", lineHeight: 1.58, margin: "0 0 28px", fontWeight: 300 }}>
-            A 4-session luxury cigar science journey.<br />
-            Build your blend, earn your rank.
+          <p style={{ fontSize: 18, color: "rgba(240,232,212,0.55)", lineHeight: 1.5, margin: "0 0 16px", fontWeight: 300 }}>
+            A 4-session luxury cigar science journey. Build your blend, earn your rank.
           </p>
 
           {/* 4 Pillars */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 0, marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 0, marginBottom: 18 }}>
             {PILLARS.map((p, i) => (
               <div key={p.label} style={{ display: "flex", alignItems: "flex-start" }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, minWidth: 96 }}>
-                  <div style={{ width: 58, height: 58, borderRadius: "50%", background: "rgba(0,0,0,0.65)", border: `1.5px solid rgba(212,175,55,0.45)`, backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px rgba(212,175,55,0.12)` }}><p.Icon /></div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.18em", textTransform: "uppercase", textAlign: "center" }}>{p.label}</div>
-                  <div style={{ fontSize: 12, color: "rgba(240,232,212,0.38)", textAlign: "center", lineHeight: 1.35 }}>{p.sub}</div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 86 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(0,0,0,0.65)", border: `1.5px solid rgba(212,175,55,0.45)`, backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px rgba(212,175,55,0.12)` }}><p.Icon /></div>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.18em", textTransform: "uppercase", textAlign: "center" }}>{p.label}</div>
+                  <div style={{ fontSize: 11, color: "rgba(240,232,212,0.38)", textAlign: "center", lineHeight: 1.3 }}>{p.sub}</div>
                 </div>
-                {i < PILLARS.length - 1 && <div style={{ marginTop: 26, padding: "0 10px", fontSize: 18, color: "rgba(212,175,55,0.30)", lineHeight: 1 }}>·</div>}
+                {i < PILLARS.length - 1 && <div style={{ marginTop: 20, padding: "0 8px", fontSize: 16, color: "rgba(212,175,55,0.30)", lineHeight: 1 }}>·</div>}
               </div>
             ))}
           </div>
 
           {/* CTAs */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 480 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 460 }}>
             {checkpoint && (
               <motion.button type="button" onPointerDown={handleRestore} whileTap={{ scale: 0.97 }}
-                style={{ width: "100%", padding: "22px 32px", background: `linear-gradient(135deg, #4A90E2 0%, #357ABD 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#FFFFFF", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(74,144,226,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
+                style={{ width: "100%", padding: "16px 28px", background: `linear-gradient(135deg, #4A90E2 0%, #357ABD 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 16, fontWeight: 800, color: "#FFFFFF", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(74,144,226,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
                 <span>RESTORE SESSION</span>
-                <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>↺</div>
+                <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>↺</div>
               </motion.button>
             )}
             <motion.button type="button" onPointerDown={beginNew} whileTap={{ scale: 0.97 }}
-              style={{ width: "100%", padding: "22px 32px", background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#090600", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
+              style={{ width: "100%", padding: "18px 28px", background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 17, fontWeight: 800, color: "#090600", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
               <span>BEGIN NEW SESSION</span>
-              <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(0,0,0,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>→</div>
+              <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(0,0,0,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>→</div>
             </motion.button>
             <motion.button type="button" onPointerDown={resumeSession} whileTap={{ scale: 0.97 }}
-              style={{ width: "100%", padding: "18px 32px", background: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)", border: `1px solid rgba(212,175,55,0.42)`, borderRadius: 6, cursor: "pointer", fontSize: 16, fontWeight: 700, color: "rgba(240,232,212,0.70)", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", textAlign: "center" }}>
+              style={{ width: "100%", padding: "15px 28px", background: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)", border: `1px solid rgba(212,175,55,0.42)`, borderRadius: 6, cursor: "pointer", fontSize: 15, fontWeight: 700, color: "rgba(240,232,212,0.70)", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", textAlign: "center" }}>
               RESUME SESSION
             </motion.button>
           </div>
@@ -410,7 +418,7 @@ export default function CraftPortalHome() {
 
       {/* ══════════ GOLDEN BOX RULES DISCLOSURE ══════════ */}
       <AnimatePresence>
-        {!goldenBoxSeen && (
+        {showGoldenBox && (
           <motion.div key="golden-box"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -1004,7 +1004,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
 
   // ── Root render ───────────────────────────────────────────────────────────
   return (
-    <div style={{ position:"fixed", inset:0, background:CREAM, display:"flex", flexDirection:"column", overflow:"hidden", fontFamily:"'Inter','Helvetica Neue',sans-serif" }}>
+    <div style={{ position:"fixed", inset:0, zIndex:500, background:CREAM, display:"flex", flexDirection:"column", overflow:"hidden", fontFamily:"'Inter','Helvetica Neue',sans-serif" }}>
 
       {/* ── Top navigation bar ── */}
       <header style={{

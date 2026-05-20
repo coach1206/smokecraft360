@@ -1,0 +1,197 @@
+EXECUTE PAIRING ENGINE LIVE EXPERIENCE REFRACTOR
+
+CURRENT ISSUE:
+The Pairing Engine only displays a cinematic title screen and never transitions into an actual operational pairing interface.
+
+OBJECTIVE:
+Transform the Pairing Engine into a fully interactive luxury hospitality recommendation workspace with live visual content, AI-assisted pairings, and real image support.
+
+====================================================
+PAIRING ENGINE EXPERIENCE FLOW
+==============================
+
+WHEN USER ENTERS PAIRING ENGINE:
+
+STEP 1
+Display cinematic intro state for 1.5–2 seconds:
+• “PAIRING ENGINE”
+• “AI SOMMELIER • FLAVOR INTELLIGENCE”
+• ambient smoke drift
+• ember particles
+• soft amber pulse
+
+STEP 2
+Automatically transition into:
+FULL INTERACTIVE PAIRING WORKSPACE
+
+Use:
+• fade dissolve
+• upward cinematic transition
+• smooth opacity animation
+• GPU-optimized motion
+
+====================================================
+MAIN PAIRING WORKSPACE
+======================
+
+TOP FEATURED EXPERIENCE PANEL
+
+Display:
+• Featured cigar image
+• Featured drink image
+• Featured food image
+• Pairing score %
+• Flavor notes
+• Strength/body meter
+• Region/origin
+• “Tonight’s Recommended Experience”
+
+EXAMPLE:
+Padrón 1964
+Macallan 18
+Wagyu Sliders
+92% Pairing Match
+
+====================================================
+REAL IMAGE SUPPORT
+==================
+
+ENABLE IMAGE SYSTEM SUPPORT FOR:
+
+• cigars
+• bourbon/whiskey
+• cocktails
+• food pairings
+• lounge events
+• VIP experiences
+
+ALLOW:
+• real uploaded photography
+• realistic AI-generated imagery
+• fallback stock images
+• Cloudinary image hosting
+• dynamic image replacement
+
+====================================================
+UPLOAD DIRECTORY SYSTEM
+=======================
+
+CREATE ADMIN MEDIA MANAGER
+
+FEATURES:
+• drag/drop upload
+• category folders
+• pairing galleries
+• image tagging
+• image replacement
+• active/inactive toggle
+• preview mode
+
+CATEGORIES:
+• Cigars
+• Spirits
+• Cocktails
+• Food
+• Lounge Themes
+• Events
+• VIP Experiences
+
+====================================================
+PAIRING INTERACTIONS
+====================
+
+ADD BUTTONS:
+• Add Full Experience
+• Save Pairing
+• Compare Pairings
+• Pair With My Profile
+• AI Recommendation
+• Add To Tab
+
+====================================================
+LOWER EXPERIENCE SECTION
+========================
+
+DISPLAY:
+• Trending Pairings
+• VIP Favorites
+• Rare Reserve Pairings
+• Seasonal Recommendations
+• Staff Picks
+• Lounge Favorites
+
+Use:
+• horizontal swipe carousel
+• touchscreen-friendly cards
+• large image-first layouts
+
+====================================================
+RIGHT-SIDE INTELLIGENCE PANEL
+=============================
+
+SHOW:
+• current lounge mode
+• lighting preset
+• music preset
+• humidity
+• atmosphere recommendation
+• recommended seating zone
+
+====================================================
+AI PAIRING LOGIC
+================
+
+RECOMMENDATIONS SHOULD ADAPT TO:
+• user profile
+• flavor preferences
+• time of day
+• humidity
+• lounge energy
+• inventory availability
+• event mode
+• VIP status
+
+====================================================
+VISUAL REQUIREMENTS
+===================
+
+DO NOT USE:
+• placeholder boxes
+• empty black screens
+• tiny text
+• generic dashboard widgets
+
+USE:
+• realistic cigar imagery
+• realistic drink pours
+• premium food photography
+• cinematic lounge visuals
+• cream/walnut/gold visual system
+
+====================================================
+RESPONSIVE REQUIREMENTS
+=======================
+
+OPTIMIZE FOR:
+• touchscreen kiosks
+• tablets
+• desktop command stations
+
+MINIMUM FONT SIZES:
+• headers 30px+
+• card titles 22px+
+• operational text 18px+
+
+====================================================
+FINAL REQUIREMENTS
+==================
+
+• no empty pairing screen
+• no dead interactions
+• fully animated transition into workspace
+• real image rendering
+• uploadable media system
+• touchscreen optimized
+• luxury hospitality visual identity
+• responsive layouts
+• future AI expansion ready
