@@ -116,11 +116,13 @@ class NoveePOSRouterEngineClass {
 
     if (ev.eventType !== "ORDER_PLACED") return;
 
-    if (ev.guestSessionId) {
-      this._pruneProcessed();
-      if (this.processed.has(ev.guestSessionId)) return;
-      this.processed.set(ev.guestSessionId, Date.now());
-    }
+    // Dedup by composite key (sessionId + timestamp) — prevents double-firing when
+    // the EXACT same event arrives twice (network retry), while allowing multiple
+    // distinct orders from the same session within the 30s window.
+    const dedupKey = `${ev.guestSessionId ?? "anon"}:${ev.timestamp}`;
+    this._pruneProcessed();
+    if (this.processed.has(dedupKey)) return;
+    this.processed.set(dedupKey, Date.now());
 
     const itemNames = ev.lineItems.map(i => i.name);
     const m = getMultiplier();
@@ -133,6 +135,7 @@ class NoveePOSRouterEngineClass {
       .map(i => ({ name: i.name, qty: i.qty }));
     if (decrements.length) this.cbs.onInventoryDecrement(decrements);
 
+    // Spend tracking is always keyed by sessionId — independent of dedup gate
     if (ev.guestSessionId) this._trackSpend(ev.guestSessionId, ev.totalCents);
   };
 

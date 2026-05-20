@@ -35,7 +35,15 @@ function tryEmitToVenueRoom(venueId: string, event: string, payload: Record<stri
     } else {
       io.emit(event, payload);
     }
-  } catch { /* socket not ready or circular — silent */ }
+  } catch (err) {
+    // Socket not ready yet (circular dep at startup) or IO not initialized — expected during boot
+    // Log only if it looks like an unexpected runtime failure (not a missing-IO startup race)
+    const msg = err instanceof Error ? err.message : String(err);
+    if (!msg.includes("getIO") && !msg.includes("Cannot find module")) {
+      // eslint-disable-next-line no-console
+      console.warn("[unifiedPosBridge] socket emit failed:", msg);
+    }
+  }
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────

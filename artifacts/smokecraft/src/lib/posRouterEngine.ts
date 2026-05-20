@@ -109,7 +109,11 @@ class POSRouterEngineClass {
   private callbacks:  POSRouterCallbacks | null = null;
   private venueId:    string | null             = null;
   private sessions    = new Map<string, ActiveSession>();
-  /** 30s dedup cache keyed by guestSessionId to prevent double-firing */
+  /**
+   * Dedup cache keyed by order-unique composite: `${guestSessionId}:${timestamp}`
+   * This prevents exact duplicate network retries of the same event while allowing
+   * multiple distinct orders from the same session within the 30s window.
+   */
   private processed   = new Map<string, number>();
 
   subscribe(venueId: string, callbacks: POSRouterCallbacks): void {
@@ -142,13 +146,13 @@ class POSRouterEngineClass {
     // Side effects (XP + inventory) ONLY on ORDER_PLACED
     if (ev.eventType !== "ORDER_PLACED") return;
 
-    // Dedup by guestSessionId — prevents double-firing if the same order
-    // session somehow arrives twice (e.g. network retry)
-    if (ev.guestSessionId) {
-      this._pruneProcessed();
-      if (this.processed.has(ev.guestSessionId)) return;
-      this.processed.set(ev.guestSessionId, Date.now());
-    }
+    // Dedup by composite key (sessionId + timestamp) — prevents double-firing when
+    // the EXACT same event arrives twice (network retry), while allowing multiple
+    // distinct orders from the same session within the 30s window.
+    const dedupKey = `${ev.guestSessionId ?? "anon"}:${ev.timestamp}`;
+    this._pruneProcessed();
+    if (this.processed.has(dedupKey)) return;
+    this.processed.set(dedupKey, Date.now());
 
     const itemNames  = ev.lineItems.map(i => i.name);
     const multiplier = getMultiplier();
@@ -161,6 +165,7 @@ class POSRouterEngineClass {
       .map(i => ({ name: i.name, qty: i.qty }));
     if (decrements.length) this.callbacks.onInventoryDecrement(decrements);
 
+    // Spend tracking is always keyed by sessionId — independent of dedup gate
     if (ev.guestSessionId) this._trackSpend(ev.guestSessionId, ev.totalCents);
   };
 
