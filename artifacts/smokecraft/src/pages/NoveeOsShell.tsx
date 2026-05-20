@@ -24,11 +24,11 @@ const G = GOLD;
 const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
 const PAGE_V = {
-  enter: { opacity: 0, x: 40, scale: 0.96 },
-  active: { opacity: 1, x: 0, scale: 1 },
-  exit: { opacity: 0, x: -30, scale: 0.98 },
+  enter:  { opacity: 0, scale: 0.97, filter: "blur(10px)" },
+  active: { opacity: 1, scale: 1,    filter: "blur(0px)"  },
+  exit:   { opacity: 0, scale: 1.02, filter: "blur(8px)"  },
 };
-const PAGE_T = { type: "spring" as const, mass: 1.1, stiffness: 280, damping: 32, duration: 0.35 };
+const PAGE_T = { duration: 1.60, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] };
 const EASE_CINEMA: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const S1_PHASES = new Set(["s1_demo", "s1_rules", "s1_leaderboard", "s1_mentor", "s1_seed", "s1_quiz", "s1_posgate"]);
@@ -65,12 +65,184 @@ function StubView({ title, icon, sub }: { title: string; icon: string; sub: stri
   );
 }
 
+const FALLBACK_VENUE_ID = "00000000-0000-0000-0000-000000000001";
+
+interface PairingSuggestion {
+  id: string;
+  name: string;
+  category: string;
+  costCents: number;
+  affinityScore: number;
+}
+
 function PairingView() {
-  return <StubView title="PAIRING ENGINE" icon="⟡" sub="AI Sommelier · Flavor Intelligence" />;
+  const [pairings, setPairings] = useState<PairingSuggestion[]>([]);
+  const [pulse, setPulse]       = useState("");
+  const [loading, setLoading]   = useState(true);
+
+  React.useEffect(() => {
+    const venueId = localStorage.getItem("smokecraft_venue") ?? FALLBACK_VENUE_ID;
+    fetch(`/api/pairing-engine/suggest?venueId=${venueId}&type=cigar&limit=6`)
+      .then(r => r.json())
+      .then(d => {
+        if (Array.isArray(d.suggestions)) setPairings(d.suggestions);
+        if (d.pulse) setPulse(d.pulse);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div style={{ width: "100%", height: "100%", overflow: "auto", padding: "24px 28px" }}>
+      <div style={{ marginBottom: 20, borderBottom: `1px solid ${GOLD}22`, paddingBottom: 14 }}>
+        <div style={{ fontSize: 36, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>PAIRING INTELLIGENCE</div>
+        <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 4 }}>AI Sommelier · Flavor-Matched Recommendations</div>
+        {pulse && <div style={{ fontSize: 12, color: "#5BBFFF", marginTop: 8, letterSpacing: "0.10em", fontFamily: "'Inter',sans-serif" }}>{pulse}</div>}
+      </div>
+      {loading ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200 }}>
+          <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.8, repeat: Infinity }}
+            style={{ fontSize: 24, color: GOLD, letterSpacing: "0.20em", fontFamily: "'Cormorant Garamond',serif" }}>
+            READING PALATE…
+          </motion.div>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+          {pairings.map((p, i) => (
+            <motion.div key={p.id}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.10, duration: 0.55 }}
+              style={{ background: "rgba(5,3,1,0.82)", backdropFilter: "blur(18px)", borderRadius: 12, border: `1px solid ${GOLD}33`, padding: 18, position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(212,175,55,0.05) 0%, transparent 60%)", pointerEvents: "none" }} />
+              <div style={{ fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 6, fontFamily: "'Inter',sans-serif" }}>{p.category}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: "rgba(240,232,212,0.95)", marginBottom: 10, fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{p.name}</div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ fontSize: 16, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>${(p.costCents / 100).toFixed(0)}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{ width: 60, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: `${p.affinityScore}%`, background: `linear-gradient(90deg, ${GOLD}88, ${GOLD})`, borderRadius: 2 }} />
+                  </div>
+                  <span style={{ fontSize: 11, color: `${GOLD}99`, fontFamily: "'Inter',sans-serif" }}>{p.affinityScore}%</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+          {!loading && pairings.length === 0 && (
+            <div style={{ gridColumn: "1 / -1", textAlign: "center", color: `${GOLD}40`, fontSize: 20, padding: 48, fontFamily: "'Cormorant Garamond',serif" }}>
+              Begin a session to unlock AI pairing recommendations.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
+
+interface EnvState {
+  energyState:       string;
+  eventAtmosphere:   string;
+  automationEnabled: boolean;
+  intensityOverride: number | null;
+  warmthOverride:    number | null;
+}
+const ENERGY_STATES = ["quiet_reserve","social_warmth","elevated_lounge","peak_energy","vip_session","late_night_reserve","event_atmosphere","mentor_session"] as const;
+
 function LoungeView() {
-  return <StubView title="LOUNGE MODE" icon="◯" sub="Ambient Venue Controls" />;
+  const [env, setEnv]       = useState<EnvState | null>(null);
+  const [saving, setSaving] = useState(false);
+  const venueId = localStorage.getItem("smokecraft_venue") ?? FALLBACK_VENUE_ID;
+
+  React.useEffect(() => {
+    fetch(`/api/environment/${venueId}`)
+      .then(r => r.json())
+      .then(d => { if (d.state) setEnv(d.state as EnvState); })
+      .catch(() => {});
+  }, [venueId]);
+
+  function applyPreset(preset: string) {
+    setSaving(true);
+    const token = localStorage.getItem("axiom_token") ?? "";
+    fetch(`/api/environment/${venueId}/preset`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ preset }),
+    })
+      .then(r => r.json())
+      .then(d => { if (d.state) setEnv(d.state as EnvState); })
+      .catch(() => {})
+      .finally(() => setSaving(false));
+  }
+
+  return (
+    <div style={{ width: "100%", height: "100%", overflow: "auto", padding: "24px 28px" }}>
+      <div style={{ marginBottom: 20, borderBottom: `1px solid ${GOLD}22`, paddingBottom: 14 }}>
+        <div style={{ fontSize: 36, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>LOUNGE CONTROL</div>
+        <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 4 }}>Environmental Reaction Engine · Live Venue Atmosphere</div>
+      </div>
+      {!env ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200 }}>
+          <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.8, repeat: Infinity }}
+            style={{ fontSize: 24, color: GOLD, letterSpacing: "0.20em", fontFamily: "'Cormorant Garamond',serif" }}>
+            READING ENVIRONMENT…
+          </motion.div>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div style={{ background: "rgba(5,3,1,0.82)", backdropFilter: "blur(18px)", borderRadius: 12, border: `1px solid ${GOLD}33`, padding: 20 }}>
+            <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 12, fontFamily: "'Inter',sans-serif" }}>CURRENT STATE</div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", marginBottom: 8, lineHeight: 1.2 }}>
+              {env.energyState.replace(/_/g, " ").toUpperCase()}
+            </div>
+            <div style={{ fontSize: 13, color: "rgba(240,232,212,0.55)", letterSpacing: "0.10em", fontFamily: "'Inter',sans-serif" }}>
+              Atmosphere: {env.eventAtmosphere === "none" ? "Standard" : env.eventAtmosphere.replace(/_/g, " ")}
+            </div>
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: env.automationEnabled ? "#32B45A" : "#F07070", boxShadow: `0 0 7px ${env.automationEnabled ? "#32B45A" : "#F07070"}` }} />
+              <span style={{ fontSize: 11, color: `${GOLD}66`, letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>AUTOMATION {env.automationEnabled ? "ACTIVE" : "DISABLED"}</span>
+            </div>
+          </div>
+          <div style={{ background: "rgba(5,3,1,0.82)", backdropFilter: "blur(18px)", borderRadius: 12, border: `1px solid ${GOLD}33`, padding: 20 }}>
+            <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 14, fontFamily: "'Inter',sans-serif" }}>ENVIRONMENT LEVELS</div>
+            {([["Intensity", env.intensityOverride ?? 65, GOLD], ["Warmth", env.warmthOverride ?? 72, "#C87028"]] as [string,number,string][]).map(([label, value, color]) => (
+              <div key={label} style={{ marginBottom: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                  <span style={{ fontSize: 12, color: `${GOLD}70`, letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>{label}</span>
+                  <span style={{ fontSize: 14, color, fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>{value}%</span>
+                </div>
+                <div style={{ height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${value}%` }} transition={{ duration: 1.2, ease: "easeOut" }}
+                    style={{ height: "100%", background: `linear-gradient(90deg, ${color}88, ${color})`, borderRadius: 3 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ gridColumn: "1 / -1", background: "rgba(5,3,1,0.82)", backdropFilter: "blur(18px)", borderRadius: 12, border: `1px solid ${GOLD}33`, padding: 20 }}>
+            <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 14, fontFamily: "'Inter',sans-serif" }}>ENERGY STATE PRESETS</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {ENERGY_STATES.map(s => {
+                const active = env.energyState === s;
+                return (
+                  <motion.button key={s} type="button" onPointerDown={() => applyPreset(s)} whileTap={{ scale: 0.94 }} disabled={saving}
+                    style={{
+                      padding: "10px 18px", borderRadius: 8, fontFamily: "'Inter',sans-serif", fontSize: 11, fontWeight: 700,
+                      letterSpacing: "0.12em", cursor: saving ? "not-allowed" : "pointer", textTransform: "uppercase",
+                      background: active ? "rgba(212,175,55,0.18)" : "rgba(255,255,255,0.04)",
+                      color: active ? GOLD : "rgba(240,232,212,0.50)",
+                      border: `1px solid ${active ? GOLD + "66" : "rgba(255,255,255,0.08)"}`,
+                      boxShadow: active ? `0 0 14px ${GOLD}2A, inset 0 1px 0 ${GOLD}22` : "none",
+                    }}>
+                    {s.replace(/_/g, " ")}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
+
 function ProfileView() {
   const { navigate, resetGuest } = useNoveeNav();
   return (
@@ -85,13 +257,61 @@ function ProfileView() {
     </div>
   );
 }
+
 function SettingsView() {
-  return <StubView title="SETTINGS" icon="⊹" sub="Kiosk Configuration" />;
+  const deviceId = (() => { try { return localStorage.getItem("novee_device_id") ?? "KIOSK-001"; } catch { return "KIOSK-001"; } })();
+  const SETTINGS = [
+    { group: "SESSION", items: [
+      { label: "Auto-reset timer",  value: "15 minutes" },
+      { label: "Guest greeting",    value: "Enabled"    },
+      { label: "Boot sequence",     value: "Enabled"    },
+    ]},
+    { group: "AUDIO", items: [
+      { label: "Ambient audio",     value: "Active"     },
+      { label: "Haptic feedback",   value: "Enabled"    },
+    ]},
+    { group: "SYSTEM", items: [
+      { label: "Device ID",         value: deviceId          },
+      { label: "Platform version",  value: "NOVEE OS v2.4"   },
+      { label: "Kernel mode",       value: "Sovereign"       },
+      { label: "Heartbeat",         value: "Active · Live"   },
+    ]},
+  ];
+  return (
+    <div style={{ width: "100%", height: "100%", overflow: "auto", padding: "24px 28px" }}>
+      <div style={{ marginBottom: 20, borderBottom: `1px solid ${GOLD}22`, paddingBottom: 14 }}>
+        <div style={{ fontSize: 36, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>SYSTEM CONFIGURATION</div>
+        <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 4 }}>Kiosk Edition · Table Terminal Settings</div>
+      </div>
+      {SETTINGS.map(section => (
+        <div key={section.group} style={{ marginBottom: 22 }}>
+          <div style={{ fontSize: 10, letterSpacing: "0.30em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 10, fontFamily: "'Inter',sans-serif", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: 6 }}>
+            {section.group}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {section.items.map(item => (
+              <div key={item.label} style={{ background: "rgba(5,3,1,0.72)", backdropFilter: "blur(12px)", borderRadius: 8, border: `1px solid ${GOLD}22`, padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 15, color: "rgba(240,232,212,0.75)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }}>{item.label}</span>
+                <span style={{ fontSize: 14, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif", letterSpacing: "0.08em" }}>{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div style={{ marginTop: 20 }}>
+        <motion.button type="button" whileTap={{ scale: 0.96 }}
+          onPointerDown={() => { try { sessionStorage.removeItem("novee_boot_done"); } catch { /* */ } window.location.reload(); }}
+          style={{ padding: "15px 30px", borderRadius: 10, border: "1px solid rgba(240,112,112,0.35)", background: "rgba(240,112,112,0.08)", color: "#F07070", fontSize: 14, fontWeight: 700, letterSpacing: "0.14em", cursor: "pointer", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
+          RESTART KIOSK
+        </motion.button>
+      </div>
+    </div>
+  );
 }
 
 const NAV_ITEMS = [
   { id: "crafthub",          label: "CraftHub",             abbr: "HUB", targetPhase: "crafthub" as Phase,          isActive: (p: string) => p === "crafthub" },
-  { id: "smokecraft",        label: "SmokeCraft",           abbr: "SC",  targetPhase: "crafthub" as Phase,          isActive: (p: string) => SESSION_PHASES.has(p) },
+  { id: "smokecraft",        label: "SmokeCraft",           abbr: "SC",  targetPhase: "s1_demo" as Phase,           isActive: (p: string) => SESSION_PHASES.has(p) },
   { id: "eat",               label: "E.A.T Intel",          abbr: "EAT", targetPhase: "eat_dashboard" as Phase,     pinLevel: "staff" as PinRole,      isActive: (p: string) => p === "eat_dashboard" },
   { id: "executive_command", label: "Command Center",       abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, isActive: (p: string) => p === "executive_command" },
   { id: "pairing",           label: "Pairing",              abbr: "PR",  targetPhase: "pairing_view" as Phase,      isActive: (p: string) => p === "pairing_view" },
@@ -176,7 +396,7 @@ function OsNavBar() {
 
 const RAIL_ITEMS = [
   { id: "crafthub",          label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub" as Phase,          pinLevel: undefined,                    icon: "⊹", isActive: (p: string) => p === "crafthub" },
-  { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "crafthub" as Phase,          pinLevel: undefined,                    icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
+  { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,                    icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
   { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "staff" as PinRole,           icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
   { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole,      icon: "⟡", isActive: (p: string) => p === "executive_command" },
   { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,                    icon: "◆", isActive: (p: string) => p === "pairing_view" },
@@ -344,9 +564,11 @@ function EATTelemetryBar() {
         ))}
       </div>
 
-      <div style={{ flexShrink: 0, padding: "0 16px", height: "100%", display: "flex", alignItems: "center", gap: 8, borderLeft: `1px solid rgba(212,175,55,0.14)` }}>
-        <span style={{ fontSize: 8.5, letterSpacing: "0.22em", color: `${GOLD}50`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>OPEN COMMAND CENTER</span>
-        <span style={{ fontSize: 14, color: `${GOLD}66` }}>›</span>
+      <div
+        onPointerDown={(e) => { e.stopPropagation(); navigate("executive_command", "management"); }}
+        style={{ flexShrink: 0, padding: "0 18px", height: "100%", display: "flex", alignItems: "center", gap: 8, borderLeft: `1px solid rgba(212,175,55,0.22)`, cursor: "pointer", background: "rgba(212,175,55,0.03)", transition: "background 0.18s" }}>
+        <span style={{ fontSize: 8.5, letterSpacing: "0.22em", color: `${GOLD}80`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>OPEN COMMAND CENTER</span>
+        <span style={{ fontSize: 14, color: GOLD }}>›</span>
       </div>
     </motion.div>
   );
@@ -575,7 +797,8 @@ function OsShellContent() {
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
             <FullBleedBackground />
             <SystemBar />
-            <div style={{ position: "relative", zIndex: 10, width: "100%", height: "100%" }}>
+            {/* Content starts at top:44 so SystemBar never clips or intercepts */}
+            <div style={{ position: "absolute", top: 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
               <PhaseRouter eatFlags={eatFlags} onFlagsChange={setEatFlags} />
             </div>
           </div>

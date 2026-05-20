@@ -1,0 +1,296 @@
+EXECUTE COMPLETE NOVEE OS KIOSK ARCHITECTURE FIX
+(PRIORITY: TRUE OPERATING SYSTEM CONVERSION)
+
+The current NOVEE OS / SmokeCraft build has crossed from visual prototype phase into OS architecture phase.
+
+DO NOT redesign the visual identity.
+DO NOT remove cinematic systems.
+DO NOT simplify the interface.
+
+This task is STRICTLY:
+interaction architecture,
+viewport restructuring,
+persistent OS shell conversion,
+and live routing repair.
+
+==================================================
+PHASE 1 — BUILD TRUE NOVEE OS SHELL
+==================================================
+
+Create a persistent operating system shell architecture.
+
+The system must behave like:
+Tesla UI,
+Apple Vision OS,
+luxury casino kiosks,
+military command systems.
+
+The following layers MUST remain permanently mounted:
+
+• Top navigation bar
+• Left vertical rail
+• Right utility systems
+• Bottom E.A.T Intel strip
+• Smoke atmosphere
+• Ember fixture
+• Ambient vignette
+• Audio environment
+• Session memory
+
+ONLY the CENTER VIEWPORT may change.
+
+==================================================
+TARGET STRUCTURE
+==================================================
+
+<NoveeOSShell>
+
+  <PersistentTopBar />
+  <PersistentLeftRail />
+  <PersistentRightRail />
+  <PersistentAtmosphere />
+  <PersistentIntelStrip />
+
+  <ViewportContainer>
+     Dynamic mounted modules render here only
+  </ViewportContainer>
+
+</NoveeOSShell>
+
+==================================================
+PHASE 2 — FIX ROUTING SYSTEM
+==================================================
+
+Replace ALL fake visual tab state logic.
+
+REMOVE:
+activeTab-only highlighting behavior.
+
+IMPLEMENT:
+true viewport content switching.
+
+All top navigation buttons MUST mount live modules.
+
+Required routes/modules:
+
+/crafthub
+/smokecraft
+/lounge
+/pairing
+/eat-intel
+/settings
+/profile
+/command-center
+
+Use React Router OR internal viewport state manager.
+
+REQUIREMENTS:
+• no hard reloads
+• preserve atmosphere continuity
+• preserve audio continuity
+• preserve ember continuity
+• preserve smoke continuity
+• preserve session state
+
+==================================================
+PHASE 3 — CRAFTHUB RESTORATION
+==================================================
+
+CraftHub button MUST restore actual CraftHub home.
+
+CraftHub Home MUST contain:
+
+• cinematic hero
+• 4 craft tiles
+• atmospheric intro
+• system overview
+• immersive entry portal
+• ambient lounge presentation
+• E.A.T explanation
+• NOVEE OS overview
+
+NOT just highlight the tab.
+
+==================================================
+PHASE 4 — FIX CLICK INTERCEPTION
+==================================================
+
+Audit ALL overlays and cinematic layers.
+
+ALL decorative systems MUST use:
+
+pointer-events: none;
+
+INCLUDING:
+• smoke layers
+• ember particles
+• cinematic gradients
+• ambient overlays
+• vignette systems
+• floating effects
+
+Navigation and buttons MUST remain fully clickable.
+
+==================================================
+PHASE 5 — VIEWPORT RESTRUCTURE
+==================================================
+
+Current issue:
+top nav + bottom intel strip are crushing viewport height.
+
+REMOVE ALL:
+fixed-height assumptions.
+
+CREATE:
+dynamic responsive kiosk viewport calculations.
+
+The center viewport height MUST dynamically calculate around:
+
+• top bar height
+• bottom intel strip height
+• safe viewport padding
+• left rail width
+• right rail width
+
+Ensure:
+NO clipping.
+NO hidden content.
+NO cut-off typography.
+
+==================================================
+PHASE 6 — COMMAND CENTER ACTIVATION
+==================================================
+
+The "Open Command Center" button must become live.
+
+Create mounted Command Center module.
+
+Features:
+• Lounge metrics
+• Environment telemetry
+• Session tracking
+• Pairing analytics
+• POS connection status
+• Inventory status
+• Humidor intelligence
+• Live room conditions
+
+Must open as:
+cinematic side-panel OR fullscreen command overlay.
+
+==================================================
+PHASE 7 — LIVE MODULE ACTIVATION
+==================================================
+
+The following sections MUST become operational:
+
+• Lounge
+• Pairing
+• Settings
+• E.A.T Intel
+• My Profile
+
+Each module MUST mount inside center viewport.
+
+NO placeholders.
+
+==================================================
+PHASE 8 — Z-INDEX HIERARCHY REBUILD
+==================================================
+
+Establish strict z-index architecture.
+
+Required hierarchy:
+
+z-index 1:
+background imagery
+
+z-index 10:
+ambient smoke
+
+z-index 20:
+ember effects
+
+z-index 30:
+vignettes
+
+z-index 50:
+content viewport
+
+z-index 100:
+navigation systems
+
+z-index 200:
+modal systems
+
+z-index 300:
+command overlays
+
+Ensure:
+NO overlay blocks interaction.
+
+==================================================
+PHASE 9 — TRANSITION SYSTEM
+==================================================
+
+Preserve cinematic pacing.
+
+NO instant swaps.
+
+Use:
+• dissolve fades
+• blur transitions
+• atmospheric transitions
+• opacity interpolation
+• smooth viewport transitions
+
+Duration:
+1.2s–2.4s.
+
+==================================================
+PHASE 10 — RESPONSIVE KIOSK MODE
+==================================================
+
+Primary target:
+1920x1080 landscape kiosk.
+
+Also support:
+1440p
+MacBook landscape
+tablet landscape.
+
+NO clipped content.
+NO overflow cutoffs.
+NO hidden hero sections.
+
+==================================================
+PHASE 11 — QUALITY VALIDATION
+==================================================
+
+Verify:
+• CraftHub returns properly
+• all tabs route correctly
+• command center opens
+• no dead buttons
+• no click interception
+• no content clipping
+• no overflow issues
+• no atmosphere resets
+• no white flashes
+• no visual snapping
+
+==================================================
+FINAL REQUIREMENT
+==================================================
+
+The final system must feel like:
+
+"a living luxury hospitality operating system"
+
+NOT:
+"a website with cinematic effects."
+
+EXECUTE COMPLETE ARCHITECTURE REBUILD NOW.
+NO STUBS.
+NO PLACEHOLDERS.
+NO PARTIAL IMPLEMENTATIONS.
