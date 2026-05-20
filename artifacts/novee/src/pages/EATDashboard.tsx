@@ -626,6 +626,42 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
               })}
             </div>
           </Card>
+
+          {/* Recent transactions — last 10 tabs */}
+          <Card>
+            <div style={{ padding: "13px 18px", borderBottom: `1px solid ${BORDER_DIM}`,
+              display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", textTransform: "uppercase" }}>RECENT ACTIVITY</span>
+              <span style={{ fontSize: 11, color: "rgba(212,175,55,0.35)", fontWeight: 700, letterSpacing: "0.10em" }}>LAST {Math.min(liveTabs.length, 10)}</span>
+            </div>
+            <div style={{ overflow: "auto", maxHeight: 240 }}>
+              {liveTabs.slice(0, 10).map(t => (
+                <motion.div key={t.id} whileTap={{ backgroundColor: "rgba(212,175,55,0.04)" }}
+                  style={{ padding: "11px 18px", borderBottom: `1px solid rgba(255,255,255,0.03)`,
+                    display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "default" }}>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.82)", marginBottom: 2 }}>{t.name}</div>
+                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.26)", letterSpacing: "0.10em" }}>
+                      TABLE {t.id} · {t.guests} GUEST{t.guests !== 1 ? "S" : ""}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, lineHeight: 1 }}>${t.spend.toLocaleString()}</div>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 3,
+                      color: t.status === "active" ? TEAL : "rgba(255,255,255,0.22)" }}>
+                      {t.status}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+              {liveTabs.length === 0 && (
+                <div style={{ padding: "24px", textAlign: "center", fontSize: 11,
+                  color: "rgba(255,255,255,0.18)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+                  NO ACTIVITY THIS SHIFT
+                </div>
+              )}
+            </div>
+          </Card>
         </div>
 
       </main>
@@ -647,8 +683,28 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
           <StaffPinGate
             level="staff"
             onSuccess={() => {
-              if (pendingAction === "close_tab" && activeTables[0]) {
+              const token   = localStorage.getItem("axiom_token") ?? "";
+              const headers: HeadersInit = {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              };
+              if (pendingAction === "open_tab") {
+                const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
+                fetch("/api/tabs/open", {
+                  method: "POST", headers,
+                  body: JSON.stringify({ guestName: "Walk-in Guest", venueId }),
+                })
+                  .then(r => r.ok ? r.json() : null)
+                  .then(d => { if (d?.tab?.id) setBillTableId(Number(d.tab.id)); })
+                  .catch(() => {});
+              } else if (pendingAction === "close_tab" && activeTables[0]) {
                 setBillTableId(activeTables[0].id);
+              } else if (pendingAction === "void_item" && activeTables[0]) {
+                const tabId = activeTables[0].id;
+                fetch(`/api/tabs/${tabId}/void`, { method: "POST", headers })
+                  .then(r => r.ok ? r.json() : null)
+                  .then(() => setLiveTabs(prev => prev.filter(t => t.id !== tabId)))
+                  .catch(() => {});
               }
               setPendingAction(null);
             }}

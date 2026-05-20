@@ -69,7 +69,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
   }, []);
 
   function logFailedManagement() {
-    if (level === "management") {
+    if (activeLevel === "management") {
       fetch("/api/audit", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },

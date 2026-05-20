@@ -338,6 +338,7 @@ app.use("/api/auth/pin-login", pinLimiter, pinAuthRouter);
 app.use("/api/auth",           authLimiter, authRouter);
 app.use("/api/recommend", recommendLimiter, recommendRouter);
 app.use("/api/products",                    productsRouter);
+app.use("/api/inventory",                   productsRouter);
 app.use("/api/analytics",                   venueAnalyticsRouter);
 app.use("/api/analytics",                   insightsRouter);
 app.use("/api/analytics",                   analyticsRouter);
