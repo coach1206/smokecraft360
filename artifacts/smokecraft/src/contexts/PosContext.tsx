@@ -555,19 +555,30 @@ export function PosProvider({ children }: { children: ReactNode }) {
 
   // ── Wire POSRouterEngine — subscribe on mount, destroy on unmount ──────────
   useEffect(() => {
-    posRouterEngine.subscribe({
+    // Derive venueId: prefer stored user's venue context, fall back to a
+    // session/localStorage value set during kiosk boot, then use a default.
+    let venueId = "default";
+    try {
+      const stored = sessionStorage.getItem("pos_venue_id") ??
+                     localStorage.getItem("pos_venue_id");
+      if (stored) venueId = stored;
+    } catch { /* SSR / blocked storage */ }
+
+    posRouterEngine.subscribe(venueId, {
       onSynergyXP: (result) => {
         if (result.xpAwarded > 0) setSynergyXP(result);
       },
-      onInventoryDecrement: (itemNames) => {
-        // Find products whose names match any of the incoming item names
-        // and decrement stock by 1 per matched item (external POS deduction)
-        const lower = itemNames.map(n => n.toLowerCase());
-        for (const prod of productsRef.current) {
-          const pLower = prod.name.toLowerCase();
-          const matched = lower.filter(n => pLower.includes(n) || n.includes(pLower));
-          if (matched.length > 0) {
-            applyStockDelta(prod.id, -matched.length, "pos.external_order");
+      onInventoryDecrement: (items) => {
+        // Qty-accurate stock decrement: match product by name and apply the
+        // exact ordered quantity from the external POS lineItem.
+        for (const item of items) {
+          const lower = item.name.toLowerCase();
+          for (const prod of productsRef.current) {
+            const pLower = prod.name.toLowerCase();
+            if (pLower.includes(lower) || lower.includes(pLower)) {
+              applyStockDelta(prod.id, -item.qty, "pos.external_order");
+              break; // one product match per line item
+            }
           }
         }
       },

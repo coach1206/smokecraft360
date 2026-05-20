@@ -33,6 +33,20 @@ function tryEmitPosOrderComplete(payload: Record<string, unknown>): void {
   } catch { /* socket not ready or circular — silent */ }
 }
 
+/** Emit an event to a venue-scoped room; falls back to global broadcast. */
+function tryEmitToVenueRoom(venueId: string, event: string, payload: Record<string, unknown>): void {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getIO } = require("../lib/socketServer") as { getIO: () => import("socket.io").Server };
+    const io = getIO();
+    if (venueId) {
+      io.to(`venue:${venueId}`).emit(event, payload);
+    } else {
+      io.emit(event, payload);
+    }
+  } catch { /* socket not ready or circular — silent */ }
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type PosHealthStatus = "HEALTHY" | "DEGRADED" | "OFFLINE" | "UNCONFIGURED";
@@ -263,12 +277,26 @@ export const UnifiedPOSBridge = {
         lineItems:      order.items.map(i => ({
           name:       i.name,
           productId:  i.productId,
-          qty:        i.quantity,
+          qty:        i.quantity,   // pass actual ordered quantity
           priceCents: i.priceCents,
         })),
         totalCents:     order.totalCents,
-        guestSessionId: null,
+        // Use POS-side order ID as session correlation so spend tracking populates
+        guestSessionId: order.id ?? order.externalId ?? null,
         timestamp:      new Date().toISOString(),
+      });
+
+      // Also emit venue-scoped PAYMENT_COMPLETE so normalized channel consumers fire
+      tryEmitToVenueRoom(venueId, "pos:PAYMENT_COMPLETE", {
+        eventType:  "PAYMENT_COMPLETE",
+        vendor:     reg.provider,
+        venueId,
+        lineItems:  order.items.map(i => ({
+          name: i.name, productId: i.productId, qty: i.quantity, priceCents: i.priceCents,
+        })),
+        totalCents:  order.totalCents,
+        sessionId:   order.id ?? order.externalId ?? null,
+        ts:          Date.now(),
       });
 
       return result;

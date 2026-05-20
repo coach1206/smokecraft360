@@ -184,9 +184,27 @@ router.post("/pos/order", (req: Request, res: Response) => {
   const { orderType, items, venueId, tableId } = parsed.data;
 
   try {
-    const io      = getIO();
-    const payload = { orderType, items, venueId, tableId, ts: Date.now() };
-    io.emit("pos_order", payload);
+    const io  = getIO();
+    const ts  = Date.now();
+
+    // Legacy broadcast (backwards compat)
+    io.emit("pos_order", { orderType, items, venueId, tableId, ts });
+
+    // Normalized live-event — routed to venue room when venueId is known,
+    // global broadcast as fallback so clients without join_venue still receive
+    const livePayload = {
+      eventType:  "ORDER_PLACED" as const,
+      venueId:    venueId ?? undefined,
+      lineItems:  (items ?? []).map((name: string) => ({ name, productId: "", qty: 1, priceCents: 0 })),
+      totalCents: 0,
+      ts,
+    };
+    if (venueId) {
+      io.to(`venue:${venueId}`).emit("pos:ORDER_PLACED", livePayload);
+    } else {
+      io.emit("pos:ORDER_PLACED", livePayload);
+    }
+
     req.log.info({ orderType, venueId }, "POS direct order broadcast");
     res.json({ success: true, broadcast: io.engine.clientsCount });
   } catch (err) {
@@ -215,9 +233,28 @@ router.post("/pos/webhook", (req: Request, res: Response) => {
   }
 
   try {
-    const io      = getIO();
-    const payload = { orderType, items, ts: Date.now() };
-    io.emit("pos_order", payload);
+    const io  = getIO();
+    const ts  = Date.now();
+    const body = req.body as Record<string, unknown>;
+    const webhookVenueId = typeof body["venueId"] === "string" ? body["venueId"] : undefined;
+
+    // Legacy broadcast
+    io.emit("pos_order", { orderType, items, ts });
+
+    // Normalized live-event broadcast
+    const livePayload = {
+      eventType:  "ORDER_PLACED" as const,
+      venueId:    webhookVenueId,
+      lineItems:  items.map((name: string) => ({ name, productId: "", qty: 1, priceCents: 0 })),
+      totalCents: 0,
+      ts,
+    };
+    if (webhookVenueId) {
+      io.to(`venue:${webhookVenueId}`).emit("pos:ORDER_PLACED", livePayload);
+    } else {
+      io.emit("pos:ORDER_PLACED", livePayload);
+    }
+
     req.log.info({ orderType, itemCount: items.length }, "POS webhook broadcast");
     res.json({ ok: true, orderType, broadcast: io.engine.clientsCount });
   } catch (err) {

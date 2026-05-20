@@ -59,18 +59,25 @@ export function usePosIntegration() {
 
   // ── Subscribe to live POS order events on mount ───────────────────────────
   useEffect(() => {
-    noveePosRouterEngine.subscribe({
+    let venueId = "default";
+    try {
+      const stored = sessionStorage.getItem("pos_venue_id") ??
+                     localStorage.getItem("pos_venue_id");
+      if (stored) venueId = stored;
+    } catch { /* blocked storage */ }
+
+    noveePosRouterEngine.subscribe(venueId, {
       onSynergyXP: (result) => {
         if (result.xpAwarded > 0) setSynergyXP(result);
       },
-      onInventoryDecrement: (_itemNames) => {
-        // NOVEE manages inventory via inventoryState.ts — signal update
+      onInventoryDecrement: (items) => {
+        // Dispatch with qty so inventoryState.ts consumers can apply accurate decrements
         window.dispatchEvent(new CustomEvent("novee:inventory_decrement", {
-          detail: { itemNames: _itemNames },
+          detail: { items },
         }));
       },
-      onOrderReceived: (vendor, _totalCents) => {
-        if (vendor) setLastOrderVendor(vendor);
+      onLiveEvent: (ev) => {
+        if (ev.vendor) setLastOrderVendor(ev.vendor);
       },
     });
     return () => noveePosRouterEngine.destroy();

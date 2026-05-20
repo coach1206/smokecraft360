@@ -1,15 +1,24 @@
 /**
  * posRouterEngine.ts — Frontend POS State-Binding Layer (SmokeCraft)
  *
- * Connects to the existing socket.io singleton and listens for `pos_order`
- * and `pos_order_complete` events from any of the 4 vendor adapters
- * (Toast · Clover · Square · Lightspeed).
+ * subscribe(venueId, callbacks) opens a venue-scoped socket channel to the
+ * existing Socket.IO infra at /api/socket.io.  The engine joins the
+ * `venue:<venueId>` room and listens for four normalized event types:
  *
- * On each external order event:
- *  1. Classifies line items into categories (cigar / spirit / food / other)
- *  2. Computes flavor synergy XP based on category combinations
- *  3. Applies active spend multiplier (2x / 3x / 5x) from localStorage
- *  4. Dispatches callbacks to PosContext for inventory decrement + XP overlay
+ *   pos:ORDER_PLACED    — new order confirmed at the POS terminal
+ *   pos:ITEM_ADDED      — line item added to an open tab
+ *   pos:TAB_CLOSED      — tab settled / guest checked out
+ *   pos:PAYMENT_COMPLETE — payment fully captured
+ *
+ * Legacy events (`pos_order`, `pos_order_complete`) are also handled for
+ * backwards compatibility with direct-trigger and webhook paths.
+ *
+ * Per event the engine:
+ *  1. Filters out any event whose venueId does not match the subscribed venue
+ *  2. Classifies line items into cigar / spirit / food / other
+ *  3. Computes flavor synergy XP with optional spend multiplier
+ *  4. Dispatches qty-accurate inventory decrements to PosContext
+ *  5. Maintains a per-session spend ledger for E.A.T Terminal display
  */
 
 import { socket } from "@/lib/socket";
@@ -17,20 +26,20 @@ import { socket } from "@/lib/socket";
 // ── Item category classification ──────────────────────────────────────────────
 
 const CIGAR_KW  = ["cigar","padron","cohiba","arturo","fuente","opus","liga","romeo","davidoff","montecristo","plasencia","behike"];
-const SPIRIT_KW = ["bourbon","whiskey","whisky","scotch","cognac","hennessy","macallan","rum","vodka","gin","tequila","mezcal","cognac","brandy","armagnac"];
+const SPIRIT_KW = ["bourbon","whiskey","whisky","scotch","cognac","hennessy","macallan","rum","vodka","gin","tequila","mezcal","brandy","armagnac"];
 const FOOD_KW   = ["plate","slider","truffle","wagyu","lobster","deviled","salad","cheese","chocolate","charcuterie","nuts","pairing","appetizer","soup"];
 
 export type ItemCategory = "cigar" | "spirit" | "food" | "other";
 
 function classify(name: string): ItemCategory {
   const n = name.toLowerCase();
-  if (CIGAR_KW.some(k => n.includes(k)))  return "cigar";
+  if (CIGAR_KW.some(k  => n.includes(k))) return "cigar";
   if (SPIRIT_KW.some(k => n.includes(k))) return "spirit";
-  if (FOOD_KW.some(k => n.includes(k)))   return "food";
+  if (FOOD_KW.some(k   => n.includes(k))) return "food";
   return "other";
 }
 
-// ── Synergy XP table ─────────────────────────────────────────────────────────
+// ── Synergy XP table ──────────────────────────────────────────────────────────
 //   Cigar only:              +5 XP
 //   Cigar + Spirit:         +12 XP
 //   Cigar + Spirit + Food:  +22 XP
@@ -81,7 +90,29 @@ export interface ActiveSession {
   lastActivity: number;
 }
 
-// ── Socket event shapes ───────────────────────────────────────────────────────
+// ── Normalized POS line item (shared across event types) ─────────────────────
+
+export interface PosLineItem {
+  name:       string;
+  productId:  string;
+  qty:        number;
+  priceCents: number;
+}
+
+// ── Normalized event shape emitted to frontend ────────────────────────────────
+// All four event types share this contract.  `eventType` is the discriminant.
+
+export interface PosLiveEvent {
+  eventType:      "ORDER_PLACED" | "ITEM_ADDED" | "TAB_CLOSED" | "PAYMENT_COMPLETE";
+  vendor?:        string;
+  venueId?:       string;
+  lineItems:      PosLineItem[];
+  totalCents:     number;
+  sessionId?:     string;   // POS-side order / tab correlation ID
+  ts:             number;
+}
+
+// ── Legacy socket event shapes (backwards compat) ────────────────────────────
 
 interface PosOrderSocketEvent {
   orderType:  string | null;
@@ -93,8 +124,8 @@ interface PosOrderSocketEvent {
 
 interface PosOrderCompleteEvent {
   vendor:         string;
-  venueId:        string;
-  lineItems:      { name?: string; productId?: string; qty?: number; priceCents?: number }[];
+  venueId?:       string;
+  lineItems:      PosLineItem[];
   totalCents:     number;
   guestSessionId?: string;
   timestamp:      string;
@@ -105,67 +136,150 @@ interface PosOrderCompleteEvent {
 export interface POSRouterCallbacks {
   /** Called when synergy XP should be awarded (cigar/spirit/food combo) */
   onSynergyXP: (result: SynergyResult) => void;
-  /** Called with matching product names that should have stock decremented */
-  onInventoryDecrement: (itemNames: string[]) => void;
-  /** Called when any POS order arrives — for display / analytics */
-  onOrderReceived?: (event: PosOrderSocketEvent | PosOrderCompleteEvent) => void;
+  /** Called with qty-accurate line items that should have stock decremented */
+  onInventoryDecrement: (items: { name: string; qty: number }[]) => void;
+  /** Called on any live event — for analytics / display */
+  onLiveEvent?: (event: PosLiveEvent) => void;
 }
 
 // ── Engine class ──────────────────────────────────────────────────────────────
 
 class POSRouterEngineClass {
   private callbacks: POSRouterCallbacks | null = null;
-  private sessions  = new Map<string, ActiveSession>();
+  private venueId:   string | null             = null;
+  private sessions   = new Map<string, ActiveSession>();
 
-  subscribe(callbacks: POSRouterCallbacks): void {
-    this.destroy(); // clean any prior subscription
+  /**
+   * Open the venue-scoped live-events channel.
+   *
+   * Joins `venue:<venueId>` room so the server routes events only to this
+   * venue's clients.  Listens for all four normalised event types plus legacy
+   * fallbacks.  Call destroy() before calling subscribe() again.
+   */
+  subscribe(venueId: string, callbacks: POSRouterCallbacks): void {
+    this.destroy();
+    this.venueId   = venueId;
     this.callbacks = callbacks;
-    socket.on("pos_order",          this._handleOrder);
-    socket.on("pos_order_complete", this._handleOrderComplete);
+
+    // Join venue room — server routes pos:* events to this room
+    socket.emit("join_venue", { venueId });
+
+    // ── Normalized live-event channel (/api/pos/live-events semantics)
+    socket.on("pos:ORDER_PLACED",    this._handleLiveEvent);
+    socket.on("pos:ITEM_ADDED",      this._handleLiveEvent);
+    socket.on("pos:TAB_CLOSED",      this._handleLiveEvent);
+    socket.on("pos:PAYMENT_COMPLETE",this._handleLiveEvent);
+
+    // ── Legacy fallbacks (direct-trigger + webhook paths)
+    socket.on("pos_order",           this._handleOrder);
+    socket.on("pos_order_complete",  this._handleOrderComplete);
   }
+
+  // ── Normalized event handler (all four types) ─────────────────────────────
+
+  private _handleLiveEvent = (ev: PosLiveEvent): void => {
+    if (!this.callbacks) return;
+    // Venue-scope guard — ignore cross-venue events that slip through
+    if (ev.venueId && this.venueId && ev.venueId !== this.venueId) return;
+
+    const itemNames  = ev.lineItems.map(i => i.name);
+    const multiplier = getMultiplier();
+    const synergy    = calcSynergyXP(itemNames, multiplier);
+
+    if (synergy.xpAwarded > 0) {
+      this.callbacks.onSynergyXP(synergy);
+    }
+
+    // Qty-accurate decrement
+    const decrementItems = ev.lineItems
+      .filter(i => i.name && i.qty > 0)
+      .map(i => ({ name: i.name, qty: i.qty }));
+    if (decrementItems.length) {
+      this.callbacks.onInventoryDecrement(decrementItems);
+    }
+
+    // Session spend tracking
+    if (ev.sessionId) {
+      this._trackSpend(ev.sessionId, ev.totalCents);
+    }
+
+    this.callbacks.onLiveEvent?.(ev);
+  };
+
+  // ── Legacy: pos_order (direct trigger / webhook)  ────────────────────────
 
   private _handleOrder = (ev: PosOrderSocketEvent): void => {
     if (!this.callbacks) return;
-    const items = ev.items ?? [];
+    if (ev.venueId && this.venueId && ev.venueId !== this.venueId) return;
+
+    const items      = ev.items ?? [];
     const multiplier = getMultiplier();
-    const synergy = calcSynergyXP(items, multiplier);
+    const synergy    = calcSynergyXP(items, multiplier);
 
     if (synergy.xpAwarded > 0) this.callbacks.onSynergyXP(synergy);
-    if (items.length)           this.callbacks.onInventoryDecrement(items);
-    this.callbacks.onOrderReceived?.(ev);
+    if (items.length) {
+      // Legacy path has no qty — assume 1 per item
+      this.callbacks.onInventoryDecrement(items.map(n => ({ name: n, qty: 1 })));
+    }
+
+    this.callbacks.onLiveEvent?.({
+      eventType: "ORDER_PLACED",
+      venueId:   ev.venueId,
+      lineItems: items.map(n => ({ name: n, productId: "", qty: 1, priceCents: 0 })),
+      totalCents: 0,
+      ts: ev.ts,
+    });
   };
+
+  // ── Legacy: pos_order_complete (from unifiedPosBridge.pushOrder) ──────────
 
   private _handleOrderComplete = (ev: PosOrderCompleteEvent): void => {
     if (!this.callbacks) return;
+    if (ev.venueId && this.venueId && ev.venueId !== this.venueId) return;
 
-    // Extract item names from the enriched payload
-    const itemNames = (ev.lineItems ?? [])
-      .map(i => i.name ?? "")
-      .filter(n => n.length > 0);
-
+    const lineItems  = ev.lineItems ?? [];
+    const itemNames  = lineItems.map(i => i.name).filter(n => n.length > 0);
     const multiplier = getMultiplier();
-    const synergy = calcSynergyXP(itemNames, multiplier);
+    const synergy    = calcSynergyXP(itemNames, multiplier);
 
     if (synergy.xpAwarded > 0) this.callbacks.onSynergyXP(synergy);
-    if (itemNames.length)       this.callbacks.onInventoryDecrement(itemNames);
 
-    // Track session spend
-    if (ev.guestSessionId) {
-      const existing = this.sessions.get(ev.guestSessionId);
-      this.sessions.set(ev.guestSessionId, {
-        sessionId:    ev.guestSessionId,
-        totalSpent:   (existing?.totalSpent ?? 0) + ev.totalCents,
-        lastActivity: Date.now(),
-      });
+    // Qty-accurate from enriched payload
+    const decrementItems = lineItems
+      .filter(i => i.name && i.qty > 0)
+      .map(i => ({ name: i.name, qty: i.qty }));
+    if (decrementItems.length) {
+      this.callbacks.onInventoryDecrement(decrementItems);
     }
 
-    this.callbacks.onOrderReceived?.(ev);
+    const sessionId = ev.guestSessionId;
+    if (sessionId) this._trackSpend(sessionId, ev.totalCents);
+
+    this.callbacks.onLiveEvent?.({
+      eventType: "PAYMENT_COMPLETE",
+      vendor:    ev.vendor,
+      venueId:   ev.venueId,
+      lineItems,
+      totalCents: ev.totalCents,
+      sessionId,
+      ts: Date.now(),
+    });
   };
+
+  // ── Session spend ledger ──────────────────────────────────────────────────
+
+  private _trackSpend(sessionId: string, totalCents: number): void {
+    const existing = this.sessions.get(sessionId);
+    this.sessions.set(sessionId, {
+      sessionId,
+      totalSpent:   (existing?.totalSpent ?? 0) + totalCents,
+      lastActivity: Date.now(),
+    });
+  }
 
   /** Returns all tracked active sessions (for display in E.A.T Terminal) */
   getActiveSessions(): ActiveSession[] {
-    // Prune sessions idle >4 hours
-    const cutoff = Date.now() - 4 * 60 * 60 * 1000;
+    const cutoff = Date.now() - 4 * 60 * 60 * 1000; // 4-hour idle prune
     for (const [id, s] of this.sessions) {
       if (s.lastActivity < cutoff) this.sessions.delete(id);
     }
@@ -174,9 +288,14 @@ class POSRouterEngineClass {
 
   /** Unsubscribe all socket listeners and clear state */
   destroy(): void {
-    socket.off("pos_order",          this._handleOrder);
-    socket.off("pos_order_complete", this._handleOrderComplete);
+    socket.off("pos:ORDER_PLACED",    this._handleLiveEvent);
+    socket.off("pos:ITEM_ADDED",      this._handleLiveEvent);
+    socket.off("pos:TAB_CLOSED",      this._handleLiveEvent);
+    socket.off("pos:PAYMENT_COMPLETE",this._handleLiveEvent);
+    socket.off("pos_order",           this._handleOrder);
+    socket.off("pos_order_complete",  this._handleOrderComplete);
     this.callbacks = null;
+    this.venueId   = null;
   }
 }
 
