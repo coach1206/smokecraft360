@@ -1,0 +1,40 @@
+EXECUTE NATIVE OS ARCHITECTURAL FIX: BIND SMOKECRAFT 360 TO NOVEE OS ECOSYSTEM (NO STUBS / 100% FUNCTIONAL)
+
+1. ERASE ALL ISOLATED WEB VIEWS: Treat this platform as a native touchscreen kiosk (1920x1080 landscape) running a unified hospitality operating system, not a standard browser app. Strip out the flat-design dashboard cards and generic glyphs. Everything must now use a cohesive material language: Obsidian Glass panels, Brushed Titanium headers, Warm Gold accents, and Smoked Chrome background plates. Elimination of hover states is mandatory.
+
+2. ADD GLOBAL NATIVE OS NAVIGATION LAYER (FUNCTIONAL RAIL/DOCK): Deploy a persistent, system-level navigation chassis that is visible across ALL SmokeCraft screens.
+
+POSITION: Left-side vertical OS rail, compact and minimalist, framed in brushed titanium and gold. 
+The rail must have touch-friendly, minimal amber glowing icons and prestige serif labels with full-stack coding linkage (no stubs) for:
+  * CraftHub
+  * SmokeCraft
+  * E.A.T Intelligence (Rename visually as: "E.A.T Intelligence | Environment • Asset • Transaction")
+  * Pairing Engine
+  * Lounge Mode
+  * My Profile
+  * Settings
+
+STYLE REQUIREMENTS: Cinematic, luxury, and touch-optimized. Utilize obsidian black glass, amber/gold glow accents, metallic highlights, and a soft smoke ambiance.
+
+3. UNIFY ALL NAVIGATION HOOKS (ZERO BROKEN PATHS):
+
+ADD "RETURN TO CRAFTHUB" ENTRY POINT: LINKed to the system dock, accessible from ALL SmokeCraft screens. On selection, execute a heavy, cinematic smoke dissolve transition, retracting ambient haptic lighting, returning the user to the NOVEE OS CraftHub launcher (master operating environment).
+
+ADD E.A.T SYSTEM ACCESS: E.A.T Intelligence must open functionally without leaving the OS chassis. It must integrate with true, live backend telemetry (zero Enterprise Analytics dashboards) to display real data parameters:
+  * environment intelligence (Atmosphere / Lighting telemetry)
+  * pairing intelligence (Chemical match analytics)
+  * inventory awareness (Physical humidor stock count)
+  * lounge atmosphere status (Table spend triggers)
+  * guest preference analytics (Mentor tracking)
+  * recommendation engine (Spend multipliers)
+  * venue intelligence (POS transaction log)
+
+ADD MODULE SWITCHING: The system must allow functional, seamless switching inside CraftHub between "SmokeCraft 360," "PourCraft 360," "BeerCraft 360," and "VapeCraft 360" without breaking immersion or losing state, utilizing a high-fidelity soundscape and motion engine. Preserving smoke atmosphere and lighting language is essential.
+
+4. BIND SESSION PRESERVATION & MULTIPLIERS (RE-ENTRY CHECKPOINT): Ensure zero session destruction when the user leaves. Preserve all mentor selection, XP, blend profile, completed stages, and loyalty progression. Session is only cleared by explicit "END SESSION" call or when starting a "NEW EXPERIENCE."
+
+5. CINEMATIC NATIVE MOTION ENGINE: Transitions between all views must eliminate hard cuts. Use weighted spring mass animations (Forward: dissolve opacity 1->0, slide left -50px; Incoming: slide in, scale 0.95->1.0). Use synthetic tone oscillators and haptic vibrate() pulses mapped to all nodes. Text is oversized for 40-60 age cohorts in dim lighting. Enforce fullscreen, fullscreen safe, and tablet-optimized kiosk safety.
+
+6. MAINTAIN SYSTEM CONTINUITY: The user should ALWAYS feel they are still inside NOVEE OS. Add the NOVEE OS identity layer, subtle OS status indicators (Gaia GA location marker, Biometric ring status), module breadcrumbs, and ambient system glow across every view.
+
+REFACTOR COMPLETE APP TREE IN PARALLEL BATCHES NOW. ZERO SHORTCUTS. 100% PRESTIGE FIDELITY.

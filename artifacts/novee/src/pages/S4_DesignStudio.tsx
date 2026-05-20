@@ -75,7 +75,7 @@ export function S4_DesignStudio() {
 
   return (
     <div style={{
-      position: "fixed",
+      position: "absolute",
       inset: 0,
       background: "#000000",
       overflow: "hidden",

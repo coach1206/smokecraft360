@@ -41,7 +41,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: "crafthub",   label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub",      isActive: (p) => p === "crafthub" },
   { id: "smokecraft", label: "SmokeCraft",  abbr: "SC",  targetPhase: "crafthub",      isActive: (p) => SESSION_PHASES.has(p) },
-  { id: "eat",        label: "E.A.T",       abbr: "EAT", targetPhase: "eat_dashboard", isActive: (p) => p === "eat_dashboard" },
+  { id: "eat",        label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard", isActive: (p) => p === "eat_dashboard" },
   { id: "pairing",    label: "Pairing",     abbr: "PR",  targetPhase: null,            isActive: () => false },
   { id: "lounge",     label: "Lounge",      abbr: "LG",  targetPhase: "crafthub",      isActive: () => false },
   { id: "profile",    label: "My Profile",  abbr: "ME",  targetPhase: null,            isActive: () => false },

@@ -156,7 +156,7 @@ export function S2_TerroirMatrix() {
   ] as const;
 
   return (
-    <div style={{ position: "fixed", inset: 0, overflow: "hidden", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", fontFamily: "'Inter', sans-serif" }}>
       <BackButton />
 
       <div style={{

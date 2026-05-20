@@ -117,7 +117,7 @@ export function S3_FormulationLab() {
 
   return (
     <div style={{
-      position: "fixed",
+      position: "absolute",
       inset: 0,
       background: "#000000",
       overflow: "hidden",
