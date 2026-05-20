@@ -153,10 +153,10 @@ export default function CraftPortalHome() {
 
           {/* Title */}
           <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 50, fontWeight: 400, color: "#F0E8D4", lineHeight: 1.06, marginBottom: 2 }}>
-            Welcome to
+            Welcome To
           </div>
           <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 72, fontWeight: 700, color: GOLD, lineHeight: 0.96, marginBottom: 20, textShadow: `0 0 70px ${GOLD}44` }}>
-            The Lounge
+            Smokecraft 360
           </div>
 
           {/* Gold ornament divider */}
