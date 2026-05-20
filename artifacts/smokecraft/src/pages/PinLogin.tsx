@@ -35,7 +35,7 @@ interface PinLoginResponse {
 }
 
 async function validatePin(pin: string, mode: "staff" | "management" = "staff", venueId?: string): Promise<PinLoginResponse> {
-  const endpoint = mode === "management" ? "/api/auth/founder-verify" : "/api/auth/pin-login";
+  const endpoint = "/api/auth/pin-login";
   const res = await fetch(endpoint, {
     method:  "POST",
     headers: { "Content-Type": "application/json" },

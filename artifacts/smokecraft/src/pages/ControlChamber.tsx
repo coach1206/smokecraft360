@@ -16,7 +16,7 @@ export default function ControlChamber() {
   const verifyPin = async () => {
     if (pin.length < 6) { setError("ENTER 6-DIGIT FOUNDER PIN"); return; }
     try {
-      const res = await fetch("/api/auth/founder-verify", {
+      const res = await fetch("/api/auth/pin-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pin }),

@@ -69,15 +69,15 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
 
       let data: PinResponse;
       if (activeLevel === "management") {
-        // Management: verify against founder secret (server-side bcrypt)
-        const res = await fetch("/api/auth/founder-verify", {
+        // Management: 6-digit sovereign PIN, validated server-side via pinAuth.ts
+        const res = await fetch("/api/auth/pin-login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ pin: entered }),
         });
         data = await res.json() as PinResponse;
       } else {
-        // Staff/developer: DB-backed via venueStaffTable
+        // Staff/developer: 4-digit DB-backed via venueStaffTable
         const res = await fetch("/api/auth/pin-login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
