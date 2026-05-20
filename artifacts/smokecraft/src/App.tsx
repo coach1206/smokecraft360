@@ -52,6 +52,7 @@ const SovereignOverrideHub = lazy(() => import('@/components/SovereignOverrideHu
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
 const SettingsModule        = lazy(() => import('@/pages/SettingsModule'));
+const OperationsManual      = lazy(() => import('@/pages/OperationsManual'));
 const AdminMaster           = lazy(() => import('@/pages/AdminMaster'));
 const OnboardWizard         = lazy(() => import('@/pages/OnboardWizard'));
 const AnalyticsModule       = lazy(() => import('@/pages/AnalyticsModule'));
@@ -1016,6 +1017,9 @@ export default function App() {
           </Route>
           <Route path="/settings">
             <SubPageProviders><SettingsModule /></SubPageProviders>
+          </Route>
+          <Route path="/operations-manual">
+            <SubPageProviders><OperationsManual /></SubPageProviders>
           </Route>
           <Route path="/admin-master">
             <SubPageProviders><AdminMaster /></SubPageProviders>

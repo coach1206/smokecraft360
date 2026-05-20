@@ -1,0 +1,430 @@
+==================================================
+MASTER DOCUMENT STRUCTURE
+
+CREATE THE FOLLOWING COMPLETE MANUALS:
+
+VOLUME 1 — NOVEE OS MASTER OPERATIONS BIBLE
+VOLUME 2 — CRAFTHUB EXPERIENCE & NAVIGATION GUIDE
+VOLUME 3 — SMOKECRAFT 360 STAFF TRAINING SYSTEM
+VOLUME 4 — E.A.T. SYSTEM TECHNICAL OPERATIONS GUIDE
+VOLUME 5 — POS & COMMERCE INTELLIGENCE MANUAL
+VOLUME 6 — VENUE DEPLOYMENT & INSTALLATION HANDBOOK
+VOLUME 7 — ADMIN COMMAND CENTER & SECURITY GUIDE
+VOLUME 8 — AI INTELLIGENCE & REVENUE BRAIN GUIDE
+VOLUME 9 — FRANCHISE & MULTI-VENUE OPERATIONS MANUAL
+VOLUME 10 — LUXURY SERVICE CERTIFICATION & STAFF TRAINING HANDBOOK
+
+==================================================
+GLOBAL OUTPUT RULES
+
+THE DOCUMENTATION MUST INCLUDE:
+
+• Executive overviews
+• Technical architecture
+• SOP procedures
+• Role-based workflows
+• Staff onboarding systems
+• Troubleshooting guides
+• Revenue optimization systems
+• Behavioral intelligence explanations
+• Deployment instructions
+• Hardware setup
+• Guest journey flows
+• Staff interaction examples
+• Scripts for employees
+• Venue management procedures
+• AI learning systems
+• Security systems
+• POS integration logic
+• Session management
+• Inventory intelligence
+• Environment automation
+• Experience orchestration
+• Emotional atmosphere control
+• Revenue trigger logic
+• Ambient intelligence
+• Pairing intelligence
+• Dynamic recommendations
+• Cross-platform orchestration
+• Franchise scalability
+• Enterprise governance
+• Compliance systems
+• Emergency fallback systems
+• Failure recovery systems
+• Certification programs
+
+==================================================
+SECTION REQUIREMENTS
+
+FOR EVERY MAJOR SYSTEM INCLUDE:
+
+1. WHAT THE SYSTEM IS
+2. WHY IT EXISTS
+3. HOW IT WORKS
+4. WHAT DATA IT TRACKS
+5. WHAT AUTOMATIONS IT CONTROLS
+6. HOW STAFF INTERACTS WITH IT
+7. HOW GUESTS EXPERIENCE IT
+8. HOW MANAGERS CONFIGURE IT
+9. HOW ADMINS MONITOR IT
+10. WHAT HAPPENS DURING FAILURES
+11. HOW RECOVERY WORKS
+12. WHAT AI DECISIONS ARE MADE
+13. WHAT TRIGGERS ACTIONS
+14. WHAT EVENTS ARE TRACKED
+15. HOW THE SYSTEM LEARNS OVER TIME
+
+==================================================
+NOVEE OS REQUIREMENTS
+
+FULLY EXPLAIN:
+
+• Living Infrastructure
+• Behavioral Intelligence
+• Environment Adaptation
+• Mood Recognition
+• Sensory Intelligence
+• Dynamic Atmosphere Control
+• Revenue Optimization
+• Predictive Intelligence
+• Autonomous Venue Adjustments
+• Cross-System Communication
+• AI Orchestration
+• Smart Venue Synchronization
+• Multi-Room Intelligence
+• Emotional Energy Mapping
+• Staff Guidance Systems
+• Phantom Service
+• Guest Memory Profiles
+• AI Learning Loops
+• Operational Intelligence
+• Intelligent Automation
+• Experience Enhancement Systems
+
+INCLUDE:
+• Data flow diagrams
+• Decision trees
+• Trigger maps
+• Behavioral analysis examples
+• Venue adaptation examples
+• Revenue increase scenarios
+
+==================================================
+CRAFTHUB REQUIREMENTS
+
+FULLY EXPLAIN:
+
+• Boot sequence
+• Splash screen logic
+• Navigation system
+• Touchscreen UX
+• Guest flow
+• Mentor selection
+• Session creation
+• User progression
+• Badge systems
+• Reward systems
+• Golden Box system
+• Leaderboards
+• Experience memory
+• Return guest recognition
+• Craft switching
+• Session persistence
+• Atmosphere synchronization
+
+INCLUDE:
+• Every screen explanation
+• UI descriptions
+• Guest interaction walkthroughs
+• Staff assistance scripts
+• Troubleshooting examples
+
+==================================================
+SMOKECRAFT 360 REQUIREMENTS
+
+CREATE A COMPLETE LUXURY CIGAR TRAINING SYSTEM INCLUDING:
+
+• Tobacco education
+• Wrapper education
+• Binder education
+• Filler education
+• Regional cigar knowledge
+• Flavor wheel analysis
+• Strength scale training
+• Pairing methodologies
+• Whiskey pairing intelligence
+• Bourbon pairing systems
+• Guest taste profiling
+• AI pairing recommendations
+• Humidor intelligence
+• Inventory optimization
+• Revenue enhancement
+• Concierge-level guest interaction
+
+CREATE:
+• Beginner certification
+• Intermediate certification
+• Master tobacconist certification
+• Luxury service certification
+
+==================================================
+POURCRAFT 360 REQUIREMENTS
+
+CREATE A COMPLETE PREMIUM SPIRITS & BOURBON EXPERIENCE TRAINING SYSTEM INCLUDING:
+
+• Whiskey education
+• Bourbon education
+• Scotch classifications
+• Barrel aging science
+• Flavor profiling
+• Pairing systems
+• Tasting techniques
+• Luxury presentation methods
+• AI-assisted pairing intelligence
+• Guest preference profiling
+• Premium spirit upselling
+• Rare bottle intelligence
+• Inventory optimization
+• VIP experience training
+
+CREATE:
+• Beginner spirits certification
+• Advanced bourbon certification
+• Luxury tasting concierge certification
+• Venue beverage manager certification
+
+==================================================
+BREWCRAFT 360 REQUIREMENTS
+
+CREATE A COMPLETE PREMIUM BEER EXPERIENCE TRAINING SYSTEM INCLUDING:
+
+• Beer classifications
+• Brewing science
+• Lager vs ale systems
+• Craft beer flavor profiling
+• Pairing methodologies
+• Tap system management
+• Temperature optimization
+• Glassware intelligence
+• Inventory intelligence
+• AI beer recommendations
+• Guest taste analytics
+• Premium beer presentation
+• Venue beer optimization systems
+
+CREATE:
+• Beginner beer certification
+• Craft beer specialist certification
+• Taproom management certification
+• Beer pairing specialist certification
+
+==================================================
+WINECRAFT 360 REQUIREMENTS
+
+CREATE A COMPLETE LUXURY WINE EXPERIENCE TRAINING SYSTEM INCLUDING:
+
+• Red wine education
+• White wine education
+• Rosé education
+• Sparkling wine systems
+• Champagne classifications
+• Vineyard region intelligence
+• Old world vs new world wine analysis
+• Wine aging science
+• Sommelier-level tasting methodology
+• Wine pairing intelligence
+• Cheese and food pairing systems
+• Guest palate profiling
+• AI wine recommendations
+• Wine cellar intelligence
+• Bottle preservation systems
+• Luxury tableside presentation
+• Decanting procedures
+• Premium wine upselling
+• VIP wine service training
+
+CREATE:
+• Beginner wine certification
+• Advanced sommelier certification
+• Luxury wine concierge certification
+• Wine director certification
+
+==================================================
+E.A.T. SYSTEM REQUIREMENTS
+
+FULLY EXPLAIN:
+
+ENVIRONMENT
+ASSET
+TRANSACTION
+
+SHOW:
+• How environment intelligence works
+• How assets are tracked
+• How transactions become behavioral intelligence
+• How AI interprets spending behavior
+• How atmosphere changes in real time
+• How the venue adapts dynamically
+
+INCLUDE:
+• Lighting automation
+• Audio adaptation
+• Climate response
+• Scent synchronization
+• Crowd energy analysis
+• VIP detection
+• Heat mapping
+• Revenue-triggered environment shifts
+• Energy balancing
+• Smart ambiance logic
+
+==================================================
+POS & COMMERCE REQUIREMENTS
+
+FULLY EXPLAIN:
+
+• Toast integration
+• Clover integration
+• Square integration
+• Lightspeed integration
+• Shopify integration
+
+INCLUDE:
+• Order synchronization
+• Inventory synchronization
+• Smart upselling
+• Dynamic recommendations
+• Revenue prompts
+• Checkout intelligence
+• Escrow systems
+• Payment reconciliation
+• Loyalty systems
+• Rewards systems
+• Staff prompts
+• Commerce Intelligence behavior
+
+CREATE:
+• Cashier training
+• Manager training
+• Troubleshooting workflows
+• Recovery protocols
+
+==================================================
+STAFF TRAINING REQUIREMENTS
+
+CREATE COMPLETE TRAINING PROGRAMS:
+
+• Day 1 onboarding
+• Week 1 onboarding
+• 30-day certification
+• AI operations certification
+• Venue specialist certification
+• Craft specialist certification
+• Luxury concierge certification
+• Venue administrator certification
+
+INCLUDE:
+• Quizzes
+• Practical scenarios
+• Real guest simulations
+• Scripts
+• Roleplay situations
+• Troubleshooting drills
+• Emergency procedures
+
+==================================================
+DEPLOYMENT REQUIREMENTS
+
+CREATE COMPLETE INSTALLATION GUIDES:
+
+• Kiosk setup
+• Tablet setup
+• Audio systems
+• Sensor systems
+• Display systems
+• POS configuration
+• User permissions
+• Security setup
+• Multi-venue setup
+• Franchise deployment
+• Cloud synchronization
+• Local network configuration
+• Failover systems
+• Backup procedures
+
+==================================================
+AI & REVENUE BRAIN REQUIREMENTS
+
+FULLY EXPLAIN:
+
+• AI recommendation systems
+• Predictive spending systems
+• Guest memory systems
+• Emotional adaptation systems
+• Sensory intelligence
+• Revenue optimization
+• Pairing intelligence
+• Autonomous orchestration
+• Behavioral learning systems
+• Experience prediction
+• Smart upselling
+• AI mentorship systems
+
+SHOW:
+• How the AI improves over time
+• What data the AI learns from
+• How recommendations evolve
+• How atmosphere decisions are made
+• How spending triggers are identified
+
+==================================================
+OUTPUT FORMATTING REQUIREMENTS
+
+THE OUTPUT MUST:
+
+• Be written like a Fortune 500 enterprise operations manual
+• Be highly detailed
+• Be organized into chapters
+• Use tables
+• Use SOP formatting
+• Use bullet hierarchies
+• Use flow explanations
+• Use troubleshooting matrices
+• Use role-based instruction
+• Use enterprise language
+• Use deployment checklists
+• Use onboarding checklists
+• Use certification structures
+• Use operational walkthroughs
+• Use real-world venue examples
+
+==================================================
+MANDATORY VISUAL CONTENT
+
+INCLUDE PLACEHOLDERS AND DESCRIPTIONS FOR:
+
+• UI screenshots
+• Hardware diagrams
+• Touchscreen layouts
+• Flowcharts
+• Venue maps
+• Guest journey maps
+• Data flow diagrams
+• POS integration diagrams
+• Sensor placement diagrams
+• AI decision trees
+• Staff workflow diagrams
+
+==================================================
+FINAL OUTPUT REQUIREMENTS
+
+THE FINAL RESULT MUST FEEL LIKE:
+
+“A COMPLETE ENTERPRISE OPERATING SYSTEM AND HOSPITALITY INTELLIGENCE PLATFORM READY FOR REAL-WORLD DEPLOYMENT, STAFF TRAINING, FRANCHISE SCALING, AND INVESTOR PRESENTATION.”
+
+THE DOCUMENT SHOULD FEEL VALUED AT MULTI-MILLION-DOLLAR ENTERPRISE LEVEL.
+
+GENERATE IN EXTREME DETAIL.
+
+MINIMUM TARGET:
+100–300+ PAGES OF CONTENT ACROSS ALL VOLUMES.

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw, Brain, ExternalLink, ChevronRight, Crown, Zap, RefreshCw } from "lucide-react";
+import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw, Brain, ExternalLink, ChevronRight, Crown, Zap, RefreshCw, BookOpen, Printer } from "lucide-react";
 import { SovereignGate } from "@/components/SovereignGate";
 import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
@@ -877,6 +877,57 @@ export default function SettingsModule() {
               </div>
             </motion.button>
           </SovereignGate>
+        </div>
+
+        {/* ── Operations Manual ─────────────────────────────────────────── */}
+        <div style={{
+          padding: "16px", borderRadius: 14,
+          background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.18)",
+          marginBottom: 16,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+            <BookOpen size={14} color="#D48B00" />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              Platform Documentation
+            </span>
+          </div>
+          <div style={{ fontSize: 12, color: "rgba(26,26,27,0.42)", lineHeight: 1.55, marginBottom: 14 }}>
+            10-volume enterprise operations manual covering NOVEE OS, CraftHub, SmokeCraft 360 staff training, E.A.T. system, POS integration, deployment, security, AI intelligence, franchise operations, and luxury service certification.
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate("/operations-manual")}
+              style={{
+                flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "12px 16px", borderRadius: 12, cursor: "pointer",
+                background: "linear-gradient(135deg, rgba(212,139,0,0.12), rgba(212,139,0,0.06))",
+                border: "1px solid rgba(212,139,0,0.30)", color: "#D48B00",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <BookOpen size={15} color="#D48B00" />
+                <div style={{ textAlign: "left" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#D48B00" }}>View Operations Manual</div>
+                  <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", marginTop: 2 }}>All 10 volumes — browse or print</div>
+                </div>
+              </div>
+              <ChevronRight size={14} color="#D48B00" />
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => { navigate("/operations-manual"); setTimeout(() => window.print(), 800); }}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "12px 16px", borderRadius: 12, cursor: "pointer",
+                background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.22)",
+                color: "#D48B00", flexShrink: 0,
+              }}
+            >
+              <Printer size={14} color="#D48B00" />
+              <span style={{ fontSize: 12, fontWeight: 600 }}>Print</span>
+            </motion.button>
+          </div>
         </div>
 
         <div style={{
