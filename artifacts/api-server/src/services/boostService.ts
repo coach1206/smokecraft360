@@ -48,13 +48,16 @@ export interface ProductMeta {
   imageUrl?: string;
 }
 
-export type InventoryEntry = ProductMeta & BoostState & ProductStats;
+export type InventoryEntry = ProductMeta & BoostState & ProductStats & { qty: number; par: number };
 
 // ── In-memory caches (module-level singletons) ────────────────────────────────
 
 const boostStore = new Map<string, BoostState>();
 const statsStore = new Map<string, ProductStats>();
 const metaStore  = new Map<string, ProductMeta>();
+/** Live quantity counters — updated via PATCH /api/inventory/:id */
+const qtyStore   = new Map<string, number>();
+const parStore   = new Map<string, number>();
 
 /** Maximum boost contribution — keeps irrelevant products from crowding out relevant ones. */
 const MAX_BOOST_POINTS = 5;
@@ -79,7 +82,14 @@ export function seedProducts(products: Product[]): void {
     if (!statsStore.has(p.id)) {
       statsStore.set(p.id, { impressions: 0, featuredImpressions: 0 });
     }
+    if (!qtyStore.has(p.id)) qtyStore.set(p.id, ((p as unknown) as { qty?: number }).qty ?? 0);
+    if (!parStore.has(p.id)) parStore.set(p.id, ((p as unknown) as { par?: number }).par ?? 0);
   }
+}
+
+/** Update live quantity for a product (called via PATCH /api/inventory/:id). */
+export function updateQty(id: string, qty: number): void {
+  qtyStore.set(id, qty);
 }
 
 /** Seed boost + meta from a PostgreSQL products query result. */
@@ -158,6 +168,8 @@ export function getAllInventory(): InventoryEntry[] {
     ...meta,
     ...getProductBoost(meta.id),
     ...getStats(meta.id),
+    qty: qtyStore.get(meta.id) ?? 0,
+    par: parStore.get(meta.id) ?? 0,
   }));
 }
 

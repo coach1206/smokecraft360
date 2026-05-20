@@ -8,7 +8,7 @@
 
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db, productsTable }                     from "@workspace/db";
-import { getAllInventory, applyBoost, seedProducts, updateImageUrl } from "../services/boostService";
+import { getAllInventory, applyBoost, seedProducts, updateImageUrl, updateQty } from "../services/boostService";
 import { registerProductInEngine }               from "../engine/registry";
 import { requireAuth, type AuthRequest }         from "../middleware/auth";
 import { requireRole }                           from "../middleware/roles";
@@ -177,15 +177,16 @@ router.patch(
   "/:id",
   requireAuth,
   requireRole("venue_owner", "manager"),
-  allowOnly("boostLevel", "sponsored", "brandId", "campaignId", "imageUrl"),
+  allowOnly("boostLevel", "sponsored", "brandId", "campaignId", "imageUrl", "qty"),
   async (req: AuthRequest, res: Response) => {
     const id = String(req.params.id ?? "");
-    const { boostLevel, sponsored, brandId, campaignId, imageUrl } = req.body as {
+    const { boostLevel, sponsored, brandId, campaignId, imageUrl, qty } = req.body as {
       boostLevel?: number;
       sponsored?:  boolean;
       brandId?:    string;
       campaignId?: string;
       imageUrl?:   string;
+      qty?:        number;
     };
 
     if (
@@ -206,7 +207,17 @@ router.patch(
       return;
     }
 
+    if (qty !== undefined && (!Number.isInteger(qty) || qty < 0)) {
+      res.status(400).json({ error: '"qty" must be a non-negative integer' });
+      return;
+    }
+
     try {
+      // Apply qty change to in-memory store
+      if (qty !== undefined) {
+        updateQty(id, qty);
+      }
+
       // Apply boost/sponsored changes
       const updated = await applyBoost(id, { boostLevel, sponsored, brandId, campaignId });
 
@@ -215,8 +226,8 @@ router.patch(
         await updateImageUrl(id, imageUrl);
       }
 
-      req.log.info({ productId: id, userId: req.user?.id, ...updated }, "product updated");
-      res.json({ id, ...updated, ...(imageUrl !== undefined ? { imageUrl } : {}) });
+      req.log.info({ productId: id, userId: req.user?.id, qty, ...updated }, "product updated");
+      res.json({ id, ...updated, ...(imageUrl !== undefined ? { imageUrl } : {}), ...(qty !== undefined ? { qty } : {}) });
     } catch (err) {
       req.log.error({ err, productId: id }, "failed to update product");
       res.status(500).json({ error: "Failed to update product" });
