@@ -535,7 +535,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
     const token = localStorage.getItem("axiom_token") ?? "";
     if(!selectedTab) return;
     const dest = action.replace("Send to ","").toLowerCase();
-    fetch(`/api/orders/${selectedTab.id}/route`, {
+    fetch(`/api/tabs/${selectedTab.id}/route`, {
       method:"POST",
       headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
       body:JSON.stringify({ destination: dest, items: selectedTab.items }),
@@ -679,7 +679,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
             </div>
           ) : (
             <div style={{ maxHeight:240, overflow:"auto" }}>
-              {INITIAL_TABLES.filter(t=>t.active).map(t=>(
+              {floorTables.filter(t=>t.active).map(t=>(
                 <div key={String(t.id)} style={{ padding:"7px 12px", borderBottom:`1px solid rgba(180,140,80,0.09)`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                   <div>
                     <span style={{ fontSize:12, fontWeight:700, color:DARK }}>Table {String(t.id)}</span>

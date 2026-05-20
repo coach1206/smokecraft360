@@ -522,4 +522,83 @@ router.get(
   },
 );
 
+// ── POST /api/tabs/:tabId/route ───────────────────────────────────────────────
+// Route tab items to a fulfillment destination (bar / kitchen / humidor).
+// Creates a fulfillment queue entry for each item and logs the action.
+
+const RouteSchema = z.object({
+  destination: z.enum(["bar", "kitchen", "humidor"]),
+  items: z.array(z.object({
+    name:  z.string(),
+    qty:   z.number().int().positive(),
+    price: z.number(),
+  })).min(1),
+});
+
+router.post(
+  "/:tabId/route",
+  requireAuth,
+  requireRole("staff", "manager", "venue_owner", "super_admin"),
+  allowOnly("destination", "items"),
+  async (req: AuthRequest, res: Response) => {
+    const tabId = String(req.params.tabId ?? "");
+    if (!isUuid(tabId)) {
+      res.status(400).json({ error: "invalid_tab_id" });
+      return;
+    }
+
+    const parsed = RouteSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "invalid_body", detail: parsed.error.issues });
+      return;
+    }
+
+    const { destination, items } = parsed.data;
+    const queueType: "bar" | "floor" = destination === "bar" ? "bar" : "floor";
+
+    try {
+      const [tab] = await db.select().from(guestTabsTable).where(eq(guestTabsTable.id, tabId)).limit(1);
+      if (!tab) {
+        res.status(404).json({ error: "tab_not_found" });
+        return;
+      }
+      if (req.user!.role !== "super_admin" && tab.venueId && req.user!.venueId !== tab.venueId) {
+        res.status(403).json({ error: "forbidden" });
+        return;
+      }
+
+      const venueId = tab.venueId ?? req.user!.venueId;
+      if (!venueId) {
+        res.status(422).json({ error: "venue_id_required" });
+        return;
+      }
+
+      const queueEntries = items.map(item => ({
+        tabId,
+        venueId,
+        queueType,
+        productName: item.name,
+        quantity:    item.qty,
+        status:      "pending" as const,
+      }));
+
+      await db.insert(fulfillmentQueueTable).values(queueEntries);
+
+      await logAudit(req, {
+        action:     "tab.route",
+        entityType: "tab",
+        entityId:   tabId,
+        after:      { destination, itemCount: items.length },
+        venueId:    tab.venueId ?? null,
+      });
+
+      req.log.info({ tabId, destination, itemCount: items.length, userId: req.user?.id }, "tab items routed");
+      res.json({ ok: true, destination, routed: items.length });
+    } catch (err) {
+      logger.error({ err, tabId }, "tab route failed");
+      res.status(500).json({ error: "route_failed" });
+    }
+  },
+);
+
 export default router;

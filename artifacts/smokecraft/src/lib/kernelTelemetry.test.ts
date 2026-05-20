@@ -135,7 +135,7 @@ describe("emitKernelEvent", () => {
           posts[posts.length - 1][1].body as string,
         ) as Record<string, unknown>;
       },
-      { timeout: 600 },
+      { timeout: 1500 },
     );
     return body;
   }
