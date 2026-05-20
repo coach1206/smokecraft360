@@ -2,23 +2,65 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <title>NOVEE OS</title>
-    <meta name="description" content="NOVEE OS — built on Replit. Update this description to reflect the app." />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/novee/manifest.webmanifest" />
+
+    <!-- Theme & Status Bar -->
+    <meta name="theme-color" content="#D4AF37" />
+    <meta name="background-color" content="#050301" />
+
+    <!-- iOS PWA (Add to Home Screen installs as full-screen app) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="NOVEE OS" />
+    <link rel="apple-touch-icon" href="/novee/images/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/novee/images/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/novee/images/icon-512.png" />
+
+    <!-- Android / Chrome PWA -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="NOVEE OS" />
+
+    <!-- Microsoft Tiles (Windows kiosk) -->
+    <meta name="msapplication-TileColor" content="#050301" />
+    <meta name="msapplication-TileImage" content="/novee/images/icon-192.png" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- SEO & Social -->
+    <meta name="description" content="NOVEE OS — SmokeCraft 360 luxury cigar kiosk experience. Powered by Axiom OS." />
     <meta name="robots" content="index, follow" />
-    <meta property="og:title" content="NOVEE OS" />
-    <meta property="og:description" content="NOVEE OS — built on Replit. Update this description to reflect the app." />
+    <meta property="og:title" content="NOVEE OS — SmokeCraft 360" />
+    <meta property="og:description" content="Luxury cigar science kiosk. Powered by Axiom OS." />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="/novee/opengraph.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="NOVEE OS" />
-    <meta name="twitter:description" content="NOVEE OS — built on Replit. Update this description to reflect the app." />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="twitter:description" content="Luxury cigar science kiosk. Powered by Axiom OS." />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/novee/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/novee/images/icon-192.png" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register Service Worker for offline/installable PWA support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/novee/sw.js', { scope: '/novee/' })
+            .then(reg => console.log('[NOVEE SW] registered, scope:', reg.scope))
+            .catch(err => console.warn('[NOVEE SW] registration failed:', err));
+        });
+      }
+    </script>
   </body>
 </html>

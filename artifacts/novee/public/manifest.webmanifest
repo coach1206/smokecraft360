@@ -1,0 +1,52 @@
+{
+  "name": "NOVEE OS — Kiosk Edition",
+  "short_name": "NOVEE OS",
+  "description": "SmokeCraft 360 — Luxury Cigar Science Kiosk. Powered by Axiom OS.",
+  "start_url": "/novee/",
+  "scope": "/novee/",
+  "display": "standalone",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#050301",
+  "theme_color": "#D4AF37",
+  "categories": ["lifestyle", "business"],
+  "icons": [
+    {
+      "src": "/novee/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/novee/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/novee/opengraph.jpg",
+      "sizes": "1200x630",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "NOVEE OS SmokeCraft 360 Command Center"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "E.A.T Intel",
+      "short_name": "E.A.T",
+      "description": "Staff Command Center",
+      "url": "/novee/?phase=eat",
+      "icons": [{ "src": "/novee/images/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Begin Session",
+      "short_name": "Session",
+      "description": "Start a new SmokeCraft 360 experience",
+      "url": "/novee/?phase=s1_demo",
+      "icons": [{ "src": "/novee/images/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
