@@ -1,0 +1,652 @@
+EXECUTE ULTIMATE NOVEE OS + E.A.T SYSTEM SUPER BUILD
+ZERO STUBS • ZERO DEAD ROUTES • ZERO PLACEHOLDERS
+FULL TOUCHSCREEN LUXURY HOSPITALITY OPERATING SYSTEM
+
+====================================================
+SYSTEM CORE IDENTITY
+====================================================
+
+BUILD A TRUE NEXT-GENERATION HOSPITALITY OPERATING SYSTEM.
+
+THIS IS NOT:
+• a standard POS
+• a generic dashboard
+• a restaurant checkout app
+• a boring admin portal
+
+THIS IS:
+NOVEE OS powered by the E.A.T SYSTEM
+(Environment • Asset • Transactions)
+
+A cinematic hospitality intelligence ecosystem for:
+• cigar lounges
+• whiskey lounges
+• luxury hospitality venues
+• private member clubs
+• music lounges
+• VIP entertainment venues
+• immersive social environments
+
+====================================================
+CORE PHILOSOPHY
+====================================================
+
+The platform must feel:
+• cinematic
+• intelligent
+• luxurious
+• warm
+• immersive
+• touchscreen optimized
+• operationally fast
+• emotionally responsive
+• alive
+
+The guest should feel:
+“I’m inside an experience.”
+
+NOT:
+“I’m using software.”
+
+====================================================
+TECH STACK
+====================================================
+
+FRONTEND:
+• React 18
+• TypeScript
+• Vite
+• TailwindCSS
+• Framer Motion
+• Zustand
+• React DnD
+
+BACKEND:
+• Node.js
+• Express
+• PostgreSQL
+• Drizzle ORM
+• Socket.IO
+• JWT RBAC
+
+INTEGRATIONS:
+• Stripe
+• Cloudinary
+• Philips Hue
+• Sonos
+• Lutron
+• Nest
+• Smart HVAC
+• WebSocket live sync
+
+====================================================
+VISUAL DESIGN SYSTEM
+====================================================
+
+TOP NAVIGATION:
+• walnut gradient
+• espresso bronze glass
+• amber edge illumination
+
+MAIN CONTENT:
+• cream smoke-glass surfaces
+• warm ivory typography
+• bronze separators
+• soft amber glow
+
+ACCENT COLORS:
+• gold
+• bronze
+• copper
+• champagne cream
+
+====================================================
+DO NOT USE
+====================================================
+
+• tiny fonts
+• muddy black backgrounds
+• spreadsheet dashboards
+• cyberpunk overload
+• cramped layouts
+• generic POS designs
+
+====================================================
+TYPOGRAPHY RULES
+====================================================
+
+• Main headers = 34px minimum
+• Section headers = 28px minimum
+• Operational text = 20px minimum
+• Buttons = 22px minimum
+• NEVER render text below 18px
+
+====================================================
+TOUCHSCREEN RULES
+====================================================
+
+• minimum touch targets = 58px
+• finger-friendly spacing
+• swipe support
+• drag/drop support
+• tablet optimized
+• kiosk optimized
+• wall-terminal optimized
+
+====================================================
+FULL ROUTE + MODULE SEPARATION
+====================================================
+
+CREATE UNIQUE ROUTES + UNIQUE STATE TREES FOR:
+
+/crafthub
+/smokecraft
+/eat-intel
+/lounge
+/pairing
+/settings
+/staff-auth
+/coach-help
+/executive-command
+/founder-chamber
+
+NO:
+• duplicate screens
+• mirrored layouts
+• dead buttons
+• placeholder pages
+• empty routes
+
+====================================================
+ROLE-BASED NAVIGATION SYSTEM
+====================================================
+
+Guests MUST NOT see operational systems.
+
+====================================================
+GUEST NAVIGATION ONLY
+====================================================
+
+TOP NAV:
+• CraftHub
+• SmokeCraft
+• My Profile
+
+OPTIONAL:
+• Pairing (if tied directly into SmokeCraft flow)
+
+====================================================
+REMOVE / HIDE FROM GUESTS
+====================================================
+
+DO NOT SHOW TO GUESTS:
+• E.A.T Intel
+• Lounge Controls
+• Command Center
+• Settings
+• Staff Auth
+• Coach Help
+• Executive Systems
+• Device telemetry
+• Environment systems
+• Analytics systems
+• Inventory systems
+
+====================================================
+ROLE ACCESS SYSTEM
+====================================================
+
+ROLES:
+• Guest
+• Member
+• VIP
+• Server
+• Bartender
+• Humidor Specialist
+• Manager
+• Executive Manager
+• Developer
+• Founder
+
+====================================================
+ACCESS RULES
+====================================================
+
+GUESTS:
+• experiences
+• pairings
+• ordering
+• profile
+• XP progression
+• Golden Box progression
+
+STAFF:
+• tabs
+• seating
+• orders
+• pairing assistance
+• active sessions
+
+MANAGERS:
+• inventory
+• staffing
+• analytics
+• environment controls
+• lounge presets
+
+DEVELOPER / FOUNDER:
+• diagnostics
+• telemetry
+• APIs
+• HVAC systems
+• Stripe internals
+• debug systems
+• hidden command systems
+
+====================================================
+HIDDEN FEATURE SYSTEM
+====================================================
+
+DO NOT:
+• gray out hidden features
+• show disabled nav items
+
+INSTEAD:
+• completely hide unauthorized systems
+• dynamically render navigation by role
+• protect backend routes with RBAC middleware
+
+====================================================
+SPECIAL SECRET ACCESS FEATURES
+====================================================
+
+CREATE:
+• Founder Control Chamber
+• hidden gesture unlocks
+• invisible hotspots
+• multi-tap unlock logic
+• emergency override systems
+
+====================================================
+CRAFT HUB MODULE
+====================================================
+
+PURPOSE:
+Master ecosystem landing page.
+
+DISPLAY:
+• SmokeCraft
+• PourCraft
+• BeerCraft
+• WineCraft
+• Events
+• Memberships
+• Lounge Experiences
+• Featured Pairings
+
+MUST NOT:
+redirect to Golden Box.
+
+====================================================
+SMOKECRAFT MODULE
+====================================================
+
+PURPOSE:
+Guest-facing cigar experience engine.
+
+FEATURES:
+• blend journey
+• flavor analysis
+• XP system
+• mentor system
+• progression
+• Golden Box progression
+
+====================================================
+WHAT TO EXPECT BUTTONS
+====================================================
+
+DISCOVER:
+• cinematic overlay popup
+• flavor wheel
+• wrapper education
+• tobacco origins
+
+ANALYZE:
+• overlay popup
+• flavor chemistry
+• AI analysis
+• strength profile
+
+CRAFT:
+• full dedicated experience builder
+• wrapper selection
+• filler selection
+• shape selection
+• blend creation
+
+EXPERIENCE:
+• popup summary
+• XP
+• badges
+• progression
+• optional deep-dive screen
+
+====================================================
+PAIRING ENGINE MASTER BUILD
+====================================================
+
+CURRENT ISSUE:
+Pairing Engine currently displays only a cinematic holding page and never transitions into an operational interface.
+
+FIX COMPLETELY.
+
+====================================================
+PAIRING ENGINE EXPERIENCE FLOW
+====================================================
+
+STEP 1:
+Display cinematic intro for 1.5–2 seconds:
+• PAIRING ENGINE
+• AI SOMMELIER • FLAVOR INTELLIGENCE
+• ambient smoke
+• ember glow
+• soft pulse
+
+STEP 2:
+Automatically transition into:
+FULL INTERACTIVE PAIRING WORKSPACE
+
+USE:
+• fade dissolve
+• cinematic upward transition
+• GPU-optimized animation
+
+====================================================
+PAIRING WORKSPACE
+====================================================
+
+DISPLAY:
+• cigar image
+• drink image
+• food image
+• pairing compatibility %
+• flavor profile
+• body/strength meter
+• region/origin
+• atmosphere recommendation
+
+EXAMPLE:
+Padrón 1964
+Macallan 18
+Wagyu Sliders
+92% Match
+
+====================================================
+PAIRING BUTTONS
+====================================================
+
+• Add Full Experience
+• Save Pairing
+• Compare Pairings
+• Pair With My Profile
+• AI Recommendation
+• Add To Tab
+
+====================================================
+LOWER EXPERIENCE SECTION
+====================================================
+
+DISPLAY:
+• Trending Pairings
+• VIP Pairings
+• Rare Reserve Pairings
+• Seasonal Pairings
+• Lounge Favorites
+• Staff Picks
+
+USE:
+• swipe carousels
+• image-first layouts
+• touchscreen cards
+
+====================================================
+RIGHT-SIDE INTELLIGENCE PANEL
+====================================================
+
+SHOW:
+• current lounge mode
+• lighting preset
+• music preset
+• humidity
+• atmosphere recommendations
+• suggested seating zone
+
+====================================================
+REAL IMAGE SUPPORT
+====================================================
+
+ENABLE:
+• real uploaded photography
+• realistic AI-generated images
+• fallback stock visuals
+• dynamic image replacement
+
+====================================================
+MEDIA DIRECTORY SYSTEM
+====================================================
+
+CREATE FULL MEDIA MANAGER
+
+UPLOAD SUPPORT:
+• cigars
+• spirits
+• cocktails
+• food
+• events
+• VIP experiences
+• lounge themes
+
+FEATURES:
+• drag/drop upload
+• category organization
+• image replacement
+• image tagging
+• preview mode
+• active/inactive toggles
+• Cloudinary integration
+
+====================================================
+E.A.T INTEL MODULE
+====================================================
+
+PURPOSE:
+Operational intelligence center.
+
+LIVE DATA:
+• temperature
+• humidity
+• air quality
+• occupancy
+• inventory movement
+• lounge energy
+• active tablets
+• active sessions
+• staffing
+• sales velocity
+
+====================================================
+LOUNGE MODULE
+====================================================
+
+PURPOSE:
+Atmosphere command center.
+
+CONTROLS:
+• lighting presets
+• music presets
+• scent presets
+• jazz mode
+• sports mode
+• VIP mode
+• event themes
+
+PREPARE API HOOKS:
+• Philips Hue
+• Sonos
+• Lutron
+• Nest
+• DMX lighting
+• HVAC integrations
+
+====================================================
+DEVICE TELEMETRY SYSTEM
+====================================================
+
+TRACK:
+• tablet ID
+• battery percentage
+• room location
+• assigned staff
+• signal strength
+• online/offline
+• active table
+• active session
+
+DISPLAY:
+• live device grid
+• room/device mapping
+• sync indicators
+
+====================================================
+SEATING ENGINE
+====================================================
+
+CREATE:
+• drag/drop floor plan
+• live table assignment
+• VIP table coloring
+• occupancy heat mapping
+• active glow states
+
+====================================================
+STRIPE PAYMENT SYSTEM
+====================================================
+
+ENABLE:
+• Apple Pay
+• Google Pay
+• QR payments
+• split tabs
+• tap-to-pay
+• memberships
+• gratuity
+• event tickets
+• saved cards
+
+Guests must be able to:
+• browse visually
+• order visually
+• reorder instantly
+• pay instantly
+• reopen tabs
+
+WITHOUT waiting for staff.
+
+====================================================
+LIVE SYNC ENGINE
+====================================================
+
+USE SOCKET.IO FOR:
+• inventory sync
+• seating sync
+• order sync
+• environment sync
+• device sync
+• transaction sync
+
+====================================================
+ANIMATION SYSTEM
+====================================================
+
+USE FRAMER MOTION:
+
+ADD:
+• smoke drift
+• ember particles
+• ambient shimmer
+• ripple transitions
+• cinematic overlays
+• telemetry pulse
+
+DO NOT:
+• overanimate
+• create lag
+• reduce responsiveness
+
+====================================================
+COACH HELP MODULE
+====================================================
+
+DISPLAY:
+• onboarding overlays
+• guided tutorials
+• contextual assistance
+• mentor guidance
+
+====================================================
+STAFF AUTH MODULE
+====================================================
+
+TRIGGER:
+• PIN overlay
+• ripple transition
+• role validation
+• secure authentication
+• staff assignment
+
+====================================================
+SETTINGS MODULE
+====================================================
+
+DISPLAY:
+• device manager
+• API manager
+• Stripe manager
+• HVAC integrations
+• media manager
+• theme manager
+• user roles
+• permissions
+
+====================================================
+GOLDEN BOX SYSTEM
+====================================================
+
+RESTORE ORIGINAL GOLDEN BOX EXPERIENCE.
+
+Golden Box must be:
+• cinematic
+• mysterious
+• premium
+• progression locked
+• XP locked
+• membership-aware
+• event-aware
+
+====================================================
+FINAL BUILD REQUIREMENTS
+====================================================
+
+• Zero TypeScript errors
+• Zero dead routes
+• Zero blank screens
+• Zero duplicate layouts
+• Zero placeholder containers
+• Fully responsive
+• Touchscreen optimized
+• Premium hospitality atmosphere
+• Real operational architecture
+• Future expansion ready
+• Production-grade structure
+• Replit compatible

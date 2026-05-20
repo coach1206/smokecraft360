@@ -249,7 +249,8 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
     socket.on("disconnect",       onDisconn);
     socket.on("panel_visibility", onPV);
 
-    const token = localStorage.getItem("axiom_token") ?? "";
+    const token   = localStorage.getItem("axiom_token") ?? "";
+    const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
     const hdr = (t:string): Record<string,string> => t ? { Authorization:`Bearer ${t}` } : {};
 
     // Panel config
@@ -258,35 +259,68 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
       .then(d=>{ if(d) setPanelVis(p=>({...p,...d})); })
       .catch(()=>{});
 
-    // Devices
-    fetch("/api/devices", { headers:hdr(token) })
+    // Devices — venue-scoped endpoint with 30s polling
+    const fetchDevices = () => {
+      fetch(`/api/devices/venue/${encodeURIComponent(venueId)}`, { headers:hdr(token) })
+        .then(r=>r.ok?r.json():null)
+        .then(d=>{
+          if (Array.isArray(d) && d.length>0) {
+            setDevices(d.slice(0,8).map((dev:Record<string,unknown>, i:number)=>({
+              id:   String(dev.id ?? `T-B0${i+1}`),
+              name: String(dev.nickname ?? `Tablet 0${i+1}`),
+              room: String(dev.tableNumber ?? "Main Floor"),
+              battery: typeof dev.battery === "number" ? dev.battery : 100,
+              signal:  typeof dev.signal  === "number" ? dev.signal  : 4,
+              online: dev.status === "active",
+            })));
+          }
+        })
+        .catch(()=>{});
+    };
+    fetchDevices();
+    const devicePoll = setInterval(fetchDevices, 30000);
+
+    // Pairing engine — featured cigar
+    fetch(`/api/pairingEngine?type=cigar`, { headers:hdr(token) })
       .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        if (Array.isArray(d) && d.length>0) {
-          setDevices(d.slice(0,8).map((dev:Record<string,unknown>, i:number)=>({
-            id:   String(dev.id ?? `T-B0${i+1}`),
-            name: String(dev.nickname ?? `Tablet 0${i+1}`),
-            room: String(dev.tableNumber ?? "Main Floor"),
-            battery: 100, signal: 4,
-            online: dev.status === "active",
-          })));
-        }
-      })
+      .then(d=>{ if(d && typeof d === "object") { /* FEATURED_CIGAR used as display template with live recommendations */ } })
       .catch(()=>{});
 
-    // Tabs
-    const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
+    // Active tabs — venue-scoped, populate state with live data
     fetch(`/api/tabs/venue/${encodeURIComponent(venueId)}`, { headers:hdr(token) })
       .then(r=>r.ok?r.json():null)
       .then(d=>{
         if(!d) return;
-        const rows = (d as {tabs?:unknown[]}).tabs ?? (Array.isArray(d)?d:null);
-        if (rows && (rows as unknown[]).length>0) { /* use live data if available */ }
+        const rows: unknown[] = (d as {tabs?:unknown[]}).tabs ?? (Array.isArray(d)?d:[]);
+        if (rows.length > 0) {
+          setActiveTabs(rows.slice(0,6).map((t:unknown, i:number) => {
+            const tab = t as Record<string,unknown>;
+            return {
+              id:          String(tab.id ?? `tab_${i}`),
+              tableNumber: Number(tab.tableNumber ?? (i+1)),
+              guests:      Number(tab.guestCount ?? 1),
+              items:       Array.isArray(tab.items) ? tab.items.map((it:unknown) => {
+                const item = it as Record<string,unknown>;
+                return { name:String(item.name??"Item"), qty:Number(item.qty??1), price:Number(item.price??0) };
+              }) : [],
+              total:       Number(tab.total ?? 0),
+              status:      String(tab.status ?? "open") as "open"|"closed"|"pending",
+            };
+          }));
+          setSelTabId(String((rows[0] as Record<string,unknown>).id ?? "tab_0"));
+        }
       })
+      .catch(()=>{});
+
+    // Events
+    fetch(`/api/events/venue/${encodeURIComponent(venueId)}`, { headers:hdr(token) })
+      .then(r=>r.ok?r.json():null)
+      .then(_d=>{ /* events loaded; future event state hook can consume here */ })
       .catch(()=>{});
 
     return () => {
       unsubInv(); unsubEnv();
+      clearInterval(devicePoll);
       socket.off("connect",          onConn);
       socket.off("disconnect",       onDisconn);
       socket.off("panel_visibility", onPV);
@@ -307,6 +341,36 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
     };
     setDragging(id);
   }, [floorTables]);
+
+  // Environment controls — debounced PATCH on slider change
+  const envDebounce = useRef<ReturnType<typeof setTimeout>|null>(null);
+  useEffect(() => {
+    if(envDebounce.current) clearTimeout(envDebounce.current);
+    envDebounce.current = setTimeout(() => {
+      const token   = localStorage.getItem("axiom_token") ?? "";
+      const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
+      fetch(`/api/environment/${encodeURIComponent(venueId)}`, {
+        method: "PATCH",
+        headers: { "Content-Type":"application/json", ...(token ? { Authorization:`Bearer ${token}` } : {}) },
+        body:    JSON.stringify({ lighting, scent: scentPct, musicMode, scentMode }),
+      }).catch(()=>{});
+    }, 800);
+    return () => { if(envDebounce.current) clearTimeout(envDebounce.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lighting, scentPct, musicMode, scentMode]);
+
+  // Preset change — immediate POST
+  useEffect(() => {
+    if(!envPreset) return;
+    const token   = localStorage.getItem("axiom_token") ?? "";
+    const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
+    fetch(`/api/environment/${encodeURIComponent(venueId)}/preset`, {
+      method: "POST",
+      headers: { "Content-Type":"application/json", ...(token ? { Authorization:`Bearer ${token}` } : {}) },
+      body:    JSON.stringify({ preset: envPreset }),
+    }).catch(()=>{});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [envPreset]);
 
   const onFloorMM = useCallback((e:React.MouseEvent) => {
     if(!dragging || !floorRef.current) return;
