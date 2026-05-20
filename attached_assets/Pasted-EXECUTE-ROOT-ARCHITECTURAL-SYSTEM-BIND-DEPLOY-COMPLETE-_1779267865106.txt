@@ -1,0 +1,29 @@
+EXECUTE ROOT ARCHITECTURAL SYSTEM BIND: DEPLOY COMPLETE SYSTEM CONTEXT ROUTING, MULTI-TIER SECURITY PIN LOCKS, HIGH-READABILITY VISUAL TUNING, AND END-TO-END DATA FULFILLMENT (ZERO STUBS)
+
+1. MULTI-TIER HARDWARE SECURITY MATRIX & STAFF HANDOFF (PIN CONTROL)
+- Restricted E.A.T Access: The E.A.T Intelligence module is strictly locked down against standard guest access. Tapping 'E.A.T Intelligence' anywhere on the UI must trigger a modal prompt requesting a 4-digit Staff PIN. Wire a live conditional check: if entered PIN matches the dedicated Staff Credentials array, execute the handoff.
+- The Handoff Ripple Animation: Upon successful Staff PIN validation, fire an immediate, explosive, hardware-accelerated concentric ripple animation that scales outward from the precise touch coordinates across the entire 1920x1080 canvas using a GPU-accelerated layer, smoothly dissolving the current screen state into the live E.A.T System dashboards.
+- Executive Command Center Lockdown: The core administrative Executive Command Center requires a higher clearance level and must be protected by an independent, unique Management PIN. 
+- Management Granular Control: Once authorized inside the Executive Command Center, the manager must be provided with an active toggle dashboard layout. Managers can globally inject, show, hide, or completely remove individual E.A.T features (Environment, Asset, Transaction modules) from appearing on the active terminal viewports in real time.
+
+2. ROOT STATE ENGINE, STRUCTURAL CLEANUP, & STATE PRESERVATION
+- Refactor the global navigation state manager (App.tsx or NavigationContext.tsx). Declare an explicit routing state machine utilizing a single unified string union type:
+  type ActiveView = 'crafthub' | 'smokecraft' | 'pairing' | 'lounge' | 'profile' | 'settings' | 'eat_intelligence' | 'executive_command';
+- Clean the View Tree: Scan all component returns across the application tree. Completely strip out any duplicated headers, floating cards, recurring navigation bars, or redundant text overlays. Every single element must exist within one clear, cohesive layout container shell. Moving between views must NEVER destroy active session metrics, XP, chosen mentor states, or active blend progress variables.
+
+3. VISUAL COMFORT & HIGH-READABILITY CALIBRATION (LIGHTEN SCREEN / ENLARGE FONTS)
+- Ambient Luminance Tuning: Replace deep pitch-black (#000000) layers with a premium, deep True Obsidian (#010101) base, but elevate foreground layout panels and glass cards to a lighter, semi-translucent smoke-tinted glass finish with soft gold back-lighting. This lightens the overall contrast of the interface containers, eliminating harsh eye strain.
+- Advanced Readability Scale: Increase base typography sizes globally across all screens. Section headings must scale to a minimum of 28px, interactive control buttons to 22px, and general body data readouts/labels to 18px-20px. Ensure text scales cleanly and remains perfectly readable for 40-60 age cohorts navigating in dimly lit lounge environments.
+
+4. FULL-STACK SYSTEM DEPLOYMENT: END-TO-END FUNCTIONAL REPLACEMENT OF MOCK DATA
+Remove all generic mock structures and dummy placeholders. Replace them entirely with rich, realistic, deeply descriptive, and state-driven production-ready data arrays that are live, interactive, and active across the runtime environment:
+- ENVIRONMENT MATRIX: Connect the panel to true, active reactive states representing real-time ambient environment variables: Lounge Temperature (68°F), Target Relative Humidity (70%), and Air Filtration Velocity status.
+- DRAG-AND-DROP TABLE MANAGEMENT REFACTOR: Re-architect the seating grid layout using native HTML5 Drag and Drop APIs or dnd-kit mechanics. Ensure table/lounge area nodes cleanly accept drops from active guest profile items. On drop events, update state, trigger touch animation layers, and persist the table mapping array directly to local storage.
+- ASSET INTELLIGENCE: Hook this view up to an active state array modeling true structural stock counts: humidor inventory quantities (145 Puros remaining), specific leaf wrapper allocation balances, and precise vitola classification warning alarms.
+- TRANSACTION INTELLIGENCE: Build an active transaction processing state that tracks real point-of-sale receipt parameters: current table spend tiers, running customer tabs, and live gamified score generation engines connected to spend multipliers (2x, 3x, 5x cheat code receipts).
+
+5. ECOSYSTEM NAVIGATION ACTIONS
+- Left Navigation Rail & Toolbar: Wire pointerDown click actions on 'CraftHub', 'SmokeCraft', 'Pairing Engine', 'Lounge Mode', 'My Profile', and 'Settings' directly to the global navigation routing machine.
+- Profile Reset Routine: Wire the user profile clearing actions to completely flush the active registration cache from local storage, smoothly returning the interface back to the ReentryGate handshake onboarding screen without looping, locking up, or freezing.
+
+Execute a comprehensive file-by-file compile block across the workspace tree. Ensure zero broken TypeScript imports, strict type safety, no duplicate code loops, and 100% active operational code.

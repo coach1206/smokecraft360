@@ -3,6 +3,78 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGuest } from "@/context/GuestProfileContext";
 import { hapticMilestone } from "@/hooks/useHaptic";
 
+const EASE_CINEMA = [0.22, 1, 0.36, 1] as const;
+
+const GOLDEN_BOX_RULES = [
+  {
+    num: "§ I",
+    title: "ONE RITUAL PER GUEST",
+    body: "Each session begins fresh. Your blend, your story — never someone else's.",
+  },
+  {
+    num: "§ II",
+    title: "TRUST THE PROCESS",
+    body: "Four stages, each essential. No skipping. Your palate reveals itself in sequence.",
+  },
+  {
+    num: "§ III",
+    title: "YOUR MENTOR GUIDES YOU",
+    body: "Follow your guide. Their expertise becomes your competitive advantage on the floor.",
+  },
+  {
+    num: "§ IV",
+    title: "YOUR LEGACY RESERVE AWAITS",
+    body: "Complete the full ritual to unlock your signature cigar profile — kept in the vault.",
+  },
+];
+
+const MENTOR_PORTFOLIO = [
+  {
+    key:     "rosa",
+    name:    "DOÑA ROSA",
+    role:    "Wrapper Artistry",
+    origin:  "Jalapa Valley, Nicaragua",
+    flag:    "🇳🇮",
+    tier:    "SOVEREIGN",
+    img:     "mentor_nicaraguan.jpg",
+    accent:  "#C8964A",
+    note:    "34 years curing volcanic-grown Jalapa wrappers.",
+  },
+  {
+    key:     "cruz",
+    name:    "MAESTRO CRUZ",
+    role:    "Filler Architecture",
+    origin:  "Santiago, Dominican Republic",
+    flag:    "🇩🇴",
+    tier:    "MASTER",
+    img:     "mentor_dominican.jpg",
+    accent:  "#D4AF37",
+    note:    "Champion blender of long-leaf Dominican ligero.",
+  },
+  {
+    key:     "hiroshi",
+    name:    "SENSEI HIROSHI",
+    role:    "Binder Selection",
+    origin:  "Danlí, Honduras",
+    flag:    "🇭🇳",
+    tier:    "ARTISAN",
+    img:     "mentor_honduran.jpg",
+    accent:  "#9BB8D4",
+    note:    "Specialist in dark Honduran binder structure.",
+  },
+  {
+    key:     "valdez",
+    name:    "MAESTRÍA VALDEZ",
+    role:    "Vintage Curating",
+    origin:  "Vuelta Abajo, Cuba",
+    flag:    "🇨🇺",
+    tier:    "LEGENDARY",
+    img:     "",
+    accent:  "#C84A4A",
+    note:    "Guardian of pre-embargo Habano seed lineage.",
+  },
+];
+
 const GOLD = "#D4AF37";
 const IMG  = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
@@ -53,11 +125,24 @@ const MENTOR = {
 
 export default function CraftPortalHome() {
   const { setPhase } = useGuest();
-  const [activeCraft, setActiveCraft] = useState("smoke");
-  const [showReturn,  setShowReturn]  = useState(false);
-  const [retLast,     setRetLast]     = useState("");
-  const [retPin,      setRetPin]      = useState("");
-  const [mentorOpen,  setMentorOpen]  = useState(false);
+  const [activeCraft,    setActiveCraft]    = useState("smoke");
+  const [showReturn,     setShowReturn]     = useState(false);
+  const [retLast,        setRetLast]        = useState("");
+  const [retPin,         setRetPin]         = useState("");
+  const [mentorOpen,     setMentorOpen]     = useState(false);
+  const [goldenBoxSeen,  setGoldenBoxSeen]  = useState<boolean>(() => {
+    try { return sessionStorage.getItem("novee_golden_box_seen") === "1"; } catch { return false; }
+  });
+  const [showMentorPort, setShowMentorPort] = useState(false);
+
+  function dismissGoldenBox() {
+    playTactile(); hapticMilestone();
+    try { sessionStorage.setItem("novee_golden_box_seen", "1"); } catch { /* */ }
+    setGoldenBoxSeen(true);
+    setShowMentorPort(true);
+  }
+
+  function dismissMentorPort() { playTactile(); setShowMentorPort(false); }
 
   function beginNew()      { playTactile(); hapticMilestone(); setPhase("s1_demo"); }
   function resumeSession() { setShowReturn(true); }
@@ -298,6 +383,283 @@ export default function CraftPortalHome() {
           </div>
         </motion.div>
       </div>
+
+      {/* ══════════ GOLDEN BOX RULES DISCLOSURE ══════════ */}
+      <AnimatePresence>
+        {!goldenBoxSeen && (
+          <motion.div key="golden-box"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, filter: "blur(8px)" }}
+            transition={{ duration: 0.90, ease: EASE_CINEMA }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 8000,
+              background: "rgba(0,0,0,0.88)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            {/* Ambient gold glow */}
+            <div style={{ position: "absolute", inset: 0, pointerEvents: "none",
+              background: `radial-gradient(ellipse 55% 40% at 50% 50%, rgba(212,175,55,0.12) 0%, transparent 70%)` }} />
+
+            <motion.div
+              initial={{ opacity: 0, y: 28, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.85, delay: 0.15, ease: EASE_CINEMA }}
+              style={{
+                width: "min(720px, 88vw)",
+                background: "linear-gradient(145deg, rgba(14,10,3,0.99) 0%, rgba(8,5,1,0.99) 100%)",
+                border: `1px solid rgba(212,175,55,0.45)`,
+                borderRadius: 20,
+                overflow: "hidden",
+                boxShadow: `0 0 80px rgba(212,175,55,0.18), 0 32px 100px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.06)`,
+                position: "relative",
+              }}
+            >
+              {/* Titanium grain */}
+              <div style={{ position: "absolute", inset: 0, pointerEvents: "none",
+                backgroundImage: "repeating-linear-gradient(96deg,transparent 0px,rgba(255,255,255,0.014) 1px,transparent 2px,transparent 16px)" }} />
+
+              {/* Top gold bar */}
+              <div style={{ height: 3,
+                background: `linear-gradient(90deg,transparent,${GOLD}88,${GOLD},${GOLD}88,transparent)`,
+                boxShadow: `0 0 28px ${GOLD}55` }} />
+
+              {/* Header */}
+              <div style={{ padding: "32px 40px 24px", textAlign: "center",
+                borderBottom: `1px solid rgba(212,175,55,0.14)` }}>
+                <div style={{ fontSize: 9.5, fontWeight: 900, letterSpacing: "0.55em",
+                  color: `${GOLD}66`, fontFamily: "'Inter',sans-serif",
+                  textTransform: "uppercase", marginBottom: 10 }}>
+                  CRAFTHUB · MANDATORY DISCLOSURE
+                </div>
+                <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif",
+                  fontSize: 48, fontWeight: 700, color: GOLD, lineHeight: 1.0,
+                  textShadow: `0 0 50px ${GOLD}44` }}>
+                  The Golden Box
+                </div>
+                <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif",
+                  fontSize: 22, fontWeight: 400, color: "rgba(240,232,212,0.55)", marginTop: 6, fontStyle: "italic" }}>
+                  Rules of the Ritual
+                </div>
+              </div>
+
+              {/* Rules grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1,
+                margin: "0", background: "rgba(212,175,55,0.08)" }}>
+                {GOLDEN_BOX_RULES.map((rule, i) => (
+                  <motion.div key={rule.num}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.30 + i * 0.10, duration: 0.55, ease: EASE_CINEMA }}
+                    style={{
+                      background: "linear-gradient(145deg, rgba(14,10,3,0.98) 0%, rgba(8,5,1,0.99) 100%)",
+                      padding: "24px 28px",
+                      borderRight: i % 2 === 0 ? "1px solid rgba(212,175,55,0.09)" : "none",
+                      borderBottom: i < 2 ? "1px solid rgba(212,175,55,0.09)" : "none",
+                    }}
+                  >
+                    <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: "0.30em",
+                      color: `${GOLD}88`, fontFamily: "'Cormorant Garamond',serif",
+                      marginBottom: 6 }}>
+                      {rule.num}
+                    </div>
+                    <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif",
+                      fontSize: 19, fontWeight: 700, color: "#F0E8D4", marginBottom: 8, lineHeight: 1.15 }}>
+                      {rule.title}
+                    </div>
+                    <div style={{ fontSize: 13, color: "rgba(240,232,212,0.50)",
+                      fontFamily: "'Inter',sans-serif", lineHeight: 1.58 }}>
+                      {rule.body}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <div style={{ padding: "28px 40px 32px", textAlign: "center" }}>
+                <motion.button
+                  type="button"
+                  onPointerDown={dismissGoldenBox}
+                  whileTap={{ scale: 0.97 }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.72, duration: 0.50, ease: EASE_CINEMA }}
+                  style={{
+                    width: "100%", padding: "22px 32px",
+                    background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`,
+                    border: "none", borderRadius: 8, cursor: "pointer",
+                    fontSize: 14, fontWeight: 900, color: "#0A0700",
+                    letterSpacing: "0.32em", textTransform: "uppercase",
+                    fontFamily: "'Inter',sans-serif",
+                    boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset`,
+                  }}
+                >
+                  I UNDERSTAND THE CODE
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══════════ MENTOR PORTFOLIO OVERLAY ══════════ */}
+      <AnimatePresence>
+        {showMentorPort && (
+          <motion.div key="mentor-portfolio"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, filter: "blur(6px)" }}
+            transition={{ duration: 0.75, ease: EASE_CINEMA }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 7500,
+              background: "rgba(0,0,0,0.82)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              padding: "0 32px",
+            }}
+          >
+            <div style={{ position: "absolute", inset: 0, pointerEvents: "none",
+              background: `radial-gradient(ellipse 70% 50% at 50% 50%, rgba(180,100,20,0.09) 0%, transparent 65%)` }} />
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.12, ease: EASE_CINEMA }}
+              style={{ width: "100%", maxWidth: 1040 }}
+            >
+              {/* Header */}
+              <div style={{ textAlign: "center", marginBottom: 40 }}>
+                <div style={{ fontSize: 9.5, fontWeight: 900, letterSpacing: "0.50em",
+                  color: `${GOLD}55`, fontFamily: "'Inter',sans-serif",
+                  textTransform: "uppercase", marginBottom: 10 }}>
+                  CRAFTHUB · MENTOR PORTFOLIO
+                </div>
+                <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif",
+                  fontSize: 52, fontWeight: 400, color: "#F0E8D4", lineHeight: 1.0,
+                  textShadow: `0 0 60px rgba(212,175,55,0.20)` }}>
+                  Your Guides
+                </div>
+                <div style={{ height: 1,
+                  background: `linear-gradient(90deg,transparent,${GOLD}44,transparent)`,
+                  width: 280, margin: "16px auto 0" }} />
+              </div>
+
+              {/* Mentor cards row */}
+              <div style={{ display: "flex", flexDirection: "row", gap: 16 }}>
+                {MENTOR_PORTFOLIO.map((m, i) => (
+                  <motion.div key={m.key}
+                    initial={{ opacity: 0, y: 22, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ delay: 0.20 + i * 0.09, duration: 0.65,
+                      type: "spring", mass: 0.9, stiffness: 260, damping: 28 }}
+                    style={{
+                      flex: 1, position: "relative", borderRadius: 14, overflow: "hidden",
+                      background: "linear-gradient(145deg, rgba(18,12,6,0.97) 0%, rgba(8,5,1,0.99) 100%)",
+                      border: `1.5px solid ${m.accent}44`,
+                      boxShadow: `0 0 28px ${m.accent}11, 0 8px 32px rgba(0,0,0,0.55)`,
+                      minHeight: 300,
+                    }}
+                  >
+                    {/* Mentor image */}
+                    {m.img ? (
+                      <div style={{ position: "relative", height: 170, overflow: "hidden" }}>
+                        <img src={IMG(m.img)} alt={m.name}
+                          style={{ width: "100%", height: "100%", objectFit: "cover",
+                            objectPosition: "center 20%" }}
+                          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                        <div style={{ position: "absolute", inset: 0,
+                          background: `linear-gradient(0deg, rgba(8,5,1,0.95) 0%, rgba(0,0,0,0.20) 60%, transparent 100%)` }} />
+                      </div>
+                    ) : (
+                      <div style={{ height: 170, display: "flex", alignItems: "center", justifyContent: "center",
+                        background: `radial-gradient(circle, ${m.accent}18 0%, rgba(8,5,1,0.97) 70%)` }}>
+                        <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 52,
+                          fontWeight: 700, color: m.accent, opacity: 0.70 }}>
+                          {m.name.split(" ").map(w => w[0]).join("").slice(0,2)}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Top accent */}
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2,
+                      background: `linear-gradient(90deg,transparent,${m.accent}88,transparent)` }} />
+
+                    {/* Content */}
+                    <div style={{ padding: "14px 18px 18px" }}>
+                      {/* Country flag + tier */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 22, lineHeight: 1 }}>{m.flag}</span>
+                          <span style={{ fontSize: 9.5, color: "rgba(240,232,212,0.40)",
+                            fontFamily: "'Inter',sans-serif", letterSpacing: "0.12em" }}>
+                            {m.origin}
+                          </span>
+                        </div>
+                        <span style={{ fontSize: 7.5, fontWeight: 900, letterSpacing: "0.26em",
+                          color: m.accent, fontFamily: "'Inter',sans-serif",
+                          background: `${m.accent}14`,
+                          border: `1px solid ${m.accent}33`,
+                          borderRadius: 3, padding: "2px 7px" }}>
+                          {m.tier}
+                        </span>
+                      </div>
+
+                      {/* Name */}
+                      <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif",
+                        fontSize: 22, fontWeight: 700, color: "#F0E8D4", marginBottom: 3, lineHeight: 1.1 }}>
+                        {m.name}
+                      </div>
+                      <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.22em",
+                        color: `${m.accent}CC`, fontFamily: "'Inter',sans-serif",
+                        textTransform: "uppercase", marginBottom: 10 }}>
+                        {m.role}
+                      </div>
+
+                      <div style={{ height: 1,
+                        background: `linear-gradient(90deg,transparent,${m.accent}33,transparent)`,
+                        marginBottom: 10 }} />
+
+                      <p style={{ fontSize: 12, color: "rgba(240,232,212,0.48)",
+                        fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.55,
+                        margin: 0, fontStyle: "italic" }}>
+                        {m.note}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Dismiss */}
+              <div style={{ textAlign: "center", marginTop: 32 }}>
+                <motion.button
+                  type="button"
+                  onPointerDown={dismissMentorPort}
+                  whileTap={{ scale: 0.97 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.65, duration: 0.50, ease: EASE_CINEMA }}
+                  style={{
+                    padding: "18px 52px",
+                    background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`,
+                    border: "none", borderRadius: 8, cursor: "pointer",
+                    fontSize: 13, fontWeight: 900, color: "#0A0700",
+                    letterSpacing: "0.32em", textTransform: "uppercase",
+                    fontFamily: "'Inter',sans-serif",
+                    boxShadow: `0 4px 28px rgba(212,175,55,0.38)`,
+                  }}
+                >
+                  ENTER THE RITUAL →
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ══════════ RESUME SESSION DRAWER ══════════ */}
       <AnimatePresence>

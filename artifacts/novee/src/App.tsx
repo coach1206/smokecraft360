@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
 import CraftPortalHome from "@/pages/CraftPortalHome";
 import EATDashboard from "@/pages/EATDashboard";
+import KioskBootSequence from "@/pages/KioskBootSequence";
 import { S1_InitGate } from "@/pages/S1_InitGate";
 import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
 import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
@@ -617,49 +618,77 @@ function FullBleedBackground() {
 ───────────────────────────────────────────── */
 function handlePointerDown() { playClick(); hapticClick(); }
 
+function OsShell() {
+  return (
+    <div
+      onPointerDown={handlePointerDown}
+      style={{
+        position: "fixed", inset: 0,
+        cursor: "none",
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        overscrollBehavior: "none",
+        touchAction: "manipulation",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* ── Top OS navigation bar ── */}
+      <OsNavBar />
+
+      {/* ── Middle: Left Rail + Content Area ── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden", position: "relative" }}>
+
+        {/* Left vertical OS rail */}
+        <LeftRail />
+
+        {/* Main content area */}
+        <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+          <FullBleedBackground />
+          <SystemBar />
+          <div style={{ position: "relative", zIndex: 10, width: "100%", height: "100%" }}>
+            <PhaseRouter />
+          </div>
+        </div>
+      </div>
+
+      {/* ── E.A.T Intelligence Telemetry Bar ── */}
+      <EATTelemetryBar />
+
+      {/* ── Bottom ticker + Day One 360 ── */}
+      <BottomBar />
+    </div>
+  );
+}
+
 export default function App() {
+  const [bootDone, setBootDone] = useState<boolean>(() => {
+    try { return sessionStorage.getItem("novee_boot_done") === "1"; } catch { return false; }
+  });
+
+  function handleBootComplete() {
+    try { sessionStorage.setItem("novee_boot_done", "1"); } catch { /* */ }
+    setBootDone(true);
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <GuestProfileProvider>
-        <div
-          onPointerDown={handlePointerDown}
-          style={{
-            position: "fixed", inset: 0,
-            cursor: "none",
-            userSelect: "none",
-            WebkitUserSelect: "none",
-            overscrollBehavior: "none",
-            touchAction: "manipulation",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          {/* ── Top OS navigation bar ── */}
-          <OsNavBar />
-
-          {/* ── Middle: Left Rail + Content Area ── */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden", position: "relative" }}>
-
-            {/* Left vertical OS rail */}
-            <LeftRail />
-
-            {/* Main content area */}
-            <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-              <FullBleedBackground />
-              <SystemBar />
-              <div style={{ position: "relative", zIndex: 10, width: "100%", height: "100%" }}>
-                <PhaseRouter />
-              </div>
-            </div>
-          </div>
-
-          {/* ── E.A.T Intelligence Telemetry Bar ── */}
-          <EATTelemetryBar />
-
-          {/* ── Bottom ticker + Day One 360 ── */}
-          <BottomBar />
-        </div>
+        <AnimatePresence mode="wait">
+          {!bootDone ? (
+            <KioskBootSequence key="boot" onComplete={handleBootComplete} />
+          ) : (
+            <motion.div key="shell"
+              initial={{ opacity: 0, filter: "blur(12px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)" }}
+              transition={{ duration: 1.20, ease: [0.22, 1, 0.36, 1] }}
+              style={{ position: "fixed", inset: 0 }}
+            >
+              <OsShell />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </GuestProfileProvider>
     </QueryClientProvider>
   );
