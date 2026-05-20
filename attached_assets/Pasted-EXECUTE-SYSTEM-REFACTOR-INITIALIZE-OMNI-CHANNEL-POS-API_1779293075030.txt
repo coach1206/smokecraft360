@@ -1,0 +1,26 @@
+EXECUTE SYSTEM REFACTOR: INITIALIZE OMNI-CHANNEL POS APIS, BIOMETRIC-GUARDED E.A.T TACTICAL TERMINAL, AND EXECUTIVE MANAGEMENT COMMAND HUB (ZERO STUBS)
+
+1. UNIVERSAL API DISCOVERY ENGINE (EXTERNAL POS INTEGRATION CHASSIS)
+- Abstract Integration Layer: Write a specialized, abstract data parsing engine (`POSRouterEngine`) capable of binding external system webhooks and REST payloads (Toast, Clover, Lightspeed, Square) directly to the application state tree.
+- Live Telemetry Syncing: When an external order is generated or a physical check status updates, parse the payload array instantaneously. Automatically push these metrics to active guest sessions to calculate real-time flavor synergy points, trigger inventory item decrements, and scale active gamified point multipliers (2x, 3x, 5x cheat code receipts).
+
+2. THE CUTTING-EDGE E.A.T TOUCH-SCREEN POS PLATFORM
+- Destroy the Analytics Dashboard Look: Completely wipe out any small tables, intricate technical mini-charts, or generic layout cards. Replace them entirely with a ultra-premium, ultra-bold tactical POS grid optimized for raw haptic muscle memory in high-velocity lounge environments.
+- Fully Wired Data Ingestion Logic: Build an operational runtime transaction engine (`EAT_POS_Core`) that maps layout items directly to structural backend models. Every transaction or menu tap must instantly process across three key areas:
+  * ENVIRONMENT MODULE: Feeds live, reactive climate readings (68°F Temp / 70% Humidity), lighting presets, and exhaust filtration trackers directly to the main view, running the Kitchen, Bar, and Humidor metrics through a unified data tree.
+  * ASSET MODULE: Hard-wires tracking for raw inventory item counts. Individual puros inside the humidor (e.g., 144 remaining), specific premium wrapper allocations, and spirit/wine fluid reserves must update instantly on every transaction checkout.
+  * TRANSACTION MODULE: Manages real-time running client guest tabs, active loyalty tiers, and automated milestone tracking.
+
+3. SECURITY GATES: MULTI-TIER SECURITY PIN MATRIX & STAFF HANDOFF
+- Staff Hand-Off Controls: Strictly block standard guest access from the E.A.T Intelligence terminal dashboard. Tapping the module icon must immediately trigger an oversized, minimal 4-digit PIN pad overlay. 
+- The Handoff Ripple Effect: Upon successful validation of a Staff PIN, fire an immediate, hardware-accelerated concentric ripple animation expanding outward from the precise touch coordinates across the entire 1920x1080 canvas using a GPU-accelerated layer, smoothly dissolving the screen into the active floor matrix.
+- Executive Command Center Gate: Secure the master root administrative platform behind a distinct Management PIN. 
+- Granular Visibility Controls: Once authorized inside the Executive Command Center, provide the manager with a live system override matrix giving them total structural power to globally inject, toggle visibility, or completely remove individual panels (Environment, Asset, Transaction blocks) across all live customer-facing terminal viewports in real time.
+- Remote Developer Protocol: Establish an automated user role context configuration supporting the 'Developer' role. Wire an active WebRTC or secure WebSocket tunnel to enable full remote terminal access. Developers must have root authority to push core logic overrides, update state maps, clear lingering process memory, and run live debugging checks from any remote off-site destination.
+
+4. VISUAL REFINEMENT, EYE COMFORT, & TYPOGRAPHY SCALE
+- High-Luminance Contrast Tuning (Lighten Screen): The current views are too dark for physical lounge use. Replace muddy dark gray panels with semi-translucent smoke-glass containers backed by rich, glowing amber/gold haptic illumination vectors. This eliminates screen-glare eye strain while preserving a high-end luxury aesthetic.
+- Massive Operational Fonts: Enlarge typography globally across the application tree. All operational headers must scale to a minimum of 28px, control buttons and state toggles to 22px, and core real-time telemetry parameters to 18px-20px to ensure flawless glanceability from feet away.
+- Structural Cleanup: Sweep the entire view tree. Strip out any duplicated headers, floating redundant text assets, or stacking navigation panels. Every feature must map directly into the persistent Left Navigation Rail router ('CraftHub', 'SmokeCraft', 'Pairing Engine', 'Lounge Mode', 'My Profile', 'Settings').
+
+Execute full batch compilation across the workspace workspace tree. Ensure zero duplicate layouts, zero TypeScript compilation errors, and zero broken paths.
