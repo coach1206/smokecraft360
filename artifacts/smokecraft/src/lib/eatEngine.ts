@@ -286,7 +286,7 @@ class EATEngineClass {
   private async _fetchInventory(): Promise<void> {
     try {
       const q   = this._venueId ? `?venueId=${encodeURIComponent(this._venueId)}` : "";
-      const res = await fetch(`/api/products${q}`);
+      const res = await fetch(`/api/inventory${q}`);
       if (!res.ok) return;
       const raw = await res.json() as Array<Record<string, unknown>>;
       if (!Array.isArray(raw) || !raw.length) return;

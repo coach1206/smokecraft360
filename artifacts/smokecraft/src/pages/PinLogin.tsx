@@ -224,7 +224,7 @@ function KeyButton({
       }}
       transition={{ type: "spring", stiffness: 600, damping: 18 }}
       style={{
-        minHeight: 70, position: "relative", overflow: "hidden",
+        minHeight: 80, position: "relative", overflow: "hidden",
         fontSize:      isNumber ? 26 : 11,
         fontWeight:    isNumber ? 300 : 700,
         letterSpacing: isNumber ? "0" : "0.14em",

@@ -21,7 +21,7 @@ export default function ControlChamber() {
         body: JSON.stringify({ pin }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok && data.ok) {
+      if (res.ok && data.ok && (data.tier === "sovereign" || data.role === "super_admin")) {
         setIsAuthorized(true);
         setError("");
       } else {

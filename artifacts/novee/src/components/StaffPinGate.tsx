@@ -86,7 +86,8 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
         data = await res.json() as PinResponse;
       }
 
-      if (data.ok) {
+      const mgmtOk = activeLevel !== "management" || (data.tier === "sovereign" || data.role === "super_admin");
+      if (data.ok && mgmtOk) {
         // Store JWT if provided (staff login returns one; management/founder-verify does not)
         if (data.token) localStorage.setItem("axiom_token", data.token);
 
@@ -330,7 +331,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
                   disabled={locked}
                   whileTap={{ scale: 0.90 }}
                   style={{
-                    height: 62,
+                    height: 80,
                     background: isBack ? "rgba(240,112,112,0.10)" : `${accentColor}0d`,
                     border: `1px solid ${isBack ? "rgba(240,112,112,0.30)" : `${accentColor}33`}`,
                     borderRadius: 10,

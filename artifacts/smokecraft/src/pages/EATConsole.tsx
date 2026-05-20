@@ -257,16 +257,16 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
 
           {/* Climate tile */}
           <Card highlight style={{ padding: "22px 24px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.24em", color: "rgba(212,175,55,0.48)", marginBottom: 16, textTransform: "uppercase" }}>LOUNGE CLIMATE</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 16, textTransform: "uppercase", fontWeight: 800 }}>LOUNGE CLIMATE</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               {[
                 { label: "Temperature", value: "68°",  unit: "FAHRENHEIT", color: GOLD },
                 { label: "Humidity",    value: "70%",  unit: "RELATIVE",   color: TEAL },
               ].map(r => (
                 <div key={r.label}>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.28)", letterSpacing: "0.16em", marginBottom: 4, textTransform: "uppercase" }}>{r.label}</div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.38)", letterSpacing: "0.14em", marginBottom: 4, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
                   <div style={{ fontSize: 52, fontWeight: 900, color: r.color, lineHeight: 0.92, letterSpacing: "-0.02em" }}>{r.value}</div>
-                  <div style={{ fontSize: 11, color: `${r.color}77`, marginTop: 4, letterSpacing: "0.14em", fontWeight: 600 }}>{r.unit}</div>
+                  <div style={{ fontSize: 13, color: `${r.color}77`, marginTop: 4, letterSpacing: "0.14em", fontWeight: 600 }}>{r.unit}</div>
                 </div>
               ))}
             </div>
@@ -274,7 +274,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
 
           {/* Atmosphere presets */}
           <Card style={{ padding: "16px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 12, textTransform: "uppercase" }}>ATMOSPHERE PRESETS</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 12, textTransform: "uppercase", fontWeight: 800 }}>ATMOSPHERE PRESETS</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9 }}>
               {displayPresets.slice(0, 4).map((p, i) => {
                 const lbl = p.label || ["ATMOSPHERE","CEREMONY","SERVICE","CLOSE"][i] || "PRESET";
@@ -308,7 +308,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
 
           {/* Filtration + Air quality + Humidor */}
           <Card style={{ padding: "16px 20px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 14, textTransform: "uppercase" }}>FILTRATION & AIR</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 14, textTransform: "uppercase", fontWeight: 800 }}>FILTRATION & AIR</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.10em", color: "rgba(255,255,255,0.55)" }}>EXHAUST FILTRATION</span>
@@ -323,11 +323,11 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
                 <span style={{ fontSize: 30, fontWeight: 900, color: TEAL }}>94</span>
               </div>
               <div style={{ borderTop: `1px solid rgba(212,175,55,0.09)`, paddingTop: 12 }}>
-                <div style={{ fontSize: 9, letterSpacing: "0.20em", color: "rgba(212,175,55,0.38)", marginBottom: 10, textTransform: "uppercase" }}>HUMIDOR READINGS</div>
+                <div style={{ fontSize: 12, letterSpacing: "0.20em", color: "rgba(212,175,55,0.48)", marginBottom: 10, textTransform: "uppercase", fontWeight: 800 }}>HUMIDOR READINGS</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                   {[{ label: "Temp", value: "65°F", color: GOLD }, { label: "Humidity", value: "72%", color: TEAL }].map(r => (
                     <div key={r.label}>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.26)", letterSpacing: "0.14em", marginBottom: 2, textTransform: "uppercase" }}>{r.label}</div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.36)", letterSpacing: "0.12em", marginBottom: 2, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
                       <div style={{ fontSize: 24, fontWeight: 800, color: r.color }}>{r.value}</div>
                     </div>
                   ))}
@@ -343,7 +343,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
 
           {/* Hero puro count */}
           <Card highlight style={{ padding: "22px 24px", boxShadow: `0 0 60px rgba(212,175,55,0.09)` }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.24em", color: "rgba(212,175,55,0.48)", marginBottom: 10, textTransform: "uppercase" }}>HUMIDOR INVENTORY</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 10, textTransform: "uppercase", fontWeight: 800 }}>HUMIDOR INVENTORY</div>
             <div style={{ display: "flex", alignItems: "flex-end", gap: 14, marginBottom: 16 }}>
               <span style={{ fontSize: 84, fontWeight: 900, color: GOLD, lineHeight: 0.88, letterSpacing: "-0.03em" }}>{totalPuros}</span>
               <span style={{ fontSize: 24, fontWeight: 700, color: "rgba(212,175,55,0.60)", letterSpacing: "0.22em", paddingBottom: 10 }}>PUROS</span>
@@ -369,7 +369,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
 
           {/* Spirit reserves */}
           <Card style={{ padding: "18px 20px", flex: 1 }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 16, textTransform: "uppercase" }}>SPIRIT RESERVES</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 16, textTransform: "uppercase", fontWeight: 800 }}>SPIRIT RESERVES</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {spirits.map(s => {
                 const pct   = Math.min(100, Math.round((s.qty / s.par) * 100));
@@ -386,10 +386,10 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
                       {isEdit ? (
                         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                           {([["−", () => setEditQty(q => Math.max(0, q - 1))], ["+", () => setEditQty(q => q + 1)]] as [string, () => void][]).map(([lbl, fn], idx) => (
-                            <button key={idx} onClick={fn} style={{ width: 30, height: 30, borderRadius: 6, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "white", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>{lbl}</button>
+                            <button key={idx} onClick={fn} style={{ width: 44, height: 44, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "white", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{lbl}</button>
                           ))}
                           <span style={{ fontSize: 20, fontWeight: 900, color, minWidth: 28, textAlign: "center" }}>{editQty}</span>
-                          <button onClick={() => setEditId(null)} style={{ padding: "5px 10px", borderRadius: 6, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 11, fontWeight: 800 }}>SAVE</button>
+                          <button onClick={() => setEditId(null)} style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 14, fontWeight: 800 }}>SAVE</button>
                         </div>
                       ) : (
                         <button onClick={() => { setEditId(s.id); setEditQty(s.qty); }} style={{ background: "none", border: "none", cursor: "pointer" }}>

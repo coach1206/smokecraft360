@@ -359,16 +359,16 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
           {/* Climate tile */}
           <Card highlight style={{ padding: "22px 24px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.24em", color: "rgba(212,175,55,0.48)", marginBottom: 16, textTransform: "uppercase" }}>LOUNGE CLIMATE</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 16, textTransform: "uppercase", fontWeight: 800 }}>LOUNGE CLIMATE</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               {[
                 { label: "Temperature", value: "68°",  unit: "FAHRENHEIT", color: GOLD },
                 { label: "Humidity",    value: "70%",  unit: "RELATIVE",   color: TEAL },
               ].map(r => (
                 <div key={r.label}>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.28)", letterSpacing: "0.16em", marginBottom: 4, textTransform: "uppercase" }}>{r.label}</div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.38)", letterSpacing: "0.14em", marginBottom: 4, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
                   <div style={{ fontSize: 52, fontWeight: 900, color: r.color, lineHeight: 0.92, letterSpacing: "-0.02em" }}>{r.value}</div>
-                  <div style={{ fontSize: 11, color: `${r.color}77`, marginTop: 4, letterSpacing: "0.14em", fontWeight: 600 }}>{r.unit}</div>
+                  <div style={{ fontSize: 13, color: `${r.color}77`, marginTop: 4, letterSpacing: "0.14em", fontWeight: 600 }}>{r.unit}</div>
                 </div>
               ))}
             </div>
@@ -376,7 +376,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
           {/* Atmosphere presets */}
           <Card style={{ padding: "16px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 12, textTransform: "uppercase" }}>ATMOSPHERE PRESETS</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 12, textTransform: "uppercase", fontWeight: 800 }}>ATMOSPHERE PRESETS</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9 }}>
               {DEFAULT_PRESETS.map(p => {
                 const active = activePresetId === p.id;
@@ -406,7 +406,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
           {/* Filtration + Air quality + Humidor */}
           <Card style={{ padding: "16px 20px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 14, textTransform: "uppercase" }}>FILTRATION & AIR</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 14, textTransform: "uppercase", fontWeight: 800 }}>FILTRATION & AIR</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.10em", color: "rgba(255,255,255,0.55)" }}>EXHAUST FILTRATION</span>
@@ -421,11 +421,11 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                 <span style={{ fontSize: 30, fontWeight: 900, color: TEAL }}>94</span>
               </div>
               <div style={{ borderTop: `1px solid rgba(212,175,55,0.09)`, paddingTop: 12 }}>
-                <div style={{ fontSize: 9, letterSpacing: "0.20em", color: "rgba(212,175,55,0.38)", marginBottom: 10, textTransform: "uppercase" }}>HUMIDOR READINGS</div>
+                <div style={{ fontSize: 12, letterSpacing: "0.20em", color: "rgba(212,175,55,0.48)", marginBottom: 10, textTransform: "uppercase", fontWeight: 800 }}>HUMIDOR READINGS</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                   {[{ label: "Temp", value: "65°F", color: GOLD }, { label: "Humidity", value: "72%", color: TEAL }].map(r => (
                     <div key={r.label}>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.26)", letterSpacing: "0.14em", marginBottom: 2, textTransform: "uppercase" }}>{r.label}</div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.36)", letterSpacing: "0.12em", marginBottom: 2, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
                       <div style={{ fontSize: 24, fontWeight: 800, color: r.color }}>{r.value}</div>
                     </div>
                   ))}
@@ -441,7 +441,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
           {/* Hero puro count */}
           <Card highlight style={{ padding: "22px 24px", boxShadow: `0 0 60px rgba(212,175,55,0.09)` }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.24em", color: "rgba(212,175,55,0.48)", marginBottom: 10, textTransform: "uppercase" }}>HUMIDOR INVENTORY</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 10, textTransform: "uppercase", fontWeight: 800 }}>HUMIDOR INVENTORY</div>
             <div style={{ display: "flex", alignItems: "flex-end", gap: 14, marginBottom: 16 }}>
               <span style={{ fontSize: 84, fontWeight: 900, color: GOLD, lineHeight: 0.88, letterSpacing: "-0.03em" }}>{totalPuros}</span>
               <span style={{ fontSize: 24, fontWeight: 700, color: "rgba(212,175,55,0.60)", letterSpacing: "0.22em", paddingBottom: 10 }}>PUROS</span>
@@ -467,7 +467,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
           {/* Spirit reserves */}
           <Card style={{ padding: "18px 20px", flex: 1 }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 16, textTransform: "uppercase" }}>SPIRIT RESERVES</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 16, textTransform: "uppercase", fontWeight: 800 }}>SPIRIT RESERVES</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {spirits.map(s => {
                 const pct   = Math.min(100, Math.round((s.qty / s.par) * 100));
@@ -531,7 +531,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
           {/* Shift metrics */}
           <Card highlight style={{ padding: "18px 22px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 14, textTransform: "uppercase" }}>SHIFT METRICS</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 14, textTransform: "uppercase", fontWeight: 800 }}>SHIFT METRICS</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
               {[
                 { label: "Shift Revenue", value: `$${shiftTotal.toLocaleString()}`, color: GOLD      },
@@ -550,7 +550,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
           <Card>
             <div style={{ padding: "13px 18px", borderBottom: `1px solid rgba(212,175,55,0.07)`,
               display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", textTransform: "uppercase" }}>ACTIVE GUEST TABS</span>
+              <span style={{ fontSize: 13, letterSpacing: "0.20em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>ACTIVE GUEST TABS</span>
               <span style={{ fontSize: 12, color: TEAL, fontWeight: 800, letterSpacing: "0.12em" }}>{activeTables.length} OPEN</span>
             </div>
             <div style={{ overflow: "auto", maxHeight: 230 }}>
@@ -606,7 +606,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
           {/* Milestone tracker */}
           <Card style={{ padding: "15px 18px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 13, textTransform: "uppercase" }}>MILESTONE TRACKER</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 13, textTransform: "uppercase", fontWeight: 800 }}>MILESTONE TRACKER</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
                 { label: "Shift Revenue Goal",  current: shiftTotal,      target: 5000, color: GOLD      },
@@ -631,7 +631,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
           <Card>
             <div style={{ padding: "13px 18px", borderBottom: `1px solid ${BORDER_DIM}`,
               display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", textTransform: "uppercase" }}>RECENT ACTIVITY</span>
+              <span style={{ fontSize: 13, letterSpacing: "0.20em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>RECENT ACTIVITY</span>
               <span style={{ fontSize: 11, color: "rgba(212,175,55,0.35)", fontWeight: 700, letterSpacing: "0.10em" }}>LAST {Math.min(liveTabs.length, 10)}</span>
             </div>
             <div style={{ overflow: "auto", maxHeight: 240 }}>
