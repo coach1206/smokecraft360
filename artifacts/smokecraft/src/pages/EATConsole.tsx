@@ -226,6 +226,8 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
   const [txnTab, setTxnTab]         = useState<"Active Tabs"|"Recent Orders"|"Payments">("Active Tabs");
   const [activeTabs, setActiveTabs] = useState<TabRecord[]>(STATIC_TABS);
   const [selTabId, setSelTabId]     = useState<string>(STATIC_TABS[0].id);
+  type OrderRow = { id:string; tableNumber:string; items:{name:string;qty:number;price:number}[]; total:number; status:string; createdAt:string };
+  const [recentOrders, setRecentOrders] = useState<OrderRow[]>([]);
 
   // Center — inventory sub-tab
   const [invCat, setInvCat] = useState<"Kitchen"|"Bar"|"Humidor">("Kitchen");
@@ -297,14 +299,16 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
             const tab = t as Record<string,unknown>;
             return {
               id:          String(tab.id ?? `tab_${i}`),
-              tableNumber: Number(tab.tableNumber ?? (i+1)),
-              guests:      Number(tab.guestCount ?? 1),
+              name:        String(tab.guestName ?? tab.name ?? `Table ${i+1}`),
+              server:      String(tab.serverName ?? tab.server ?? "Staff"),
+              tableNumber: String(tab.tableNumber ?? String(i+1)),
+              guests:      Number(tab.guestCount ?? tab.guests ?? 1),
               items:       Array.isArray(tab.items) ? tab.items.map((it:unknown) => {
                 const item = it as Record<string,unknown>;
                 return { name:String(item.name??"Item"), qty:Number(item.qty??1), price:Number(item.price??0) };
               }) : [],
               total:       Number(tab.total ?? 0),
-              status:      String(tab.status ?? "open") as "open"|"closed"|"pending",
+              tax:         Number(tab.tax ?? 0),
             };
           }));
           setSelTabId(String((rows[0] as Record<string,unknown>).id ?? "tab_0"));
@@ -316,6 +320,30 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
     fetch(`/api/events/venue/${encodeURIComponent(venueId)}`, { headers:hdr(token) })
       .then(r=>r.ok?r.json():null)
       .then(_d=>{ /* events loaded; future event state hook can consume here */ })
+      .catch(()=>{});
+
+    // Recent orders
+    fetch(`/api/orders/venue/${encodeURIComponent(venueId)}?limit=20`, { headers:hdr(token) })
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        const list: unknown[] = Array.isArray(d) ? d : ((d as {orders?:unknown[]}).orders ?? []);
+        if (list.length > 0) {
+          setRecentOrders(list.map((o:unknown) => {
+            const order = o as Record<string,unknown>;
+            return {
+              id:          String(order.id ?? ""),
+              tableNumber: String(order.tableNumber ?? order.table ?? ""),
+              items:       Array.isArray(order.items) ? order.items.map((it:unknown) => {
+                const item = it as Record<string,unknown>;
+                return { name:String(item.name??""), qty:Number(item.qty??1), price:Number(item.price??0) };
+              }) : [],
+              total:       Number(order.total ?? 0),
+              status:      String(order.status ?? ""),
+              createdAt:   String(order.createdAt ?? order.created_at ?? ""),
+            };
+          }));
+        }
+      })
       .catch(()=>{});
 
     return () => {
@@ -406,6 +434,37 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
       method:"POST",
       headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
       body:JSON.stringify({ name:FEATURED_CIGAR.name, price:FEATURED_CIGAR.price, qty:1, category:"cigar" }),
+    }).catch(()=>{});
+  }, [selectedTab]);
+
+  const handleAddPairing = useCallback(() => {
+    const token = localStorage.getItem("axiom_token") ?? "";
+    if(!selectedTab) return;
+    fetch(`/api/tabs/${selectedTab.id}/items`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
+      body:JSON.stringify({ name:"Premium Pairing Selection", price:28, qty:1, category:"pairing" }),
+    }).catch(()=>{});
+  }, [selectedTab]);
+
+  const handleAddFullExperience = useCallback(() => {
+    const token = localStorage.getItem("axiom_token") ?? "";
+    if(!selectedTab) return;
+    fetch(`/api/tabs/${selectedTab.id}/items`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
+      body:JSON.stringify({ name:"Full Cigar & Pairing Experience", price:FEATURED_CIGAR.price + 28, qty:1, category:"experience" }),
+    }).catch(()=>{});
+  }, [selectedTab]);
+
+  const handleRoute = useCallback((action: string) => {
+    const token = localStorage.getItem("axiom_token") ?? "";
+    if(!selectedTab) return;
+    const dest = action.replace("Send to ","").toLowerCase();
+    fetch(`/api/orders/${selectedTab.id}/route`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
+      body:JSON.stringify({ destination: dest, items: selectedTab.items }),
     }).catch(()=>{});
   }, [selectedTab]);
 
@@ -658,12 +717,12 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
               background:"rgba(46,125,79,0.08)", color:GREEN, fontSize:14, fontWeight:800, cursor:"pointer", letterSpacing:"0.06em" }}>
             Add Cigar<br/><span style={{ fontSize:12, fontWeight:600 }}>${FEATURED_CIGAR.price}.00</span>
           </motion.button>
-          <motion.button whileTap={{ scale:0.96 }}
+          <motion.button whileTap={{ scale:0.96 }} onClick={handleAddPairing}
             style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid rgba(180,140,80,0.35)`,
               background:"rgba(180,140,80,0.08)", color:MED, fontSize:14, fontWeight:800, cursor:"pointer", letterSpacing:"0.06em" }}>
             Add Pairing<br/><span style={{ fontSize:12, fontWeight:600 }}>From $16.00</span>
           </motion.button>
-          <motion.button whileTap={{ scale:0.96 }}
+          <motion.button whileTap={{ scale:0.96 }} onClick={handleAddFullExperience}
             style={{ flex:2, padding:"12px", borderRadius:8, border:"none",
               background:`linear-gradient(135deg,${GOLD},${AMBER})`,
               color:ESPRESSO, fontSize:15, fontWeight:900, cursor:"pointer", letterSpacing:"0.08em" }}>
@@ -750,7 +809,22 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
 
           {txnTab==="Recent Orders" && (
             <div style={{ padding:"10px 12px" }}>
-              <div style={{ fontSize:12, color:LIGHT, textAlign:"center", padding:"20px 0" }}>Loading recent orders…</div>
+              {recentOrders.length === 0 ? (
+                <div style={{ fontSize:12, color:LIGHT, textAlign:"center", padding:"20px 0" }}>No recent orders found.</div>
+              ) : (
+                recentOrders.map(o=>(
+                  <div key={o.id} style={{ padding:"8px 0", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:800, color:DARK }}>Table {o.tableNumber}</div>
+                      <div style={{ fontSize:11, color:LIGHT }}>{o.items.length} item{o.items.length!==1?"s":""} · {o.createdAt ? new Date(o.createdAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : ""}</div>
+                    </div>
+                    <div style={{ textAlign:"right" }}>
+                      <div style={{ fontSize:13, fontWeight:900, color:AMBER }}>${o.total.toFixed(2)}</div>
+                      <div style={{ fontSize:10, color:LIGHT, textTransform:"uppercase", letterSpacing:"0.1em" }}>{o.status}</div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
 
@@ -766,8 +840,8 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
           {/* Route buttons */}
           <SCard style={{ padding:"10px 10px 8px" }}>
             <div style={{ fontSize:11, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:8 }}>Route Order</div>
-            {["Send to Bar","Send to Kitchen","Send to Humidor","Add Items"].map(a=>(
-              <motion.button key={a} whileTap={{ scale:0.96 }}
+            {["Send to Bar","Send to Kitchen","Send to Humidor"].map(a=>(
+              <motion.button key={a} whileTap={{ scale:0.96 }} onClick={()=>handleRoute(a)}
                 style={{ width:"100%", padding:"9px", marginBottom:6, borderRadius:7,
                   border:`1px solid ${BORDER}`, background:CREAM,
                   color:DARK, fontSize:12, fontWeight:700, cursor:"pointer", textAlign:"left" }}>
