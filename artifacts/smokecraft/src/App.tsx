@@ -166,6 +166,43 @@ function SovereignSocketBridge() {
   return null;
 }
 
+/* ── Secret gesture zones — top-left 3s hold → /control-chamber
+      bottom-right triple-tap → /control-chamber ────────────── */
+function GestureGateway() {
+  const [, navigate] = useLocation();
+  const [brCount, setBrCount] = useState(0);
+
+  function handleTopLeftDown() {
+    const start = Date.now();
+    const iv = setInterval(() => {
+      if (Date.now() - start >= 3000) {
+        clearInterval(iv);
+        navigate('/control-chamber');
+      }
+    }, 100);
+    const up = () => clearInterval(iv);
+    window.addEventListener('pointerup', up, { once: true });
+  }
+
+  function handleBottomRightClick() {
+    setBrCount(prev => {
+      const next = prev + 1;
+      if (next >= 3) { navigate('/control-chamber'); return 0; }
+      return next;
+    });
+    setTimeout(() => setBrCount(0), 1000);
+  }
+
+  return (
+    <>
+      <div onPointerDown={handleTopLeftDown}
+        style={{ position: 'fixed', top: 0, left: 0, width: 80, height: 80, zIndex: 9999, cursor: 'none' }} />
+      <div onPointerDown={handleBottomRightClick}
+        style={{ position: 'fixed', bottom: 0, right: 0, width: 80, height: 80, zIndex: 9999, cursor: 'none' }} />
+    </>
+  );
+}
+
 /* ── Full provider stack for all sub-pages ──────────────────── */
 function SubPageProviders({ children }: { children: React.ReactNode }) {
   const venueId = typeof localStorage !== 'undefined'
@@ -1007,6 +1044,7 @@ export default function App() {
   const userRole = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_role')       ?? 'venue_owner') : 'venue_owner';
   return (
     <Router>
+      <GestureGateway />
       <BrandPartnerFirewall />
       <GuestAmbientLayer />
 
