@@ -1,0 +1,446 @@
+EXECUTE FULL E.A.T SYSTEM ARCHITECTURE BUILD
+ZERO STUBS • ZERO DUPLICATE ROUTES • FULL TOUCHSCREEN OPERATIONAL SYSTEM
+
+STACK:
+React 18
+TypeScript
+Vite
+TailwindCSS
+Framer Motion
+Zustand
+Socket.IO
+Node.js
+Express
+PostgreSQL
+Drizzle ORM
+Stripe
+Cloudinary
+WebSocket Live Sync
+
+PRIMARY OBJECTIVE:
+Transform the current SmokeCraft/NOVEE interface from shared visual placeholders into a true modular hospitality operating system.
+
+SYSTEM IDENTITY:
+The E.A.T System (Environment • Asset • Transactions) is NOT a standard POS.
+It is a luxury hospitality operating system built for:
+• cigar lounges
+• whiskey lounges
+• luxury hospitality venues
+• VIP clubs
+• private member environments
+
+The system must feel:
+• cinematic
+• premium
+• calm
+• touchscreen optimized
+• operationally fast
+• easy to read in nightclub lighting
+
+VISUAL LANGUAGE:
+TOP NAVIGATION:
+• dark walnut gradient
+• smoked bronze glass
+• gold amber edge lighting
+
+MAIN CONTENT:
+• cream smoke-glass surfaces
+• warm ivory typography
+• bronze separators
+• soft glow highlights
+
+DO NOT:
+• use tiny fonts
+• use spreadsheet dashboards
+• use cyberpunk neon overload
+• use muddy black backgrounds
+• use generic POS layouts
+
+TYPOGRAPHY:
+• Main headers = 34px+
+• Section headers = 28px+
+• Operational text = 20px+
+• Buttons = minimum 22px
+• NEVER render text smaller than 18px
+
+TOUCH TARGETS:
+• minimum 58px height
+• finger-friendly spacing
+• swipe compatible
+• drag-and-drop optimized
+
+====================================================
+CORE MODULE SEPARATION
+====================================================
+
+CREATE FULLY SEPARATED ROUTES + STATE TREES FOR:
+
+/crafthub
+/smokecraft
+/eat-intel
+/lounge
+/pairing
+/settings
+/staff-auth
+/coach-help
+
+Each route must:
+• have unique layout
+• unique state
+• unique interactions
+• unique functionality
+• preserve shared shell/navbar only
+
+NO duplicated screens.
+NO mirrored placeholders.
+NO dead buttons.
+
+====================================================
+CRAFT HUB MODULE
+====================================================
+
+PURPOSE:
+Master ecosystem launcher.
+
+FEATURES:
+• SmokeCraft
+• PourCraft
+• BeerCraft
+• WineCraft
+• Event center
+• Membership center
+• Live venue status
+• Featured pairings
+• Active experiences
+
+VISUALS:
+• cinematic lounge imagery
+• animated smoke
+• premium hero cards
+• hover glow states
+
+====================================================
+SMOKECRAFT MODULE
+====================================================
+
+PURPOSE:
+Guest cigar experience engine.
+
+FEATURES:
+• blend journey
+• flavor analysis
+• XP system
+• Golden Box progression
+• mentor system
+• cigar education
+• session tracking
+
+WHAT TO EXPECT BUTTONS:
+DISCOVER
+• cinematic overlay popup
+• wrapper education
+• flavor wheel
+• region visuals
+
+ANALYZE
+• overlay popup
+• flavor chemistry
+• AI blend analysis
+• strength spectrum
+
+CRAFT
+• full dedicated page
+• wrapper selection
+• filler selection
+• cut style
+• blend creation
+
+EXPERIENCE
+• popup overlay first
+• XP summary
+• score
+• Golden Box status
+• optional deep dive page
+
+====================================================
+PAIRING ENGINE MODULE
+====================================================
+
+PURPOSE:
+Luxury visual pairing engine.
+
+FEATURES:
+• cigar image rendering
+• whiskey/bourbon image rendering
+• cocktail visuals
+• food pairings
+• flavor chemistry
+• AI pairing recommendations
+• pairing score system
+• “Add Full Experience” button
+
+EACH PAIRING CARD MUST DISPLAY:
+• cigar image
+• wrapper close-up
+• flavor profile
+• drink pairing image
+• food pairing image
+• suggested atmosphere
+• lounge mode recommendation
+
+INTERACTIONS:
+• tap to expand
+• swipe carousel
+• add-to-tab
+• save experience
+• AI recommendation pulse
+
+====================================================
+E.A.T INTEL MODULE
+====================================================
+
+PURPOSE:
+Operational intelligence center.
+
+SECTIONS:
+ENVIRONMENT
+ASSET
+TRANSACTIONS
+
+LIVE DATA:
+• temperature
+• humidity
+• air quality
+• lounge energy
+• occupancy
+• inventory movement
+• sales velocity
+• active tablets
+• active staff
+• active sessions
+
+CREATE:
+• operational telemetry bar
+• live sync indicators
+• venue pulse engine
+
+====================================================
+LOUNGE MODULE
+====================================================
+
+PURPOSE:
+Atmosphere control center.
+
+CONTROLS:
+• lighting presets
+• music presets
+• scent presets
+• crowd energy mode
+• VIP mode
+• sports mode
+• jazz mode
+• event themes
+
+API PREP:
+• Lutron
+• Philips Hue
+• Sonos
+• Nest
+• DMX lighting
+• Smart HVAC
+
+====================================================
+STAFF AUTH MODULE
+====================================================
+
+PURPOSE:
+Operational authentication.
+
+WHEN CLICKED:
+• trigger cinematic PIN overlay
+• darkened backdrop
+• ripple animation from touch point
+• role validation
+• staff assignment
+
+ROLES:
+• server
+• bartender
+• humidor specialist
+• manager
+• developer
+• founder
+
+====================================================
+COACH HELP MODULE
+====================================================
+
+PURPOSE:
+Interactive onboarding assistant.
+
+FEATURES:
+• contextual help overlays
+• guided tutorials
+• mentor walkthroughs
+• voice guidance hooks
+• operational walkthroughs
+
+====================================================
+SETTINGS MODULE
+====================================================
+
+PURPOSE:
+Master admin configuration center.
+
+FEATURES:
+• device manager
+• API manager
+• Stripe manager
+• HVAC integrations
+• image upload manager
+• user roles
+• permissions
+• telemetry controls
+• theme manager
+
+====================================================
+IMAGE DIRECTORY SYSTEM
+====================================================
+
+CREATE MEDIA MANAGER:
+
+UPLOAD SUPPORT:
+• cigar images
+• drink images
+• food images
+• event images
+• lounge themes
+• promotions
+
+FEATURES:
+• Cloudinary integration
+• category sorting
+• drag/drop upload
+• image replacement
+• real-time updates
+
+====================================================
+DEVICE TELEMETRY SYSTEM
+====================================================
+
+TRACK:
+• tablet ID
+• battery percentage
+• room location
+• assigned staff
+• signal strength
+• online/offline
+• active session
+• current table
+
+DISPLAY:
+• active tablet grid
+• room map integration
+• live sync status
+
+====================================================
+SEATING ENGINE
+====================================================
+
+CREATE:
+• drag/drop floor plan
+• live table assignment
+• VIP table coloring
+• active session glow
+• occupancy heat maps
+
+FEATURES:
+• touchscreen drag controls
+• table grouping
+• reservation syncing
+• server assignment
+
+====================================================
+STRIPE PAYMENT LAYER
+====================================================
+
+ENABLE:
+• Apple Pay
+• Google Pay
+• QR checkout
+• split tabs
+• tap-to-pay
+• saved cards
+• gratuity
+• memberships
+• event tickets
+
+GUEST FLOW:
+Guests can:
+• browse visually
+• order instantly
+• pay instantly
+• reopen tabs
+• reorder experiences
+
+WITHOUT waiting for staff.
+
+====================================================
+LIVE SYNC ENGINE
+====================================================
+
+USE SOCKET.IO FOR:
+• live inventory sync
+• seating sync
+• order sync
+• environment sync
+• tablet sync
+• pairing updates
+• transaction updates
+
+====================================================
+RESPONSIVE MODES
+====================================================
+
+CREATE:
+• tablet mode
+• kiosk mode
+• executive desktop mode
+• wall terminal mode
+
+====================================================
+ANIMATION SYSTEM
+====================================================
+
+USE FRAMER MOTION:
+
+ADD:
+• ember glow
+• smoke drift
+• ambient pulse
+• ripple transitions
+• overlay dissolves
+• warm telemetry shimmer
+
+DO NOT:
+• overanimate
+• lag rendering
+• block touchscreen responsiveness
+
+====================================================
+FINAL BUILD REQUIREMENTS
+====================================================
+
+• Zero TypeScript errors
+• Zero duplicate layouts
+• Zero dead buttons
+• Zero placeholder routes
+• Zero shared mirrored screens
+• Fully responsive
+• Touchscreen optimized
+• Premium hospitality aesthetic
+• Real operational architecture
+• Future module expansion ready
+• Production-grade routing
+• Clean state management
+• Replit compatible

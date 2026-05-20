@@ -1,782 +1,875 @@
 /**
- * EATDashboard — NOVEE OS · E.A.T. Tactical Terminal
- * 3-column persistent grid: ENVIRONMENT | ASSET VAULT | TRANSACTION
+ * EATDashboard — E.A.T. System Hospitality OS
+ * Elevated Atmosphere & Transactions · NOVEE OS
+ * Rebuilt to match reference design: top-nav, device sidebar,
+ * pairing engine, orders, environment controls, floor plan.
  */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { socket } from "@/lib/socket";
 import {
   eatEngine,
+  type EnvironmentState,
   type InventoryProduct,
   type CheckoutRequest,
-  type EnvironmentState,
 } from "@/lib/eatEngine";
-import { socket } from "@/lib/socket";
 import type { EATModuleFlags } from "@/pages/ExecutiveCommandCenter";
-import { StaffPinGate } from "@/components/StaffPinGate";
 
-// ── Design constants ──────────────────────────────────────────────────────────
-const BG         = "#0D0D0D";
-const GOLD       = "#D4AF37";
-const PANEL      = "rgba(14,10,3,0.96)";
-const BORDER     = "rgba(212,175,55,0.30)";
-const BORDER_DIM = "rgba(212,175,55,0.12)";
-const TEAL       = "#4AD9C8";
-const AMBER_H    = "#FF9500";
-const GREEN      = "#32B45A";
-const RED_H      = "#F07070";
+// ── Design tokens ─────────────────────────────────────────────────────────────
+const ESPRESSO = "#1E0C04";
+const CREAM    = "#F0EBE0";
+const CARD     = "#FAF7F1";
+const GOLD     = "#D4AF37";
+const AMBER    = "#C4860A";
+const GREEN    = "#2E7D4F";
+const RED_CLR  = "#C0392B";
+const DARK     = "#1A1208";
+const MED      = "#6B5240";
+const LIGHT    = "#A08B70";
+const BORDER   = "rgba(180,140,80,0.18)";
 
-// ── Fallback inventory ────────────────────────────────────────────────────────
-type AssetCat = "CIGAR" | "SPIRIT" | "WINE";
-interface StockItem { id: string; name: string; brand: string; category: AssetCat; qty: number; par: number; price: number; }
+// ── Navigation tabs ───────────────────────────────────────────────────────────
+const TOP_TABS = [
+  "Command Center","Environment","Assets","Transactions",
+  "Pairing Engine","Lounge Control","Analytics","Staffing",
+] as const;
+type TopTab = (typeof TOP_TABS)[number];
 
-const STOCK: StockItem[] = [
-  { id: "c1", name: "1926 Serie No. 6",        brand: "PADRÓN",             category: "CIGAR",  qty: 24, par: 48, price: 45  },
-  { id: "c2", name: "Fuente Fuente Opus X",     brand: "ARTURO FUENTE",      category: "CIGAR",  qty: 11, par: 36, price: 65  },
-  { id: "c3", name: "Cohiba Behike 54",         brand: "COHIBA",             category: "CIGAR",  qty: 18, par: 30, price: 95  },
-  { id: "c4", name: "Liga Privada No. 9",       brand: "DREW ESTATE",        category: "CIGAR",  qty: 31, par: 48, price: 32  },
-  { id: "c5", name: "Padron 1964 Anniversary",  brand: "PADRÓN",             category: "CIGAR",  qty: 42, par: 60, price: 48  },
-  { id: "s1", name: "Macallan 18yr Sherry Oak", brand: "THE MACALLAN",       category: "SPIRIT", qty: 6,  par: 12, price: 220 },
-  { id: "s2", name: "Pappy Van Winkle 23yr",    brand: "OLD RIP VAN WINKLE", category: "SPIRIT", qty: 3,  par: 6,  price: 340 },
-  { id: "s3", name: "Hennessy XO",              brand: "HENNESSY",           category: "SPIRIT", qty: 8,  par: 12, price: 160 },
-  { id: "s4", name: "Buffalo Trace Antique",    brand: "BUFFALO TRACE",      category: "SPIRIT", qty: 11, par: 18, price: 85  },
-  { id: "w1", name: "Opus One 2020",            brand: "OPUS ONE",           category: "WINE",   qty: 18, par: 24, price: 120 },
-  { id: "w2", name: "Château Pétrus 2016",      brand: "POMEROL ESTATE",     category: "WINE",   qty: 4,  par: 12, price: 280 },
-  { id: "w3", name: "Dom Pérignon 2013",        brand: "MOËT & CHANDON",     category: "WINE",   qty: 9,  par: 18, price: 210 },
+// ── Fallback static data ───────────────────────────────────────────────────────
+const STATIC_DEVICES = [
+  { id:"T-B01", name:"Tablet 01", room:"Main Lounge",    battery:100, signal:4, online:true  },
+  { id:"T-B02", name:"Tablet 02", room:"VIP Room 1",     battery:85,  signal:3, online:true  },
+  { id:"T-B03", name:"Tablet 03", room:"Cigar Patio",    battery:73,  signal:3, online:true  },
+  { id:"T-B04", name:"Tablet 04", room:"Bar Station",    battery:92,  signal:4, online:true  },
+  { id:"T-B05", name:"Tablet 05", room:"Humidor",        battery:65,  signal:2, online:true  },
+  { id:"T-B06", name:"Tablet 06", room:"Kitchen Display",battery:100, signal:4, online:true  },
+  { id:"T-B07", name:"Tablet 07", room:"Wine Cellar",    battery:58,  signal:2, online:false },
+  { id:"T-B08", name:"Tablet 08", room:"Private Room 2", battery:41,  signal:1, online:true  },
 ];
 
-const WRAPPER_NAMES = ["CONNECTICUT", "COROJO", "CRIOLLO", "MADURO", "HABANO"];
-
-const DEFAULT_PRESETS = [
-  { id: "atmosphere", label: "ATMOSPHERE" },
-  { id: "ceremony",   label: "CEREMONY"   },
-  { id: "service",    label: "SERVICE"    },
-  { id: "close",      label: "CLOSE"      },
+const FEATURED_CIGAR = {
+  name:"Padrón 1926 Serie 80", type:"Maduro", origin:"Nicaragua",
+  body:"Full Bodied", strength:4, rating:4.5, price:36,
+  description:"Rich, bold and complex. Notes of espresso, dark chocolate, earth and black pepper with a long creamy finish.",
+};
+const PAIRINGS = [
+  { name:"The Macallan 18",      sub:"Sherry Oak",            notes:"Rich · Dried Fruit · Oak",   price:42 },
+  { name:"Smoked Old Fashioned", sub:"Bourbon · Bitters · Smoke", notes:"Artisan cocktail",       price:18 },
+  { name:"Wagyu Sliders",        sub:"Truffle Aioli · Brioche",   notes:"Chef feature tonight",   price:16 },
 ];
 
-// ── Static table data for Transaction module ──────────────────────────────────
-const TABLES = [
-  { id: 1,  status: "active", vip: false, guests: 2, spend: 180, name: "Anna T.",     loyalty: "Gold"     },
-  { id: 2,  status: "active", vip: false, guests: 3, spend: 290, name: "James R.",    loyalty: "Silver"   },
-  { id: 4,  status: "active", vip: false, guests: 4, spend: 430, name: "Marcus B.",   loyalty: "Platinum" },
-  { id: 5,  status: "active", vip: false, guests: 2, spend: 210, name: "Elena R.",    loyalty: "Silver"   },
-  { id: 7,  status: "active", vip: false, guests: 3, spend: 340, name: "David C.",    loyalty: "Gold"     },
-  { id: 9,  status: "active", vip: false, guests: 5, spend: 580, name: "Group: V",    loyalty: "Platinum" },
-  { id: 12, status: "active", vip: true,  guests: 4, spend: 820, name: "John D.",     loyalty: "Platinum" },
+interface FloorTable { id:number|string; x:number; y:number; vip:boolean; active:boolean; guests:number; }
+const INITIAL_TABLES: FloorTable[] = [
+  { id:101, x:8,  y:6,  vip:false, active:false, guests:0 },
+  { id:102, x:43, y:6,  vip:false, active:true,  guests:2 },
+  { id:103, x:25, y:26, vip:false, active:true,  guests:3 },
+  { id:104, x:62, y:6,  vip:false, active:false, guests:0 },
+  { id:105, x:8,  y:46, vip:false, active:false, guests:0 },
+  { id:106, x:62, y:46, vip:false, active:true,  guests:4 },
+  { id:107, x:43, y:28, vip:false, active:false, guests:0 },
+  { id:108, x:62, y:28, vip:false, active:true,  guests:2 },
+  { id:109, x:8,  y:34, vip:false, active:false, guests:0 },
+  { id:110, x:25, y:58, vip:false, active:false, guests:0 },
+  { id:111, x:62, y:68, vip:false, active:false, guests:0 },
+  { id:112, x:8,  y:66, vip:false, active:false, guests:0 },
+  { id:"VIP1", x:34, y:50, vip:true, active:true, guests:5 },
 ];
 
-// ── Bill items ────────────────────────────────────────────────────────────────
-const BILL_ITEMS: Record<number, { item: string; qty: number; price: number }[]> = {
-  12: [{ item: "Padron 1964 Anniversary", qty: 2, price: 48 }, { item: "Pappy Van Winkle 15yr", qty: 2, price: 85 }, { item: "Old Forester 1920", qty: 1, price: 42 }],
-  4:  [{ item: "Arturo Fuente OpusX",     qty: 2, price: 72 }, { item: "Hennessy XO",            qty: 2, price: 78 }],
-  9:  [{ item: "Opus X BBMF",             qty: 3, price: 88 }, { item: "Dom Pérignon",            qty: 1, price: 210 }],
-  7:  [{ item: "Arturo Fuente Anejo",     qty: 2, price: 56 }, { item: "Woodford Double Oaked",  qty: 2, price: 48 }],
+interface TabRecord {
+  id:string; name:string; guests:number; server:string;
+  tableNumber:string; total:number; tax:number;
+  items:{ name:string; qty:number; price:number }[];
+}
+const STATIC_TABS: TabRecord[] = [
+  { id:"t1", name:"John D.", guests:3, server:"Alex T.", tableNumber:"103", total:248.75, tax:18.75,
+    items:[
+      { name:"Padrón 1926 Serie 80", qty:1, price:36 },
+      { name:"The Macallan 18",      qty:2, price:42 },
+      { name:"Wagyu Sliders",        qty:1, price:32 },
+      { name:"Smoked Old Fashioned", qty:2, price:18 },
+      { name:"Lounge Charge",        qty:1, price:20 },
+    ] },
+  { id:"t2", name:"Marcus B.", guests:2, server:"Sam K.",   tableNumber:"104",  total:340,  tax:0, items:[] },
+  { id:"t3", name:"Elena R.",  guests:4, server:"Alex T.",  tableNumber:"107",  total:198,  tax:0, items:[] },
+  { id:"t4", name:"David C.",  guests:2, server:"Chris M.", tableNumber:"108",  total:127,  tax:0, items:[] },
+  { id:"t5", name:"Group VIP", guests:5, server:"Alex T.",  tableNumber:"VIP1", total:820,  tax:0, items:[] },
+];
+const STATIC_EVENTS = [
+  { id:"e1", name:"Smooth Jazz Night",  schedule:"Every Friday 8PM – 12AM",  desc:"Live jazz, crafted cocktails and premium pairings.", emoji:"🎷" },
+  { id:"e2", name:"Cigar & Bourbon",    schedule:"Saturdays 7PM",            desc:"", emoji:"🥃" },
+  { id:"e3", name:"Wine Down",          schedule:"Wednesdays 6PM",           desc:"", emoji:"🍷" },
+  { id:"e4", name:"Latin Night",        schedule:"Thursdays 9PM",            desc:"", emoji:"💃" },
+  { id:"e5", name:"Poker Night",        schedule:"Tuesdays 8PM",             desc:"", emoji:"♠️" },
+];
+
+const INVENTORY_TABS = ["Kitchen","Bar","Humidor"] as const;
+const INVENTORY_DATA: Record<string,{name:string;qty:number;status:"In Stock"|"Low Stock"}[]> = {
+  Kitchen:[ {name:"Wagyu Beef",qty:12,status:"In Stock"},{name:"Truffle Oil",qty:4,status:"Low Stock"},{name:"Brioche Buns",qty:28,status:"In Stock"} ],
+  Bar:    [ {name:"The Macallan 18",qty:6,status:"Low Stock"},{name:"Pappy Van Winkle",qty:3,status:"Low Stock"},{name:"Hennessy XO",qty:8,status:"In Stock"} ],
+  Humidor:[ {name:"Cohiba Behike 52",qty:144,status:"In Stock"},{name:"Padrón 1926 No.9",qty:89,status:"In Stock"},{name:"Oliva Serie V Melanio",qty:112,status:"In Stock"},{name:"Davidoff Millennium",qty:67,status:"In Stock"},{name:"Premium Lighters",qty:23,status:"Low Stock"} ],
 };
 
-function loyaltyColor(t: string): string {
-  if (t === "Platinum") return "#E8E8FF";
-  if (t === "Gold")     return GOLD;
-  if (t === "Silver")   return "#A8A8B8";
-  return "#CD7F32";
-}
+const MUSIC_OPTIONS = ["Smooth Jazz","Neo-Soul","Ambient Lounge","Classical","Upbeat Jazz"];
+const SCENT_OPTIONS = ["Leather & Oak","Cedar & Vanilla","Aged Oak","Sandalwood","Citrus & Cedar"];
+const PRESET_OPTIONS= ["Warm Lounge","VIP Experience","Ceremony Mode","Late Night","Service Mode"];
 
-// ── Atoms ─────────────────────────────────────────────────────────────────────
+type PanelVis = "on"|"muted"|"hidden";
 
-function PulsingDot({ color = GREEN }: { color?: string }) {
-  return (
-    <motion.div
-      animate={{ scale: [1, 1.55, 1], opacity: [1, 0.4, 1] }}
-      transition={{ duration: 1.4, repeat: Infinity }}
-      style={{ width: 8, height: 8, borderRadius: "50%", background: color, boxShadow: `0 0 8px ${color}88`, flexShrink: 0 }}
-    />
-  );
-}
-
-function FluidBar({ pct, color }: { pct: number; color: string }) {
-  return (
-    <div style={{ width: "100%", height: 6, background: "rgba(255,255,255,0.055)", borderRadius: 3, overflow: "hidden" }}>
-      <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        style={{ height: "100%", background: color, borderRadius: 3, boxShadow: `0 0 8px ${color}55` }} />
-    </div>
-  );
-}
-
-function ModLabel({ n, label }: { n: string; label: string }) {
-  return (
-    <div style={{ marginBottom: 12 }}>
-      <span style={{ fontSize: 18, fontWeight: 900, letterSpacing: "0.32em", color: "rgba(212,175,55,0.42)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
-        {n} — {label}
-      </span>
-    </div>
-  );
-}
-
-function Card({ children, highlight = false, style }: { children: React.ReactNode; highlight?: boolean; style?: React.CSSProperties }) {
-  return (
-    <div style={{
-      background: PANEL, border: `1px solid ${highlight ? BORDER : BORDER_DIM}`,
-      borderRadius: 12, overflow: "hidden",
-      backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-      boxShadow: highlight ? `0 0 50px rgba(212,175,55,0.07), inset 0 1px 0 rgba(212,175,55,0.07)` : "none",
-      ...style,
-    }}>
-      {children}
-    </div>
-  );
-}
-
-// ── Bill modal ────────────────────────────────────────────────────────────────
-function BillModal({ tableId, onClose, onSendBill }: { tableId: number; onClose: () => void; onSendBill: () => void }) {
-  const items    = BILL_ITEMS[tableId] ?? [{ item: "Miscellaneous Items", qty: 1, price: 200 }];
-  const table    = TABLES.find(t => t.id === tableId);
-  const subtotal = items.reduce((s, i) => s + i.qty * i.price, 0);
-  const tax      = Math.round(subtotal * 0.085);
-  const svc      = Math.round(subtotal * 0.20);
-  const total    = subtotal + tax + svc;
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 8000, background: "rgba(0,0,0,0.82)", backdropFilter: "blur(18px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <motion.div initial={{ scale: 0.88, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.88, y: 30 }}
-        onClick={e => e.stopPropagation()}
-        style={{ background: "rgba(8,5,2,0.98)", border: `1px solid ${GOLD}44`, borderRadius: 14, padding: "28px", width: 420, boxShadow: `0 24px 80px rgba(0,0,0,0.95)` }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 18 }}>
-          <div>
-            <div style={{ fontSize: 18, color: `${GOLD}88`, letterSpacing: "0.20em", marginBottom: 3, textTransform: "uppercase" }}>TABLE {tableId} — BILL SUMMARY</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "rgba(240,232,212,0.88)", fontFamily: "'Cormorant Garamond',serif" }}>{table?.name ?? "Guest"}</div>
-            <div style={{ fontSize: 18, color: `${GOLD}66`, marginTop: 2 }}>{table?.loyalty ?? "—"} Member</div>
-          </div>
-          <button type="button" onClick={onClose} style={{ background: "none", border: `1px solid ${GOLD}22`, borderRadius: 6, width: 30, height: 30, color: "rgba(240,232,212,0.45)", cursor: "pointer", fontSize: 18 }}>×</button>
-        </div>
-        <div style={{ borderTop: `1px solid ${GOLD}18`, borderBottom: `1px solid ${GOLD}18`, padding: "10px 0", marginBottom: 10 }}>
-          {items.map((it, i) => (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 7 }}>
-              <div>
-                <div style={{ fontSize: 18, color: "rgba(240,232,212,0.80)" }}>{it.item}</div>
-                <div style={{ fontSize: 18, color: `${GOLD}55` }}>× {it.qty}</div>
-              </div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: GOLD }}>${(it.qty * it.price).toLocaleString()}</div>
-            </div>
-          ))}
-        </div>
-        {[["Subtotal", `$${subtotal}`], ["Tax (8.5%)", `$${tax}`], ["Service (20%)", `$${svc}`]].map(([l, v]) => (
-          <div key={l} style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-            <span style={{ fontSize: 18, color: "rgba(240,232,212,0.38)" }}>{l}</span>
-            <span style={{ fontSize: 18, color: "rgba(240,232,212,0.38)" }}>{v}</span>
-          </div>
-        ))}
-        <div style={{ display: "flex", justifyContent: "space-between", borderTop: `1px solid ${GOLD}18`, paddingTop: 10, marginTop: 6, marginBottom: 18 }}>
-          <span style={{ fontSize: 18, fontWeight: 800, color: "rgba(240,232,212,0.88)" }}>TOTAL</span>
-          <span style={{ fontSize: 20, fontWeight: 900, color: GOLD }}>${total.toLocaleString()}</span>
-        </div>
-        <motion.button type="button" onClick={() => { onSendBill(); onClose(); }} whileTap={{ scale: 0.95 }}
-          style={{ width: "100%", padding: "15px", background: `linear-gradient(135deg, ${GOLD}, #C8960A)`, border: "none", borderRadius: 8, cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#090600", letterSpacing: "0.14em", textTransform: "uppercase" }}>
-          SEND TO POS
-        </motion.button>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ── Interface ─────────────────────────────────────────────────────────────────
+// ── Component props ───────────────────────────────────────────────────────────
 interface EATDashboardProps {
   eatFlags?: EATModuleFlags;
   onBack?: () => void;
 }
 
-export default function EATDashboard({ onBack }: EATDashboardProps) {
-  // ── Engine state ──────────────────────────────────────────────────────────
-  const [wsConnected,    setWsConnected]    = useState(socket.connected);
-  type PanelVis = "on" | "muted" | "hidden";
-  const [panelVis, setPanelVis] = useState<{ environment: PanelVis; asset: PanelVis; transaction: PanelVis }>({ environment: "on", asset: "on", transaction: "on" });
-  const [liveInventory,  setLiveInventory]  = useState<InventoryProduct[]>([]);
-  const [activePresetId, setActivePresetId] = useState<string | null>(null);
+// ── Micro-components ──────────────────────────────────────────────────────────
 
-  // ── Live tabs (fetched from API, fallback to static TABLES data) ─────────
-  const [liveTabs,      setLiveTabs]      = useState(TABLES);
-  const [pendingAction, setPendingAction] = useState<"open_tab" | "close_tab" | "void_item" | null>(null);
+function Dot({ color=GREEN }: { color?:string }) {
+  return (
+    <motion.div
+      animate={{ scale:[1,1.5,1], opacity:[1,0.35,1] }}
+      transition={{ duration:1.6, repeat:Infinity }}
+      style={{ width:7, height:7, borderRadius:"50%", background:color, boxShadow:`0 0 5px ${color}99`, flexShrink:0 }}
+    />
+  );
+}
 
-  useEffect(() => {
-    const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
-    const token   = localStorage.getItem("axiom_token") ?? "";
-    fetch(`/api/tabs/venue/${encodeURIComponent(venueId)}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        if (!d) return;
-        const tabs = (d.tabs ?? d) as Array<{
-          id: number; guestName?: string; totalAmount?: number;
-          status?: string; guestCount?: number;
-        }>;
-        if (tabs.length > 0) {
-          setLiveTabs(tabs.map(t => ({
-            id:      t.id,
-            status:  t.status ?? "active",
-            vip:     false,
-            guests:  t.guestCount ?? 2,
-            spend:   Math.round((t.totalAmount ?? 0) / 100),
-            name:    t.guestName ?? `Tab #${t.id}`,
-            loyalty: "Gold",
-          })));
-        }
-      })
-      .catch(() => { /* keep static fallback */ });
-  }, []);
+function BattBar({ pct }: { pct:number }) {
+  const c = pct>60 ? GREEN : pct>30 ? AMBER : RED_CLR;
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+      <div style={{ width:26, height:9, background:"rgba(0,0,0,0.09)", borderRadius:2, overflow:"hidden", border:"1px solid rgba(0,0,0,0.14)" }}>
+        <div style={{ width:`${pct}%`, height:"100%", background:c, transition:"width 0.5s" }} />
+      </div>
+      <span style={{ fontSize:11, fontWeight:700, color:c }}>{pct}%</span>
+    </div>
+  );
+}
 
-  // ── Transaction state ─────────────────────────────────────────────────────
-  const [billTableId,  setBillTableId]  = useState<number | null>(null);
-  const [checkoutBusy, setCheckoutBusy] = useState(false);
+function Stars({ v }: { v:number }) {
+  return (
+    <div style={{ display:"flex", gap:2 }}>
+      {[1,2,3,4,5].map(i=>(
+        <span key={i} style={{ fontSize:16, color: i<=v ? GOLD : "rgba(180,140,80,0.22)", lineHeight:1 }}>
+          {i<=v ? "★" : "☆"}
+        </span>
+      ))}
+    </div>
+  );
+}
 
-  // ── Inline qty edit ───────────────────────────────────────────────────────
-  const [editId,  setEditId]  = useState<string | null>(null);
-  const [editQty, setEditQty] = useState(0);
+function Strength({ v, max=5 }: { v:number; max?:number }) {
+  return (
+    <div style={{ display:"flex", gap:5 }}>
+      {Array.from({length:max},(_,i)=>(
+        <div key={i} style={{
+          width:15, height:15, borderRadius:"50%",
+          background: i<v ? AMBER : "rgba(180,140,80,0.15)",
+          border:`1.5px solid ${i<v ? AMBER : "rgba(180,140,80,0.22)"}`,
+        }} />
+      ))}
+    </div>
+  );
+}
+
+function SCard({ children, style }: { children:React.ReactNode; style?:React.CSSProperties }) {
+  return (
+    <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:10,
+      boxShadow:"0 1px 4px rgba(80,40,0,0.06)", ...style }}>
+      {children}
+    </div>
+  );
+}
+
+function SectionHead({ title, action, onAction }: { title:string; action?:string; onAction?:()=>void }) {
+  return (
+    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+      <span style={{ fontSize:13, fontWeight:900, letterSpacing:"0.16em", color:MED, textTransform:"uppercase" }}>{title}</span>
+      {action && <button onClick={onAction} style={{ fontSize:12, color:AMBER, background:"none", border:"none", cursor:"pointer", fontWeight:700, letterSpacing:"0.08em" }}>{action}</button>}
+    </div>
+  );
+}
+
+// ── Main component ─────────────────────────────────────────────────────────────
+
+export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboardProps) {
+  const [activeTab, setActiveTab] = useState<TopTab>("Command Center");
+
+  const [panelVis, setPanelVis] = useState<{environment:PanelVis;asset:PanelVis;transaction:PanelVis}>(
+    { environment:"on", asset:"on", transaction:"on" }
+  );
+  const [wsConnected, setWsConnected] = useState(socket.connected);
+
   const [envState, setEnvState] = useState<EnvironmentState>(eatEngine.getEnvironment());
+  const [, setLiveInv]          = useState<InventoryProduct[]>([]);
+
+  const [devices, setDevices]         = useState(STATIC_DEVICES);
+  const [floorTables, setFloorTables] = useState<FloorTable[]>(INITIAL_TABLES);
+  const [floorView, setFloorView]     = useState<"Floor Plan"|"List View">("Floor Plan");
+  const [dragging, setDragging]       = useState<string|number|null>(null);
+  const dragOff  = useRef({ x:0, y:0 });
+  const floorRef = useRef<HTMLDivElement>(null);
+
+  const [pairingCat, setPairingCat] = useState<"Cigar"|"Spirits"|"Food">("Cigar");
+  const [txnTab, setTxnTab]         = useState<"Active Tabs"|"Recent Orders"|"Payments">("Active Tabs");
+  const [activeTabs, setActiveTabs] = useState<TabRecord[]>(STATIC_TABS);
+  const [selTabId, setSelTabId]     = useState<string>(STATIC_TABS[0].id);
+  const [invCat, setInvCat]         = useState<"Kitchen"|"Bar"|"Humidor">("Kitchen");
+
+  const [envPreset, setEnvPreset] = useState(PRESET_OPTIONS[0]);
+  const [lighting, setLighting]   = useState(65);
+  const [musicMode, setMusicMode] = useState(MUSIC_OPTIONS[0]);
+  const [scentMode, setScentMode] = useState(SCENT_OPTIONS[0]);
+  const [scentPct, setScentPct]   = useState(40);
 
   useEffect(() => {
     eatEngine.start();
-    const unsubInv = eatEngine.subscribeInventory(setLiveInventory);
-    const unsubEnv = eatEngine.subscribeEnvironment(s => setEnvState(s));
+    const unsubInv = eatEngine.subscribeInventory(setLiveInv);
+    const unsubEnv = eatEngine.subscribeEnvironment(setEnvState);
     const onConn    = () => setWsConnected(true);
     const onDisconn = () => setWsConnected(false);
-    const onPanelVis = (d: { environment?: PanelVis; asset?: PanelVis; transaction?: PanelVis }) =>
-      setPanelVis(prev => ({ ...prev, ...d }));
+    const onPV = (d: Partial<typeof panelVis>) => setPanelVis(prev => ({ ...prev, ...d }));
     socket.on("connect",          onConn);
     socket.on("disconnect",       onDisconn);
-    socket.on("panel_visibility", onPanelVis);
-    const _pvToken = localStorage.getItem("axiom_token") ?? "";
-    fetch("/api/admin/panel-config", { headers: _pvToken ? { Authorization: `Bearer ${_pvToken}` } : {} })
-      .then(r => r.ok ? r.json() : null)
-      .then((d: { environment?: PanelVis; asset?: PanelVis; transaction?: PanelVis } | null) => {
-        if (d) setPanelVis(prev => ({ ...prev, ...d }));
+    socket.on("panel_visibility", onPV);
+
+    const token = localStorage.getItem("axiom_token") ?? "";
+    const hdr = (t:string): Record<string,string> => t ? { Authorization:`Bearer ${t}` } : {};
+
+    fetch("/api/admin/panel-config", { headers:hdr(token) })
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{ if(d) setPanelVis(p=>({...p,...d})); })
+      .catch(()=>{});
+
+    fetch("/api/devices", { headers:hdr(token) })
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        if (Array.isArray(d) && d.length>0) {
+          setDevices(d.slice(0,8).map((dev:Record<string,unknown>, i:number)=>({
+            id:   String(dev.id ?? `T-B0${i+1}`),
+            name: String(dev.nickname ?? `Tablet 0${i+1}`),
+            room: String(dev.tableNumber ?? "Main Floor"),
+            battery: 100, signal: 4,
+            online: dev.status === "active",
+          })));
+        }
       })
-      .catch(() => {});
+      .catch(()=>{});
+
+    const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
+    fetch(`/api/tabs/venue/${encodeURIComponent(venueId)}`, { headers:hdr(token) })
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        if(!d) return;
+        const rows = (d as {tabs?:unknown[]}).tabs ?? (Array.isArray(d)?d:null);
+        if (rows && (rows as unknown[]).length>0) { /* use live data if available */ }
+      })
+      .catch(()=>{});
+
     return () => {
       unsubInv(); unsubEnv();
       socket.off("connect",          onConn);
       socket.off("disconnect",       onDisconn);
-      socket.off("panel_visibility", onPanelVis);
-      eatEngine.stop();
+      socket.off("panel_visibility", onPV);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Derived ───────────────────────────────────────────────────────────────
-  const displayStock: StockItem[] = liveInventory.length > 0
-    ? liveInventory.map(p => {
-        const base = STOCK.find(s => s.id === p.id) ?? STOCK[0];
-        const cat  = (["CIGAR","SPIRIT","WINE"].includes(p.category.toUpperCase()) ? p.category.toUpperCase() : base.category) as AssetCat;
-        return { ...base, id: p.id, name: p.name, brand: p.brand ?? base.brand, qty: p.qty, par: p.par, price: p.price, category: cat };
-      })
-    : STOCK;
+  const onTableMD = useCallback((e:React.MouseEvent, id:string|number) => {
+    e.preventDefault();
+    const rect = floorRef.current?.getBoundingClientRect();
+    if(!rect) return;
+    const t = floorTables.find(t=>t.id===id);
+    if(!t) return;
+    dragOff.current = {
+      x: e.clientX - rect.left - (t.x/100)*rect.width,
+      y: e.clientY - rect.top  - (t.y/100)*rect.height,
+    };
+    setDragging(id);
+  }, [floorTables]);
 
-  const cigars  = displayStock.filter(s => s.category === "CIGAR");
-  const spirits = displayStock.filter(s => s.category === "SPIRIT");
-  const wines   = displayStock.filter(s => s.category === "WINE");
-  const totalPuros = cigars.reduce((n, c) => n + c.qty, 0);
-  const lowStock   = displayStock.filter(s => s.qty / s.par < 0.35);
+  const onFloorMM = useCallback((e:React.MouseEvent) => {
+    if(!dragging || !floorRef.current) return;
+    const rect = floorRef.current.getBoundingClientRect();
+    const x = Math.max(2, Math.min(88, ((e.clientX-rect.left-dragOff.current.x)/rect.width)*100));
+    const y = Math.max(2, Math.min(88, ((e.clientY-rect.top -dragOff.current.y)/rect.height)*100));
+    setFloorTables(prev => prev.map(t => t.id===dragging ? {...t, x, y} : t));
+  }, [dragging]);
 
-  const activeTables = liveTabs.filter(t => t.status === "active");
-  const shiftTotal   = activeTables.reduce((s, t) => s + t.spend, 0);
-  const avgSpend     = activeTables.length > 0 ? Math.round(shiftTotal / activeTables.length) : 0;
+  const onFloorMU = useCallback(() => {
+    if(dragging) {
+      const t = floorTables.find(t=>t.id===dragging);
+      if(t) {
+        const token = localStorage.getItem("axiom_token") ?? "";
+        fetch(`/api/staffFloor/table/${encodeURIComponent(String(dragging))}`, {
+          method:"PATCH",
+          headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
+          body:JSON.stringify({x:t.x,y:t.y}),
+        }).catch(()=>{});
+      }
+      setDragging(null);
+    }
+  }, [dragging, floorTables]);
 
-  const handlePreset = useCallback(async (id: string) => {
-    setActivePresetId(id);
-    try { await eatEngine.setEnvironmentMode(id); } catch { /* silent */ }
-  }, []);
+  const selectedTab = activeTabs.find(t=>t.id===selTabId) ?? activeTabs[0];
+  const shiftTotal  = activeTabs.reduce((s,t)=>s+t.total,0);
 
-  const handleSendBill = useCallback(async (tableId: number) => {
-    if (checkoutBusy) return;
-    setCheckoutBusy(true);
-    const table = TABLES.find(t => t.id === tableId);
-    const items = (BILL_ITEMS[tableId] ?? [{ item: "Session Total", qty: 1, price: table?.spend ?? 0 }]);
+  const handleAddCigar = useCallback(() => {
+    const token = localStorage.getItem("axiom_token") ?? "";
+    if(!selectedTab) return;
+    fetch(`/api/tabs/${selectedTab.id}/items`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
+      body:JSON.stringify({ name:FEATURED_CIGAR.name, price:FEATURED_CIGAR.price, qty:1, category:"cigar" }),
+    }).catch(()=>{});
+  }, [selectedTab]);
+
+  const handleCheckout = useCallback(async () => {
+    if(!selectedTab || !selectedTab.items.length) return;
     const req: CheckoutRequest = {
-      venueId:     "venue_01",
-      tableNumber: String(tableId),
-      items:       items.map(i => ({ productId: `item_${i.item}`, name: i.item, qty: i.qty, price: i.price })),
-      successUrl:  window.location.href,
-      cancelUrl:   window.location.href,
+      venueId:     localStorage.getItem("axiom_venue_id") ?? "venue_01",
+      tableNumber: selectedTab.tableNumber,
+      items:       selectedTab.items.map(i=>({
+        productId:`item_${i.name.replace(/\s+/g,"_")}`,
+        name:i.name, qty:i.qty, price:i.price,
+      })),
+      successUrl: window.location.href,
+      cancelUrl:  window.location.href,
     };
     try {
       const result = await eatEngine.checkout(req);
-      if (result.checkoutUrl && result.checkoutUrl !== "" && !result.checkoutUrl.startsWith("#")) {
+      if(result.checkoutUrl && result.checkoutUrl.startsWith("http")) {
         window.open(result.checkoutUrl, "_blank");
       }
-    } catch { /* silent — manual fallback */ }
-    setCheckoutBusy(false);
-  }, [checkoutBusy]);
+    } catch { /* silent */ }
+  }, [selectedTab]);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  return (
-    <div style={{ position: "fixed", inset: 0, background: BG, display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: "'Inter',sans-serif" }}>
-
-      {/* ── Ambient ── */}
-      <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <div style={{ position: "absolute", right: "-8%", top: "-12%", width: 640, height: 640,
-          background: `radial-gradient(circle, rgba(212,175,55,0.10) 0%, transparent 65%)`, filter: "blur(60px)" }} />
-        <div style={{ position: "absolute", left: "-6%", bottom: "-10%", width: 540, height: 540,
-          background: `radial-gradient(circle, rgba(180,80,0,0.07) 0%, transparent 70%)`, filter: "blur(55px)" }} />
-        <div style={{ position: "absolute", inset: 0, opacity: 0.035,
-          backgroundImage: `radial-gradient(${GOLD}88 1px, transparent 1px)`, backgroundSize: "32px 32px" }} />
-      </div>
-
-      {/* ── Header ── */}
-      <header style={{
-        height: 64, flexShrink: 0, display: "flex", alignItems: "center",
-        justifyContent: "space-between", padding: "0 24px",
-        background: "rgba(5,3,1,0.97)", backdropFilter: "blur(20px)",
-        borderBottom: `1px solid rgba(212,175,55,0.16)`, position: "relative", zIndex: 10,
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          {onBack && (
-            <button onClick={onBack} style={{
-              display: "flex", alignItems: "center", gap: 8, minHeight: 44,
-              background: "rgba(212,175,55,0.07)", border: `1px solid rgba(212,175,55,0.28)`,
-              borderRadius: 10, padding: "10px 18px", cursor: "pointer",
-              color: GOLD, fontSize: 18, fontWeight: 800, letterSpacing: "0.18em",
-            }}>← BACK</button>
-          )}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.8, repeat: Infinity }}
-              style={{ width: 8, height: 8, borderRadius: "50%", background: GOLD, boxShadow: `0 0 10px ${GOLD}` }} />
-            <span style={{ color: GOLD, fontSize: 28, fontWeight: 900, letterSpacing: "0.22em" }}>E.A.T. TERMINAL</span>
-            <span style={{ color: "rgba(212,175,55,0.28)", fontSize: 18, letterSpacing: "0.14em" }}>// NOVEE OS</span>
+  // ── Left sidebar ──────────────────────────────────────────────────────────
+  const renderLeft = () => (
+    <aside style={{ width:230, flexShrink:0, borderRight:`1px solid ${BORDER}`, display:"flex", flexDirection:"column", overflow:"hidden", background:CREAM }}>
+      <div style={{ flex:1, overflow:"auto", padding:"12px 10px 0" }}>
+        <SCard style={{ marginBottom:12 }}>
+          <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+              <span style={{ fontSize:12, fontWeight:900, letterSpacing:"0.14em", color:MED, textTransform:"uppercase" }}>Tablet & Device Status</span>
+              <button onClick={()=>{}} style={{ fontSize:11, color:AMBER, background:"none", border:"none", cursor:"pointer", fontWeight:700 }}>View All</button>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:6, marginTop:4 }}>
+              <Dot color={GREEN} />
+              <span style={{ fontSize:11, color:LIGHT }}>{devices.filter(d=>d.online).length} Active Devices</span>
+              <span style={{ marginLeft:"auto", fontSize:12, fontWeight:900, color:DARK }}>{devices.length} Total</span>
+            </div>
           </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {lowStock.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px",
-              background: "rgba(255,149,0,0.09)", border: "1px solid rgba(255,149,0,0.38)", borderRadius: 8 }}>
-              <PulsingDot color={AMBER_H} />
-              <span style={{ color: AMBER_H, fontSize: 18, fontWeight: 800, letterSpacing: "0.16em" }}>{lowStock.length} LOW STOCK</span>
+          <div style={{ maxHeight:200, overflow:"auto" }}>
+            {devices.map(dev => (
+              <div key={dev.id} style={{ padding:"7px 12px", borderBottom:`1px solid rgba(180,140,80,0.09)`, display:"flex", alignItems:"center", gap:8 }}>
+                <div style={{ fontSize:16, opacity: dev.online ? 1 : 0.4 }}>📱</div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between" }}>
+                    <span style={{ fontSize:12, fontWeight:700, color:DARK }}>{dev.name}</span>
+                    <span style={{ fontSize:10, color:LIGHT, fontFamily:"monospace" }}>{dev.id}</span>
+                  </div>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:3 }}>
+                    <span style={{ fontSize:11, color:LIGHT, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:80 }}>{dev.room}</span>
+                    <BattBar pct={dev.battery} />
+                  </div>
+                </div>
+                <div style={{ width:7, height:7, borderRadius:"50%", background:dev.online?GREEN:RED_CLR, flexShrink:0 }} />
+              </div>
+            ))}
+          </div>
+        </SCard>
+
+        <SCard>
+          <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+              <span style={{ fontSize:12, fontWeight:900, letterSpacing:"0.14em", color:MED, textTransform:"uppercase" }}>Active Tables</span>
+            </div>
+            <div style={{ display:"flex", gap:6 }}>
+              {(["Floor Plan","List View"] as const).map(v=>(
+                <button key={v} onClick={()=>setFloorView(v)}
+                  style={{ flex:1, padding:"5px 0", fontSize:11, fontWeight:700, cursor:"pointer", borderRadius:6, border:`1px solid ${floorView===v?AMBER:BORDER}`, background:floorView===v?"rgba(196,134,10,0.10)":CREAM, color:floorView===v?AMBER:MED }}>
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {floorView === "Floor Plan" ? (
+            <div ref={floorRef} onMouseMove={onFloorMM} onMouseUp={onFloorMU} onMouseLeave={onFloorMU}
+              style={{ position:"relative", height:240, margin:"8px", background:"#EDE6D8", borderRadius:8, overflow:"hidden", cursor:dragging?"grabbing":"default", border:`1px solid rgba(180,140,80,0.20)` }}>
+              <div style={{ position:"absolute", inset:8, border:"1px dashed rgba(180,140,80,0.30)", borderRadius:6, pointerEvents:"none" }} />
+              {floorTables.map(t=>(
+                <motion.div key={String(t.id)} onMouseDown={e=>onTableMD(e,t.id)} animate={{ scale:dragging===t.id?1.1:1 }}
+                  style={{ position:"absolute", left:`${t.x}%`, top:`${t.y}%`, transform:"translate(-50%,-50%)",
+                    width:t.vip?38:30, height:t.vip?38:30, borderRadius:t.vip?"10px":"50%",
+                    background: t.vip ? `linear-gradient(135deg,${GOLD},${AMBER})` : t.active ? `rgba(46,125,79,0.18)` : `rgba(180,140,80,0.15)`,
+                    border:`1.5px solid ${t.vip?GOLD:t.active?"rgba(46,125,79,0.6)":BORDER}`,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    cursor:"grab", userSelect:"none", zIndex:dragging===t.id?10:1 }}>
+                  <span style={{ fontSize:t.vip?10:9, fontWeight:900, color:t.vip?ESPRESSO:t.active?GREEN:LIGHT, lineHeight:1 }}>
+                    {t.vip?"VIP":String(t.id)}
+                  </span>
+                  {t.active && t.guests>0 && (
+                    <div style={{ position:"absolute", top:-4, right:-4, background:GREEN, color:"white", fontSize:8, fontWeight:900, borderRadius:"50%", width:14, height:14, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      {t.guests}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ maxHeight:240, overflow:"auto" }}>
+              {INITIAL_TABLES.filter(t=>t.active).map(t=>(
+                <div key={String(t.id)} style={{ padding:"7px 12px", borderBottom:`1px solid rgba(180,140,80,0.09)`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div>
+                    <span style={{ fontSize:12, fontWeight:700, color:DARK }}>Table {String(t.id)}</span>
+                    {t.vip && <span style={{ marginLeft:6, fontSize:10, color:GOLD, fontWeight:800, padding:"1px 6px", border:`1px solid ${GOLD}44`, borderRadius:4 }}>VIP</span>}
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                    <Dot color={GREEN} /><span style={{ fontSize:11, color:LIGHT }}>{t.guests} guests</span>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <motion.div
-              animate={{ opacity: wsConnected ? [1, 0.4, 1] : 1 }}
-              transition={{ duration: 2, repeat: Infinity }}
-              style={{ width: 7, height: 7, borderRadius: "50%", background: wsConnected ? GREEN : "#444", boxShadow: wsConnected ? `0 0 6px ${GREEN}` : "none" }} />
-            <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "0.16em", color: wsConnected ? GREEN : "#444" }}>
-              {wsConnected ? "LIVE" : "POLLING"}
-            </span>
+          <div style={{ padding:"6px 12px 8px", textAlign:"center" }}>
+            <span style={{ fontSize:10, color:LIGHT, letterSpacing:"0.06em" }}>Drag & Drop tables to reassign</span>
           </div>
+        </SCard>
+      </div>
+    </aside>
+  );
+
+  // ── Pairing Engine ────────────────────────────────────────────────────────
+  const renderPairing = () => (
+    <div style={{ padding:"12px 14px 0", marginBottom:16 }}>
+      <SCard style={{ overflow:"hidden" }}>
+        <div style={{ padding:"10px 14px 0", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <span style={{ fontSize:13, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase" }}>Pairing Engine</span>
+          <div style={{ display:"flex", gap:0 }}>
+            {(["Cigar","Spirits","Food"] as const).map(c=>(
+              <button key={c} onClick={()=>setPairingCat(c)}
+                style={{ padding:"6px 16px", fontSize:13, fontWeight:700, cursor:"pointer", border:"none", borderBottom:pairingCat===c?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:pairingCat===c?AMBER:LIGHT }}>
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ display:"flex", gap:0 }}>
+          <div style={{ flex:1, padding:"14px", borderRight:`1px solid ${BORDER}` }}>
+            <div style={{ display:"flex", gap:14 }}>
+              <div style={{ width:110, height:120, borderRadius:8, flexShrink:0, background:"linear-gradient(145deg,#3D1F0A 0%,#5C2D0E 45%,#2A1106 100%)", border:`1px solid rgba(180,140,80,0.25)`, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <span style={{ fontSize:40 }}>🍂</span>
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                  <span style={{ fontSize:11, padding:"2px 8px", borderRadius:10, background:`rgba(180,140,80,0.14)`, color:MED, fontWeight:700 }}>{FEATURED_CIGAR.body}</span>
+                </div>
+                <div style={{ fontSize:18, fontWeight:900, color:DARK, lineHeight:1.2, marginBottom:2 }}>{FEATURED_CIGAR.name}</div>
+                <div style={{ fontSize:13, color:LIGHT, marginBottom:10 }}>{FEATURED_CIGAR.type} · {FEATURED_CIGAR.origin}</div>
+                <p style={{ fontSize:13, color:MED, lineHeight:1.6, margin:"0 0 10px 0" }}>{FEATURED_CIGAR.description}</p>
+                <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <span style={{ fontSize:12, color:LIGHT, fontWeight:700, width:64 }}>STRENGTH</span>
+                    <Strength v={FEATURED_CIGAR.strength} />
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <span style={{ fontSize:12, color:LIGHT, fontWeight:700, width:64 }}>RATING</span>
+                    <Stars v={FEATURED_CIGAR.rating} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style={{ width:220, flexShrink:0 }}>
+            <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+              <span style={{ fontSize:11, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase" }}>Perfect Pairings</span>
+              <div style={{ display:"flex", gap:4 }}>
+                {["‹","›"].map(a=>(<button key={a} style={{ width:22, height:22, borderRadius:4, border:`1px solid ${BORDER}`, background:CREAM, color:DARK, cursor:"pointer", fontSize:13 }}>{a}</button>))}
+              </div>
+            </div>
+            <div style={{ padding:"8px" }}>
+              {PAIRINGS.map((p,i)=>(
+                <div key={i} style={{ padding:"8px 10px", borderRadius:8, marginBottom:6, background:CREAM, border:`1px solid ${BORDER}` }}>
+                  <div style={{ fontSize:13, fontWeight:800, color:DARK, marginBottom:2 }}>{p.name}</div>
+                  <div style={{ fontSize:11, color:LIGHT, marginBottom:4 }}>{p.sub}</div>
+                  <div style={{ display:"flex", justifyContent:"space-between" }}>
+                    <span style={{ fontSize:11, color:MED }}>{p.notes}</span>
+                    <span style={{ fontSize:13, fontWeight:900, color:AMBER }}>${p.price}.00</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div style={{ padding:"10px 14px", borderTop:`1px solid ${BORDER}`, display:"flex", gap:8 }}>
+          <motion.button whileTap={{ scale:0.96 }} onClick={handleAddCigar}
+            style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.40)`, background:"rgba(46,125,79,0.08)", color:GREEN, fontSize:14, fontWeight:800, cursor:"pointer" }}>
+            Add Cigar<br/><span style={{ fontSize:12, fontWeight:600 }}>${FEATURED_CIGAR.price}.00</span>
+          </motion.button>
+          <motion.button whileTap={{ scale:0.96 }}
+            style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid rgba(180,140,80,0.35)`, background:"rgba(180,140,80,0.08)", color:MED, fontSize:14, fontWeight:800, cursor:"pointer" }}>
+            Add Pairing<br/><span style={{ fontSize:12, fontWeight:600 }}>From $16.00</span>
+          </motion.button>
+          <motion.button whileTap={{ scale:0.96 }}
+            style={{ flex:2, padding:"12px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${GOLD},${AMBER})`, color:ESPRESSO, fontSize:15, fontWeight:900, cursor:"pointer" }}>
+            Add Full Experience<br/><span style={{ fontSize:13 }}>$70.00</span>
+          </motion.button>
+        </div>
+      </SCard>
+    </div>
+  );
+
+  // ── Orders & Transactions ─────────────────────────────────────────────────
+  const renderOrders = () => (
+    <div style={{ padding:"0 14px 12px" }}>
+      <div style={{ display:"flex", gap:10 }}>
+        <SCard style={{ flex:1, overflow:"hidden" }}>
+          <div style={{ display:"flex", borderBottom:`1px solid ${BORDER}` }}>
+            {(["Active Tabs","Recent Orders","Payments"] as const).map(t=>(
+              <button key={t} onClick={()=>setTxnTab(t)}
+                style={{ flex:1, padding:"10px 4px", fontSize:12, fontWeight:700, cursor:"pointer", border:"none", borderBottom:txnTab===t?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:txnTab===t?AMBER:LIGHT }}>
+                {t}{t==="Active Tabs"?` ${activeTabs.length}`:""}
+              </button>
+            ))}
+          </div>
+          {txnTab==="Active Tabs" && (
+            <div>
+              {selectedTab && (
+                <div style={{ padding:"10px 12px", borderBottom:`1px solid ${BORDER}` }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
+                    <div>
+                      <div style={{ fontSize:15, fontWeight:900, color:DARK }}>Table {selectedTab.tableNumber}</div>
+                      <div style={{ fontSize:12, color:LIGHT }}>{selectedTab.guests} Guests · {selectedTab.server}</div>
+                    </div>
+                    <div style={{ fontSize:18, fontWeight:900, color:AMBER }}>${selectedTab.total.toFixed(2)}</div>
+                  </div>
+                  {selectedTab.items.map((it,i)=>(
+                    <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"4px 0", borderBottom:`1px solid rgba(180,140,80,0.08)` }}>
+                      <div><span style={{ fontSize:12, color:DARK }}>{it.name}</span><span style={{ fontSize:11, color:LIGHT, marginLeft:6 }}>× {it.qty}</span></div>
+                      <span style={{ fontSize:13, fontWeight:700, color:MED }}>${(it.qty*it.price).toFixed(2)}</span>
+                    </div>
+                  ))}
+                  {selectedTab.items.length===0 && <div style={{ fontSize:12, color:LIGHT, padding:"8px 0", textAlign:"center" }}>No items yet</div>}
+                  {selectedTab.tax>0 && (
+                    <div style={{ display:"flex", justifyContent:"space-between", padding:"6px 0 0" }}>
+                      <span style={{ fontSize:12, color:LIGHT }}>Tax</span>
+                      <span style={{ fontSize:12, color:LIGHT }}>${selectedTab.tax.toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div style={{ maxHeight:110, overflow:"auto" }}>
+                {activeTabs.map(t=>(
+                  <div key={t.id} onClick={()=>setSelTabId(t.id)}
+                    style={{ padding:"8px 12px", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", background:selTabId===t.id?`rgba(196,134,10,0.07)`:"transparent", borderLeft:`3px solid ${selTabId===t.id?AMBER:"transparent"}`, borderBottom:`1px solid rgba(180,140,80,0.08)` }}>
+                    <div>
+                      <div style={{ fontSize:13, fontWeight:700, color:DARK }}>{t.name}</div>
+                      <div style={{ fontSize:11, color:LIGHT }}>Table {t.tableNumber} · {t.guests} guests</div>
+                    </div>
+                    <span style={{ fontSize:14, fontWeight:900, color:AMBER }}>${t.total.toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {txnTab!=="Active Tabs" && (
+            <div style={{ padding:"10px 12px" }}>
+              <div style={{ fontSize:12, color:LIGHT, textAlign:"center", padding:"20px 0" }}>
+                {txnTab==="Recent Orders" ? "Loading recent orders…" : "Payment records loading…"}
+              </div>
+            </div>
+          )}
+        </SCard>
+
+        <div style={{ width:200, display:"flex", flexDirection:"column", gap:8 }}>
+          <SCard style={{ padding:"10px 10px 8px" }}>
+            <div style={{ fontSize:11, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:8 }}>Route Order</div>
+            {["Send to Bar","Send to Kitchen","Send to Humidor","Add Items"].map(a=>(
+              <motion.button key={a} whileTap={{ scale:0.96 }}
+                style={{ width:"100%", padding:"9px", marginBottom:6, borderRadius:7, border:`1px solid ${BORDER}`, background:CREAM, color:DARK, fontSize:12, fontWeight:700, cursor:"pointer", textAlign:"left" }}>
+                {a}
+              </motion.button>
+            ))}
+          </SCard>
+          <SCard style={{ padding:"10px" }}>
+            <div style={{ fontSize:11, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:8 }}>Payment</div>
+            <motion.button whileTap={{ scale:0.97 }} onClick={()=>void handleCheckout()}
+              style={{ width:"100%", padding:"12px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${GOLD},${AMBER})`, color:ESPRESSO, fontSize:14, fontWeight:900, cursor:"pointer", marginBottom:8 }}>
+              Pay Now<br/><span style={{ fontSize:12, fontWeight:700 }}>${selectedTab?.total.toFixed(2)??""}</span>
+            </motion.button>
+            <div style={{ display:"flex", justifyContent:"center", gap:6, flexWrap:"wrap" }}>
+              {["Apple Pay","Google Pay","QR","Tap"].map(m=>(<span key={m} style={{ fontSize:10, padding:"3px 7px", borderRadius:5, border:`1px solid ${BORDER}`, color:MED, fontWeight:600 }}>{m}</span>))}
+            </div>
+            <button style={{ width:"100%", marginTop:8, padding:"7px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:MED, fontSize:12, cursor:"pointer" }}>More Options</button>
+          </SCard>
+          <SCard style={{ padding:"10px" }}>
+            <div style={{ fontSize:11, color:LIGHT, marginBottom:4, textTransform:"uppercase", letterSpacing:"0.10em" }}>Shift Revenue</div>
+            <div style={{ fontSize:22, fontWeight:900, color:AMBER }}>${shiftTotal.toLocaleString()}</div>
+            <div style={{ fontSize:11, color:LIGHT }}>{activeTabs.length} active tabs</div>
+          </SCard>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── Center (tab-based) ────────────────────────────────────────────────────
+  const renderCenter = () => {
+    if (activeTab === "Assets") {
+      return (
+        <div style={{ padding:"12px 14px" }}>
+          <SCard style={{ overflow:"hidden" }}>
+            <div style={{ display:"flex", borderBottom:`1px solid ${BORDER}` }}>
+              {(INVENTORY_TABS as readonly string[]).map(t=>(
+                <button key={t} onClick={()=>setInvCat(t as typeof invCat)}
+                  style={{ flex:1, padding:"10px 4px", fontSize:12, fontWeight:700, cursor:"pointer", border:"none", borderBottom:invCat===t?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:invCat===t?AMBER:LIGHT }}>
+                  {t}
+                </button>
+              ))}
+            </div>
+            <div>
+              {INVENTORY_DATA[invCat].map((item,i)=>(
+                <div key={i} style={{ padding:"10px 14px", borderBottom:`1px solid rgba(180,140,80,0.09)`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <div style={{ width:36, height:36, borderRadius:6, background:"rgba(180,140,80,0.12)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>
+                      {invCat==="Humidor"?"🚬":invCat==="Bar"?"🥃":"🍽️"}
+                    </div>
+                    <div>
+                      <div style={{ fontSize:14, fontWeight:700, color:DARK }}>{item.name}</div>
+                      <span style={{ fontSize:11, padding:"2px 7px", borderRadius:8, background:item.status==="In Stock"?"rgba(46,125,79,0.10)":"rgba(196,134,10,0.12)", color:item.status==="In Stock"?GREEN:AMBER, fontWeight:700 }}>{item.status}</span>
+                    </div>
+                  </div>
+                  <div style={{ textAlign:"right" }}>
+                    <div style={{ fontSize:22, fontWeight:900, color:DARK }}>{item.qty}</div>
+                    <div style={{ fontSize:11, color:LIGHT }}>In Stock</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SCard>
+        </div>
+      );
+    }
+    if (activeTab === "Transactions") return <div style={{ overflow:"auto", flex:1 }}>{renderOrders()}</div>;
+    if (activeTab === "Environment") {
+      return (
+        <div style={{ padding:"12px 14px" }}>
+          <SCard style={{ padding:"16px" }}>
+            <SectionHead title="Environment State" />
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
+              {[ {label:"Temperature",value:`${Math.round(envState.temperature)}°F`,color:AMBER}, {label:"Humidity",value:`${Math.round(envState.humidity)}%`,color:"#4AD9C8"}, {label:"Air Quality",value:envState.airQuality,color:GREEN} ].map(m=>(
+                <div key={m.label} style={{ padding:"14px", background:CREAM, borderRadius:8, border:`1px solid ${BORDER}`, textAlign:"center" }}>
+                  <div style={{ fontSize:28, fontWeight:900, color:m.color }}>{m.value}</div>
+                  <div style={{ fontSize:12, color:LIGHT, marginTop:4, textTransform:"uppercase", letterSpacing:"0.10em" }}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+          </SCard>
+        </div>
+      );
+    }
+    // Default "Command Center"
+    return (
+      <div style={{ overflow:"auto", flex:1 }}>
+        {panelVis.asset !== "hidden" && (
+          <div style={{ position:"relative" }}>
+            {panelVis.asset === "muted" && (
+              <div style={{ position:"absolute", inset:0, zIndex:99, background:"rgba(240,235,224,0.72)", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:10, pointerEvents:"none" }}>
+                <span style={{ fontSize:20, fontWeight:900, color:AMBER, letterSpacing:"0.18em" }}>MUTED</span>
+              </div>
+            )}
+            {renderPairing()}
+          </div>
+        )}
+        {panelVis.transaction !== "hidden" && (
+          <div style={{ position:"relative" }}>
+            {panelVis.transaction === "muted" && (
+              <div style={{ position:"absolute", inset:0, zIndex:99, background:"rgba(240,235,224,0.72)", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:10, pointerEvents:"none" }}>
+                <span style={{ fontSize:20, fontWeight:900, color:AMBER, letterSpacing:"0.18em" }}>MUTED</span>
+              </div>
+            )}
+            <div style={{ padding:"0 14px", marginBottom:4 }}>
+              <div style={{ fontSize:13, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase", paddingBottom:8, borderBottom:`1px solid ${BORDER}`, marginBottom:8 }}>Orders & Transactions</div>
+            </div>
+            {renderOrders()}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ── Right sidebar ─────────────────────────────────────────────────────────
+  const renderRight = () => (
+    <aside style={{ width:272, flexShrink:0, borderLeft:`1px solid ${BORDER}`, display:"flex", flexDirection:"column", overflow:"hidden", background:CREAM }}>
+      <div style={{ flex:1, overflow:"auto", padding:"12px 10px 0" }}>
+        {panelVis.environment !== "hidden" && (
+          <SCard style={{ marginBottom:12, position:"relative" }}>
+            {panelVis.environment === "muted" && (
+              <div style={{ position:"absolute", inset:0, zIndex:10, background:"rgba(240,235,224,0.70)", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:10, pointerEvents:"none" }}>
+                <span style={{ fontSize:16, fontWeight:900, color:AMBER, letterSpacing:"0.18em" }}>MUTED</span>
+              </div>
+            )}
+            <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
+              <SectionHead title="Environment Controls" />
+              <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+                <span style={{ fontSize:11, color:LIGHT }}>Lounge Preset</span>
+                <select value={envPreset} onChange={e=>setEnvPreset(e.target.value)} style={{ flex:1, fontSize:12, padding:"4px 8px", borderRadius:6, border:`1px solid ${BORDER}`, background:CARD, color:DARK, cursor:"pointer" }}>
+                  {PRESET_OPTIONS.map(p=><option key={p}>{p}</option>)}
+                </select>
+              </div>
+            </div>
+            <div style={{ padding:"10px 12px" }}>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
+                {[ {label:"Temperature",value:`${Math.round(envState.temperature)}°F`,icon:"🌡️"}, {label:"Humidity",value:`${Math.round(envState.humidity)}%`,icon:"💧"}, {label:"Air Quality",value:envState.airQuality,icon:"🌿"}, {label:"Noise Level",value:"Low",icon:"🔈"} ].map(m=>(
+                  <div key={m.label} style={{ padding:"8px 10px", background:CREAM, borderRadius:8, border:`1px solid ${BORDER}`, textAlign:"center" }}>
+                    <div style={{ fontSize:16, marginBottom:2 }}>{m.icon}</div>
+                    <div style={{ fontSize:15, fontWeight:900, color:DARK, lineHeight:1 }}>{m.value}</div>
+                    <div style={{ fontSize:10, color:LIGHT, marginTop:2, textTransform:"uppercase", letterSpacing:"0.08em" }}>{m.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginBottom:10 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                  <span style={{ fontSize:12, color:MED }}>💡 Lighting</span>
+                  <span style={{ fontSize:12, fontWeight:700, color:AMBER }}>{lighting}%</span>
+                </div>
+                <input type="range" min={0} max={100} value={lighting} onChange={e=>setLighting(Number(e.target.value))} style={{ width:"100%", accentColor:AMBER }} />
+              </div>
+              <div style={{ marginBottom:10 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:12, color:MED, whiteSpace:"nowrap" }}>🎵 Music</span>
+                  <select value={musicMode} onChange={e=>setMusicMode(e.target.value)} style={{ flex:1, fontSize:12, padding:"4px 8px", borderRadius:6, border:`1px solid ${BORDER}`, background:CARD, color:DARK }}>
+                    {MUSIC_OPTIONS.map(m=><option key={m}>{m}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div style={{ marginBottom:10 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                  <span style={{ fontSize:12, color:MED, whiteSpace:"nowrap" }}>🌸 Scent</span>
+                  <select value={scentMode} onChange={e=>setScentMode(e.target.value)} style={{ flex:1, fontSize:12, padding:"4px 8px", borderRadius:6, border:`1px solid ${BORDER}`, background:CARD, color:DARK }}>
+                    {SCENT_OPTIONS.map(s=><option key={s}>{s}</option>)}
+                  </select>
+                  <span style={{ fontSize:12, fontWeight:700, color:AMBER }}>{scentPct}%</span>
+                </div>
+                <input type="range" min={0} max={100} value={scentPct} onChange={e=>setScentPct(Number(e.target.value))} style={{ width:"100%", accentColor:AMBER }} />
+              </div>
+              <button style={{ width:"100%", padding:"8px", borderRadius:8, border:`1px solid ${BORDER}`, background:CREAM, color:MED, fontSize:12, fontWeight:700, cursor:"pointer" }}>Advanced Controls</button>
+            </div>
+          </SCard>
+        )}
+
+        <SCard style={{ marginBottom:12, padding:"10px 12px" }}>
+          <SectionHead title="HVAC & Air Quality" />
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:6 }}><Dot color={GREEN} /><span style={{ fontSize:12, color:MED, fontWeight:700 }}>HVAC Status</span></div>
+            <span style={{ fontSize:12, fontWeight:800, color:GREEN, padding:"2px 8px", borderRadius:6, background:"rgba(46,125,79,0.12)", border:"1px solid rgba(46,125,79,0.30)" }}>Optimal</span>
+          </div>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+            <div><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Current Temp</div><div style={{ fontSize:22, fontWeight:900, color:DARK }}>{Math.round(envState.temperature)}°F</div></div>
+            <div style={{ textAlign:"right" }}><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Humidity</div><div style={{ fontSize:22, fontWeight:900, color:DARK }}>{Math.round(envState.humidity)}%</div></div>
+          </div>
+          <div style={{ height:36, marginBottom:8 }}>
+            <svg width="100%" height="36" viewBox="0 0 240 36" preserveAspectRatio="none">
+              <polyline points="0,28 40,22 80,25 120,18 160,20 200,15 240,17" fill="none" stroke={AMBER} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <polyline points="0,28 40,22 80,25 120,18 160,20 200,15 240,17 240,36 0,36" fill="rgba(196,134,10,0.07)" stroke="none" />
+            </svg>
+          </div>
+          <button style={{ width:"100%", padding:"7px", borderRadius:7, border:`1px solid ${BORDER}`, background:CREAM, color:MED, fontSize:12, fontWeight:700, cursor:"pointer" }}>View Full HVAC System</button>
+        </SCard>
+
+        <SCard style={{ marginBottom:12 }}>
+          <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
+            <SectionHead title="Upcoming Events & Themes" action="View All" />
+          </div>
+          <div style={{ margin:"10px 10px 6px", borderRadius:8, overflow:"hidden", border:`1px solid ${BORDER}` }}>
+            <div style={{ height:64, background:`linear-gradient(135deg,#2B1506,#4A2010)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32 }}>{STATIC_EVENTS[0].emoji}</div>
+            <div style={{ padding:"8px 10px", background:CARD }}>
+              <div style={{ fontSize:13, fontWeight:800, color:DARK, marginBottom:2 }}>{STATIC_EVENTS[0].name}</div>
+              <div style={{ fontSize:11, color:AMBER, fontWeight:700, marginBottom:4 }}>{STATIC_EVENTS[0].schedule}</div>
+              <p style={{ fontSize:11, color:LIGHT, margin:0, lineHeight:1.5 }}>{STATIC_EVENTS[0].desc}</p>
+              <button style={{ marginTop:8, padding:"5px 12px", borderRadius:6, border:`1px solid ${AMBER}44`, background:"rgba(196,134,10,0.10)", color:AMBER, fontSize:11, fontWeight:700, cursor:"pointer" }}>See Details</button>
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:6, padding:"0 10px 8px", flexWrap:"wrap" }}>
+            {STATIC_EVENTS.slice(1).map(e=>(
+              <div key={e.id} style={{ flex:"1 0 40px", padding:"8px 6px", borderRadius:8, background:CREAM, border:`1px solid ${BORDER}`, textAlign:"center", cursor:"pointer" }}>
+                <div style={{ fontSize:18, marginBottom:3 }}>{e.emoji}</div>
+                <div style={{ fontSize:9, color:MED, fontWeight:700, lineHeight:1.2 }}>{e.name}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ padding:"0 10px 10px" }}>
+            <button style={{ width:"100%", padding:"7px", borderRadius:7, border:`1px solid ${BORDER}`, background:CREAM, color:MED, fontSize:12, fontWeight:700, cursor:"pointer" }}>Manage Themes</button>
+          </div>
+        </SCard>
+      </div>
+    </aside>
+  );
+
+  // ── Root render ───────────────────────────────────────────────────────────
+  return (
+    <div style={{ position:"fixed", inset:0, background:CREAM, display:"flex", flexDirection:"column", overflow:"hidden", fontFamily:"'Inter','Helvetica Neue',sans-serif" }}>
+
+      <header style={{ height:64, flexShrink:0, background:ESPRESSO, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 16px", borderBottom:"1px solid rgba(180,140,80,0.18)", boxShadow:"0 2px 12px rgba(0,0,0,0.35)", zIndex:20 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:0, overflow:"hidden" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10, paddingRight:20, borderRight:"1px solid rgba(180,140,80,0.25)", marginRight:8, flexShrink:0 }}>
+            <div style={{ width:36, height:36, borderRadius:8, background:`linear-gradient(135deg,${GOLD},${AMBER})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>⚜️</div>
+            <div>
+              <div style={{ fontSize:13, fontWeight:900, color:GOLD, letterSpacing:"0.18em", lineHeight:1 }}>E.A.T SYSTEM</div>
+              <div style={{ fontSize:9, color:"rgba(212,175,55,0.50)", letterSpacing:"0.10em", lineHeight:1.4 }}>ELEVATED ATMOSPHERE & TRANSACTIONS</div>
+            </div>
+          </div>
+          <div style={{ display:"flex", overflow:"hidden" }}>
+            {TOP_TABS.map(tab=>(
+              <button key={tab} onClick={()=>setActiveTab(tab)}
+                style={{ padding:"0 14px", height:64, border:"none", borderBottom:activeTab===tab?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:activeTab===tab?GOLD:"rgba(212,175,55,0.45)", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:"0.06em", whiteSpace:"nowrap" }}>
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+            <Dot color={wsConnected?GREEN:"#666"} />
+            <span style={{ fontSize:11, fontWeight:700, color:wsConnected?GREEN:"#666", letterSpacing:"0.10em" }}>{wsConnected?"LIVE":"OFFLINE"}</span>
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 12px", borderRadius:8, background:"rgba(255,255,255,0.06)", border:"1px solid rgba(180,140,80,0.20)" }}>
+            <div style={{ width:28, height:28, borderRadius:"50%", background:`linear-gradient(135deg,${GOLD},${AMBER})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, color:ESPRESSO, fontWeight:900 }}>GM</div>
+            <div>
+              <div style={{ fontSize:12, fontWeight:800, color:"rgba(255,255,255,0.88)" }}>Marcus C.</div>
+              <div style={{ fontSize:10, color:"rgba(212,175,55,0.55)", letterSpacing:"0.08em" }}>General Manager</div>
+            </div>
+          </div>
+          {onBack && (
+            <button onClick={onBack} style={{ padding:"8px 14px", borderRadius:8, border:"1px solid rgba(180,140,80,0.30)", background:"rgba(255,255,255,0.05)", color:"rgba(212,175,55,0.65)", fontSize:12, fontWeight:700, cursor:"pointer" }}>
+              ← BACK
+            </button>
+          )}
         </div>
       </header>
 
-      {/* ── 3-column grid ── */}
-      <main style={{
-        flex: 1, display: "flex",
-        gap: 14, padding: 14, overflow: "hidden", position: "relative", zIndex: 10,
-      }}>
+      <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+        {renderLeft()}
+        <main style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+          {renderCenter()}
+        </main>
+        {renderRight()}
+      </div>
 
-        {/* ════════════ LEFT · ENVIRONMENT ════════════ */}
-        <AnimatePresence>
-          {panelVis.environment !== "hidden" && (
-            <motion.div key="env-col"
-              style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12, overflow: "auto", position: "relative" }}
-              initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -18, transition: { duration: 0.22 } }}
-              transition={{ duration: 0.22 }}>
-              {panelVis.environment === "muted" && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.52)", zIndex: 99, borderRadius: 10, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 22, fontWeight: 900, color: "#F5A623", letterSpacing: "0.22em" }}>MUTED</span>
-                </div>
-              )}
-              <ModLabel n="01" label="ENVIRONMENT" />
-
-          {/* Climate tile */}
-          <Card highlight style={{ padding: "22px 24px" }}>
-            <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 16, textTransform: "uppercase", fontWeight: 800 }}>LOUNGE CLIMATE</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              {[
-                { label: "Temperature", value: `${Math.round(envState.temperature)}°`,  unit: "FAHRENHEIT", color: GOLD },
-                { label: "Humidity",    value: `${Math.round(envState.humidity)}%`,     unit: "RELATIVE",   color: TEAL },
-              ].map(r => (
-                <div key={r.label}>
-                  <div style={{ fontSize: 18, color: "rgba(255,255,255,0.38)", letterSpacing: "0.14em", marginBottom: 4, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
-                  <div style={{ fontSize: 52, fontWeight: 900, color: r.color, lineHeight: 0.92, letterSpacing: "-0.02em" }}>{r.value}</div>
-                  <div style={{ fontSize: 18, color: `${r.color}77`, marginTop: 4, letterSpacing: "0.14em", fontWeight: 600 }}>{r.unit}</div>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Atmosphere presets */}
-          <Card style={{ padding: "16px" }}>
-            <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 12, textTransform: "uppercase", fontWeight: 800 }}>ATMOSPHERE PRESETS</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9 }}>
-              {DEFAULT_PRESETS.map(p => {
-                const active = activePresetId === p.id;
-                return (
-                  <motion.button key={p.id} whileTap={{ scale: 0.93 }}
-                    onClick={() => handlePreset(p.id)}
-                    style={{
-                      minHeight: 64, padding: "12px 14px", cursor: "pointer",
-                      background: active ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.025)",
-                      border: `1.5px solid ${active ? GOLD : "rgba(212,175,55,0.16)"}`,
-                      borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "space-between",
-                      boxShadow: active ? `0 0 20px rgba(212,175,55,0.22)` : "none",
-                      transition: "all 0.2s",
-                    }}>
-                    <span style={{ fontSize: 18, fontWeight: 900, letterSpacing: "0.18em", color: active ? GOLD : "rgba(255,255,255,0.42)", textTransform: "uppercase" }}>
-                      {p.label}
-                    </span>
-                    {active && (
-                      <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.4, repeat: Infinity }}
-                        style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 6px ${GOLD}` }} />
-                    )}
-                  </motion.button>
-                );
-              })}
-            </div>
-          </Card>
-
-          {/* Filtration + Air quality + Humidor */}
-          <Card style={{ padding: "16px 20px" }}>
-            <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 14, textTransform: "uppercase", fontWeight: 800 }}>FILTRATION & AIR</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "0.10em", color: "rgba(255,255,255,0.55)" }}>EXHAUST FILTRATION</span>
-                <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "6px 13px",
-                  background: "rgba(50,180,90,0.09)", border: "1px solid rgba(50,180,90,0.35)", borderRadius: 20 }}>
-                  <PulsingDot color={GREEN} />
-                  <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.16em", color: GREEN }}>ACTIVE</span>
-                </div>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "0.10em", color: "rgba(255,255,255,0.55)" }}>AIR QUALITY INDEX</span>
-                <span style={{ fontSize: 30, fontWeight: 900, color: TEAL }}>{envState.airQuality === "Good" ? 94 : envState.airQuality === "Fair" ? 68 : 42}</span>
-              </div>
-              <div style={{ borderTop: `1px solid rgba(212,175,55,0.09)`, paddingTop: 12 }}>
-                <div style={{ fontSize: 18, letterSpacing: "0.20em", color: "rgba(212,175,55,0.48)", marginBottom: 10, textTransform: "uppercase", fontWeight: 800 }}>HUMIDOR READINGS</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  {[{ label: "Temp", value: `${Math.round(envState.humidorTemp)}°F`, color: GOLD }, { label: "Humidity", value: `${Math.round(envState.humidorHumidity)}%`, color: TEAL }].map(r => (
-                    <div key={r.label}>
-                      <div style={{ fontSize: 18, color: "rgba(255,255,255,0.36)", letterSpacing: "0.12em", marginBottom: 2, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
-                      <div style={{ fontSize: 24, fontWeight: 800, color: r.color }}>{r.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ════════════ CENTER · ASSET VAULT ════════════ */}
-        <AnimatePresence>
-          {panelVis.asset !== "hidden" && (
-            <motion.div key="asset-col"
-              style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12, overflow: "auto", position: "relative" }}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.22 } }}
-              transition={{ duration: 0.22 }}>
-              {panelVis.asset === "muted" && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.52)", zIndex: 99, borderRadius: 10, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 22, fontWeight: 900, color: "#F5A623", letterSpacing: "0.22em" }}>MUTED</span>
-                </div>
-              )}
-              <ModLabel n="02" label="ASSET VAULT" />
-
-          {/* Hero puro count */}
-          <Card highlight style={{ padding: "22px 24px", boxShadow: `0 0 60px rgba(212,175,55,0.09)` }}>
-            <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 10, textTransform: "uppercase", fontWeight: 800 }}>HUMIDOR INVENTORY</div>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 14, marginBottom: 16 }}>
-              <span style={{ fontSize: 84, fontWeight: 900, color: GOLD, lineHeight: 0.88, letterSpacing: "-0.03em" }}>{totalPuros}</span>
-              <span style={{ fontSize: 24, fontWeight: 700, color: "rgba(212,175,55,0.60)", letterSpacing: "0.22em", paddingBottom: 10 }}>PUROS</span>
-            </div>
-            <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-              {cigars.map((c, i) => {
-                const low = c.qty / c.par < 0.35;
-                return (
-                  <div key={c.id} style={{
-                    display: "flex", alignItems: "center", gap: 6, padding: "5px 11px", borderRadius: 20,
-                    background: low ? "rgba(255,149,0,0.09)" : "rgba(212,175,55,0.07)",
-                    border: `1px solid ${low ? "rgba(255,149,0,0.45)" : "rgba(212,175,55,0.26)"}`,
-                  }}>
-                    {low && <PulsingDot color={AMBER_H} />}
-                    <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.12em", color: low ? AMBER_H : "rgba(212,175,55,0.85)" }}>
-                      {WRAPPER_NAMES[i] ?? c.brand.split(" ")[0].toUpperCase()} · {c.qty}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-
-          {/* Spirit reserves */}
-          <Card style={{ padding: "18px 20px", flex: 1 }}>
-            <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 16, textTransform: "uppercase", fontWeight: 800 }}>SPIRIT RESERVES</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {spirits.map(s => {
-                const pct   = Math.min(100, Math.round((s.qty / s.par) * 100));
-                const low   = pct < 35;
-                const color = low ? AMBER_H : pct > 70 ? TEAL : GOLD;
-                const isEdit = editId === s.id;
-                return (
-                  <div key={s.id}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                        {low && <PulsingDot color={AMBER_H} />}
-                        <span style={{ fontSize: 18, fontWeight: 700, color: "rgba(255,255,255,0.70)", letterSpacing: "0.06em" }}>{s.name}</span>
-                      </div>
-                      {isEdit ? (
-                        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                          {(["−", "+"] as const).map((lbl, idx) => (
-                            <button key={idx} onClick={() => setEditQty(q => idx === 0 ? Math.max(0, q - 1) : q + 1)}
-                              style={{ width: 44, height: 44, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "white", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{lbl}</button>
-                          ))}
-                          <span style={{ fontSize: 20, fontWeight: 900, color, minWidth: 28, textAlign: "center" }}>{editQty}</span>
-                          <button onClick={() => {
-                            const id  = editId;
-                            const qty = editQty;
-                            setEditId(null);
-                            if (!id) return;
-                            setLiveInventory(inv => inv.map(p => p.id === id ? { ...p, qty } : p));
-                            void fetch(`/api/inventory/${encodeURIComponent(id)}`, {
-                              method: "PATCH",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ qty }),
-                            }).catch(() => {});
-                          }} style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 18, fontWeight: 800 }}>SAVE</button>
-                        </div>
-                      ) : (
-                        <button onClick={() => { setEditId(s.id); setEditQty(s.qty); }} style={{ background: "none", border: "none", cursor: "pointer" }}>
-                          <span style={{ fontSize: 22, fontWeight: 900, color }}>
-                            {s.qty}<span style={{ fontSize: 18, color: "rgba(255,255,255,0.26)", marginLeft: 3 }}>/{s.par}</span>
-                          </span>
-                        </button>
-                      )}
-                    </div>
-                    <FluidBar pct={pct} color={color} />
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Wine cellar */}
-            <div style={{ borderTop: `1px solid rgba(212,175,55,0.08)`, marginTop: 18, paddingTop: 16 }}>
-              <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 12, textTransform: "uppercase" }}>WINE CELLAR BY VARIETAL</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {wines.map(w => {
-                  const low = w.qty / w.par < 0.35;
-                  return (
-                    <div key={w.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                        {low && <PulsingDot color={AMBER_H} />}
-                        <span style={{ fontSize: 18, fontWeight: 600, color: "rgba(255,255,255,0.56)", letterSpacing: "0.06em" }}>{w.name}</span>
-                      </div>
-                      <span style={{ fontSize: 22, fontWeight: 900, color: low ? AMBER_H : "#9B59B6" }}>{w.qty}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ════════════ RIGHT · TRANSACTION ════════════ */}
-        <AnimatePresence>
-          {panelVis.transaction !== "hidden" && (
-            <motion.div key="txn-col"
-              style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12, overflow: "auto", position: "relative" }}
-              initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 18, transition: { duration: 0.22 } }}
-              transition={{ duration: 0.22 }}>
-              {panelVis.transaction === "muted" && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.52)", zIndex: 99, borderRadius: 10, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 22, fontWeight: 900, color: "#F5A623", letterSpacing: "0.22em" }}>MUTED</span>
-                </div>
-              )}
-              <ModLabel n="03" label="TRANSACTION" />
-
-          {/* Shift metrics */}
-          <Card highlight style={{ padding: "18px 22px" }}>
-            <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 14, textTransform: "uppercase", fontWeight: 800 }}>SHIFT METRICS</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-              {[
-                { label: "Shift Revenue", value: `$${shiftTotal.toLocaleString()}`, color: GOLD      },
-                { label: "Active Tables", value: `${activeTables.length}`,          color: TEAL      },
-                { label: "Avg Spend",     value: `$${avgSpend}`,                    color: "#9B59B6" },
-              ].map(m => (
-                <div key={m.label}>
-                  <div style={{ fontSize: 18, color: "rgba(255,255,255,0.26)", letterSpacing: "0.16em", marginBottom: 4, textTransform: "uppercase" }}>{m.label}</div>
-                  <div style={{ fontSize: 30, fontWeight: 900, color: m.color, lineHeight: 1 }}>{m.value}</div>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Active tables */}
-          <Card>
-            <div style={{ padding: "13px 18px", borderBottom: `1px solid rgba(212,175,55,0.07)`,
-              display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 18, letterSpacing: "0.20em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>ACTIVE GUEST TABS</span>
-              <span style={{ fontSize: 18, color: TEAL, fontWeight: 800, letterSpacing: "0.12em" }}>{activeTables.length} OPEN</span>
-            </div>
-            <div style={{ overflow: "auto", maxHeight: 230 }}>
-              {activeTables.map(t => (
-                <motion.div key={t.id} whileTap={{ backgroundColor: "rgba(212,175,55,0.05)" }}
-                  style={{ padding: "13px 18px", borderBottom: `1px solid rgba(255,255,255,0.03)`,
-                    display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
-                  onClick={() => setBillTableId(t.id)}>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, color: "rgba(255,255,255,0.84)" }}>{t.name}</span>
-                      {t.vip && (
-                        <span style={{ fontSize: 18, padding: "2px 7px", borderRadius: 10, fontWeight: 800,
-                          background: `${GOLD}14`, border: `1px solid ${GOLD}44`, color: GOLD }}>VIP</span>
-                      )}
-                      <span style={{ fontSize: 18, padding: "2px 7px", borderRadius: 10, fontWeight: 800,
-                        background: `${loyaltyColor(t.loyalty)}12`, border: `1px solid ${loyaltyColor(t.loyalty)}38`,
-                        color: loyaltyColor(t.loyalty) }}>{t.loyalty}</span>
-                    </div>
-                    <span style={{ fontSize: 18, color: "rgba(255,255,255,0.30)", letterSpacing: "0.10em" }}>
-                      TABLE {t.id} · {t.guests} GUESTS
-                    </span>
-                  </div>
-                  <span style={{ fontSize: 22, fontWeight: 900, color: GOLD }}>${t.spend.toLocaleString()}</span>
-                </motion.div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Quick actions */}
-          <Card style={{ padding: "15px 16px" }}>
-            <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 11, textTransform: "uppercase", fontWeight: 800 }}>QUICK ACTIONS</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9 }}>
-              {[
-                { label: "OPEN TAB",  color: GREEN,    action: () => setPendingAction("open_tab")  },
-                { label: "CLOSE TAB", color: GOLD,     action: () => setPendingAction("close_tab") },
-                { label: "VOID ITEM", color: RED_H,    action: () => setPendingAction("void_item") },
-              ].map(a => (
-                <motion.button key={a.label} whileTap={{ scale: 0.93 }}
-                  onClick={a.action}
-                  style={{
-                    minHeight: 72, padding: "14px 8px", cursor: "pointer",
-                    background: `${a.color}0d`, border: `1px solid ${a.color}44`,
-                    borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>
-                  <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: "0.14em", color: a.color, textTransform: "uppercase" }}>
-                    {a.label}
-                  </span>
-                </motion.button>
-              ))}
-            </div>
-          </Card>
-
-          {/* Milestone tracker */}
-          <Card style={{ padding: "15px 18px" }}>
-            <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 13, textTransform: "uppercase", fontWeight: 800 }}>MILESTONE TRACKER</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {[
-                { label: "Shift Revenue Goal",  current: shiftTotal,      target: 5000, color: GOLD      },
-                { label: "Average Spend Target", current: avgSpend,        target: 350,  color: TEAL      },
-                { label: "VIP Table Fill Rate",  current: activeTables.filter(t => t.vip).length, target: 3, color: "#9B59B6" },
-              ].map(m => {
-                const pct = Math.min(100, Math.round((m.current / m.target) * 100));
-                return (
-                  <div key={m.label}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 600, color: "rgba(255,255,255,0.48)", letterSpacing: "0.08em" }}>{m.label}</span>
-                      <span style={{ fontSize: 18, fontWeight: 800, color: m.color }}>{pct}%</span>
-                    </div>
-                    <FluidBar pct={pct} color={m.color} />
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-
-          {/* Recent transactions — last 10 tabs */}
-          <Card>
-            <div style={{ padding: "13px 18px", borderBottom: `1px solid ${BORDER_DIM}`,
-              display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 18, letterSpacing: "0.20em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>RECENT ACTIVITY</span>
-              <span style={{ fontSize: 18, color: "rgba(212,175,55,0.35)", fontWeight: 700, letterSpacing: "0.10em" }}>LAST {Math.min(liveTabs.length, 10)}</span>
-            </div>
-            <div style={{ overflow: "auto", maxHeight: 240 }}>
-              {liveTabs.slice(0, 10).map(t => (
-                <motion.div key={t.id} whileTap={{ backgroundColor: "rgba(212,175,55,0.04)" }}
-                  style={{ padding: "11px 18px", borderBottom: `1px solid rgba(255,255,255,0.03)`,
-                    display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "default" }}>
-                  <div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: "rgba(255,255,255,0.82)", marginBottom: 2 }}>{t.name}</div>
-                    <div style={{ fontSize: 18, color: "rgba(255,255,255,0.26)", letterSpacing: "0.10em" }}>
-                      TABLE {t.id} · {t.guests} GUEST{t.guests !== 1 ? "S" : ""}
-                    </div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, lineHeight: 1 }}>${t.spend.toLocaleString()}</div>
-                    <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 3,
-                      color: t.status === "active" ? TEAL : "rgba(255,255,255,0.22)" }}>
-                      {t.status}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-              {liveTabs.length === 0 && (
-                <div style={{ padding: "24px", textAlign: "center", fontSize: 18,
-                  color: "rgba(255,255,255,0.18)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
-                  NO ACTIVITY THIS SHIFT
-                </div>
-              )}
-            </div>
-          </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-      </main>
-
-      {/* ── Bill Modal ── */}
-      <AnimatePresence>
-        {billTableId !== null && (
-          <BillModal
-            tableId={billTableId}
-            onClose={() => setBillTableId(null)}
-            onSendBill={() => { void handleSendBill(billTableId); }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Action PIN Gate — staff must authenticate before OPEN/CLOSE/VOID ── */}
-      <AnimatePresence>
-        {pendingAction !== null && (
-          <StaffPinGate
-            level="staff"
-            onSuccess={() => {
-              const token   = localStorage.getItem("axiom_token") ?? "";
-              const headers: HeadersInit = {
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              };
-              if (pendingAction === "open_tab") {
-                const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
-                fetch("/api/tabs/open", {
-                  method: "POST", headers,
-                  body: JSON.stringify({ guestName: "Walk-in Guest", venueId }),
-                })
-                  .then(r => r.ok ? r.json() : null)
-                  .then(d => { if (d?.tab?.id) setBillTableId(Number(d.tab.id)); })
-                  .catch(() => {});
-              } else if (pendingAction === "close_tab" && activeTables[0]) {
-                setBillTableId(activeTables[0].id);
-              } else if (pendingAction === "void_item" && activeTables[0]) {
-                const tabId = activeTables[0].id;
-                fetch(`/api/tabs/${tabId}/void`, { method: "POST", headers })
-                  .then(r => r.ok ? r.json() : null)
-                  .then(() => setLiveTabs(prev => prev.filter(t => t.id !== tabId)))
-                  .catch(() => {});
-              }
-              setPendingAction(null);
-            }}
-            onCancel={() => setPendingAction(null)}
-          />
-        )}
-      </AnimatePresence>
+      <footer style={{ height:56, flexShrink:0, background:ESPRESSO, display:"flex", alignItems:"center", padding:"0 20px", borderTop:"1px solid rgba(180,140,80,0.18)", zIndex:20 }}>
+        <div style={{ display:"flex", gap:0, flex:1, justifyContent:"center" }}>
+          {["Menu","Reservations","Events","Messages","Reports","Settings"].map((item,i)=>(
+            <button key={item} style={{ padding:"0 18px", height:56, border:"none", background:"transparent", color:"rgba(212,175,55,0.45)", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
+              {["📋","📅","🎭","✉️","📊","⚙️"][i]} {item}
+            </button>
+          ))}
+        </div>
+        <div style={{ position:"absolute", left:"50%", transform:"translateX(-50%)" }}>
+          <div style={{ width:44, height:44, borderRadius:12, background:`linear-gradient(135deg,${GOLD},${AMBER})`, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 0 20px ${GOLD}44` }}>
+            <span style={{ fontSize:14, fontWeight:900, color:ESPRESSO }}>E.A.T</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
