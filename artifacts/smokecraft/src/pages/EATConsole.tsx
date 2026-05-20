@@ -2,13 +2,21 @@
  * EATConsole — Unified E.A.T. (Environment · Asset · Transaction) Console
  * Routes: /inventory  /environment  /transaction  (all funnel here via defaultTab)
  */
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import {
   ArrowLeft, Camera, Upload, X, Zap, Map,
-  TrendingUp, Package2, Trash2, CheckCircle2,
+  TrendingUp, Package2, Trash2, CheckCircle2, Wifi, WifiOff,
 } from "lucide-react";
+import {
+  eatEngine,
+  type InventoryProduct,
+  type FloorState,
+  type EnvironmentPreset,
+  type CheckoutRequest,
+} from "@/lib/eatEngine";
+import { socket } from "@/lib/socket";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -215,6 +223,54 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
   const [cart,            setCart]          = useState<CartLine[]>([]);
   const [tableNum,        setTableNum]      = useState("01");
   const [confirmed,       setConfirmed]     = useState(false);
+  // ── Live engine state ──────────────────────────────────────────────────────
+  const [wsConnected,     setWsConnected]   = useState(socket.connected);
+  const [liveInventory,   setLiveInventory] = useState<InventoryProduct[]>([]);
+  const [_liveFloor,      setLiveFloor]     = useState<FloorState | null>(null);
+  const [livePresets,     setLivePresets]   = useState<EnvironmentPreset[]>(eatEngine.getPresets());
+  const [activePresetId,  setActivePresetId]= useState<string | null>(null);
+  const [checkoutBusy,    setCheckoutBusy]  = useState(false);
+  const [checkoutError,   setCheckoutError] = useState<string | null>(null);
+
+  useEffect(() => {
+    eatEngine.start();
+    const unsubInv   = eatEngine.subscribeInventory(setLiveInventory);
+    const unsubFloor = eatEngine.subscribeFloor(setLiveFloor);
+    const unsubEnv   = eatEngine.subscribeEnvironment(() => {
+      setLivePresets(eatEngine.getPresets());
+    });
+    const onConn    = () => setWsConnected(true);
+    const onDisconn = () => setWsConnected(false);
+    socket.on("connect",    onConn);
+    socket.on("disconnect", onDisconn);
+    return () => {
+      unsubInv(); unsubFloor(); unsubEnv();
+      socket.off("connect",    onConn);
+      socket.off("disconnect", onDisconn);
+    };
+  }, []);
+
+  // Merge live API inventory with static fallback
+  const displayStock: StockItem[] = liveInventory.length > 0
+    ? liveInventory.map(p => {
+        const base = STOCK.find(s => s.id === p.id) ?? STOCK[0];
+        return {
+          ...base,
+          id:       p.id,
+          name:     p.name,
+          brand:    p.brand ?? base.brand,
+          qty:      p.qty,
+          par:      p.par,
+          price:    p.price,
+          origin:   p.origin ?? base.origin,
+          category: (["CIGAR","SPIRIT","WINE"].includes(p.category.toUpperCase())
+            ? p.category.toUpperCase() : base.category) as AssetCategory,
+        };
+      })
+    : STOCK;
+
+  // Display presets from engine (falls back to built-ins)
+  const displayPresets = livePresets.length > 0 ? livePresets : eatEngine.getPresets();
 
   // ── ASSET handlers ────────────────────────────────────────────────────────
 
@@ -275,11 +331,39 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
   const tax      = subtotal * 0.0875;
   const total    = subtotal + tax;
 
-  function authorize() {
-    if (!cart.length) return; playClick();
-    setConfirmed(true);
-    setTimeout(() => { setConfirmed(false); setCart([]); }, 2800);
-  }
+  const authorize = useCallback(async () => {
+    if (!cart.length || checkoutBusy) return;
+    playClick();
+    setCheckoutError(null);
+    setCheckoutBusy(true);
+    const req: CheckoutRequest = {
+      venueId:     "venue_01",
+      tableNumber: tableNum,
+      items:       cart.map(l => ({
+        productId: l.item.id,
+        name:      l.item.name,
+        qty:       l.qty,
+        price:     l.item.price,
+      })),
+      successUrl: window.location.href,
+      cancelUrl:  window.location.href,
+    };
+    try {
+      const result = await eatEngine.checkout(req);
+      if (result.checkoutUrl && !result.checkoutUrl.startsWith("#") && result.checkoutUrl !== "") {
+        window.location.href = result.checkoutUrl;
+      } else {
+        setConfirmed(true);
+        setTimeout(() => { setConfirmed(false); setCart([]); setCheckoutBusy(false); }, 2800);
+      }
+    } catch {
+      setCheckoutError("Payment gateway offline — recording as manual transaction.");
+      setConfirmed(true);
+      setTimeout(() => {
+        setConfirmed(false); setCart([]); setCheckoutBusy(false); setCheckoutError(null);
+      }, 3400);
+    }
+  }, [cart, tableNum, checkoutBusy]);
 
   // ── Shared header ─────────────────────────────────────────────────────────
 
@@ -319,7 +403,14 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
             ))}
           </nav>
         </div>
-        <span className="text-[#252530] font-mono text-sm tracking-widest">SYSTEM CONNECTED // NODE.01</span>
+        <div className="flex items-center gap-2">
+          {wsConnected
+            ? <Wifi size={14} className="text-[#32B45A]" />
+            : <WifiOff size={14} className="text-[#555566]" />}
+          <span className={`font-mono text-sm tracking-widest ${wsConnected ? "text-[#32B45A]" : "text-[#444450]"}`}>
+            {wsConnected ? "NODE.01 // LIVE" : "NODE.01 // POLLING"}
+          </span>
+        </div>
       </header>
 
       {/* ── Module workspace ── */}
@@ -353,7 +444,7 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
 
               <div className="grid grid-cols-2 gap-6">
                 <AnimatePresence mode="popLayout">
-                  {(filter === "ALL" ? STOCK : STOCK.filter(s => s.category === filter)).map(item => {
+                  {(filter === "ALL" ? displayStock : displayStock.filter(s => s.category === filter)).map(item => {
                     const low  = item.qty / item.par < 0.35;
                     const img  = uploadedImages[item.id];
                     const ledger = item.price * item.qty;
@@ -484,10 +575,10 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
               <div className="p-6 flex flex-col gap-3">
                 <h3 className="text-[#ffb300] font-mono font-black text-xl tracking-widest mb-1">VAULT METRICS</h3>
                 {[
-                  { l:"TOTAL SKUs",       v:String(STOCK.length) },
-                  { l:"TOTAL ITEMS",      v:String(STOCK.reduce((s,i)=>s+i.qty,0)) },
-                  { l:"VAULT VALUE",      v:`$${STOCK.reduce((s,i)=>s+i.qty*i.price,0).toLocaleString()}` },
-                  { l:"LOW STOCK ALERTS", v:String(STOCK.filter(i=>i.qty/i.par<0.35).length) },
+                  { l:"TOTAL SKUs",       v:String(displayStock.length) },
+                  { l:"TOTAL ITEMS",      v:String(displayStock.reduce((s,i)=>s+i.qty,0)) },
+                  { l:"VAULT VALUE",      v:`$${displayStock.reduce((s,i)=>s+i.qty*i.price,0).toLocaleString()}` },
+                  { l:"LOW STOCK ALERTS", v:String(displayStock.filter(i=>i.qty/i.par<0.35).length) },
                 ].map(m => (
                   <div key={m.l} className="flex justify-between items-center py-3 border-b border-[#141414]">
                     <span className="text-[#444] font-mono font-bold text-sm tracking-widest">{m.l}</span>
@@ -510,6 +601,53 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
               <div className="p-6 border-b border-[#141418]">
                 <h2 className="text-[#d4af37] font-mono font-black text-4xl tracking-widest mb-2">ENV DESIGNER</h2>
                 <p className="text-[#444] font-mono text-lg leading-relaxed">Drag components onto the grid · tap a placed table to open the passthrough drawer.</p>
+              </div>
+
+              {/* ── Live Atmosphere Presets ── */}
+              <div className="px-5 pt-5 pb-4 border-b border-[#141418]">
+                <h3 className="text-[#ffb300] font-mono font-black text-xl tracking-widest mb-3">ATMOSPHERE</h3>
+                <div className="flex flex-col gap-2">
+                  {displayPresets.map(preset => {
+                    const active = activePresetId === preset.id;
+                    return (
+                      <motion.button
+                        key={preset.id}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={async () => {
+                          playClick();
+                          setActivePresetId(preset.id);
+                          await eatEngine.setEnvironmentMode(preset.id);
+                        }}
+                        className="text-left rounded-xl px-4 py-3 border transition-all"
+                        style={{
+                          background:   active ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.03)",
+                          borderColor:  active ? "#d4af37" : "#1c1c24",
+                          boxShadow:    active ? "0 0 16px rgba(212,175,55,0.22)" : "none",
+                        }}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-mono font-black text-sm tracking-widest"
+                            style={{ color: active ? "#ffb300" : "#666672" }}>
+                            {preset.label}
+                          </span>
+                          {active && (
+                            <motion.span
+                              animate={{ opacity:[1,0.4,1] }}
+                              transition={{ duration:1.2, repeat:Infinity }}
+                              className="font-mono text-xs tracking-widest"
+                              style={{ color:"#32B45A" }}>
+                              LIVE
+                            </motion.span>
+                          )}
+                        </div>
+                        <div className="flex gap-3">
+                          <span className="font-mono text-xs" style={{ color:"#3a3a48" }}>{preset.lighting}</span>
+                          <span className="font-mono text-xs" style={{ color:"#3a3a48" }}>·</span>
+                          <span className="font-mono text-xs" style={{ color:"#3a3a48" }}>{preset.scent}</span>
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
               </div>
               <div className="flex flex-col gap-4 p-5">
                 {ASSET_TYPES.map(type => {
@@ -663,7 +801,7 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
 
             {/* Product matrix */}
             <div className="w-[60%] grid grid-cols-2 gap-4 p-5 overflow-y-auto content-start border-r-2 border-[#111116]">
-              {STOCK.map(s => (
+              {displayStock.map(s => (
                 <motion.div key={s.id}
                   whileTap={{ scale:0.93 }}
                   onPointerDown={() => addToCart(s)}
@@ -741,10 +879,18 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
                   <span className="text-[#888] font-mono font-bold text-2xl tracking-widest">TOTAL DUE</span>
                   <span className="text-[#ffb300] font-mono font-black text-5xl tracking-tight">${total.toFixed(2)}</span>
                 </div>
-                <motion.button disabled={!cart.length} onPointerDown={authorize} whileTap={{ scale:0.97 }}
+                <motion.button
+                  disabled={!cart.length || checkoutBusy}
+                  onPointerDown={() => { void authorize(); }}
+                  whileTap={{ scale:0.97 }}
                   className="w-full mt-2 py-6 bg-[#ffb300] hover:bg-[#ffc107] disabled:bg-[#141418] disabled:text-[#333] text-black font-mono font-black text-2xl tracking-widest rounded-2xl transition-all shadow-[0_4px_32px_rgba(255,179,0,0.25)] disabled:shadow-none uppercase">
-                  AUTHORIZE &amp; CLOSE TRANSACTION
+                  {checkoutBusy ? "PROCESSING..." : "AUTHORIZE & CLOSE TRANSACTION"}
                 </motion.button>
+                {checkoutError && (
+                  <p className="text-center font-mono text-sm mt-3 tracking-wide" style={{ color:"#F46C6C" }}>
+                    {checkoutError}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -761,8 +907,15 @@ export default function EATConsole({ defaultTab = "ASSET" }: { defaultTab?: Tab 
               className="flex flex-col items-center gap-8">
               <CheckCircle2 size={96} className="text-[#ffb300]" strokeWidth={1.5}/>
               <div className="text-center">
-                <p className="text-[#ffb300] font-mono font-black text-5xl tracking-widest">TRANSACTION AUTHORIZED</p>
+                <p className="text-[#ffb300] font-mono font-black text-5xl tracking-widest">
+                  {checkoutError ? "RECORDED MANUALLY" : "TRANSACTION AUTHORIZED"}
+                </p>
                 <p className="text-[#555] font-mono text-2xl tracking-widest mt-3">TABLE {tableNum} · ${total.toFixed(2)} SECURED</p>
+                {checkoutError && (
+                  <p className="font-mono text-lg mt-4 tracking-wide" style={{ color:"#F46C6C" }}>
+                    {checkoutError}
+                  </p>
+                )}
               </div>
             </motion.div>
           </motion.div>

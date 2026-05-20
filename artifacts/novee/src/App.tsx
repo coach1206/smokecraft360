@@ -1,4 +1,5 @@
 import { useState, createContext, useContext, useEffect } from "react";
+import { startHeartbeat, getOrCreateDeviceId } from "@/lib/deviceTelemetry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
@@ -658,6 +659,16 @@ export default function App() {
   const [bootDone, setBootDone] = useState<boolean>(() => {
     try { return sessionStorage.getItem("novee_boot_done") === "1"; } catch { return false; }
   });
+
+  // ── Device heartbeat — keeps kiosk registered as ACTIVE in venue registry ──
+  useEffect(() => {
+    const stop = startHeartbeat({
+      deviceId:  getOrCreateDeviceId(),
+      platform:  "kiosk",
+      version:   "2.0.0",
+    });
+    return stop;
+  }, []);
 
   function handleBootComplete() {
     try { sessionStorage.setItem("novee_boot_done", "1"); } catch { /* */ }

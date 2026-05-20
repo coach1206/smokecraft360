@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  eatEngine,
+  type FloorTable,
+  type CheckoutRequest,
+} from "@/lib/eatEngine";
+import { socket } from "@/lib/socket";
 
 const G    = "#D4AF37";
 const DIM  = "rgba(212,175,55,0.55)";
@@ -382,11 +388,36 @@ export default function EATDashboard({ eatFlags }: { eatFlags?: any }) {
   const [recTable,       setRecTable]       = useState<number | null>(null);
   const [billSentMap,    setBillSentMap]    = useState<Record<number, boolean>>({});
   const modeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // ── Live engine state ──────────────────────────────────────────────────────
+  const [wsConnected,  setWsConnected]  = useState(socket.connected);
+  const [liveFloor,    setLiveFloor]    = useState<{ tables: FloorTable[] } | null>(null);
 
   const mode        = ENV_MODES.find(m => m.id === envMode) ?? ENV_MODES[0];
   const activeStaff = STAFF.find(s => s.id === selectedStaff) ?? STAFF[0];
   const tableGuest  = selectedTable ? TABLE_GUESTS[selectedTable] : null;
   const activeTables = TABLES.filter(t => t.status === "active").length;
+
+  /* ── EAT Engine: start + subscribe ── */
+  useEffect(() => {
+    eatEngine.start();
+    const unsubFloor = eatEngine.subscribeFloor(f => setLiveFloor({ tables: f.tables }));
+    const unsubEnv   = eatEngine.subscribeEnvironment(env => {
+      const matchedMode = ENV_MODES.find(m =>
+        m.label.toLowerCase().includes(env.lightingMode.toLowerCase()) ||
+        env.activeSceneId === m.id
+      );
+      if (matchedMode) setEnvMode(matchedMode.id);
+    });
+    const onConn    = () => setWsConnected(true);
+    const onDisconn = () => setWsConnected(false);
+    socket.on("connect",    onConn);
+    socket.on("disconnect", onDisconn);
+    return () => {
+      unsubFloor(); unsubEnv();
+      socket.off("connect",    onConn);
+      socket.off("disconnect", onDisconn);
+    };
+  }, []);
 
   /* Live revenue tick */
   useEffect(() => {
@@ -446,12 +477,36 @@ export default function EATDashboard({ eatFlags }: { eatFlags?: any }) {
     }
   };
 
-  /* Bill actions */
-  const sendBill = (tableId: number) => {
+  /* Bill actions — wire to real checkout API */
+  const sendBill = useCallback(async (tableId: number) => {
     setBillSentMap(m => ({ ...m, [tableId]: true }));
-    setTimeout(() => setBillSentMap(m => ({ ...m, [tableId]: false })), 2500);
     setBillModal(tableId);
-  };
+    const items = BILL_ITEMS[tableId] ?? [{ item: "Miscellaneous Items", qty: 1, price: 180 }];
+    const req: CheckoutRequest = {
+      venueId:     "venue_01",
+      tableNumber: String(tableId).padStart(2, "0"),
+      items:       items.map(i => ({
+        productId: `table_${tableId}_item_${i.item.replace(/\s+/g, "_").toLowerCase()}`,
+        name:      i.item,
+        qty:       i.qty,
+        price:     i.price,
+      })),
+      successUrl: window.location.href,
+      cancelUrl:  window.location.href,
+    };
+    try {
+      const result = await eatEngine.checkout(req);
+      if (result.checkoutUrl && !result.checkoutUrl.startsWith("#") && result.checkoutUrl !== "") {
+        window.open(result.checkoutUrl, "_blank", "noopener");
+        toast(`Stripe checkout opened — Table ${tableId}`, G);
+      } else {
+        toast(`Bill sent — Table ${tableId} — manual record`, G);
+      }
+    } catch {
+      toast(`Bill recorded manually — Table ${tableId}`, DIM);
+    }
+    setTimeout(() => setBillSentMap(m => ({ ...m, [tableId]: false })), 4000);
+  }, [toast]);
 
   /* Staff actions */
   const staffAction = (action: "support" | "refill" | "vip", tableId: number | null) => {
@@ -495,8 +550,18 @@ export default function EATDashboard({ eatFlags }: { eatFlags?: any }) {
       {/* ── TOP METRICS BAR ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap", padding: "10px 16px", marginBottom: 8, background: PANEL, border: `1px solid ${BORDER}`, borderRadius: 10, backdropFilter: "blur(20px)", flexShrink: 0 }}>
         <div>
-          <div style={{ fontSize: 14, fontWeight: 900, color: G, letterSpacing: "0.16em", fontFamily: "'Cormorant Garamond',serif" }}>E.A.T SYSTEM</div>
-          <div style={{ fontSize: 8, color: DIM, letterSpacing: "0.22em", textTransform: "uppercase" }}>Environment · Asset · Transaction</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ fontSize: 14, fontWeight: 900, color: G, letterSpacing: "0.16em", fontFamily: "'Cormorant Garamond',serif" }}>E.A.T SYSTEM</div>
+            <div style={{
+              width: 6, height: 6, borderRadius: "50%",
+              background: wsConnected ? EM : DIM,
+              boxShadow: wsConnected ? `0 0 6px ${EM}` : "none",
+              flexShrink: 0,
+            }} title={wsConnected ? "WebSocket Live" : "Polling"} />
+          </div>
+          <div style={{ fontSize: 8, color: DIM, letterSpacing: "0.22em", textTransform: "uppercase" }}>
+            {wsConnected ? "Live · Connected" : "Environment · Asset · Transaction"}
+          </div>
         </div>
         <div style={{ width: 1, height: 36, background: BORDER, flexShrink: 0 }} />
         <Metric label="Lounge Revenue (Live)" value={`$${revenue.toLocaleString()}`} sub="+13% vs last hour" />
@@ -721,7 +786,7 @@ export default function EATDashboard({ eatFlags }: { eatFlags?: any }) {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 13, fontWeight: 800, color: G }}>{r.amt}</span>
-                  <motion.button type="button" onPointerDown={e => { e.stopPropagation(); sendBill(r.id); }} whileTap={{ scale: 0.92 }}
+                  <motion.button type="button" onPointerDown={e => { e.stopPropagation(); void sendBill(r.id); }} whileTap={{ scale: 0.92 }}
                     style={{ border: `1px solid ${billSentMap[r.id] ? `${EM}88` : `${G}44`}`, borderRadius: 5, padding: "4px 8px", background: billSentMap[r.id] ? "rgba(50,180,90,0.16)" : "rgba(212,175,55,0.08)", cursor: "pointer", fontSize: 8, fontWeight: 700, color: billSentMap[r.id] ? EM : DIM, fontFamily: "'Inter',sans-serif", letterSpacing: "0.10em", textTransform: "uppercase" }}>
                     {billSentMap[r.id] ? "✓" : "BILL"}
                   </motion.button>

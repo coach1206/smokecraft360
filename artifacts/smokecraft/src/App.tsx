@@ -41,6 +41,7 @@ import GuestAmbientOverlay           from '@/components/GuestAmbientOverlay';
 import { AshParticles }              from '@/components/AshParticles';
 import { RevenueOptimizationOverlay } from '@/components/RevenueOptimizationOverlay';
 import { PosXPFeedback }             from '@/components/PosXPFeedback';
+import { startHeartbeat, getOrCreateDeviceId } from '@/lib/deviceTelemetry';
 
 /* ── Lazy-loaded overlays (removed from critical path) ────── */
 const EeisOverlay          = lazy(() => import('@/components/EeisOverlay'));
@@ -1037,6 +1038,19 @@ function BrandPartnerFirewall() {
 }
 
 
+/* ── Device heartbeat mount — keeps kiosk ACTIVE in venue registry ── */
+function DeviceHeartbeatMount() {
+  useEffect(() => {
+    const stop = startHeartbeat({
+      deviceId:  getOrCreateDeviceId(),
+      platform:  "kiosk",
+      version:   "2.0.0",
+    });
+    return stop;
+  }, []);
+  return null;
+}
+
 /* ══════════════════════════════════════════════════════════════
    ROOT APP — wouter router
    All sub-pages lazy-loaded; / → CraftHub
@@ -1046,6 +1060,7 @@ export default function App() {
   const userRole = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_role')       ?? 'venue_owner') : 'venue_owner';
   return (
     <Router>
+      <DeviceHeartbeatMount />
       <GestureGateway />
       <BrandPartnerFirewall />
       <GuestAmbientLayer />
