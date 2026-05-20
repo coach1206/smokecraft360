@@ -104,7 +104,7 @@ function FluidBar({ pct, color }: { pct: number; color: string }) {
 function ModLabel({ n, label }: { n: string; label: string }) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.32em", color: "rgba(212,175,55,0.42)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
+      <span style={{ fontSize: 18, fontWeight: 900, letterSpacing: "0.32em", color: "rgba(212,175,55,0.42)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
         {n} — {label}
       </span>
     </div>
@@ -142,35 +142,35 @@ function BillModal({ tableId, onClose, onSendBill }: { tableId: number; onClose:
         style={{ background: "rgba(8,5,2,0.98)", border: `1px solid ${GOLD}44`, borderRadius: 14, padding: "28px", width: 420, boxShadow: `0 24px 80px rgba(0,0,0,0.95)` }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 18 }}>
           <div>
-            <div style={{ fontSize: 10, color: `${GOLD}88`, letterSpacing: "0.20em", marginBottom: 3, textTransform: "uppercase" }}>TABLE {tableId} — BILL SUMMARY</div>
+            <div style={{ fontSize: 18, color: `${GOLD}88`, letterSpacing: "0.20em", marginBottom: 3, textTransform: "uppercase" }}>TABLE {tableId} — BILL SUMMARY</div>
             <div style={{ fontSize: 20, fontWeight: 800, color: "rgba(240,232,212,0.88)", fontFamily: "'Cormorant Garamond',serif" }}>{table?.name ?? "Guest"}</div>
-            <div style={{ fontSize: 10, color: `${GOLD}66`, marginTop: 2 }}>{table?.loyalty ?? "—"} Member</div>
+            <div style={{ fontSize: 18, color: `${GOLD}66`, marginTop: 2 }}>{table?.loyalty ?? "—"} Member</div>
           </div>
-          <button type="button" onClick={onClose} style={{ background: "none", border: `1px solid ${GOLD}22`, borderRadius: 6, width: 30, height: 30, color: "rgba(240,232,212,0.45)", cursor: "pointer", fontSize: 16 }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: "none", border: `1px solid ${GOLD}22`, borderRadius: 6, width: 30, height: 30, color: "rgba(240,232,212,0.45)", cursor: "pointer", fontSize: 18 }}>×</button>
         </div>
         <div style={{ borderTop: `1px solid ${GOLD}18`, borderBottom: `1px solid ${GOLD}18`, padding: "10px 0", marginBottom: 10 }}>
           {items.map((it, i) => (
             <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 7 }}>
               <div>
-                <div style={{ fontSize: 12, color: "rgba(240,232,212,0.80)" }}>{it.item}</div>
-                <div style={{ fontSize: 9, color: `${GOLD}55` }}>× {it.qty}</div>
+                <div style={{ fontSize: 18, color: "rgba(240,232,212,0.80)" }}>{it.item}</div>
+                <div style={{ fontSize: 18, color: `${GOLD}55` }}>× {it.qty}</div>
               </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: GOLD }}>${(it.qty * it.price).toLocaleString()}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: GOLD }}>${(it.qty * it.price).toLocaleString()}</div>
             </div>
           ))}
         </div>
         {[["Subtotal", `$${subtotal}`], ["Tax (8.5%)", `$${tax}`], ["Service (20%)", `$${svc}`]].map(([l, v]) => (
           <div key={l} style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-            <span style={{ fontSize: 11, color: "rgba(240,232,212,0.38)" }}>{l}</span>
-            <span style={{ fontSize: 11, color: "rgba(240,232,212,0.38)" }}>{v}</span>
+            <span style={{ fontSize: 18, color: "rgba(240,232,212,0.38)" }}>{l}</span>
+            <span style={{ fontSize: 18, color: "rgba(240,232,212,0.38)" }}>{v}</span>
           </div>
         ))}
         <div style={{ display: "flex", justifyContent: "space-between", borderTop: `1px solid ${GOLD}18`, paddingTop: 10, marginTop: 6, marginBottom: 18 }}>
-          <span style={{ fontSize: 15, fontWeight: 800, color: "rgba(240,232,212,0.88)" }}>TOTAL</span>
+          <span style={{ fontSize: 18, fontWeight: 800, color: "rgba(240,232,212,0.88)" }}>TOTAL</span>
           <span style={{ fontSize: 20, fontWeight: 900, color: GOLD }}>${total.toLocaleString()}</span>
         </div>
         <motion.button type="button" onClick={() => { onSendBill(); onClose(); }} whileTap={{ scale: 0.95 }}
-          style={{ width: "100%", padding: "15px", background: `linear-gradient(135deg, ${GOLD}, #C8960A)`, border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 800, color: "#090600", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+          style={{ width: "100%", padding: "15px", background: `linear-gradient(135deg, ${GOLD}, #C8960A)`, border: "none", borderRadius: 8, cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#090600", letterSpacing: "0.14em", textTransform: "uppercase" }}>
           SEND TO POS
         </motion.button>
       </motion.div>
@@ -319,14 +319,14 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
               display: "flex", alignItems: "center", gap: 8, minHeight: 44,
               background: "rgba(212,175,55,0.07)", border: `1px solid rgba(212,175,55,0.28)`,
               borderRadius: 10, padding: "10px 18px", cursor: "pointer",
-              color: GOLD, fontSize: 13, fontWeight: 800, letterSpacing: "0.18em",
+              color: GOLD, fontSize: 18, fontWeight: 800, letterSpacing: "0.18em",
             }}>← BACK</button>
           )}
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.8, repeat: Infinity }}
               style={{ width: 8, height: 8, borderRadius: "50%", background: GOLD, boxShadow: `0 0 10px ${GOLD}` }} />
             <span style={{ color: GOLD, fontSize: 28, fontWeight: 900, letterSpacing: "0.22em" }}>E.A.T. TERMINAL</span>
-            <span style={{ color: "rgba(212,175,55,0.28)", fontSize: 12, letterSpacing: "0.14em" }}>// NOVEE OS</span>
+            <span style={{ color: "rgba(212,175,55,0.28)", fontSize: 18, letterSpacing: "0.14em" }}>// NOVEE OS</span>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -334,7 +334,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
             <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px",
               background: "rgba(255,149,0,0.09)", border: "1px solid rgba(255,149,0,0.38)", borderRadius: 8 }}>
               <PulsingDot color={AMBER_H} />
-              <span style={{ color: AMBER_H, fontSize: 12, fontWeight: 800, letterSpacing: "0.16em" }}>{lowStock.length} LOW STOCK</span>
+              <span style={{ color: AMBER_H, fontSize: 18, fontWeight: 800, letterSpacing: "0.16em" }}>{lowStock.length} LOW STOCK</span>
             </div>
           )}
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -342,7 +342,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
               animate={{ opacity: wsConnected ? [1, 0.4, 1] : 1 }}
               transition={{ duration: 2, repeat: Infinity }}
               style={{ width: 7, height: 7, borderRadius: "50%", background: wsConnected ? GREEN : "#444", boxShadow: wsConnected ? `0 0 6px ${GREEN}` : "none" }} />
-            <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.16em", color: wsConnected ? GREEN : "#444" }}>
+            <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "0.16em", color: wsConnected ? GREEN : "#444" }}>
               {wsConnected ? "LIVE" : "POLLING"}
             </span>
           </div>
@@ -370,7 +370,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                 <div key={r.label}>
                   <div style={{ fontSize: 18, color: "rgba(255,255,255,0.38)", letterSpacing: "0.14em", marginBottom: 4, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
                   <div style={{ fontSize: 52, fontWeight: 900, color: r.color, lineHeight: 0.92, letterSpacing: "-0.02em" }}>{r.value}</div>
-                  <div style={{ fontSize: 13, color: `${r.color}77`, marginTop: 4, letterSpacing: "0.14em", fontWeight: 600 }}>{r.unit}</div>
+                  <div style={{ fontSize: 18, color: `${r.color}77`, marginTop: 4, letterSpacing: "0.14em", fontWeight: 600 }}>{r.unit}</div>
                 </div>
               ))}
             </div>
@@ -415,7 +415,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                 <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "6px 13px",
                   background: "rgba(50,180,90,0.09)", border: "1px solid rgba(50,180,90,0.35)", borderRadius: 20 }}>
                   <PulsingDot color={GREEN} />
-                  <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.16em", color: GREEN }}>ACTIVE</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.16em", color: GREEN }}>ACTIVE</span>
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -458,7 +458,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                     border: `1px solid ${low ? "rgba(255,149,0,0.45)" : "rgba(212,175,55,0.26)"}`,
                   }}>
                     {low && <PulsingDot color={AMBER_H} />}
-                    <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.12em", color: low ? AMBER_H : "rgba(212,175,55,0.85)" }}>
+                    <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.12em", color: low ? AMBER_H : "rgba(212,175,55,0.85)" }}>
                       {WRAPPER_NAMES[i] ?? c.brand.split(" ")[0].toUpperCase()} · {c.qty}
                     </span>
                   </div>
@@ -501,12 +501,12 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                               headers: { "Content-Type": "application/json" },
                               body: JSON.stringify({ qty }),
                             }).catch(() => {});
-                          }} style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 14, fontWeight: 800 }}>SAVE</button>
+                          }} style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 18, fontWeight: 800 }}>SAVE</button>
                         </div>
                       ) : (
                         <button onClick={() => { setEditId(s.id); setEditQty(s.qty); }} style={{ background: "none", border: "none", cursor: "pointer" }}>
                           <span style={{ fontSize: 22, fontWeight: 900, color }}>
-                            {s.qty}<span style={{ fontSize: 13, color: "rgba(255,255,255,0.26)", marginLeft: 3 }}>/{s.par}</span>
+                            {s.qty}<span style={{ fontSize: 18, color: "rgba(255,255,255,0.26)", marginLeft: 3 }}>/{s.par}</span>
                           </span>
                         </button>
                       )}
@@ -519,7 +519,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
             {/* Wine cellar */}
             <div style={{ borderTop: `1px solid rgba(212,175,55,0.08)`, marginTop: 18, paddingTop: 16 }}>
-              <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 12, textTransform: "uppercase" }}>WINE CELLAR BY VARIETAL</div>
+              <div style={{ fontSize: 18, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 12, textTransform: "uppercase" }}>WINE CELLAR BY VARIETAL</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {wines.map(w => {
                   const low = w.qty / w.par < 0.35;
@@ -527,7 +527,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                     <div key={w.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                         {low && <PulsingDot color={AMBER_H} />}
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.56)", letterSpacing: "0.06em" }}>{w.name}</span>
+                        <span style={{ fontSize: 18, fontWeight: 600, color: "rgba(255,255,255,0.56)", letterSpacing: "0.06em" }}>{w.name}</span>
                       </div>
                       <span style={{ fontSize: 22, fontWeight: 900, color: low ? AMBER_H : "#9B59B6" }}>{w.qty}</span>
                     </div>
@@ -563,8 +563,8 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
           <Card>
             <div style={{ padding: "13px 18px", borderBottom: `1px solid rgba(212,175,55,0.07)`,
               display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 13, letterSpacing: "0.20em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>ACTIVE GUEST TABS</span>
-              <span style={{ fontSize: 12, color: TEAL, fontWeight: 800, letterSpacing: "0.12em" }}>{activeTables.length} OPEN</span>
+              <span style={{ fontSize: 18, letterSpacing: "0.20em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>ACTIVE GUEST TABS</span>
+              <span style={{ fontSize: 18, color: TEAL, fontWeight: 800, letterSpacing: "0.12em" }}>{activeTables.length} OPEN</span>
             </div>
             <div style={{ overflow: "auto", maxHeight: 230 }}>
               {activeTables.map(t => (
@@ -574,16 +574,16 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                   onClick={() => setBillTableId(t.id)}>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: "rgba(255,255,255,0.84)" }}>{t.name}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700, color: "rgba(255,255,255,0.84)" }}>{t.name}</span>
                       {t.vip && (
-                        <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 10, fontWeight: 800,
+                        <span style={{ fontSize: 18, padding: "2px 7px", borderRadius: 10, fontWeight: 800,
                           background: `${GOLD}14`, border: `1px solid ${GOLD}44`, color: GOLD }}>VIP</span>
                       )}
-                      <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 10, fontWeight: 800,
+                      <span style={{ fontSize: 18, padding: "2px 7px", borderRadius: 10, fontWeight: 800,
                         background: `${loyaltyColor(t.loyalty)}12`, border: `1px solid ${loyaltyColor(t.loyalty)}38`,
                         color: loyaltyColor(t.loyalty) }}>{t.loyalty}</span>
                     </div>
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.30)", letterSpacing: "0.10em" }}>
+                    <span style={{ fontSize: 18, color: "rgba(255,255,255,0.30)", letterSpacing: "0.10em" }}>
                       TABLE {t.id} · {t.guests} GUESTS
                     </span>
                   </div>
@@ -630,8 +630,8 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                 return (
                   <div key={m.label}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.48)", letterSpacing: "0.08em" }}>{m.label}</span>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: m.color }}>{pct}%</span>
+                      <span style={{ fontSize: 18, fontWeight: 600, color: "rgba(255,255,255,0.48)", letterSpacing: "0.08em" }}>{m.label}</span>
+                      <span style={{ fontSize: 18, fontWeight: 800, color: m.color }}>{pct}%</span>
                     </div>
                     <FluidBar pct={pct} color={m.color} />
                   </div>
@@ -644,8 +644,8 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
           <Card>
             <div style={{ padding: "13px 18px", borderBottom: `1px solid ${BORDER_DIM}`,
               display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 13, letterSpacing: "0.20em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>RECENT ACTIVITY</span>
-              <span style={{ fontSize: 11, color: "rgba(212,175,55,0.35)", fontWeight: 700, letterSpacing: "0.10em" }}>LAST {Math.min(liveTabs.length, 10)}</span>
+              <span style={{ fontSize: 18, letterSpacing: "0.20em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>RECENT ACTIVITY</span>
+              <span style={{ fontSize: 18, color: "rgba(212,175,55,0.35)", fontWeight: 700, letterSpacing: "0.10em" }}>LAST {Math.min(liveTabs.length, 10)}</span>
             </div>
             <div style={{ overflow: "auto", maxHeight: 240 }}>
               {liveTabs.slice(0, 10).map(t => (
@@ -653,14 +653,14 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                   style={{ padding: "11px 18px", borderBottom: `1px solid rgba(255,255,255,0.03)`,
                     display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "default" }}>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.82)", marginBottom: 2 }}>{t.name}</div>
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.26)", letterSpacing: "0.10em" }}>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: "rgba(255,255,255,0.82)", marginBottom: 2 }}>{t.name}</div>
+                    <div style={{ fontSize: 18, color: "rgba(255,255,255,0.26)", letterSpacing: "0.10em" }}>
                       TABLE {t.id} · {t.guests} GUEST{t.guests !== 1 ? "S" : ""}
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
                     <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, lineHeight: 1 }}>${t.spend.toLocaleString()}</div>
-                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 3,
+                    <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 3,
                       color: t.status === "active" ? TEAL : "rgba(255,255,255,0.22)" }}>
                       {t.status}
                     </div>
@@ -668,7 +668,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                 </motion.div>
               ))}
               {liveTabs.length === 0 && (
-                <div style={{ padding: "24px", textAlign: "center", fontSize: 11,
+                <div style={{ padding: "24px", textAlign: "center", fontSize: 18,
                   color: "rgba(255,255,255,0.18)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
                   NO ACTIVITY THIS SHIFT
                 </div>
