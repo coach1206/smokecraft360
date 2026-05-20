@@ -1,0 +1,61 @@
+[NOVEE OS KIOSK DEPLOYMENT]
+
+SYSTEM PRIORITY 1: INIT PHASE & NOVEE OS CONTINUITY
+SYSTEM PRIORITY 2: SENSORY SATURATION & TELEMETRY
+
+Execute full, multi-stage hardware power-up and module initialization for a native 1920x1080 kiosk, strictly following the specified boot sequence. Every view is built with the native prestige design standard: obsidian glass panels, brushed titanium headers, warm gold indicators, and smoked chrome background plates. Fullscreen safety is enforced. No Enterpise Analytics dashboards.
+
+---
+
+[STAGE 1: SYSTEM POWER-UP & BRAND DEPLOYMENT]
+1.1 INITIAL POWER ON (0.0s - 1.5s):
+A black screen rapidly dissolves to a pure True Obsidian #010101 matte. A single, very subtle, high-pitched mechanical activation tone plays, followed by the first visual anchor.
+
+1.2 PROFOUND INNOVATIONS LLC (1.5s - 4.5s):
+Center-frame, a highly detailed illustration of a complex, interwoven geometric structure constructed from smoked chrome and brushed titanium material dissolves in. As it locks, the text "PROFOUND INNOVATIONS LLC" in an oversized, prestige serif font and warm gold foil texture, framed by a soft gold ambient glow, materializes beneath. A heavy, engineered motion physics settle calculation is applied.
+
+1.3 NOVEE OS POWERED (4.5s - 7.5s):
+A clean, weighted slide transition (Forward, left -50px, opacity dissolve 1->0) clears the brand. "NOVEE OS" in True White, using the system typeface, and an interactive, animated geometric startup icon using soft blue accents, dissolves in. Beneath this, "POWERED" in True White, using a minimal typeface, dissolves. The top-left module status bar shows a minimalist biometric ring icon and a "SYSTEM ACTIVE" indicator. This screen holds the re-entry handshake point, preserved in local storage across 4 sessions.
+
+---
+
+[STAGE 2: CRAFTHUB INIT & MODULE SWITCHING]
+2.1 CRAFTHUB OVERVIEW (7.5s - 9.5s):
+A soft, cinematic smoke ambiance and ambient lighting soft pulse execute. The entire view is structured. "Crafthub" in an oversized Cormorant Garamond serif is centered. Below it, an immersive, non-Enterprise- Analytics data summary dissolves:
+  * environment intelligence (Atmosphere / Lighting telemetry)
+  * pairing intelligence (Chemical match analytics)
+  * inventory awareness (Physical humidor stock count)
+  * lounge atmosphere status (Table spend triggers)
+  * guest preference analytics (Mentor tracking)
+  * recommendation engine (Spend multipliers)
+  * venue intelligence (POS transaction log)
+The mandatory, permanent top-left vertical OS rail (or system dock) dissolves, including functional "Return to CraftHub" (linked to system dock) and functional "E.A.T Intelligence" (renamed, non-technical visualization).
+
+2.2 MODULE SWITCHING ENGINE (9.5s - 12s):
+A detailed illustration of four bespoke kiosk stations dissolves. The system executes a functional module switch matrix:
+  * SmokeCraft 360 (highlighted, cinematic cigar close-up image)
+  * PourCraft 360
+  * BeerCraft 360
+  * VapeCraft 360
+On module change, a dynamic view transition occurs (forward: dissolve, slide -50px, incoming: slide-in, scale 0.95->1.0 with weighted spring calculation). Maintain smoke atmosphere, soundscape, lighting language, and OS identity across all. Session preservation ensures mentor selection, XP, blend profile, progression, and pairing selections are maintained.
+
+---
+
+[STAGE 3: E.A.T SYSTEMS POP-UP]
+3.1 E.A.T SYSTEMS INTEGRATION (12s - 15s):
+A soft, cinematic amber gold pulse transition triggers. A functional pop-up card titled "E.A.T SYSTEMS" (renamed to avoid technical dashboard terminology) in a premium hospitality serif dissolves over the view. The card details three clear informational panels using deep telemetry data:
+  * environment intelligence (Atmosphere / Lighting telemetry)
+  * asset intelligence (Inventory / Stock status)
+  * transaction intelligence (Guest Spend Tiers)
+It is integrated, full-stack, with real POS telemetry wired to spend multipliers (2x, 3x, 5x cheat code receipts). A single, simple close 'X' in True White is present.
+
+---
+
+[STAGE 4: HOMESCREEN DEPLOYMENT]
+4.1 KIOSK HOMESCREEN (15s):
+A heavy, engineered motion settle clears the pop-up and view stack. The full-bleed homescreen lands. "NOVEE OS" brand is clearly visible. The left-side vertical OS rail is fully persistent. The main content is clean and highly visual, utilizing oversized fonts, realistic images, and clear informational telemetry to eliminate guessing:
+- THE GOLDEN BOX RULES disclosure screen (Step 1.3, non-skipped)
+- MENTOR PORTFOLIO with Country Flags (Step 1.4, non-skipped, non-Technical bio layout)
+- A highly detailed illustrated cigar on an obsidian glass preparation mat, framed by textured soils (image_9.png) and high-resolution raw tobacco leaves (image_9.png), derived from image_18.png. The imperfect cigar from image_0.png is present, and a minimalist top-left vertical OS rail from image_1.png/image_2.png is persistent, including fully coded backend linkage (no stubs) for: CraftHub, SmokeCraft, E.A.T Intelligence, Pairing Engine, Lounge Mode, My Profile, Settings. A universal back button is anchored top-left. All transitions (forward, slide -50px, scale 0.95-1.0) and tactile feedback (3400Hz mechanical oscillation synthetic tone switch, haptic vibration pulses) are active. The user feels trapped inside NO module, but rather navigating an intelligent experience within a larger ecosystem. Execute final batch write with no broken imports.
+
+Zero Enterprise Analytics Dashboards. Zero Instant Page Cuts. Full Prestige Fidelity.

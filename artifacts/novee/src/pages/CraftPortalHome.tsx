@@ -26,26 +26,30 @@ function IconCraft()   { return <svg width="22" height="22" viewBox="0 0 24 24" 
 function IconStar()    { return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>; }
 
 const PILLARS = [
-  { Icon: IconCompass, label: "DISCOVER",   sub: "Learn the leaf"    },
-  { Icon: IconChart,   label: "ANALYZE",    sub: "Decode the blend"  },
+  { Icon: IconCompass, label: "DISCOVER",   sub: "Learn the leaf"     },
+  { Icon: IconChart,   label: "ANALYZE",    sub: "Decode the blend"   },
   { Icon: IconCraft,   label: "CRAFT",      sub: "Build your profile" },
-  { Icon: IconStar,    label: "EXPERIENCE", sub: "Score & refine"    },
+  { Icon: IconStar,    label: "EXPERIENCE", sub: "Score & refine"     },
 ];
 
 /* ── Craft module switcher ── */
-interface CraftModule {
-  id: string;
-  label: string;
-  tag: string;
-  accent: string;
-  live: boolean;
-}
+interface CraftModule { id: string; label: string; tag: string; accent: string; live: boolean; }
 const CRAFT_MODULES: CraftModule[] = [
-  { id: "smoke",  label: "SmokeCraft 360",  tag: "SC",  accent: GOLD,      live: true  },
-  { id: "pour",   label: "PourCraft 360",   tag: "PC",  accent: "#C87941", live: false },
-  { id: "beer",   label: "BeerCraft 360",   tag: "BC",  accent: "#C8A041", live: false },
-  { id: "vape",   label: "VapeCraft 360",   tag: "VC",  accent: "#6A9FD8", live: false },
+  { id: "smoke", label: "SmokeCraft 360", tag: "SC", accent: GOLD,      live: true  },
+  { id: "pour",  label: "PourCraft 360",  tag: "PC", accent: "#C87941", live: false },
+  { id: "beer",  label: "BeerCraft 360",  tag: "BC", accent: "#C8A041", live: false },
+  { id: "vape",  label: "VapeCraft 360",  tag: "VC", accent: "#6A9FD8", live: false },
 ];
+
+/* ── DOÑA ROSA mentor config ── */
+const MENTOR = {
+  name:    "DOÑA ROSA",
+  role:    "WRAPPER ARTISTRY MENTOR",
+  origin:  "Jalapa Valley, Nicaragua",
+  note:    "Master of Maduro leaf selection, 34 years curing volcanic-grown Jalapa wrappers for the world's most discerning lounges.",
+  accent:  "#C8964A",
+  tier:    "SOVEREIGN MENTOR",
+};
 
 export default function CraftPortalHome() {
   const { setPhase } = useGuest();
@@ -53,38 +57,40 @@ export default function CraftPortalHome() {
   const [showReturn,  setShowReturn]  = useState(false);
   const [retLast,     setRetLast]     = useState("");
   const [retPin,      setRetPin]      = useState("");
+  const [mentorOpen,  setMentorOpen]  = useState(false);
 
   function beginNew()      { playTactile(); hapticMilestone(); setPhase("s1_demo"); }
   function resumeSession() { setShowReturn(true); }
 
   return (
-    <div style={{ width: "100%", height: "100%", display: "flex", overflow: "hidden", background: "#040200", fontFamily: "'Inter',-apple-system,sans-serif" }}>
+    <div style={{ width: "100%", height: "100%", display: "flex", overflow: "hidden", background: "#040200", fontFamily: "'Inter',-apple-system,sans-serif", position: "relative" }}>
 
-      {/* ══════════ FULL-WIDTH HERO ══════════ */}
+      {/* ══════════ FULL-BLEED HERO ══════════ */}
       <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
 
-        {/* Full-bleed cigar hero */}
+        {/* Cinematic cigar hero */}
         <img src={IMG("cigar_hero.png")} alt=""
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 36%" }}
           onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
 
-        {/* Cinematic overlays */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(120deg, rgba(4,2,0,0.28) 0%, rgba(4,2,0,0.45) 48%, rgba(4,2,0,0.12) 100%)" }} />
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "60%", background: "linear-gradient(0deg, rgba(2,1,0,0.98) 0%, rgba(2,1,0,0.75) 38%, transparent 100%)" }} />
+        {/* Obsidian glass preparation mat overlay */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(120deg, rgba(4,2,0,0.22) 0%, rgba(4,2,0,0.40) 48%, rgba(4,2,0,0.10) 100%)" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "64%", background: "linear-gradient(0deg, rgba(2,1,0,0.98) 0%, rgba(2,1,0,0.78) 36%, transparent 100%)" }} />
+        {/* Volcanic soil texture grain */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(135deg, transparent 0px, rgba(180,120,30,0.025) 1px, transparent 2px, transparent 18px)`, pointerEvents: "none" }} />
 
         {/* ── Craft module switcher ── */}
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, zIndex: 10,
           display: "flex", flexDirection: "row", alignItems: "center",
           padding: "14px 32px", gap: 10,
-          background: "linear-gradient(180deg, rgba(4,2,0,0.82) 0%, transparent 100%)",
+          background: "linear-gradient(180deg, rgba(4,2,0,0.88) 0%, transparent 100%)",
         }}>
           {CRAFT_MODULES.map(mod => {
             const active = activeCraft === mod.id;
             return (
               <motion.button
-                key={mod.id}
-                type="button"
+                key={mod.id} type="button"
                 onPointerDown={() => { if (mod.live) { playTactile(); setActiveCraft(mod.id); } }}
                 whileTap={mod.live ? { scale: 0.95 } : {}}
                 animate={{ background: active ? `rgba(212,175,55,0.18)` : "rgba(0,0,0,0.35)" }}
@@ -95,38 +101,21 @@ export default function CraftPortalHome() {
                   display: "flex", flexDirection: "row", alignItems: "center", gap: 10,
                   cursor: mod.live ? "pointer" : "default",
                   opacity: mod.live ? 1 : 0.42,
-                  fontFamily: "'Inter',sans-serif",
                   backdropFilter: "blur(16px)",
                   WebkitBackdropFilter: "blur(16px)",
                   boxShadow: active ? `0 0 18px ${mod.accent}33` : "none",
                   position: "relative",
                 }}
               >
-                {/* Active underline */}
-                {active && (
-                  <div style={{
-                    position: "absolute", bottom: -1, left: "15%", right: "15%", height: 2,
-                    background: mod.accent, borderRadius: 2, boxShadow: `0 0 8px ${mod.accent}`,
-                  }} />
-                )}
-                <div style={{
-                  width: 26, height: 26, borderRadius: 6,
-                  background: active ? `${mod.accent}33` : "rgba(255,255,255,0.08)",
-                  border: `1px solid ${active ? mod.accent + "66" : "rgba(255,255,255,0.12)"}`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0,
-                }}>
-                  <span style={{ fontSize: 10, fontWeight: 900, color: active ? mod.accent : "rgba(255,255,255,0.55)", fontFamily: "'Inter',sans-serif" }}>{mod.tag}</span>
+                {active && <div style={{ position: "absolute", bottom: -1, left: "15%", right: "15%", height: 2, background: mod.accent, borderRadius: 2, boxShadow: `0 0 8px ${mod.accent}` }} />}
+                <div style={{ width: 26, height: 26, borderRadius: 6, background: active ? `${mod.accent}33` : "rgba(255,255,255,0.08)", border: `1px solid ${active ? mod.accent + "66" : "rgba(255,255,255,0.12)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span style={{ fontSize: 10, fontWeight: 900, color: active ? mod.accent : "rgba(255,255,255,0.55)" }}>{mod.tag}</span>
                 </div>
                 <span style={{ fontSize: 13, fontWeight: active ? 800 : 600, color: active ? mod.accent : "rgba(255,255,255,0.55)", letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{mod.label}</span>
-                {!mod.live && (
-                  <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.14em", textTransform: "uppercase", background: "rgba(255,255,255,0.08)", borderRadius: 3, padding: "2px 6px" }}>SOON</span>
-                )}
+                {!mod.live && <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.14em", textTransform: "uppercase", background: "rgba(255,255,255,0.08)", borderRadius: 3, padding: "2px 6px" }}>SOON</span>}
               </motion.button>
             );
           })}
-
-          {/* Breadcrumb label right side */}
           <div style={{ flex: 1 }} />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
             <span style={{ fontSize: 11, letterSpacing: "0.32em", color: `${GOLD}99`, fontWeight: 800, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>SmokeCraft 360</span>
@@ -138,18 +127,18 @@ export default function CraftPortalHome() {
         <motion.div
           initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.80, ease: [0.22, 1, 0.36, 1] }}
-          style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 5, padding: "0 52px 40px" }}
+          style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 5, padding: "0 52px 36px" }}
         >
           {/* Title */}
-          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 52, fontWeight: 400, color: "#F0E8D4", lineHeight: 1.06, marginBottom: 2 }}>
+          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 48, fontWeight: 400, color: "#F0E8D4", lineHeight: 1.06, marginBottom: 2 }}>
             Welcome To
           </div>
-          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 76, fontWeight: 700, color: GOLD, lineHeight: 0.96, marginBottom: 20, textShadow: `0 0 70px ${GOLD}44` }}>
+          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 72, fontWeight: 700, color: GOLD, lineHeight: 0.96, marginBottom: 18, textShadow: `0 0 70px ${GOLD}44` }}>
             Smokecraft 360
           </div>
 
           {/* Gold ornament divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
             <div style={{ height: 1, width: 36, background: `linear-gradient(90deg, transparent, ${GOLD}88)` }} />
             <svg width="14" height="14" viewBox="0 0 20 20" fill={GOLD} opacity={0.70}>
               <path d="M10 2C10 2 4 6 4 12c0 2.2 1.4 3.8 3.4 4.7 0-2.2 1.1-4.4 2.6-5.5-.6 2.3-.6 4.5 0 6.3.3.1.7.3 1 .3V2z"/>
@@ -159,60 +148,153 @@ export default function CraftPortalHome() {
           </div>
 
           {/* Description */}
-          <p style={{ fontSize: 22, color: "rgba(240,232,212,0.55)", lineHeight: 1.58, margin: "0 0 32px", fontWeight: 300 }}>
+          <p style={{ fontSize: 20, color: "rgba(240,232,212,0.55)", lineHeight: 1.58, margin: "0 0 28px", fontWeight: 300 }}>
             A 4-session luxury cigar science journey.<br />
             Build your blend, earn your rank.
           </p>
 
           {/* 4 Pillars */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 0, marginBottom: 36 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 0, marginBottom: 32 }}>
             {PILLARS.map((p, i) => (
               <div key={p.label} style={{ display: "flex", alignItems: "flex-start" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, minWidth: 96 }}>
-                  <div style={{
-                    width: 62, height: 62, borderRadius: "50%",
-                    background: "rgba(0,0,0,0.65)", border: `1.5px solid rgba(212,175,55,0.45)`,
-                    backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center",
-                    boxShadow: `0 0 16px rgba(212,175,55,0.12)`,
-                  }}><p.Icon /></div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.18em", textTransform: "uppercase", textAlign: "center" }}>{p.label}</div>
-                  <div style={{ fontSize: 13, color: "rgba(240,232,212,0.38)", textAlign: "center", lineHeight: 1.35 }}>{p.sub}</div>
+                  <div style={{ width: 58, height: 58, borderRadius: "50%", background: "rgba(0,0,0,0.65)", border: `1.5px solid rgba(212,175,55,0.45)`, backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px rgba(212,175,55,0.12)` }}><p.Icon /></div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.18em", textTransform: "uppercase", textAlign: "center" }}>{p.label}</div>
+                  <div style={{ fontSize: 12, color: "rgba(240,232,212,0.38)", textAlign: "center", lineHeight: 1.35 }}>{p.sub}</div>
                 </div>
-                {i < PILLARS.length - 1 && (
-                  <div style={{ marginTop: 28, padding: "0 10px", fontSize: 18, color: "rgba(212,175,55,0.30)", lineHeight: 1 }}>·</div>
-                )}
+                {i < PILLARS.length - 1 && <div style={{ marginTop: 26, padding: "0 10px", fontSize: 18, color: "rgba(212,175,55,0.30)", lineHeight: 1 }}>·</div>}
               </div>
             ))}
           </div>
 
           {/* CTAs */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 500 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 480 }}>
             <motion.button type="button" onPointerDown={beginNew} whileTap={{ scale: 0.97 }}
-              style={{
-                width: "100%", padding: "22px 32px",
-                background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`,
-                border: "none", borderRadius: 6, cursor: "pointer",
-                fontSize: 18, fontWeight: 800, color: "#090600",
-                letterSpacing: "0.20em", textTransform: "uppercase",
-                fontFamily: "'Inter',sans-serif",
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset`,
-              }}>
+              style={{ width: "100%", padding: "22px 32px", background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#090600", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
               <span>BEGIN NEW SESSION</span>
               <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(0,0,0,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>→</div>
             </motion.button>
-
             <motion.button type="button" onPointerDown={resumeSession} whileTap={{ scale: 0.97 }}
-              style={{
-                width: "100%", padding: "20px 32px",
-                background: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)",
-                border: `1px solid rgba(212,175,55,0.42)`, borderRadius: 6, cursor: "pointer",
-                fontSize: 17, fontWeight: 700, color: "rgba(240,232,212,0.70)",
-                letterSpacing: "0.22em", textTransform: "uppercase",
-                fontFamily: "'Inter',sans-serif", textAlign: "center",
-              }}>
+              style={{ width: "100%", padding: "18px 32px", background: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)", border: `1px solid rgba(212,175,55,0.42)`, borderRadius: 6, cursor: "pointer", fontSize: 16, fontWeight: 700, color: "rgba(240,232,212,0.70)", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", textAlign: "center" }}>
               RESUME SESSION
             </motion.button>
+          </div>
+        </motion.div>
+
+        {/* ══════════ DOÑA ROSA — WRAPPER ARTISTRY MENTOR TILE ══════════ */}
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.55, duration: 0.70, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            position: "absolute", top: "50%", right: 36, transform: "translateY(-50%)",
+            zIndex: 20, width: 230,
+          }}
+        >
+          {/* Smoked chrome / obsidian glass tile */}
+          <div
+            style={{
+              background: "linear-gradient(145deg, rgba(18,12,6,0.96) 0%, rgba(10,7,3,0.99) 100%)",
+              border: `1px solid rgba(200,150,74,0.55)`,
+              borderRadius: 14,
+              padding: "20px 18px 16px",
+              backdropFilter: "blur(28px)",
+              WebkitBackdropFilter: "blur(28px)",
+              boxShadow: `0 0 40px rgba(200,150,74,0.14), 0 12px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)`,
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {/* Titanium brush grain */}
+            <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(95deg, transparent 0px, rgba(255,255,255,0.014) 1px, transparent 2px, transparent 14px)`, pointerEvents: "none" }} />
+
+            {/* Top accent bar */}
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${MENTOR.accent}99, transparent)` }} />
+
+            {/* Tier badge */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+              <span style={{ fontSize: 8, fontWeight: 900, letterSpacing: "0.28em", color: `${MENTOR.accent}88`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>
+                {MENTOR.tier}
+              </span>
+              {/* Comms active dot */}
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <style>{`
+                  @keyframes mentorPing { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.65); } }
+                `}</style>
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A", animation: "mentorPing 2.4s ease-in-out infinite" }} />
+                <span style={{ fontSize: 7.5, letterSpacing: "0.20em", color: "#32B45A99", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>ACTIVE</span>
+              </div>
+            </div>
+
+            {/* Mentor avatar placeholder — obsidian circle */}
+            <div style={{
+              width: 54, height: 54, borderRadius: "50%", marginBottom: 12,
+              background: `radial-gradient(circle, rgba(200,150,74,0.22) 0%, rgba(10,7,3,0.95) 70%)`,
+              border: `1.5px solid ${MENTOR.accent}66`,
+              boxShadow: `0 0 20px rgba(200,150,74,0.22)`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 700, color: MENTOR.accent }}>DR</span>
+            </div>
+
+            {/* Name & role */}
+            <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 20, fontWeight: 700, color: "#F0E8D4", letterSpacing: "0.04em", marginBottom: 2, lineHeight: 1.1 }}>
+              {MENTOR.name}
+            </div>
+            <div style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: "0.22em", color: `${MENTOR.accent}CC`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", marginBottom: 10 }}>
+              {MENTOR.role}
+            </div>
+
+            {/* Origin */}
+            <div style={{ fontSize: 11, color: "rgba(240,232,212,0.38)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.08em", marginBottom: 10 }}>
+              {MENTOR.origin}
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: `linear-gradient(90deg, transparent, ${MENTOR.accent}44, transparent)`, marginBottom: 10 }} />
+
+            {/* Mentor note */}
+            <p style={{ fontSize: 11.5, color: "rgba(240,232,212,0.58)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.55, margin: "0 0 14px", fontStyle: "italic" }}>
+              {MENTOR.note}
+            </p>
+
+            {/* Expand / communicate CTA */}
+            <motion.button
+              type="button"
+              onPointerDown={() => setMentorOpen(m => !m)}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                width: "100%", padding: "9px 12px",
+                background: `rgba(200,150,74,0.12)`,
+                border: `1px solid ${MENTOR.accent}55`,
+                borderRadius: 7, cursor: "pointer",
+                fontSize: 9.5, fontWeight: 900, letterSpacing: "0.22em",
+                color: MENTOR.accent, textTransform: "uppercase",
+                fontFamily: "'Inter',sans-serif", textAlign: "center",
+              }}
+            >
+              {mentorOpen ? "CLOSE CHANNEL" : "OPEN COMM CHANNEL"}
+            </motion.button>
+
+            <AnimatePresence>
+              {mentorOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.30, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <div style={{ paddingTop: 12, display: "flex", flexDirection: "column", gap: 7 }}>
+                    {["Request leaf consultation", "Flag wrapper defect", "Escalate to floor"].map(action => (
+                      <button key={action} type="button" style={{ width: "100%", padding: "8px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "rgba(240,232,212,0.65)", fontSize: 11, fontFamily: "'Inter',sans-serif", textAlign: "left", cursor: "pointer", letterSpacing: "0.04em" }}>
+                        {action}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       </div>
