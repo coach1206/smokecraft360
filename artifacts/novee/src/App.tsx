@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
 import type { Phase } from "@/context/GuestProfileContext";
+import GoldenBoxPage from "@/pages/GoldenBoxPage";
 import CraftPortalHome from "@/pages/CraftPortalHome";
 import EATDashboard from "@/pages/EATDashboard";
 import ExecutiveCommandCenter from "@/pages/ExecutiveCommandCenter";
@@ -82,18 +83,8 @@ function LoungeView() {
   return <StubView title="LOUNGE MODE" icon="◯" sub="Ambient Venue Controls" />;
 }
 function ProfileView() {
-  const { navigate, resetGuest } = useNoveeNav();
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20 }}>
-      <div style={{ fontSize: 48, color: G }}>◈</div>
-      <div style={{ fontSize: 36, fontWeight: 900, color: G, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.10em" }}>MY PROFILE</div>
-      <div style={{ fontSize: 20, color: "rgba(240,232,212,0.45)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.12em", textTransform: "uppercase" }}>Guest Identity & Session History</div>
-      <motion.button type="button" onPointerDown={() => { resetGuest(); navigate("crafthub"); }} whileTap={{ scale: 0.96 }}
-        style={{ marginTop: 20, padding: "16px 40px", background: "rgba(240,112,112,0.14)", border: "1px solid rgba(240,112,112,0.45)", borderRadius: 12, cursor: "pointer", fontSize: 20, fontWeight: 800, color: "#F07070", fontFamily: "'Inter',sans-serif", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-        CLEAR SESSION · RETURN TO CRAFTHUB
-      </motion.button>
-    </div>
-  );
+  const { navigate } = useNoveeNav();
+  return <GoldenBoxPage onBack={() => navigate("crafthub")} />;
 }
 function SettingsView() {
   return <StubView title="SETTINGS" icon="⊹" sub="Kiosk Configuration" />;

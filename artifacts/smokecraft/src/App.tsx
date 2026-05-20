@@ -65,6 +65,7 @@ const CraftHub              = lazy(() => import('@/pages/CraftHub'));
 const DemoWalkthrough       = lazy(() => import('@/pages/DemoWalkthrough'));
 const MasterOperations      = lazy(() => import('@/pages/MasterOperations'));
 const CommandCenter         = lazy(() => import('@/pages/CommandCenter'));
+const GoldenBoxPage         = lazy(() => import('@/pages/GoldenBoxPage'));
 const DevConsole            = lazy(() => import('@/pages/DevConsole'));
 const CentralCommand        = lazy(() => import('@/pages/CentralCommand'));
 const PosMode               = lazy(() => import('@/pages/PosMode'));
@@ -1109,6 +1110,9 @@ export default function App() {
           </Route>
           <Route path="/command">
             <SubPageProviders><CommandCenter /></SubPageProviders>
+          </Route>
+          <Route path="/golden-box">
+            <SubPageProviders><GoldenBoxPage onBack={() => window.history.back()} /></SubPageProviders>
           </Route>
           <Route path="/dev-console">
             <SubPageProviders><DevConsole /></SubPageProviders>
