@@ -218,6 +218,10 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
   const [selTabId, setSelTabId]     = useState<string>(STATIC_TABS[0].id);
   type OrderRow = { id:string; tableNumber:string; items:{name:string;qty:number;price:number}[]; total:number; status:string; createdAt:string };
   const [recentOrders, setRecentOrders] = useState<OrderRow[]>([]);
+  type EventRow = { id:string; name:string; schedule:string; desc:string; emoji:string };
+  const [liveEvents, setLiveEvents] = useState<EventRow[]>([]);
+  const [envHistory, setEnvHistory] = useState<number[]>([28, 22, 25, 18, 20, 15, 17]);
+  const [featuredCigar, setFeaturedCigar] = useState(FEATURED_CIGAR);
   const [invCat, setInvCat]         = useState<"Kitchen"|"Bar"|"Humidor">("Kitchen");
 
   const [envPreset, setEnvPreset] = useState(PRESET_OPTIONS[0]);
@@ -268,7 +272,25 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
 
     fetch(`/api/pairingEngine?type=cigar`, { headers:hdr(token) })
       .then(r=>r.ok?r.json():null)
-      .then(d=>{ if(d && typeof d === "object") { /* pairing data loaded; FEATURED_CIGAR used as display template */ } })
+      .then(d=>{
+        if(d && typeof d === "object") {
+          const rec = d as Record<string,unknown>;
+          const item = (Array.isArray(rec.recommendations) ? rec.recommendations[0] : rec) as Record<string,unknown>;
+          if (item && item.name) {
+            setFeaturedCigar(prev => ({
+              ...prev,
+              name:    String(item.name    ?? prev.name),
+              body:    String(item.body    ?? item.wrapper ?? prev.body),
+              origin:  String(item.origin  ?? item.country ?? prev.origin),
+              type:    String(item.type    ?? item.brand   ?? prev.type),
+              description: String(item.description ?? item.flavorNotes ?? prev.description),
+              strength:    Number(item.strength ?? prev.strength),
+              rating:      Number(item.rating   ?? item.score ?? prev.rating),
+              price:       Number(item.price    ?? item.msrp  ?? prev.price),
+            }));
+          }
+        }
+      })
       .catch(()=>{});
 
     fetch(`/api/tabs/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) })
@@ -298,9 +320,40 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
       })
       .catch(()=>{});
 
+    // Environment current state
+    fetch(`/api/environment/${encodeURIComponent(vId)}`, { headers:hdr(token) })
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{ if(d && typeof d === "object") { setEnvState(prev => ({ ...prev, ...d })); } })
+      .catch(()=>{});
+
+    // Environment 24h history for sparkline
+    fetch(`/api/environment/${encodeURIComponent(vId)}/history`, { headers:hdr(token) })
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        const list: unknown[] = Array.isArray(d) ? d : ((d as {history?:unknown[]}).history ?? []);
+        if (list.length > 0) {
+          const temps = list.slice(0, 7).map((p:unknown) => {
+            const point = p as Record<string,unknown>;
+            const t = Number(point.temperature ?? point.temp ?? 72);
+            return Math.max(0, Math.min(36, 36 - ((t - 60) / 20) * 36));
+          });
+          setEnvHistory(temps);
+        }
+      })
+      .catch(()=>{});
+
+    // Events
     fetch(`/api/events/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) })
       .then(r=>r.ok?r.json():null)
-      .then(_d=>{ /* events loaded; future state hook can consume here */ })
+      .then(d=>{
+        const list: unknown[] = Array.isArray(d) ? d : ((d as {events?:unknown[]}).events ?? []);
+        if (list.length > 0) {
+          setLiveEvents(list.map((e:unknown) => {
+            const ev = e as Record<string,unknown>;
+            return { id:String(ev.id??""), name:String(ev.name??""), schedule:String(ev.schedule??ev.startTime??""), desc:String(ev.description??ev.desc??""), emoji:"🎶" };
+          }));
+        }
+      })
       .catch(()=>{});
 
     // Recent orders
@@ -328,6 +381,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
       .catch(()=>{});
 
     return () => {
+      eatEngine.stop();
       unsubInv(); unsubEnv();
       clearInterval(devicePoll);
       socket.off("connect",          onConn);
@@ -412,7 +466,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
     fetch(`/api/tabs/${selectedTab.id}/items`, {
       method:"POST",
       headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ name:FEATURED_CIGAR.name, price:FEATURED_CIGAR.price, qty:1, category:"cigar" }),
+      body:JSON.stringify({ name:featuredCigar.name, price:featuredCigar.price, qty:1, category:"cigar" }),
     }).catch(()=>{});
   }, [selectedTab]);
 
@@ -432,7 +486,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
     fetch(`/api/tabs/${selectedTab.id}/items`, {
       method:"POST",
       headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ name:"Full Cigar & Pairing Experience", price:FEATURED_CIGAR.price + 28, qty:1, category:"experience" }),
+      body:JSON.stringify({ name:"Full Cigar & Pairing Experience", price:featuredCigar.price + 28, qty:1, category:"experience" }),
     }).catch(()=>{});
   }, [selectedTab]);
 
@@ -587,19 +641,19 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
               </div>
               <div style={{ flex:1 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
-                  <span style={{ fontSize:11, padding:"2px 8px", borderRadius:10, background:`rgba(180,140,80,0.14)`, color:MED, fontWeight:700 }}>{FEATURED_CIGAR.body}</span>
+                  <span style={{ fontSize:11, padding:"2px 8px", borderRadius:10, background:`rgba(180,140,80,0.14)`, color:MED, fontWeight:700 }}>{featuredCigar.body}</span>
                 </div>
-                <div style={{ fontSize:18, fontWeight:900, color:DARK, lineHeight:1.2, marginBottom:2 }}>{FEATURED_CIGAR.name}</div>
-                <div style={{ fontSize:13, color:LIGHT, marginBottom:10 }}>{FEATURED_CIGAR.type} · {FEATURED_CIGAR.origin}</div>
-                <p style={{ fontSize:13, color:MED, lineHeight:1.6, margin:"0 0 10px 0" }}>{FEATURED_CIGAR.description}</p>
+                <div style={{ fontSize:18, fontWeight:900, color:DARK, lineHeight:1.2, marginBottom:2 }}>{featuredCigar.name}</div>
+                <div style={{ fontSize:13, color:LIGHT, marginBottom:10 }}>{featuredCigar.type} · {featuredCigar.origin}</div>
+                <p style={{ fontSize:13, color:MED, lineHeight:1.6, margin:"0 0 10px 0" }}>{featuredCigar.description}</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
                   <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                     <span style={{ fontSize:12, color:LIGHT, fontWeight:700, width:64 }}>STRENGTH</span>
-                    <Strength v={FEATURED_CIGAR.strength} />
+                    <Strength v={featuredCigar.strength} />
                   </div>
                   <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                     <span style={{ fontSize:12, color:LIGHT, fontWeight:700, width:64 }}>RATING</span>
-                    <Stars v={FEATURED_CIGAR.rating} />
+                    <Stars v={featuredCigar.rating} />
                   </div>
                 </div>
               </div>
@@ -629,7 +683,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
         <div style={{ padding:"10px 14px", borderTop:`1px solid ${BORDER}`, display:"flex", gap:8 }}>
           <motion.button whileTap={{ scale:0.96 }} onClick={handleAddCigar}
             style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.40)`, background:"rgba(46,125,79,0.08)", color:GREEN, fontSize:14, fontWeight:800, cursor:"pointer" }}>
-            Add Cigar<br/><span style={{ fontSize:12, fontWeight:600 }}>${FEATURED_CIGAR.price}.00</span>
+            Add Cigar<br/><span style={{ fontSize:12, fontWeight:600 }}>${featuredCigar.price}.00</span>
           </motion.button>
           <motion.button whileTap={{ scale:0.96 }} onClick={handleAddPairing}
             style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid rgba(180,140,80,0.35)`, background:"rgba(180,140,80,0.08)", color:MED, fontSize:14, fontWeight:800, cursor:"pointer" }}>
@@ -792,7 +846,14 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
         </div>
       );
     }
-    if (activeTab === "Transactions") return <div style={{ overflow:"auto", flex:1 }}>{renderOrders()}</div>;
+    if (activeTab === "Transactions") {
+      if (panelVis.transaction === "hidden") return null;
+      return (
+        <div style={{ overflow:"auto", flex:1, opacity:panelVis.transaction === "muted" ? 0.45 : 1, pointerEvents:panelVis.transaction === "muted" ? "none" : "auto", transition:"opacity 0.3s" }}>
+          {renderOrders()}
+        </div>
+      );
+    }
     if (activeTab === "Environment") {
       return (
         <div style={{ padding:"12px 14px" }}>
@@ -910,11 +971,20 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
             <div><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Current Temp</div><div style={{ fontSize:22, fontWeight:900, color:DARK }}>{Math.round(envState.temperature)}°F</div></div>
             <div style={{ textAlign:"right" }}><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Humidity</div><div style={{ fontSize:22, fontWeight:900, color:DARK }}>{Math.round(envState.humidity)}%</div></div>
           </div>
+          {/* Mini sparkline — live from /api/environment/:venueId/history */}
           <div style={{ height:36, marginBottom:8 }}>
-            <svg width="100%" height="36" viewBox="0 0 240 36" preserveAspectRatio="none">
-              <polyline points="0,28 40,22 80,25 120,18 160,20 200,15 240,17" fill="none" stroke={AMBER} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              <polyline points="0,28 40,22 80,25 120,18 160,20 200,15 240,17 240,36 0,36" fill="rgba(196,134,10,0.07)" stroke="none" />
-            </svg>
+            {(() => {
+              const pts = envHistory.length >= 2 ? envHistory : [28,22,25,18,20,15,17];
+              const xs  = pts.map((_,i) => Math.round((i / (pts.length - 1)) * 240));
+              const line = pts.map((y,i) => `${xs[i]},${y}`).join(" ");
+              const fill = line + ` ${xs[xs.length-1]},36 0,36`;
+              return (
+                <svg width="100%" height="36" viewBox="0 0 240 36" preserveAspectRatio="none">
+                  <polyline points={line} fill="none" stroke={AMBER} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <polyline points={fill} fill="rgba(196,134,10,0.07)" stroke="none" />
+                </svg>
+              );
+            })()}
           </div>
           <button style={{ width:"100%", padding:"7px", borderRadius:7, border:`1px solid ${BORDER}`, background:CREAM, color:MED, fontSize:12, fontWeight:700, cursor:"pointer" }}>View Full HVAC System</button>
         </SCard>
@@ -923,23 +993,28 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
           <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
             <SectionHead title="Upcoming Events & Themes" action="View All" />
           </div>
+          {/* Featured event — live from /api/events/venue/:venueId */}
+          {(()=>{ const evts = liveEvents.length > 0 ? liveEvents : STATIC_EVENTS; const ev0 = evts[0]; return (
+          <>
           <div style={{ margin:"10px 10px 6px", borderRadius:8, overflow:"hidden", border:`1px solid ${BORDER}` }}>
-            <div style={{ height:64, background:`linear-gradient(135deg,#2B1506,#4A2010)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32 }}>{STATIC_EVENTS[0].emoji}</div>
+            <div style={{ height:64, background:`linear-gradient(135deg,#2B1506,#4A2010)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32 }}>{ev0.emoji}</div>
             <div style={{ padding:"8px 10px", background:CARD }}>
-              <div style={{ fontSize:13, fontWeight:800, color:DARK, marginBottom:2 }}>{STATIC_EVENTS[0].name}</div>
-              <div style={{ fontSize:11, color:AMBER, fontWeight:700, marginBottom:4 }}>{STATIC_EVENTS[0].schedule}</div>
-              <p style={{ fontSize:11, color:LIGHT, margin:0, lineHeight:1.5 }}>{STATIC_EVENTS[0].desc}</p>
+              <div style={{ fontSize:13, fontWeight:800, color:DARK, marginBottom:2 }}>{ev0.name}</div>
+              <div style={{ fontSize:11, color:AMBER, fontWeight:700, marginBottom:4 }}>{ev0.schedule}</div>
+              <p style={{ fontSize:11, color:LIGHT, margin:0, lineHeight:1.5 }}>{ev0.desc}</p>
               <button style={{ marginTop:8, padding:"5px 12px", borderRadius:6, border:`1px solid ${AMBER}44`, background:"rgba(196,134,10,0.10)", color:AMBER, fontSize:11, fontWeight:700, cursor:"pointer" }}>See Details</button>
             </div>
           </div>
           <div style={{ display:"flex", gap:6, padding:"0 10px 8px", flexWrap:"wrap" }}>
-            {STATIC_EVENTS.slice(1).map(e=>(
+            {evts.slice(1).map(e=>(
               <div key={e.id} style={{ flex:"1 0 40px", padding:"8px 6px", borderRadius:8, background:CREAM, border:`1px solid ${BORDER}`, textAlign:"center", cursor:"pointer" }}>
                 <div style={{ fontSize:18, marginBottom:3 }}>{e.emoji}</div>
                 <div style={{ fontSize:9, color:MED, fontWeight:700, lineHeight:1.2 }}>{e.name}</div>
               </div>
             ))}
           </div>
+          </>
+          );})()}
           <div style={{ padding:"0 10px 10px" }}>
             <button style={{ width:"100%", padding:"7px", borderRadius:7, border:`1px solid ${BORDER}`, background:CREAM, color:MED, fontSize:12, fontWeight:700, cursor:"pointer" }}>Manage Themes</button>
           </div>
