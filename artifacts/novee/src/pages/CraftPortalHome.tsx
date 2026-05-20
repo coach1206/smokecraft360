@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGuest } from "@/context/GuestProfileContext";
+import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
 
 const GOLD = "#D4AF37";
 const IMG  = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
@@ -18,227 +19,248 @@ function playTactile() {
   } catch { /* non-blocking */ }
 }
 
-const NAV_ITEMS = [
-  { id: "lounge",   icon: "⌂",  label: "LOUNGE"   },
-  { id: "sessions", icon: "◫",  label: "SESSIONS"  },
-  { id: "blends",   icon: "❧",  label: "BLENDS"    },
-  { id: "library",  icon: "⊟",  label: "LIBRARY"   },
-  { id: "profile",  icon: "◎",  label: "PROFILE"   },
-  { id: "settings", icon: "⚙",  label: "SETTINGS"  },
-];
-
 const PILLARS = [
-  { icon: "◉", label: "DISCOVER",   sub: "Learn the leaf"    },
-  { icon: "▦", label: "ANALYZE",    sub: "Decode the blend"  },
-  { icon: "❧", label: "CRAFT",      sub: "Build your profile"},
-  { icon: "✦", label: "EXPERIENCE", sub: "Score & refine"    },
+  { icon: "❧", label: "DISCOVER",   sub: "Learn the leaf"       },
+  { icon: "⚗", label: "ANALYZE",    sub: "Decode the blend"     },
+  { icon: "✂", label: "CRAFT",      sub: "Build your profile"   },
+  { icon: "⊕", label: "EXPERIENCE", sub: "Score on the room"    },
 ];
 
 export default function CraftPortalHome() {
-  const { setPhase } = useGuest();
-  const [activeNav, setActiveNav] = useState("lounge");
-  const [showReturn, setShowReturn] = useState(false);
-  const [retLast, setRetLast] = useState("");
-  const [retPin,  setRetPin]  = useState("");
+  const { setPhase, updateProfile } = useGuest();
+  const [lastName, setLastName]     = useState("");
+  const [pin,      setPin]          = useState("");
+  const [dateStr,  setDateStr]      = useState("");
+  const [error,    setError]        = useState(false);
 
-  function beginNew() { playTactile(); setPhase("reentry"); }
-  function resumeSession() { setShowReturn(true); }
-  function handleReturn() {
-    if (retLast.trim() && retPin.length === 4) {
-      setShowReturn(false); setPhase("reentry");
+  function beginNew() {
+    playTactile();
+    hapticMilestone();
+    setPhase("reentry");
+  }
+
+  function resumeSession() {
+    if (!lastName.trim() || pin.length < 4) {
+      hapticError();
+      setError(true);
+      setTimeout(() => setError(false), 900);
+      return;
     }
+    playTactile();
+    hapticMilestone();
+    updateProfile({ lastName: lastName.trim(), phone4: pin.trim() });
+    setPhase("s1_demo");
+  }
+
+  function returnSession() {
+    playTactile();
+    hapticMilestone();
+    setPhase("s1_demo");
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, display: "flex", overflow: "hidden", background: "#060402", fontFamily: "'Inter',-apple-system,sans-serif" }}>
+    <div style={{
+      position: "fixed", inset: 0, display: "flex", overflow: "hidden",
+      background: "#050300", fontFamily: "'Inter',-apple-system,sans-serif",
+    }}>
 
-      {/* ══════════ LEFT SIDEBAR ══════════ */}
-      <div style={{
-        width: 180, flexShrink: 0,
-        background: "#080600",
-        borderRight: `1px solid rgba(212,175,55,0.14)`,
-        display: "flex", flexDirection: "column",
-        zIndex: 10,
-      }}>
-        {/* Logo */}
-        <div style={{ padding: "28px 20px 24px", borderBottom: "1px solid rgba(212,175,55,0.08)" }}>
-          <div style={{ fontSize: 26, color: GOLD, marginBottom: 6, lineHeight: 1 }}>❧</div>
-          <div style={{ fontSize: 13, fontWeight: 900, color: GOLD, letterSpacing: "0.14em", textTransform: "uppercase", lineHeight: 1.2 }}>
-            SmokeCraft 360
-          </div>
-          <div style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(212,175,55,0.38)", textTransform: "uppercase", marginTop: 3 }}>
-            Kiosk Edition
-          </div>
-        </div>
+      {/* ══════════════ LEFT — HERO PHOTO PANEL ══════════════ */}
+      <div style={{ flex: "0 0 55%", position: "relative", overflow: "hidden" }}>
 
-        {/* Nav items */}
-        <nav style={{ flex: 1, padding: "16px 0" }}>
-          {NAV_ITEMS.map(item => {
-            const active = activeNav === item.id;
-            return (
-              <motion.button key={item.id} type="button"
-                onPointerDown={() => {
-                  playTactile();
-                  setActiveNav(item.id);
-                  if (item.id === "settings") setPhase("eat_dashboard");
-                }}
-                whileTap={{ scale: 0.97 }}
-                style={{
-                  width: "100%", border: "none", cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 14,
-                  padding: "14px 20px",
-                  background: active ? `rgba(212,175,55,0.14)` : "transparent",
-                  borderLeft: active ? `3px solid ${GOLD}` : "3px solid transparent",
-                  fontFamily: "'Inter',sans-serif",
-                  transition: "background 0.18s, border-color 0.18s",
-                }}>
-                <span style={{ fontSize: 17, color: active ? GOLD : "rgba(255,255,255,0.30)", transition: "color 0.18s" }}>{item.icon}</span>
-                <span style={{ fontSize: 14, fontWeight: active ? 800 : 600, color: active ? GOLD : "rgba(255,255,255,0.35)", letterSpacing: "0.10em", textTransform: "uppercase", transition: "color 0.18s" }}>{item.label}</span>
-              </motion.button>
-            );
-          })}
-        </nav>
-
-        {/* Bottom status */}
-        <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(212,175,55,0.08)" }}>
-          <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.14)", borderRadius: 8, padding: "10px 12px" }}>
-            <div style={{ fontSize: 12, fontWeight: 800, color: "rgba(240,232,212,0.50)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 4 }}>Table Kiosk</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
-              <span style={{ fontSize: 11, color: "#32B45A", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700 }}>Active</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ══════════ MAIN HERO AREA ══════════ */}
-      <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-
-        {/* Cigar hero photo — full bleed */}
+        {/* Full-bleed cigar hero photo */}
         <img src={IMG("cigar_hero.png")} alt=""
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 38%", zIndex: 0 }}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 38%" }}
           onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
 
-        {/* Dark cinematic overlay */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(105deg, rgba(4,2,0,0.72) 0%, rgba(4,2,0,0.55) 42%, rgba(4,2,0,0.20) 100%)", zIndex: 1 }} />
-        {/* Bottom fade */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(0deg, rgba(4,2,0,0.88) 0%, transparent 100%)", zIndex: 2 }} />
+        {/* Dark cinematic overlays */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(4,2,0,0.30) 0%, rgba(4,2,0,0.45) 45%, rgba(4,2,0,0.75) 100%)" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "60%", background: "linear-gradient(0deg, rgba(2,1,0,0.96) 0%, rgba(2,1,0,0.70) 40%, transparent 100%)" }} />
 
-        {/* Top bar */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "22px 36px", zIndex: 10 }}>
-          <div style={{ fontSize: 12, letterSpacing: "0.40em", color: "rgba(212,175,55,0.65)", textTransform: "uppercase", fontWeight: 800 }}>SmokeCraft 360</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 13, letterSpacing: "0.28em", color: "rgba(255,255,255,0.28)", textTransform: "uppercase" }}>Table Kiosk · Active</span>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 10px #32B45A" }} />
-          </div>
+        {/* Amber ember glow top-left */}
+        <div style={{ position: "absolute", top: 0, left: 0, width: "55%", height: "50%", background: "radial-gradient(ellipse at 10% 10%, rgba(212,140,30,0.14) 0%, transparent 65%)", pointerEvents: "none" }} />
+
+        {/* ── Top-left logo ── */}
+        <div style={{ position: "absolute", top: 24, left: 28, zIndex: 10 }}>
+          <div style={{ fontSize: 18, color: GOLD, marginBottom: 4, lineHeight: 1 }}>❧</div>
+          <div style={{ fontSize: 13, fontWeight: 900, color: GOLD, letterSpacing: "0.16em", textTransform: "uppercase", lineHeight: 1.2 }}>SmokeCraft 360</div>
+          <div style={{ fontSize: 10, letterSpacing: "0.30em", color: "rgba(212,175,55,0.40)", textTransform: "uppercase", marginTop: 2 }}>Kiosk Edition</div>
         </div>
 
-        {/* Main content — bottom-left anchored */}
+        {/* ── Hero title area — bottom-left ── */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.80, ease: [0.22, 1, 0.36, 1] }}
-          style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 5, padding: "0 56px 52px", maxWidth: 680 }}>
+          style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 36px 28px", zIndex: 5 }}>
 
-          {/* Title */}
-          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 52, fontWeight: 400, color: "#F0E8D4", lineHeight: 1.08, marginBottom: 4 }}>
+          {/* WELCOME TO label */}
+          <div style={{ fontSize: 13, letterSpacing: "0.42em", color: "rgba(212,175,55,0.75)", textTransform: "uppercase", fontWeight: 700, marginBottom: 10 }}>
             Welcome to
           </div>
-          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 72, fontWeight: 700, color: GOLD, lineHeight: 1.0, marginBottom: 22, textShadow: `0 0 60px ${GOLD}44` }}>
-            The Lounge
+
+          {/* "The" */}
+          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 82, fontWeight: 400, color: "#F0E8D4", lineHeight: 0.9, marginBottom: 2 }}>
+            The
+          </div>
+          {/* "Lounge" */}
+          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 88, fontWeight: 700, color: GOLD, lineHeight: 0.95, marginBottom: 18, textShadow: `0 0 80px ${GOLD}44` }}>
+            Lounge
           </div>
 
           {/* Gold ornament divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22 }}>
-            <div style={{ height: 1, width: 60, background: `linear-gradient(90deg, transparent, ${GOLD}88)` }} />
-            <span style={{ fontSize: 14, color: GOLD, opacity: 0.75 }}>❧</span>
-            <div style={{ height: 1, flex: 1, background: `linear-gradient(90deg, ${GOLD}55, transparent)` }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+            <div style={{ height: 1, width: 28, background: `linear-gradient(90deg, transparent, ${GOLD}88)` }} />
+            <span style={{ fontSize: 14, color: GOLD, opacity: 0.70 }}>❧</span>
+            <div style={{ height: 1, width: 44, background: `${GOLD}44` }} />
           </div>
 
           {/* Description */}
-          <p style={{ fontSize: 20, color: "rgba(240,232,212,0.60)", lineHeight: 1.60, margin: "0 0 36px", fontWeight: 300 }}>
-            A 4-session luxury cigar science journey.<br />
-            Build your blend, earn your rank.
+          <p style={{ fontSize: 20, color: "rgba(240,232,212,0.55)", lineHeight: 1.58, margin: "0 0 28px", fontWeight: 300, maxWidth: 380 }}>
+            A 4-session luxury cigar science journey.<br />Build your blend, earn your rank.
           </p>
 
           {/* 4 Pillars */}
-          <div style={{ display: "flex", gap: 36, marginBottom: 40, alignItems: "flex-start" }}>
-            {PILLARS.map((p, i) => (
-              <div key={p.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-                {i > 0 && (
-                  <div style={{ position: "absolute", top: 28, left: -18, width: 36, height: 1, background: "rgba(212,175,55,0.20)" }} />
-                )}
+          <div style={{ display: "flex", gap: 30, marginBottom: 24, alignItems: "flex-start" }}>
+            {PILLARS.map(p => (
+              <div key={p.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <div style={{
-                  width: 62, height: 62, borderRadius: "50%",
-                  background: "rgba(0,0,0,0.55)",
-                  border: `1.5px solid ${GOLD}55`,
-                  backdropFilter: "blur(10px)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 22, color: GOLD,
-                  boxShadow: `0 0 20px rgba(212,175,55,0.15)`,
+                  width: 56, height: 56, borderRadius: "50%",
+                  background: "rgba(0,0,0,0.60)", border: `1.5px solid ${GOLD}50`,
+                  backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 20, color: GOLD, boxShadow: `0 0 18px rgba(212,175,55,0.14)`,
                 }}>{p.icon}</div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.18em", textTransform: "uppercase", textAlign: "center" }}>{p.label}</div>
-                <div style={{ fontSize: 13, color: "rgba(240,232,212,0.40)", textAlign: "center" }}>{p.sub}</div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.18em", textTransform: "uppercase", textAlign: "center" }}>{p.label}</div>
+                <div style={{ fontSize: 12, color: "rgba(240,232,212,0.38)", textAlign: "center", lineHeight: 1.35 }}>{p.sub}</div>
               </div>
             ))}
           </div>
 
-          {/* CTAs */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 480 }}>
-            <motion.button type="button" onPointerDown={beginNew} whileTap={{ scale: 0.97 }}
-              style={{
-                width: "100%", padding: "22px 32px",
-                background: `linear-gradient(135deg, ${GOLD} 0%, #B8900A 100%)`,
-                border: "none", borderRadius: 6, cursor: "pointer",
-                fontSize: 18, fontWeight: 800, color: "#0A0600",
-                letterSpacing: "0.22em", textTransform: "uppercase",
-                fontFamily: "'Inter',sans-serif",
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                boxShadow: `0 8px 40px rgba(212,175,55,0.38), 0 2px 0 rgba(255,255,255,0.12) inset`,
-              }}>
-              <span>BEGIN NEW SESSION</span>
-              <span style={{ fontSize: 20, marginLeft: 12 }}>→</span>
-            </motion.button>
-            <motion.button type="button" onPointerDown={resumeSession} whileTap={{ scale: 0.97 }}
-              style={{
-                width: "100%", padding: "20px 32px",
-                background: "rgba(0,0,0,0.40)", backdropFilter: "blur(12px)",
-                border: `1px solid rgba(212,175,55,0.38)`, borderRadius: 6, cursor: "pointer",
-                fontSize: 17, fontWeight: 700, color: "rgba(240,232,212,0.75)",
-                letterSpacing: "0.22em", textTransform: "uppercase",
-                fontFamily: "'Inter',sans-serif",
-              }}>
-              RESUME SESSION
-            </motion.button>
+          {/* Status badge */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
+            <span style={{ fontSize: 13, letterSpacing: "0.24em", color: "rgba(240,232,212,0.38)", textTransform: "uppercase" }}>Table Kiosk · Active</span>
           </div>
         </motion.div>
       </div>
 
-      {/* ══════════ RESUME SESSION DRAWER ══════════ */}
-      <AnimatePresence>
-        {showReturn && (
-          <motion.div key="return-drawer"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            onClick={() => setShowReturn(false)}
-            style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(18px)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ duration: 0.50, ease: [0.22, 1, 0.36, 1] }}
-              onClick={e => e.stopPropagation()}
-              style={{ width: "100%", maxWidth: 520, background: "rgba(8,6,2,0.98)", border: `1px solid rgba(212,175,55,0.24)`, borderRadius: "16px 16px 0 0", padding: "32px 32px 44px", backdropFilter: "blur(20px)" }}>
-              <div style={{ fontSize: 12, letterSpacing: "0.40em", color: `${GOLD}60`, textTransform: "uppercase", textAlign: "center", marginBottom: 12 }}>Returning Guest</div>
-              <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 30, fontWeight: 600, color: "#F0E8D4", textAlign: "center", margin: "0 0 24px" }}>Welcome Back</h3>
-              <input placeholder="Last Name" value={retLast} onChange={e => setRetLast(e.target.value)}
-                style={{ width: "100%", padding: "18px 20px", background: "rgba(255,255,255,0.05)", border: `1px solid rgba(212,175,55,0.22)`, borderRadius: 6, color: "#F0E8D4", fontSize: 20, outline: "none", boxSizing: "border-box", marginBottom: 14, fontFamily: "'Inter',sans-serif" }} />
-              <input placeholder="Last 4 digits of phone" maxLength={4} value={retPin} onChange={e => setRetPin(e.target.value.replace(/\D/g,"").slice(0,4))}
-                style={{ width: "100%", padding: "18px 20px", background: "rgba(255,255,255,0.05)", border: `1px solid rgba(212,175,55,0.22)`, borderRadius: 6, color: "#F0E8D4", fontSize: 20, outline: "none", boxSizing: "border-box", marginBottom: 24, fontFamily: "'Inter',sans-serif" }} />
-              <button type="button" onClick={handleReturn}
-                style={{ width: "100%", padding: "20px", background: "rgba(212,175,55,0.16)", border: `1px solid ${GOLD}55`, borderRadius: 6, color: GOLD, fontSize: 16, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
-                Find My Session →
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ══════════════ RIGHT — ACTION PANEL ══════════════ */}
+      <div style={{
+        flex: 1, position: "relative", display: "flex", flexDirection: "column",
+        background: "#080502",
+        borderLeft: `1px solid rgba(212,175,55,0.20)`,
+        overflow: "hidden",
+      }}>
+        {/* Gold top border line */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${GOLD}88, ${GOLD}55, transparent)`, zIndex: 2 }} />
+        {/* Gold bottom border line */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${GOLD}55, ${GOLD}88, transparent)`, zIndex: 2 }} />
+        {/* Subtle texture overlay */}
+        <div style={{ position: "absolute", inset: 0, opacity: 0.018, backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, rgba(255,255,255,0.7) 1px, transparent 2px, transparent 16px)", pointerEvents: "none" }} />
+
+        <motion.div initial={{ opacity: 0, x: 22 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          style={{ flex: 1, overflowY: "auto", padding: "44px 40px 40px", display: "flex", flexDirection: "column" }}>
+
+          {/* ── BEGIN YOUR JOURNEY ── */}
+          <div style={{ marginBottom: 36 }}>
+            <h1 style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 54, fontWeight: 600, color: "#F0E8D4", margin: "0 0 14px", lineHeight: 1.0, letterSpacing: "0.02em" }}>
+              Begin Your<br />Journey
+            </h1>
+            <p style={{ fontSize: 18, color: "rgba(240,232,212,0.48)", lineHeight: 1.60, margin: "0 0 28px", fontWeight: 300 }}>
+              <span style={{ color: `${GOLD}CC`, fontWeight: 600 }}>New session</span> — 4 stages, fully tracked,<br />with live scoring on the room display.
+            </p>
+
+            {/* BEGIN NEW SESSION button */}
+            <motion.button type="button" onPointerDown={beginNew} whileTap={{ scale: 0.97 }}
+              style={{
+                width: "100%", padding: "20px 28px",
+                background: "rgba(212,175,55,0.10)", border: `1.5px solid ${GOLD}88`,
+                borderRadius: 8, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                fontFamily: "'Inter',sans-serif",
+                boxShadow: `0 0 30px rgba(212,175,55,0.12), inset 0 1px 0 rgba(212,175,55,0.10)`,
+                transition: "background 0.22s, box-shadow 0.22s",
+              }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(212,175,55,0.16)", border: `1px solid ${GOLD}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, color: GOLD }}>❧</div>
+                <span style={{ fontSize: 18, fontWeight: 800, color: GOLD, letterSpacing: "0.20em", textTransform: "uppercase" }}>Begin New Session</span>
+              </div>
+              <span style={{ fontSize: 22, color: GOLD }}>→</span>
+            </motion.button>
+          </div>
+
+          {/* ── DIVIDER ── */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
+            <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}33)` }} />
+            <span style={{ fontSize: 11, letterSpacing: "0.44em", color: "rgba(212,175,55,0.50)", textTransform: "uppercase", fontWeight: 700 }}>Returning Guest</span>
+            <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, ${GOLD}33, transparent)` }} />
+          </div>
+
+          {/* ── RESUME YOUR LAST SESSION ── */}
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 38, fontWeight: 600, color: "#F0E8D4", margin: "0 0 22px", lineHeight: 1.10, letterSpacing: "0.02em" }}>
+              Resume Your Last Session
+            </h2>
+
+            {/* Error */}
+            <AnimatePresence>
+              {error && (
+                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  style={{ padding: "14px 18px", background: "rgba(180,40,40,0.16)", border: "1px solid rgba(200,50,50,0.30)", borderRadius: 6, color: "#FF8080", fontSize: 17, marginBottom: 16, fontFamily: "'Inter',sans-serif" }}>
+                  Last name and 4-digit code are required.
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Form fields */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+              {/* LAST NAME */}
+              <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.04)", border: `1px solid ${error ? "rgba(200,50,50,0.50)" : "rgba(212,175,55,0.22)"}`, borderRadius: 6, overflow: "hidden", transition: "border-color 0.20s" }}>
+                <div style={{ padding: "0 18px", fontSize: 18, color: "rgba(212,175,55,0.45)", flexShrink: 0 }}>◎</div>
+                <input type="text" placeholder="LAST NAME" value={lastName} onChange={e => setLastName(e.target.value)}
+                  style={{ flex: 1, padding: "18px 18px 18px 0", background: "transparent", border: "none", outline: "none", color: "#F0E8D4", fontSize: 17, fontFamily: "'Inter',sans-serif", letterSpacing: "0.10em" }} />
+              </div>
+              {/* LAST 4 DIGITS */}
+              <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.04)", border: `1px solid ${error ? "rgba(200,50,50,0.50)" : "rgba(212,175,55,0.22)"}`, borderRadius: 6, overflow: "hidden", transition: "border-color 0.20s" }}>
+                <div style={{ padding: "0 18px", fontSize: 18, color: "rgba(212,175,55,0.45)", flexShrink: 0 }}>#</div>
+                <input type="tel" placeholder="LAST 4 DIGITS" value={pin} maxLength={4} onChange={e => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  style={{ flex: 1, padding: "18px 18px 18px 0", background: "transparent", border: "none", outline: "none", color: "#F0E8D4", fontSize: 17, fontFamily: "'Inter',sans-serif", letterSpacing: "0.10em" }} />
+              </div>
+              {/* DATE OF LAST SESSION */}
+              <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.22)", borderRadius: 6, overflow: "hidden" }}>
+                <div style={{ padding: "0 18px", fontSize: 18, color: "rgba(212,175,55,0.45)", flexShrink: 0 }}>◫</div>
+                <input type="text" placeholder="DATE OF LAST SESSION" value={dateStr} onChange={e => setDateStr(e.target.value)}
+                  style={{ flex: 1, padding: "18px 18px 18px 0", background: "transparent", border: "none", outline: "none", color: "#F0E8D4", fontSize: 17, fontFamily: "'Inter',sans-serif", letterSpacing: "0.10em" }} />
+              </div>
+            </div>
+
+            {/* RESUME SESSION button */}
+            <motion.button type="button" onPointerDown={resumeSession} whileTap={{ scale: 0.97 }}
+              style={{
+                width: "100%", padding: "18px 28px", marginBottom: 12,
+                background: "rgba(212,175,55,0.08)", border: `1.5px solid ${GOLD}66`,
+                borderRadius: 8, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                fontFamily: "'Inter',sans-serif",
+                boxShadow: `0 0 20px rgba(212,175,55,0.08)`,
+              }}>
+              <span style={{ fontSize: 17, fontWeight: 800, color: GOLD, letterSpacing: "0.20em", textTransform: "uppercase" }}>Resume Session</span>
+              <span style={{ fontSize: 20, color: GOLD }}>→</span>
+            </motion.button>
+
+            {/* RETURN TO MY SESSION button */}
+            <motion.button type="button" onPointerDown={returnSession} whileTap={{ scale: 0.97 }}
+              style={{
+                width: "100%", padding: "18px 28px",
+                background: "transparent", border: "1px solid rgba(212,175,55,0.28)",
+                borderRadius: 8, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                fontFamily: "'Inter',sans-serif",
+              }}>
+              <span style={{ fontSize: 17, fontWeight: 700, color: "rgba(240,232,212,0.50)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Return to My Session</span>
+              <span style={{ fontSize: 18, color: "rgba(212,175,55,0.45)" }}>⊙</span>
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
