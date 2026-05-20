@@ -89,7 +89,7 @@ async function updateVenueEnergy(): Promise<void> {
       SELECT
         venue_id,
         COUNT(*)                                                                    AS event_count,
-        SUM(CASE WHEN event_type IN ('order_confirmed','add_to_order') THEN 1 ELSE 0 END) AS conversions,
+        SUM(CASE WHEN confidence > 60 OR premium_intent > 60 THEN 1 ELSE 0 END)   AS conversions,
         COUNT(DISTINCT session_id)                                                 AS session_count
       FROM orchestrator_events
       WHERE created_at > NOW() - INTERVAL '10 minutes'

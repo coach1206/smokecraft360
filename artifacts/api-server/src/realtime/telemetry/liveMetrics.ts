@@ -64,7 +64,7 @@ export async function computeLiveMetrics(
            SUM(CASE WHEN event_type='swipe_start' THEN 1 ELSE 0 END) AS starts,
            SUM(CASE WHEN event_type='swipe_add'   THEN 1 ELSE 0 END) AS adds,
            SUM(CASE WHEN event_type='swipe_skip'  THEN 1 ELSE 0 END) AS skips
-         FROM orchestration_events
+         FROM neural_ingestion_events
          WHERE venue_id=$1 AND created_at > NOW() - ($2 || ' minutes')::interval`,
         [venueId, windowMinutes],
       ).catch(() => ({ rows: [{ starts:0, adds:0, skips:0 }] })),

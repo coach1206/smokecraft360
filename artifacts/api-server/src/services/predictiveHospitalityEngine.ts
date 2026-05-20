@@ -225,7 +225,8 @@ async function analyzeActiveSessions(): Promise<void> {
     HAVING COUNT(*) >= 2
   `);
 
-  const io = getIO();
+  let io: ReturnType<typeof getIO> | null = null;
+  try { io = getIO(); } catch { /* Socket.io not yet ready — skip push notifications this cycle */ }
 
   for (const row of rows.rows) {
     try {
@@ -283,10 +284,10 @@ async function analyzeActiveSessions(): Promise<void> {
       };
 
       storePrediction(prediction);
-      io.to(`venue:${row.venue_id}`).emit("eeie:predictive_signal", prediction);
+      io?.to(`venue:${row.venue_id}`).emit("eeie:predictive_signal", prediction);
 
       if (nextAction === "DISENGAGE" || nextAction === "SEEK_GUIDANCE") {
-        io.to(`venue:${row.venue_id}`).emit("eeie:staff_advisory", {
+        io?.to(`venue:${row.venue_id}`).emit("eeie:staff_advisory", {
           id:         `pred-${row.session_id}-${Date.now()}`,
           venueId:    row.venue_id,
           type:       nextAction === "DISENGAGE" ? "HIGH_ENGAGEMENT_DROP" : "GUEST_HESITATION",

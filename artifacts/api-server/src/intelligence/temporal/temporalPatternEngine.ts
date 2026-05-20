@@ -29,13 +29,13 @@ export async function learnTemporalPatterns(venueId: string): Promise<TemporalSi
          EXTRACT(HOUR FROM so.created_at)::INT       AS hour_of_day,
          EXTRACT(DOW  FROM so.created_at)::INT       AS day_of_week,
          COUNT(DISTINCT so.id)                        AS order_count,
-         AVG(so.total_amount)                         AS avg_revenue,
+         AVG(so.subtotal_cents) / 100.0               AS avg_revenue,
          COUNT(DISTINCT so.session_id)                AS session_count,
          MODE() WITHIN GROUP (ORDER BY oi.craft_type) AS peak_craft,
          SUM(CASE WHEN so.status = 'confirmed' THEN 1 ELSE 0 END)::FLOAT
            / NULLIF(COUNT(so.id),0)                  AS conversion_rate
        FROM swipe_orders so
-       LEFT JOIN swipe_order_items oi ON oi.swipe_order_id = so.id
+       LEFT JOIN swipe_order_items oi ON oi.order_id = so.id
        WHERE so.venue_id = $1
          AND so.created_at > NOW() - INTERVAL '30 days'
        GROUP BY 1, 2

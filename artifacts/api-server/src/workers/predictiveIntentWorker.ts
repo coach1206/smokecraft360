@@ -41,11 +41,11 @@ async function tick(): Promise<void> {
 
   try {
     const { rows } = await pool.query<SessionRow>(`
-      SELECT session_id, venue_id, craft_type, COUNT(*) AS event_count
+      SELECT session_id, venue_id, NULL::text AS craft_type, COUNT(*) AS event_count
       FROM neural_ingestion_events
-      WHERE recorded_at > NOW() - INTERVAL '10 minutes'
+      WHERE created_at > NOW() - INTERVAL '10 minutes'
         AND session_id IS NOT NULL
-      GROUP BY session_id, venue_id, craft_type
+      GROUP BY session_id, venue_id
       HAVING COUNT(*) >= 3
       LIMIT 50
     `);

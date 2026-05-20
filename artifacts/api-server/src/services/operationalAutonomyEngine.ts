@@ -108,7 +108,7 @@ async function fetchSessionMetrics(windowMinutes = 15): Promise<SessionMetrics[]
       COUNT(DISTINCT guest_id)                                                           AS unique_guests,
       MAX(created_at)                                                                    AS last_event_at,
       EXTRACT(EPOCH FROM (MAX(created_at) - MIN(created_at))) * 1000                    AS elapsed_ms
-    FROM orchestrator_events
+    FROM neural_ingestion_events
     WHERE created_at > NOW() - (${windowMinutes} || ' minutes')::interval
       AND session_id IS NOT NULL
       AND venue_id   IS NOT NULL

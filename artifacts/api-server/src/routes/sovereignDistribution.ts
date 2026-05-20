@@ -741,7 +741,8 @@ router.post("/distribution/deploy", async (req, res) => {
       ).catch(() => {});
       await pool.query(
         `INSERT INTO distribution_war_room_events (severity, category, title, description, source)
-         VALUES ('INFO','DEPLOY','Deployment Completed','Package ${pkg} deployed to ${target}.','deploy-worker')`,
+         VALUES ('INFO','DEPLOY','Deployment Completed',$1,'deploy-worker')`,
+        [`Package ${pkg} deployed to ${target}.`],
       ).catch(() => {});
     }, 3000);
 
