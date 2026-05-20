@@ -582,7 +582,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
           {/* Quick actions */}
           <Card style={{ padding: "15px 16px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 11, textTransform: "uppercase" }}>QUICK ACTIONS</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 11, textTransform: "uppercase", fontWeight: 800 }}>QUICK ACTIONS</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9 }}>
               {[
                 { label: "OPEN TAB",  color: GREEN,    action: () => setPendingAction("open_tab")  },
@@ -592,11 +592,11 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                 <motion.button key={a.label} whileTap={{ scale: 0.93 }}
                   onClick={a.action}
                   style={{
-                    minHeight: 60, padding: "12px 8px", cursor: "pointer",
+                    minHeight: 72, padding: "14px 8px", cursor: "pointer",
                     background: `${a.color}0d`, border: `1px solid ${a.color}44`,
                     borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                  <span style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.16em", color: a.color, textTransform: "uppercase" }}>
+                  <span style={{ fontSize: 16, fontWeight: 900, letterSpacing: "0.14em", color: a.color, textTransform: "uppercase" }}>
                     {a.label}
                   </span>
                 </motion.button>

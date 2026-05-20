@@ -485,7 +485,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
 
           {/* Quick actions — PIN-gated */}
           <Card style={{ padding: "15px 16px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 11, textTransform: "uppercase" }}>QUICK ACTIONS · PIN REQUIRED</div>
+            <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 11, textTransform: "uppercase", fontWeight: 800 }}>QUICK ACTIONS · PIN REQUIRED</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9 }}>
               {[
                 { label: "OPEN TAB",  color: GREEN   },
@@ -495,11 +495,11 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
                 <motion.button key={a.label} whileTap={{ scale: 0.93 }}
                   onClick={() => navigate("/pin-login")}
                   style={{
-                    minHeight: 60, padding: "12px 8px", cursor: "pointer",
+                    minHeight: 72, padding: "14px 8px", cursor: "pointer",
                     background: `${a.color}0d`, border: `1px solid ${a.color}44`,
                     borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                  <span style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.16em", color: a.color, textTransform: "uppercase" }}>
+                  <span style={{ fontSize: 16, fontWeight: 900, letterSpacing: "0.14em", color: a.color, textTransform: "uppercase" }}>
                     {a.label}
                   </span>
                 </motion.button>
@@ -527,6 +527,40 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
                   </div>
                 );
               })}
+            </div>
+          </Card>
+
+          {/* Recent transactions — last 10 tabs */}
+          <Card>
+            <div style={{ padding: "13px 18px", borderBottom: `1px solid rgba(212,175,55,0.12)`,
+              display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>RECENT ACTIVITY</span>
+              <span style={{ fontSize: 13, color: TEAL, fontWeight: 800, letterSpacing: "0.12em" }}>LAST {Math.min(activeTabs.length, 10)}</span>
+            </div>
+            <div style={{ overflow: "auto", maxHeight: 240 }}>
+              {activeTabs.slice(0, 10).map(tab => (
+                <div key={tab.id} style={{ padding: "11px 18px", borderBottom: `1px solid rgba(255,255,255,0.03)`,
+                  display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: "rgba(255,255,255,0.84)", marginBottom: 2 }}>{tab.name}</div>
+                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.30)", letterSpacing: "0.10em" }}>
+                      TABLE {tab.tableNumber} · {tab.itemCount ?? "—"} ITEMS · {tab.openedAt ?? "—"}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, lineHeight: 1 }}>${tab.total.toLocaleString()}</div>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 3, color: loyaltyColor(tab.loyalty ?? "") }}>
+                      {tab.loyalty ?? "—"}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {activeTabs.length === 0 && (
+                <div style={{ padding: "24px", textAlign: "center", fontSize: 14,
+                  color: "rgba(255,255,255,0.18)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+                  NO ACTIVITY THIS SHIFT
+                </div>
+              )}
             </div>
           </Card>
         </div>

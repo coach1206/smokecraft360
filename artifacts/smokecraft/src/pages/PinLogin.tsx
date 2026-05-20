@@ -727,7 +727,7 @@ export default function PinLogin() {
           {KEYS.map(key => {
             const isGo    = key === "GO";
             const isClear = key === "CLR";
-            const goReady = isGo && pin.length === MAX_PIN && !success;
+            const goReady = isGo && pin.length === activePinMax && !success;
             return (
               <KeyButton
                 key={key}
