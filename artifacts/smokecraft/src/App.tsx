@@ -36,6 +36,8 @@ import { SovereignRoute }             from '@/components/SovereignRoute';
 import { PresentationProvider }      from '@/contexts/PresentationContext';
 import TabletViewport                from '@/components/TabletViewport';
 import GlobalSmokeCanvas             from '@/components/GlobalSmokeCanvas';
+import GlobalEmberFixture            from '@/components/GlobalEmberFixture';
+import GuestAmbientOverlay           from '@/components/GuestAmbientOverlay';
 
 /* ── Lazy-loaded overlays (removed from critical path) ────── */
 const EeisOverlay          = lazy(() => import('@/components/EeisOverlay'));
@@ -192,6 +194,8 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                         <PresentationProvider>
                                           <TabletViewport />
                                           <GlobalSmokeCanvas />
+                                          <GlobalEmberFixture />
+                                          <GuestAmbientOverlay />
                                           <UniversalTouchAnchors />
                                           <UniversalBackButton />
                                           {children}

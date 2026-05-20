@@ -103,10 +103,10 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
         {phase === "INTRO" && (
           <motion.div
             key="intro"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.04 }}
-            transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, filter: "blur(8px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 1.04, filter: "blur(10px)" }}
+            transition={{ duration: 2.8, ease: [0.22, 1, 0.36, 1] }}
             style={{ position: "absolute", inset: 0, zIndex: 1 }}
           >
             <CraftCinematicOpening
@@ -121,8 +121,8 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
           <motion.div
             key="blackout"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.8, ease: "easeInOut" }}
+            exit={{ opacity: 0, filter: "blur(6px)" }}
+            transition={{ duration: 2.2, ease: "easeInOut" }}
             style={{
               position:       "absolute",
               inset:          0,

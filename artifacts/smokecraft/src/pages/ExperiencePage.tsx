@@ -1553,7 +1553,7 @@ export default function ExperiencePage() {
                 textTransform: "uppercase", color: "#d4af37", cursor: "pointer",
               }}
             >
-              ⚗ BLEND
+              ⚗ Your Reserve
             </motion.button>
           )}
         </div>
