@@ -28,9 +28,9 @@ const S4_PHASES = new Set(["s4_vitola","s4_designstudio","s4_results"]);
 const SESSION_PHASES = new Set([...S1_PHASES,...S2_PHASES,...S3_PHASES,...S4_PHASES]);
 
 /* ─────────────────────────────────────────────
-   OS Rail — persistent left navigation
+   OS Nav Bar — persistent top navigation
 ───────────────────────────────────────────── */
-interface RailItem {
+interface NavItem {
   id: string;
   label: string;
   abbr: string;
@@ -38,190 +38,145 @@ interface RailItem {
   isActive: (p: string) => boolean;
 }
 
-const RAIL_ITEMS: RailItem[] = [
-  {
-    id: "crafthub",
-    label: "CraftHub",
-    abbr: "HUB",
-    targetPhase: "crafthub",
-    isActive: (p) => p === "crafthub",
-  },
-  {
-    id: "smokecraft",
-    label: "SmokeCraft",
-    abbr: "SC",
-    targetPhase: "crafthub",
-    isActive: (p) => SESSION_PHASES.has(p),
-  },
-  {
-    id: "eat",
-    label: "E.A.T",
-    abbr: "EAT",
-    targetPhase: "eat_dashboard",
-    isActive: (p) => p === "eat_dashboard",
-  },
-  {
-    id: "pairing",
-    label: "Pairing",
-    abbr: "PR",
-    targetPhase: null,
-    isActive: () => false,
-  },
-  {
-    id: "lounge",
-    label: "Lounge",
-    abbr: "LG",
-    targetPhase: "crafthub",
-    isActive: () => false,
-  },
-  {
-    id: "profile",
-    label: "My Profile",
-    abbr: "ME",
-    targetPhase: null,
-    isActive: () => false,
-  },
-  {
-    id: "settings",
-    label: "Settings",
-    abbr: "ST",
-    targetPhase: null,
-    isActive: () => false,
-  },
+const NAV_ITEMS: NavItem[] = [
+  { id: "crafthub",   label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub",      isActive: (p) => p === "crafthub" },
+  { id: "smokecraft", label: "SmokeCraft",  abbr: "SC",  targetPhase: "crafthub",      isActive: (p) => SESSION_PHASES.has(p) },
+  { id: "eat",        label: "E.A.T",       abbr: "EAT", targetPhase: "eat_dashboard", isActive: (p) => p === "eat_dashboard" },
+  { id: "pairing",    label: "Pairing",     abbr: "PR",  targetPhase: null,            isActive: () => false },
+  { id: "lounge",     label: "Lounge",      abbr: "LG",  targetPhase: "crafthub",      isActive: () => false },
+  { id: "profile",    label: "My Profile",  abbr: "ME",  targetPhase: null,            isActive: () => false },
+  { id: "settings",   label: "Settings",    abbr: "ST",  targetPhase: null,            isActive: () => false },
 ];
 
-function OsRail() {
+function OsNavBar() {
   const { profile, setPhase } = useGuest();
   const { phase } = profile;
 
   return (
     <div style={{
-      width: 96, flexShrink: 0, height: "100%",
-      background: "rgba(3,2,0,0.98)",
+      width: "100%", flexShrink: 0,
+      height: 62,
+      background: "rgba(3,2,0,0.97)",
       backdropFilter: "blur(32px)",
       WebkitBackdropFilter: "blur(32px)",
-      borderRight: "1px solid rgba(212,175,55,0.22)",
-      display: "flex", flexDirection: "column", alignItems: "center",
+      borderBottom: `1px solid rgba(212,175,55,0.20)`,
+      display: "flex", flexDirection: "row", alignItems: "center",
       position: "relative", zIndex: 200,
-      overflow: "hidden",
+      paddingLeft: 12, paddingRight: 12,
+      gap: 4,
     }}>
 
-      {/* Left gold accent stripe */}
+      {/* Bottom gold accent line */}
       <div style={{
-        position: "absolute", top: 0, left: 0, bottom: 0, width: 2,
-        background: `linear-gradient(180deg, ${GOLD} 0%, ${GOLD}88 40%, ${GOLD}22 80%, transparent 100%)`,
-        boxShadow: `0 0 16px ${GOLD}44`,
+        position: "absolute", bottom: 0, left: 0, right: 0, height: 2,
+        background: `linear-gradient(90deg, transparent 0%, ${GOLD}88 20%, ${GOLD} 50%, ${GOLD}88 80%, transparent 100%)`,
+        boxShadow: `0 0 12px ${GOLD}44`,
       }} />
 
-      {/* NOVEE OS logo block */}
+      {/* NOVEE OS logo */}
       <div style={{
-        width: "100%", padding: "16px 0 13px",
-        display: "flex", flexDirection: "column", alignItems: "center",
-        borderBottom: "1px solid rgba(212,175,55,0.14)",
-        flexShrink: 0,
+        display: "flex", flexDirection: "row", alignItems: "center", gap: 10,
+        paddingRight: 16,
+        borderRight: "1px solid rgba(212,175,55,0.18)",
+        marginRight: 8, flexShrink: 0,
       }}>
         <div style={{
-          width: 44, height: 44, borderRadius: 12,
+          width: 40, height: 40, borderRadius: 10,
           background: `linear-gradient(135deg, ${GOLD}55 0%, rgba(0,0,0,0.70) 100%)`,
           border: `1.5px solid ${GOLD}99`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: `0 0 22px ${GOLD}44`,
-          marginBottom: 6,
+          boxShadow: `0 0 18px ${GOLD}44`,
         }}>
           <span style={{
             fontFamily: "'Cormorant Garamond',Georgia,serif",
-            fontSize: 24, fontWeight: 700, color: GOLD, lineHeight: 1,
+            fontSize: 22, fontWeight: 700, color: GOLD, lineHeight: 1,
           }}>N</span>
         </div>
-        <div style={{
-          fontSize: 9, letterSpacing: "0.20em", color: `${GOLD}88`,
-          fontWeight: 800, textTransform: "uppercase",
-          fontFamily: "'Inter',sans-serif",
-        }}>NOVEE OS</div>
+        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+          <span style={{ fontSize: 14, fontWeight: 800, color: GOLD, fontFamily: "'Cormorant Garamond',Georgia,serif", letterSpacing: "0.06em" }}>NOVEE OS</span>
+          <span style={{ fontSize: 9, color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700 }}>Kiosk Edition</span>
+        </div>
       </div>
 
       {/* Nav items */}
-      <div style={{ flex: 1, width: "100%", display: "flex", flexDirection: "column", padding: "8px 0", overflowY: "auto" }}>
-        {RAIL_ITEMS.map((item) => {
-          const active  = item.isActive(phase);
-          const enabled = item.targetPhase !== null;
-          return (
-            <motion.button
-              key={item.id}
-              type="button"
-              onPointerDown={() => {
-                if (enabled && item.targetPhase) setPhase(item.targetPhase as Parameters<typeof setPhase>[0]);
-              }}
-              whileTap={enabled ? { scale: 0.91 } : {}}
-              animate={{
-                background: active ? `rgba(212,175,55,0.15)` : "transparent",
-              }}
-              transition={{ duration: 0.18 }}
-              style={{
-                width: "100%", border: "none",
-                cursor: enabled ? "pointer" : "default",
-                padding: "12px 0",
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
-                borderLeft: active ? `3px solid ${GOLD}` : "3px solid transparent",
-                fontFamily: "'Inter',sans-serif",
-                opacity: enabled ? 1 : 0.45,
-                position: "relative",
-                flexShrink: 0,
-              }}
-            >
-              {/* Active glow */}
-              {active && (
-                <motion.div
-                  layoutId="rail-active-glow"
-                  style={{
-                    position: "absolute", inset: 0,
-                    background: `radial-gradient(ellipse at 30% 50%, ${GOLD}22 0%, transparent 65%)`,
-                    pointerEvents: "none",
-                  }}
-                  transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                />
-              )}
+      {NAV_ITEMS.map((item) => {
+        const active  = item.isActive(phase);
+        const enabled = item.targetPhase !== null;
+        return (
+          <motion.button
+            key={item.id}
+            type="button"
+            onPointerDown={() => {
+              if (enabled && item.targetPhase) setPhase(item.targetPhase as Parameters<typeof setPhase>[0]);
+            }}
+            whileTap={enabled ? { scale: 0.93 } : {}}
+            animate={{ background: active ? `rgba(212,175,55,0.16)` : "transparent" }}
+            transition={{ duration: 0.18 }}
+            style={{
+              border: `1.5px solid ${active ? GOLD + "66" : "rgba(255,255,255,0.09)"}`,
+              borderRadius: 10,
+              cursor: enabled ? "pointer" : "default",
+              padding: "7px 14px",
+              display: "flex", flexDirection: "row", alignItems: "center", gap: 8,
+              fontFamily: "'Inter',sans-serif",
+              opacity: enabled ? 1 : 0.38,
+              position: "relative",
+              flexShrink: 0,
+              boxShadow: active ? `0 0 14px ${GOLD}33, inset 0 1px 0 ${GOLD}22` : "none",
+              transition: "border-color 0.18s, box-shadow 0.18s",
+            }}
+          >
+            {/* Active glow pill */}
+            {active && (
+              <motion.div
+                layoutId="nav-active-glow"
+                style={{
+                  position: "absolute", inset: 0, borderRadius: 10,
+                  background: `radial-gradient(ellipse at 50% 50%, ${GOLD}18 0%, transparent 70%)`,
+                  pointerEvents: "none",
+                }}
+                transition={{ type: "spring", stiffness: 380, damping: 28 }}
+              />
+            )}
 
-              {/* Icon badge */}
-              <div style={{
-                width: 42, height: 42, borderRadius: 11,
-                background: active
-                  ? `rgba(212,175,55,0.24)`
-                  : "rgba(255,255,255,0.07)",
-                border: `1.5px solid ${active ? GOLD + "88" : "rgba(255,255,255,0.14)"}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: active ? `0 0 16px ${GOLD}55, inset 0 1px 0 ${GOLD}33` : "none",
-                transition: "all 0.20s",
-                position: "relative",
-              }}>
-                <span style={{
-                  fontSize: 12, fontWeight: 900, letterSpacing: "0.06em",
-                  color: active ? GOLD : "rgba(240,232,212,0.70)",
-                  fontFamily: "'Inter',sans-serif",
-                }}>{item.abbr}</span>
-              </div>
-
-              {/* Label */}
+            {/* Abbr badge */}
+            <div style={{
+              width: 30, height: 30, borderRadius: 7,
+              background: active ? `rgba(212,175,55,0.28)` : "rgba(255,255,255,0.07)",
+              border: `1px solid ${active ? GOLD + "77" : "rgba(255,255,255,0.12)"}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
               <span style={{
-                fontSize: 10, letterSpacing: "0.06em",
-                color: active ? GOLD : "rgba(240,232,212,0.60)",
-                textTransform: "uppercase", fontWeight: active ? 800 : 600,
-                textAlign: "center", lineHeight: 1.2,
-                maxWidth: 80,
-              }}>{item.label}</span>
-            </motion.button>
-          );
-        })}
-      </div>
+                fontSize: 11, fontWeight: 900, letterSpacing: "0.04em",
+                color: active ? GOLD : "rgba(240,232,212,0.80)",
+                fontFamily: "'Inter',sans-serif",
+              }}>{item.abbr}</span>
+            </div>
 
-      {/* Version tag */}
-      <div style={{
-        flexShrink: 0, padding: "8px 0",
-        borderTop: "1px solid rgba(212,175,55,0.08)",
-        width: "100%", display: "flex", justifyContent: "center",
-      }}>
-        <span style={{ fontSize: 7, color: "rgba(212,175,55,0.28)", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>v2.4</span>
-      </div>
+            {/* Label */}
+            <span style={{
+              fontSize: 12, letterSpacing: "0.08em",
+              color: active ? GOLD : "rgba(240,232,212,0.70)",
+              textTransform: "uppercase", fontWeight: active ? 800 : 600,
+              whiteSpace: "nowrap",
+            }}>{item.label}</span>
+
+            {/* Active bottom indicator */}
+            {active && (
+              <div style={{
+                position: "absolute", bottom: -1, left: "20%", right: "20%", height: 2,
+                background: GOLD, borderRadius: 2,
+                boxShadow: `0 0 8px ${GOLD}`,
+              }} />
+            )}
+          </motion.button>
+        );
+      })}
+
+      {/* Version tag — push to far right */}
+      <div style={{ flex: 1 }} />
+      <span style={{ fontSize: 9, color: "rgba(212,175,55,0.30)", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>v2.4</span>
     </div>
   );
 }
@@ -377,11 +332,11 @@ export default function App() {
             touchAction: "manipulation",
             overflow: "hidden",
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column",
           }}
         >
-          {/* ── Left OS navigation rail ── */}
-          <OsRail />
+          {/* ── Top OS navigation bar ── */}
+          <OsNavBar />
 
           {/* ── Main content area ── */}
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
