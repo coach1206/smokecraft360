@@ -269,32 +269,23 @@ export const UnifiedPOSBridge = {
       );
       recordSuccess(reg.provider, venueId, 0);
 
-      // Broadcast enriched order event so frontend POSRouterEngine can compute
-      // flavor synergy XP, decrement inventory state, and scale multipliers.
-      tryEmitPosOrderComplete({
-        vendor:         reg.provider,
-        venueId,
-        lineItems:      order.items.map(i => ({
-          name:       i.name,
-          productId:  i.productId,
-          qty:        i.quantity,   // pass actual ordered quantity
-          priceCents: i.priceCents,
-        })),
-        totalCents:     order.totalCents,
-        // Use POS-side order ID as session correlation so spend tracking populates
-        guestSessionId: order.id ?? order.externalId ?? null,
-        timestamp:      new Date().toISOString(),
-      });
-
-      // Also emit venue-scoped PAYMENT_COMPLETE so normalized channel consumers fire
-      tryEmitToVenueRoom(venueId, "pos:PAYMENT_COMPLETE", {
-        eventType:  "PAYMENT_COMPLETE",
+      // Emit a single venue-scoped ORDER_PLACED event — the canonical trigger for
+      // frontend synergy XP computation and inventory state binding.
+      // Using ORDER_PLACED (not PAYMENT_COMPLETE) ensures exactly one event fires
+      // per pushOrder() call and matches the frontend engine's restriction to
+      // ORDER_PLACED-only processing, preventing duplicate XP/decrement.
+      tryEmitToVenueRoom(venueId, "pos:ORDER_PLACED", {
+        eventType:  "ORDER_PLACED",
         vendor:     reg.provider,
         venueId,
         lineItems:  order.items.map(i => ({
-          name: i.name, productId: i.productId, qty: i.quantity, priceCents: i.priceCents,
+          name:       i.name,
+          productId:  i.productId,
+          qty:        i.quantity,   // actual ordered quantity for accurate decrement
+          priceCents: i.priceCents,
         })),
         totalCents:  order.totalCents,
+        // POS-side order ID as session correlation for spend ledger
         sessionId:   order.id ?? order.externalId ?? null,
         ts:          Date.now(),
       });

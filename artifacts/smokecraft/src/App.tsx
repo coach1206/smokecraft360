@@ -40,6 +40,7 @@ import GlobalEmberFixture            from '@/components/GlobalEmberFixture';
 import GuestAmbientOverlay           from '@/components/GuestAmbientOverlay';
 import { AshParticles }              from '@/components/AshParticles';
 import { RevenueOptimizationOverlay } from '@/components/RevenueOptimizationOverlay';
+import { PosXPFeedback }             from '@/components/PosXPFeedback';
 
 /* ── Lazy-loaded overlays (removed from critical path) ────── */
 const EeisOverlay          = lazy(() => import('@/components/EeisOverlay'));
@@ -240,6 +241,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <AshParticles />
                                           <GuestAmbientOverlay />
                                           <RevenueOptimizationOverlay />
+                                          <PosXPFeedback />
                                           <UniversalTouchAnchors />
                                           <UniversalBackButton />
                                           {children}

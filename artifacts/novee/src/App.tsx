@@ -19,6 +19,7 @@ import ControlChamber from "@/pages/ControlChamber";
 import { AmbientEmberField } from "@/components/AmbientEmberField";
 import { AshParticles } from "@/components/AshParticles";
 import { RevenueOptimizationOverlay } from "@/components/RevenueOptimizationOverlay";
+import { NoveeXPBridge }              from "@/components/PosXPFeedback";
 import { playClick } from "@/hooks/useAudio";
 import { hapticClick } from "@/hooks/useHaptic";
 
@@ -679,6 +680,7 @@ export default function App() {
               <AmbientEmberField />
               <AshParticles />
               <RevenueOptimizationOverlay />
+              <NoveeXPBridge />
             </motion.div>
           )}
         </AnimatePresence>
