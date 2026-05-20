@@ -318,111 +318,112 @@ function SystemBar() {
 const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
 const TICKER_ITEMS = [
-  { cat: "🚬 CIGAR",   text: "Arturo Fuente Opus X — Limited Reserve · Tonight Only" },
-  { cat: "🥃 SPIRITS", text: "Hennessy XO Cognac — Complimentary First Pour with Session" },
-  { cat: "🍽 KITCHEN", text: "Wagyu Beef Sliders · Chef's Feature — Available Until 11 PM" },
-  { cat: "🚬 CIGAR",   text: "Padron 1964 Aniversario Natural — 2 for $68 this Evening" },
-  { cat: "🥂 DRINKS",  text: "Añejo Old Fashioned — House Cocktail Special $16" },
-  { cat: "🍤 BITES",   text: "Lobster Bisque Shots · Truffle Deviled Eggs — Lounge Menu" },
-  { cat: "🚬 CIGAR",   text: "Rocky Patel Vintage 1990 — Staff Recommendation Tonight" },
-  { cat: "🍷 WINE",    text: "Opus One 2019 — Sommelier Select · Limited Bottles Available" },
-  { cat: "🍽 KITCHEN", text: "Pan-Seared Sea Bass — Market Price · Reserve at the Bar" },
-  { cat: "✈️ TRAVEL",  text: "Book your next luxury getaway with Day One 360 Travel — Ask staff for details" },
+  { cat: "CIGAR",   text: "Arturo Fuente Opus X — Limited Reserve, Tonight Only" },
+  { cat: "SPIRITS", text: "Hennessy XO Cognac — Complimentary First Pour with Session" },
+  { cat: "KITCHEN", text: "Wagyu Beef Sliders, Chef's Feature — Available Until 11 PM" },
+  { cat: "CIGAR",   text: "Padron 1964 Aniversario Natural — 2 for $68 This Evening" },
+  { cat: "DRINKS",  text: "Anejo Old Fashioned — House Cocktail Special $16" },
+  { cat: "BITES",   text: "Lobster Bisque Shots, Truffle Deviled Eggs — Lounge Menu" },
+  { cat: "CIGAR",   text: "Rocky Patel Vintage 1990 — Staff Recommendation Tonight" },
+  { cat: "WINE",    text: "Opus One 2019 — Sommelier Select, Limited Bottles Available" },
+  { cat: "KITCHEN", text: "Pan-Seared Sea Bass — Market Price, Reserve at the Bar" },
 ];
 
 function BottomBar() {
-  const tickerContent = TICKER_ITEMS.map((item, i) => (
-    <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "0 40px", flexShrink: 0 }}>
+  /* Build a ticker segment — text items + Day One 360 logo pass-through */
+  const textSegment = TICKER_ITEMS.map((item, i) => (
+    <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 12, padding: "0 36px", flexShrink: 0 }}>
       <span style={{
-        fontSize: 10, fontWeight: 900, letterSpacing: "0.18em",
+        fontSize: 11, fontWeight: 900, letterSpacing: "0.20em",
         color: GOLD, fontFamily: "'Inter',sans-serif", textTransform: "uppercase",
-        background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}44`,
-        borderRadius: 4, padding: "2px 8px", flexShrink: 0,
+        background: "rgba(212,175,55,0.15)", border: `1px solid ${GOLD}55`,
+        borderRadius: 4, padding: "3px 10px", flexShrink: 0,
       }}>{item.cat}</span>
       <span style={{
-        fontSize: 13, fontWeight: 500, letterSpacing: "0.06em",
-        color: "rgba(240,232,212,0.85)", fontFamily: "'Cormorant Garamond',Georgia,serif",
+        fontSize: 15, fontWeight: 500, letterSpacing: "0.04em",
+        color: "rgba(255,248,235,0.95)", fontFamily: "'Cormorant Garamond',Georgia,serif",
         whiteSpace: "nowrap",
       }}>{item.text}</span>
-      <span style={{ color: `${GOLD}55`, fontSize: 10, marginLeft: 10 }}>◆</span>
+      <span style={{ color: `${GOLD}77`, fontSize: 8, marginLeft: 4, letterSpacing: "0.10em", fontFamily: "'Inter',sans-serif" }}>—</span>
     </span>
   ));
 
+  /* Day One 360 inline scroll item */
+  const dayOneItem = (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 12, padding: "0 48px", flexShrink: 0 }}>
+      <img
+        src={IMG("dayone360.png")}
+        alt="Day One 360 Travel"
+        style={{ height: 32, width: 32, borderRadius: 6, objectFit: "contain", background: "#fff", padding: 2, flexShrink: 0 }}
+      />
+      <span style={{
+        fontSize: 15, fontWeight: 700, letterSpacing: "0.10em",
+        color: "#C8D8F0", fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap",
+      }}>DAY ONE 360 TRAVEL</span>
+      <span style={{
+        fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
+        color: "rgba(200,216,240,0.65)", fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap",
+      }}>— Your Luxury Travel Partner — Ask Staff for Details</span>
+      <span style={{ color: `${GOLD}77`, fontSize: 8, marginLeft: 4 }}>—</span>
+    </span>
+  );
+
+  /* Full track = text items + Day One + duplicated for seamless loop */
+  const track = (
+    <>
+      {textSegment}
+      {dayOneItem}
+      {textSegment}
+      {dayOneItem}
+    </>
+  );
+
   return (
     <div style={{
-      width: "100%", flexShrink: 0, height: 52,
-      background: "rgba(2,1,0,0.97)",
+      width: "100%", flexShrink: 0, height: 58,
+      background: "rgba(4,2,0,0.98)",
       backdropFilter: "blur(24px)",
       WebkitBackdropFilter: "blur(24px)",
-      borderTop: `1px solid rgba(212,175,55,0.22)`,
+      borderTop: `2px solid ${GOLD}`,
+      boxShadow: `0 -6px 32px rgba(212,175,55,0.18)`,
       display: "flex", flexDirection: "row", alignItems: "center",
       position: "relative", zIndex: 200, overflow: "hidden",
     }}>
 
-      {/* Top gold accent line */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 1,
-        background: `linear-gradient(90deg, transparent 0%, ${GOLD}88 20%, ${GOLD} 50%, ${GOLD}88 80%, transparent 100%)`,
-      }} />
-
-      {/* CSS keyframe for ticker scroll */}
+      {/* CSS keyframe */}
       <style>{`
         @keyframes novee-ticker {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
         .novee-ticker-track {
-          display: flex;
+          display: inline-flex;
           flex-direction: row;
           align-items: center;
           white-space: nowrap;
-          animation: novee-ticker 60s linear infinite;
+          animation: novee-ticker 80s linear infinite;
           will-change: transform;
         }
       `}</style>
 
-      {/* SPECIALS label */}
+      {/* TONIGHT'S SPECIALS anchor label */}
       <div style={{
-        flexShrink: 0, padding: "0 14px",
-        borderRight: "1px solid rgba(212,175,55,0.20)",
+        flexShrink: 0, padding: "0 18px",
+        borderRight: `1px solid ${GOLD}44`,
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        height: "100%", gap: 2,
+        height: "100%", gap: 2, background: "rgba(212,175,55,0.06)",
       }}>
-        <span style={{ fontSize: 8, letterSpacing: "0.26em", color: `${GOLD}88`, fontWeight: 900, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>TONIGHT'S</span>
-        <span style={{ fontSize: 11, letterSpacing: "0.18em", color: GOLD, fontWeight: 800, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>SPECIALS</span>
+        <span style={{ fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}99`, fontWeight: 900, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>TONIGHT'S</span>
+        <span style={{ fontSize: 13, letterSpacing: "0.20em", color: GOLD, fontWeight: 900, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>SPECIALS</span>
       </div>
 
       {/* Scrolling ticker */}
       <div style={{ flex: 1, overflow: "hidden", height: "100%", display: "flex", alignItems: "center", position: "relative" }}>
         {/* Left fade */}
-        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 40, background: "linear-gradient(90deg, rgba(2,1,0,0.97) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
+        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 48, background: "linear-gradient(90deg, rgba(4,2,0,0.98) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
         {/* Right fade */}
-        <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 40, background: "linear-gradient(270deg, rgba(2,1,0,0.97) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
-
-        <div className="novee-ticker-track">
-          {tickerContent}
-          {tickerContent}
-        </div>
-      </div>
-
-      {/* Day One 360 Travel referral */}
-      <div style={{
-        flexShrink: 0,
-        borderLeft: "1px solid rgba(212,175,55,0.20)",
-        height: "100%",
-        display: "flex", flexDirection: "row", alignItems: "center",
-        padding: "0 14px", gap: 10,
-        background: "rgba(10,16,40,0.60)",
-      }}>
-        <img
-          src={IMG("dayone360.png")}
-          alt="Day One 360 Travel"
-          style={{ height: 34, width: 34, borderRadius: 8, objectFit: "contain", background: "#fff", padding: 2 }}
-        />
-        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-          <span style={{ fontSize: 11, fontWeight: 900, color: "#C8D8F0", fontFamily: "'Inter',sans-serif", letterSpacing: "0.04em", whiteSpace: "nowrap" }}>DAY ONE 360</span>
-          <span style={{ fontSize: 9, fontWeight: 600, color: "rgba(180,200,230,0.70)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.12em", textTransform: "uppercase" }}>Travel Partner</span>
-        </div>
+        <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 48, background: "linear-gradient(270deg, rgba(4,2,0,0.98) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
+        <div className="novee-ticker-track">{track}</div>
       </div>
     </div>
   );
