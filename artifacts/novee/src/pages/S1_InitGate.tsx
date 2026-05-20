@@ -240,6 +240,7 @@ export function S1_InitGate() {
   const [age,         setAge]        = useState("");
   const [flavorNotes, setFlavorNotes] = useState("");
   const [expLevel,    setExpLevel]   = useState("");
+  const [seedTab,     setSeedTab]    = useState("leaf_ed");
   const [mentor,     setMentor]    = useState<string | null>(profile.mentor);
   const [seedId,     setSeedId]    = useState("criollo");
   const [selectedNote,    setSelectedNote]    = useState<string | null>(null);
@@ -1295,388 +1296,266 @@ export function S1_InitGate() {
             },
           };
           const intel = INTEL[seedId] || INTEL.criollo;
-          const activeDrink = intel.drinks.find(d => d.label === selectedPairing) || null;
+          const FLAVOR_ICONS: Record<string, {sym:string;label:string}[]> = {
+            criollo:     [{sym:"🌍",label:"EARTH"},{sym:"🌿",label:"CEDAR"},{sym:"🍫",label:"COCOA"},{sym:"🌶",label:"PEPPER"}],
+            corojo:      [{sym:"🌶",label:"PEPPER"},{sym:"🌿",label:"CEDAR"},{sym:"⚡",label:"SPICE"},{sym:"🌳",label:"OAK"}],
+            connecticut: [{sym:"🥛",label:"CREAM"},{sym:"🌾",label:"HAY"},{sym:"✨",label:"VANILLA"},{sym:"🌸",label:"FLORAL"}],
+          };
+          const RADAR_VALS: Record<string,number[]> = {
+            criollo:     [90,60,20,15,30,75,80,85],
+            corojo:      [80,70,10, 5,20,60,95,95],
+            connecticut: [25,40,90,70,55,20,10,15],
+          };
+          const BODY_META: Record<string,{label:string;dots:number}> = {
+            criollo:     {label:"MEDIUM TO FULL",dots:5},
+            corojo:      {label:"FULL",           dots:7},
+            connecticut: {label:"MILD",           dots:2},
+          };
+          const CMP_ROWS = [
+            {id:"criollo",    name:"Criollo '98",       tag:"Balanced · Earthy · Rich Spice", s:70,f:80,b:38,sm:60},
+            {id:"corojo",     name:"Corojo",            tag:"Bold · Peppery · Strong Finish",  s:95,f:90,b:55,sm:28},
+            {id:"connecticut",name:"Connecticut Shade", tag:"Smooth · Creamy · Mild",          s:22,f:45,b:78,sm:92},
+          ];
+          const FLAGS: Record<string,string> = {criollo:"🇩🇴",corojo:"🇳🇮",connecticut:"🇺🇸"};
+          const RLABELS = ["EARTH","WOOD","CREAM","SWEET","NUT","COCOA","PEPPER","SPICE"];
+          const rv  = RADAR_VALS[seedId] || RADAR_VALS.criollo;
+          const rA  = (i:number) => (i*2*Math.PI/8) - Math.PI/2;
+          const RR=68, RC=90;
+          const rGrid = (r:number) => rv.map((_,i)=>`${RC+RR*r*Math.cos(rA(i))},${RC+RR*r*Math.sin(rA(i))}`).join(" ");
+          const rPoly = rv.map((v,i)=>`${RC+RR*(v/100)*Math.cos(rA(i))},${RC+RR*(v/100)*Math.sin(rA(i))}`).join(" ");
+          const rAxes = rv.map((_,i)=>({x2:RC+RR*Math.cos(rA(i)),y2:RC+RR*Math.sin(rA(i))}));
+          const rDots = rv.map((v,i)=>({cx:RC+RR*(v/100)*Math.cos(rA(i)),cy:RC+RR*(v/100)*Math.sin(rA(i))}));
+          const rLbls = RLABELS.map((_,i)=>({x:RC+84*Math.cos(rA(i)),y:RC+84*Math.sin(rA(i))}));
+          const fl  = FLAVOR_ICONS[seedId] || FLAVOR_ICONS.criollo;
+          const bm  = BODY_META[seedId] || BODY_META.criollo;
+          const cr  = CMP_ROWS.find(c=>c.id===seedId) || CMP_ROWS[0];
+          const top2 = intel.drinks.slice(0,2);
           return (
           <motion.div key="seed_canvas" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
             style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-            {/* ── Header ── */}
-            <div style={{
-              flexShrink: 0, background: "rgba(0,0,0,0.80)", backdropFilter: "blur(20px)",
-              borderBottom: "1px solid rgba(212,175,55,0.18)",
-              display: "flex", alignItems: "stretch",
-            }}>
-              <div style={{ flex: 1, padding: "14px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div style={{ fontSize: 12, letterSpacing: "0.52em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800, marginBottom: 3 }}>
-                  SmokeCraft 360 · Kiosk Edition
-                </div>
-                <h1 style={{
-                  fontFamily: "'Cormorant Garamond',Georgia,serif",
-                  fontSize: 48, fontWeight: 700, color: GOLD,
-                  margin: 0, letterSpacing: "0.16em", textTransform: "uppercase",
-                  textShadow: `0 0 48px ${GOLD}55`, lineHeight: 1,
-                }}>Leaf Recognition Matrix</h1>
-                <div style={{ fontSize: 16, color: "rgba(240,232,212,0.35)", letterSpacing: "0.14em", marginTop: 4, fontStyle: "italic" }}>
-                  Study the leaf. Understand the blend. Build your palate.
-                </div>
-              </div>
-              <div style={{ padding: "0 32px", display: "flex", alignItems: "center", gap: 12, borderLeft: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontSize: 13, letterSpacing: "0.28em", color: "rgba(240,232,212,0.28)", textTransform: "uppercase" }}>Table Kiosk · Active</div>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 10px #32B45A" }} />
-              </div>
-            </div>
-
-            {/* ── Seed Tab Bar ── */}
-            <div style={{
-              flexShrink: 0, display: "flex",
-              background: "rgba(0,0,0,0.55)", backdropFilter: "blur(12px)",
-              borderBottom: "1px solid rgba(212,175,55,0.12)",
-            }}>
-              {SEEDS.map(s => {
-                const active = seedId === s.id;
-                return (
-                  <motion.button key={s.id} type="button" onPointerDown={() => setSeedId(s.id)}
-                    whileTap={{ scale: 0.97 }}
-                    style={{
-                      flex: 1, border: "none",
-                      borderRight: "1px solid rgba(255,255,255,0.05)",
-                      borderBottom: active ? `3px solid ${GOLD}` : "3px solid transparent",
-                      background: active ? `rgba(212,175,55,0.12)` : "transparent",
-                      cursor: "pointer", padding: "16px 28px",
-                      display: "flex", alignItems: "center", gap: 16,
-                      fontFamily: "'Inter',sans-serif", textAlign: "left",
-                      transition: "background 0.22s, border-color 0.22s",
-                      boxShadow: active ? `inset 0 -1px 0 ${GOLD}44` : "none",
-                    }}>
-                    <motion.div
-                      animate={{ scale: active ? 1 : 0.92, boxShadow: active ? `0 0 22px ${GOLD}44` : "0 0 0px transparent" }}
-                      transition={{ type: "spring", stiffness: 400, damping: 26 }}
-                      style={{
-                        width: 50, height: 50, borderRadius: "50%", flexShrink: 0,
-                        background: active ? `radial-gradient(circle at 35% 30%, ${GOLD}44, rgba(0,0,0,0.65))` : "rgba(255,255,255,0.06)",
-                        border: active ? `2px solid ${GOLD}77` : "1px solid rgba(255,255,255,0.10)",
-                        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
-                      }}>🍃</motion.div>
-                    <div>
-                      <motion.div
-                        animate={{ color: active ? GOLD : "rgba(240,232,212,0.50)" }}
-                        transition={{ duration: 0.20 }}
-                        style={{ fontSize: 26, fontWeight: 800, letterSpacing: "0.10em", textTransform: "uppercase" }}>
-                        {s.name}
-                      </motion.div>
-                      <div style={{ fontSize: 16, color: "rgba(240,232,212,0.36)", letterSpacing: "0.06em", marginTop: 2 }}>{s.tagline}</div>
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </div>
-
-            {/* ── Main body ── */}
+            {/* ── 3-column body ── */}
             <div style={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
 
-              {/* LEFT — Macro leaf photo (animated on seed change) */}
-              <div style={{ flex: "0 0 54%", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-                <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-                  {/* Animated image crossfade */}
-                  <AnimatePresence mode="sync">
-                    <motion.img
-                      key={seedId + "_img"}
-                      src={IMG(SEED_PHOTOS[seedId] || "tobacco_criollo.png")}
-                      alt={seed.name}
-                      initial={{ opacity: 0, scale: 1.08 }}
-                      animate={{ opacity: 1, scale: 1.0 }}
-                      exit={{ opacity: 0, scale: 0.96 }}
-                      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
-                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                    />
+              {/* LEFT: intro text */}
+              <div style={{ width: "22%", flexShrink: 0, background: "rgba(5,3,1,0.97)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", flexDirection: "column", padding: "32px 24px 28px", overflowY: "auto" }}>
+                <div style={{ fontSize: 11, letterSpacing: "0.40em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800, marginBottom: 12 }}>Leaf Education</div>
+                <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 34, fontWeight: 700, color: "#F0E8D4", lineHeight: 1.15, marginBottom: 20 }}>
+                  Understanding<br />the Tobacco<br />Leaf
+                </div>
+                <p style={{ fontSize: 14, color: "rgba(240,232,212,0.48)", lineHeight: 1.72, margin: "0 0 14px" }}>Every tobacco leaf contributes something different to the cigar experience.</p>
+                <p style={{ fontSize: 14, color: "rgba(240,232,212,0.48)", lineHeight: 1.72, margin: "0 0 14px" }}>Some leaves bring strength and spice. Others create smoothness, aroma, sweetness, or balance.</p>
+                <p style={{ fontSize: 14, color: "rgba(240,232,212,0.48)", lineHeight: 1.72, margin: 0 }}>Explore how each leaf shapes flavor, burn, body, and character.</p>
+                <div style={{ flex: 1, minHeight: 20 }} />
+                <div style={{ borderTop: "1px solid rgba(212,175,55,0.14)", paddingTop: 20, marginTop: 24 }}>
+                  <div style={{ fontSize: 10, letterSpacing: "0.34em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800, marginBottom: 10 }}>Why This Leaf Matters</div>
+                  <AnimatePresence mode="wait">
+                    <motion.div key={seedId + "_why"} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.30 }}>
+                      <p style={{ fontSize: 13, color: "rgba(240,232,212,0.44)", lineHeight: 1.65, margin: "0 0 12px" }}>{intel.masterNote}</p>
+                      <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 15, fontStyle: "italic", color: "rgba(212,175,55,0.45)", textAlign: "right" }}>Master Blenders of SmokeCraft</div>
+                    </motion.div>
                   </AnimatePresence>
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.40) 55%, rgba(0,0,0,0.85) 100%)" }} />
-                  {/* Bottom content */}
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 36px 28px" }}>
-                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 260, background: "linear-gradient(0deg, rgba(2,1,0,0.97) 0%, transparent 100%)", zIndex: 0 }} />
+                </div>
+              </div>
+
+              {/* CENTER: leaf photo + compare */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+
+                {/* Top: full-bleed leaf photo */}
+                <div style={{ flex: "0 0 58%", position: "relative", overflow: "hidden" }}>
+                  <AnimatePresence mode="sync">
+                    <motion.img key={seedId + "_img2"}
+                      src={IMG(SEED_PHOTOS[seedId] || "tobacco_criollo.png")} alt={seed.name}
+                      initial={{ opacity: 0, scale: 1.06 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+                      transition={{ duration: 0.50, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  </AnimatePresence>
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(150deg,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.28) 38%,rgba(0,0,0,0.94) 100%)" }} />
+
+                  {/* Bottom overlay: name + flavor icons + stats */}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "16px 22px 18px", background: "linear-gradient(0deg,rgba(4,2,0,1) 0%,rgba(4,2,0,0.75) 55%,transparent 100%)" }}>
                     <AnimatePresence mode="wait">
-                      <motion.div key={seedId + "_overlay"}
-                        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.40, ease: [0.22,1,0.36,1] }}
-                        style={{ position: "relative", zIndex: 1 }}>
-                        <div style={{ fontSize: 14, letterSpacing: "0.52em", color: `${GOLD}99`, textTransform: "uppercase", fontWeight: 800, marginBottom: 8 }}>
-                          Macro Specimen
-                        </div>
-                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 60, fontWeight: 600, color: "#F0E8D4", lineHeight: 1, textShadow: "0 2px 28px rgba(0,0,0,0.98)", marginBottom: 6 }}>
-                          {seed.name}
-                        </div>
-                        <div style={{ fontSize: 18, letterSpacing: "0.24em", color: "rgba(240,232,212,0.50)", textTransform: "uppercase", marginBottom: 12 }}>{seed.origin}</div>
-                        <p style={{ fontSize: 18, color: "rgba(240,232,212,0.55)", lineHeight: 1.60, margin: "0 0 20px", maxWidth: 400 }}>
-                          {intel.descLong}
-                        </p>
-                        <div style={{ display: "flex", gap: 24 }}>
-                          {[
-                            { label: "Origin",    val: intel.meta.origin },
-                            { label: "Seed Type", val: intel.meta.seedType },
-                            { label: "Crop",      val: intel.meta.crop },
-                            { label: "Aging",     val: intel.meta.aging },
-                          ].map(m => (
-                            <div key={m.label} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                              <div style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD, opacity: 0.65, flexShrink: 0 }} />
-                              <div>
-                                <div style={{ fontSize: 12, letterSpacing: "0.26em", color: "rgba(240,232,212,0.32)", textTransform: "uppercase", fontWeight: 700 }}>{m.label}</div>
-                                <div style={{ fontSize: 18, fontWeight: 700, color: "rgba(240,232,212,0.80)" }}>{m.val}</div>
+                      <motion.div key={seedId + "_ovl"} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                        style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 14 }}>
+
+                        {/* Left: name + origin + flavor icons */}
+                        <div>
+                          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 40, fontWeight: 700, color: "#F0E8D4", lineHeight: 1, marginBottom: 4 }}>{seed.name}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                            <span style={{ fontSize: 14 }}>{FLAGS[seedId] || "🌍"}</span>
+                            <span style={{ fontSize: 12, letterSpacing: "0.26em", color: "rgba(212,175,55,0.65)", textTransform: "uppercase", fontWeight: 700 }}>{seed.origin}</span>
+                          </div>
+                          <div style={{ fontSize: 10, letterSpacing: "0.34em", color: "rgba(212,175,55,0.50)", textTransform: "uppercase", fontWeight: 800, marginBottom: 8 }}>Flavor Profile</div>
+                          <div style={{ display: "flex", gap: 12 }}>
+                            {fl.map(fi => (
+                              <div key={fi.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                                <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(212,175,55,0.12)", border: "1.5px solid rgba(212,175,55,0.32)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>{fi.sym}</div>
+                                <span style={{ fontSize: 9, letterSpacing: "0.14em", color: "rgba(240,232,212,0.45)", textTransform: "uppercase", fontWeight: 700 }}>{fi.label}</span>
                               </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Right: body + experience + best paired */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 220 }}>
+                          <div>
+                            <div style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800, marginBottom: 5 }}>Body</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <div style={{ display: "flex", gap: 3 }}>
+                                {[1, 2, 3, 4, 5, 6, 7].map(d => (
+                                  <div key={d} style={{ width: 10, height: 10, borderRadius: 2, background: d <= bm.dots ? GOLD : "rgba(255,255,255,0.10)", boxShadow: d <= bm.dots ? `0 0 5px ${GOLD}66` : "none" }} />
+                                ))}
+                              </div>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: "#F0E8D4", letterSpacing: "0.06em" }}>{bm.label}</span>
                             </div>
-                          ))}
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800, marginBottom: 3 }}>Experience</div>
+                            <p style={{ fontSize: 12, color: "rgba(240,232,212,0.48)", lineHeight: 1.55, margin: 0, maxWidth: 200 }}>{intel.descLong.slice(0, 82)}…</p>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800, marginBottom: 6 }}>Best Paired With</div>
+                            <div style={{ display: "flex", gap: 7 }}>
+                              {top2.map(d => (
+                                <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 5, background: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.22)", borderRadius: 7, padding: "5px 9px" }}>
+                                  <span style={{ fontSize: 13 }}>{d.icon}</span>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(240,232,212,0.70)" }}>{d.label}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </motion.div>
                     </AnimatePresence>
                   </div>
                 </div>
 
-                {/* ── Leaf Comparison Intelligence bar ── */}
-                <div style={{
-                  flexShrink: 0, background: "rgba(0,0,0,0.88)", backdropFilter: "blur(20px)",
-                  borderTop: "1px solid rgba(212,175,55,0.14)", padding: "14px 20px",
-                }}>
-                  <div style={{ fontSize: 12, letterSpacing: "0.48em", color: `${GOLD}66`, textTransform: "uppercase", fontWeight: 800, textAlign: "center", marginBottom: 12 }}>
-                    ─── Leaf Comparison Intelligence ───
+                {/* Bottom: Compare to other leaves */}
+                <div style={{ flex: 1, background: "rgba(4,2,0,0.99)", borderTop: "1px solid rgba(212,175,55,0.14)", padding: "14px 18px", overflowY: "auto" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                    <div style={{ flex: 1, height: 1, background: "rgba(212,175,55,0.16)" }} />
+                    <span style={{ fontSize: 10, letterSpacing: "0.40em", color: "rgba(212,175,55,0.50)", textTransform: "uppercase", fontWeight: 800 }}>Compare to Other Leaves</span>
+                    <div style={{ flex: 1, height: 1, background: "rgba(212,175,55,0.16)" }} />
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 10 }}>
-                    {[
-                      { id:"criollo",     name:"Criollo '98",       icon:"🍃", sb:75, cb:80, pb:85, sv:"High",     cv:"High",   pv:"Heavy"     },
-                      { id:"corojo",      name:"Corojo",            icon:"🌿", sb:95, cb:55, pb:95, sv:"Very High", cv:"Medium", pv:"Aggressive"},
-                      { id:"connecticut", name:"Connecticut Shade", icon:"🍀", sb:20, cb:35, pb:10, sv:"Mild",      cv:"Smooth", pv:"Low"       },
-                    ].map(cs => (
-                      <motion.button key={cs.id} type="button" onPointerDown={() => setSeedId(cs.id)}
-                        whileTap={{ scale: 0.97 }}
-                        style={{
-                          border: "none", cursor: "pointer", textAlign: "left",
-                          background: cs.id === seedId ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.03)",
-                          borderRadius: 10, padding: "10px 14px",
-                          outline: cs.id === seedId ? `1.5px solid ${GOLD}55` : "1px solid rgba(255,255,255,0.07)",
-                          fontFamily: "'Inter',sans-serif",
-                          transition: "background 0.20s",
-                          display: "flex", gap: 10, alignItems: "flex-start",
-                        }}>
-                        <div style={{
-                          width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
-                          background: `radial-gradient(circle at 35% 30%, ${GOLD}28, rgba(0,0,0,0.55))`,
-                          border: `1.5px solid ${GOLD}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17,
-                        }}>{cs.icon}</div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 16, fontWeight: 800, color: cs.id === seedId ? GOLD : "#F0E8D4", marginBottom: 6 }}>{cs.name}</div>
-                          {[{l:"Strength",v:cs.sv,b:cs.sb},{l:"Complexity",v:cs.cv,b:cs.cb},{l:"Spice",v:cs.pv,b:cs.pb}].map(row => (
-                            <div key={row.l} style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
-                              <span style={{ fontSize:13, color:"rgba(240,232,212,0.35)", width:72, flexShrink:0 }}>{row.l}</span>
-                              <div style={{ display:"flex", gap:2 }}>
-                                {[1,2,3,4,5].map(d => (
-                                  <div key={d} style={{
-                                    width:9, height:9, borderRadius:2,
-                                    background: (row.b/20)>=d ? GOLD : "rgba(255,255,255,0.10)",
-                                    boxShadow: (row.b/20)>=d ? `0 0 5px ${GOLD}88` : "none",
-                                  }} />
-                                ))}
-                              </div>
-                              <span style={{ fontSize:13, color:"rgba(240,232,212,0.44)" }}>{row.v}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.button>
-                    ))}
-                    {/* Expert insight */}
-                    <div style={{ background:"rgba(212,175,55,0.05)", border:`1px solid ${GOLD}22`, borderRadius:10, padding:"10px 14px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
-                      <div style={{ fontSize:13, letterSpacing:"0.28em", color:`${GOLD}88`, textTransform:"uppercase", fontWeight:800, marginBottom:6 }}>Expert Insight</div>
-                      <p style={{ fontSize:14, color:"rgba(240,232,212,0.48)", lineHeight:1.55, margin:0 }}>
-                        {seedId==="criollo" ? "Criollo '98 is ideal for those who appreciate bold transitions, deep earth character, and a long, satisfying finish."
-                          : seedId==="corojo" ? "Corojo is for the serious palate — high strength, aggressive spice, and a finish that commands full attention."
-                          : "Connecticut Shade suits those who value finesse over force — elegance, creaminess, and seamless construction."}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* RIGHT — Leaf Intelligence Panel */}
-              <div style={{
-                flex: 1, display: "flex", flexDirection: "column", overflow: "hidden",
-                borderLeft: "1px solid rgba(212,175,55,0.12)",
-                background: "rgba(4,3,1,0.82)", backdropFilter: "blur(24px)",
-              }}>
-                <div style={{ flexShrink:0, padding:"10px 24px", borderBottom:"1px solid rgba(212,175,55,0.10)", display:"flex", alignItems:"center", gap:10 }}>
-                  <div style={{ width:18, height:1, background:`${GOLD}44` }} />
-                  <span style={{ fontSize:14, letterSpacing:"0.46em", color:`${GOLD}80`, fontWeight:800, textTransform:"uppercase" }}>Leaf Intelligence Panel</span>
-                  <div style={{ flex:1, height:1, background:`${GOLD}20` }} />
-                </div>
-
-                <div style={{ flex:1, overflowY:"auto", padding:"0 24px 20px" }}>
-
-                  {/* Origin Profile */}
-                  <div style={{ padding:"14px 0 14px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
-                      <div style={{ flex:1 }}>
-                        <div style={{ fontSize:14, letterSpacing:"0.36em", color:GOLD, textTransform:"uppercase", fontWeight:800, marginBottom:6 }}>🌍 Origin Profile</div>
-                        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:42, fontWeight:600, color:"#F0E8D4", lineHeight:1, marginBottom:5 }}>{seed.name}</div>
-                        <div style={{ fontSize:16, letterSpacing:"0.24em", color:`${GOLD}88`, textTransform:"uppercase", marginBottom:12 }}>{seed.origin}</div>
-                        <p style={{ fontSize:18, color:"rgba(240,232,212,0.50)", lineHeight:1.62, margin:0 }}>{seed.profile}</p>
-                      </div>
-                      <div style={{ width:72, height:56, flexShrink:0, marginLeft:16, borderRadius:8, background:"radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.20), rgba(0,0,0,0.55))", border:"1px solid rgba(212,175,55,0.22)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, opacity:0.80 }}>🗺</div>
-                    </div>
-                  </div>
-
-                  {/* Profile Telemetry */}
-                  <div style={{ padding:"14px 0 14px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
-                    <div style={{ fontSize:14, letterSpacing:"0.36em", color:GOLD, textTransform:"uppercase", fontWeight:800, marginBottom:14 }}>📊 Profile Telemetry</div>
-                    {intel.telemetry.map((sp, ti) => (
-                      <div key={sp.k} style={{ display:"flex", alignItems:"center", gap:12, marginBottom:11 }}>
-                        <span style={{ fontSize:14, letterSpacing:"0.18em", color:"rgba(240,232,212,0.40)", textTransform:"uppercase", fontWeight:700, width:82, flexShrink:0 }}>{sp.k}</span>
-                        <div style={{ flex:1, height:8, background:"rgba(255,255,255,0.06)", borderRadius:4 }}>
-                          <motion.div key={seedId+sp.k}
-                            initial={{ width:0 }} animate={{ width:`${sp.b}%` }}
-                            transition={{ duration:0.58, delay:ti*0.07, ease:[0.22,1,0.36,1] }}
-                            style={{ height:"100%", background:`linear-gradient(90deg, ${GOLD}66, ${GOLD})`, borderRadius:4, boxShadow:`0 0 12px ${GOLD}55` }} />
-                        </div>
-                        <span style={{ fontSize:16, fontWeight:700, color:"#F0E8D4", textAlign:"right", minWidth:148, flexShrink:0 }}>{sp.v}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Detectable Notes — interactive chips */}
-                  <div style={{ padding:"14px 0 14px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
-                    <div style={{ fontSize:14, letterSpacing:"0.36em", color:GOLD, textTransform:"uppercase", fontWeight:800, marginBottom:14 }}>🍫 Detectable Notes</div>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
-                      {intel.notes.map(n => {
-                        const on = selectedNote === n;
-                        return (
-                          <motion.button key={n} type="button"
-                            onPointerDown={() => setSelectedNote(on ? null : n)}
-                            whileTap={{ scale: 0.93 }}
-                            animate={{
-                              background: on ? GOLD : "rgba(212,175,55,0.07)",
-                              boxShadow: on ? `0 0 18px ${GOLD}66, 0 0 6px ${GOLD}44` : "none",
-                            }}
-                            transition={{ duration: 0.18 }}
-                            style={{
-                              border: `1.5px solid ${on ? GOLD : "rgba(212,175,55,0.24)"}`,
-                              borderRadius: 8, padding: "8px 16px", cursor: "pointer",
-                              fontSize: 18, fontWeight: 700,
-                              color: on ? "#000" : "rgba(240,232,212,0.70)",
-                              fontFamily: "'Inter',sans-serif",
-                              transition: "border-color 0.18s, color 0.18s",
-                            }}>
-                            {n}
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                    <AnimatePresence>
-                      {selectedNote && (
-                        <motion.div
-                          initial={{ opacity:0, height:0, marginTop:0 }} animate={{ opacity:1, height:"auto", marginTop:12 }} exit={{ opacity:0, height:0, marginTop:0 }}
-                          transition={{ duration:0.28 }}
-                          style={{ background:"rgba(212,175,55,0.10)", border:`1px solid ${GOLD}33`, borderRadius:10, padding:"12px 16px", overflow:"hidden" }}>
-                          <div style={{ fontSize:16, fontWeight:800, color:GOLD, marginBottom:4 }}>✓ {selectedNote}</div>
-                          <div style={{ fontSize:16, color:"rgba(240,232,212,0.55)", lineHeight:1.55 }}>
-                            This note is a primary tasting characteristic of <strong style={{ color:"#F0E8D4" }}>{seed.name}</strong>. Focus on detecting it in the early to mid-third of the smoke.
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Pairing Intelligence — active drink picker */}
-                  <div style={{ padding:"14px 0 14px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
-                    <div style={{ fontSize:14, letterSpacing:"0.36em", color:GOLD, textTransform:"uppercase", fontWeight:800, marginBottom:6 }}>🍾 Pairing Intelligence</div>
-                    <div style={{ fontSize:14, letterSpacing:"0.22em", color:"rgba(240,232,212,0.30)", textTransform:"uppercase", marginBottom:14 }}>Select a Pairing to Explore</div>
-                    <div style={{ display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:8, marginBottom:12 }}>
-                      {intel.drinks.map(d => {
-                        const on = selectedPairing === d.label;
-                        return (
-                          <motion.button key={d.label} type="button"
-                            onPointerDown={() => setSelectedPairing(on ? null : d.label)}
-                            whileTap={{ scale: 0.94 }}
-                            animate={{
-                              background: on ? `rgba(212,175,55,0.20)` : "rgba(255,255,255,0.04)",
-                              boxShadow: on ? `0 0 20px ${GOLD}44` : "none",
-                            }}
-                            transition={{ duration:0.18 }}
-                            style={{
-                              border: `1.5px solid ${on ? GOLD : "rgba(255,255,255,0.09)"}`,
-                              borderRadius:10, padding:"12px 8px", cursor:"pointer",
-                              display:"flex", flexDirection:"column", alignItems:"center", gap:6,
-                              fontFamily:"'Inter',sans-serif",
-                              transition:"border-color 0.18s",
-                              position:"relative",
-                            }}>
-                            {on && (
-                              <div style={{ position:"absolute", top:6, right:8, fontSize:12, color:GOLD, fontWeight:900 }}>✓</div>
-                            )}
-                            <span style={{ fontSize:26 }}>{d.icon}</span>
-                            <span style={{ fontSize:14, fontWeight:700, color: on ? GOLD : "#F0E8D4", textAlign:"center", lineHeight:1.25 }}>{d.label}</span>
-                            <span style={{ fontSize:12, color:"rgba(240,232,212,0.32)", letterSpacing:"0.12em", textTransform:"uppercase" }}>{d.category}</span>
-                            {/* Score bar */}
-                            <div style={{ width:"80%", height:3, background:"rgba(255,255,255,0.08)", borderRadius:2, marginTop:2 }}>
-                              <div style={{ height:"100%", width:`${d.score}%`, background: on ? GOLD : "rgba(212,175,55,0.45)", borderRadius:2 }} />
-                            </div>
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                    {/* Selected drink detail card */}
-                    <AnimatePresence mode="wait">
-                      {activeDrink ? (
-                        <motion.div key={activeDrink.label}
-                          initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-6 }}
-                          transition={{ duration:0.28, ease:[0.22,1,0.36,1] }}
-                          style={{ background:"rgba(212,175,55,0.10)", border:`1.5px solid ${GOLD}44`, borderRadius:12, padding:"16px 20px" }}>
-                          <div style={{ display:"flex", gap:14, alignItems:"flex-start" }}>
-                            <span style={{ fontSize:36, flexShrink:0 }}>{activeDrink.icon}</span>
-                            <div style={{ flex:1 }}>
-                              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:4 }}>
-                                <span style={{ fontSize:22, fontWeight:900, color:GOLD }}>{activeDrink.label}</span>
-                                <span style={{ fontSize:14, color:"rgba(212,175,55,0.65)", letterSpacing:"0.12em", textTransform:"uppercase" }}>{activeDrink.category}</span>
-                              </div>
-                              <p style={{ fontSize:18, color:"rgba(240,232,212,0.62)", lineHeight:1.60, margin:"0 0 10px" }}>{activeDrink.desc}</p>
-                              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                                <span style={{ fontSize:14, color:"rgba(240,232,212,0.35)", letterSpacing:"0.18em", textTransform:"uppercase" }}>Pairing Match</span>
-                                <div style={{ flex:1, height:6, background:"rgba(255,255,255,0.07)", borderRadius:3 }}>
-                                  <motion.div initial={{ width:0 }} animate={{ width:`${activeDrink.score}%` }} transition={{ duration:0.50, ease:[0.22,1,0.36,1] }}
-                                    style={{ height:"100%", background:`linear-gradient(90deg, ${GOLD}77, ${GOLD})`, borderRadius:3, boxShadow:`0 0 10px ${GOLD}66` }} />
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10 }}>
+                    {CMP_ROWS.map(cs => {
+                      const act = cs.id === seedId;
+                      return (
+                        <motion.button key={cs.id} type="button" onPointerDown={() => setSeedId(cs.id)} whileTap={{ scale: 0.97 }}
+                          animate={{ background: act ? "rgba(212,175,55,0.13)" : "rgba(255,255,255,0.025)" }}
+                          style={{ border: `1.5px solid ${act ? GOLD + "66" : "rgba(255,255,255,0.07)"}`, cursor: "pointer", borderRadius: 10, padding: "12px 14px", textAlign: "left", fontFamily: "'Inter',sans-serif", display: "flex", gap: 10, alignItems: "flex-start", transition: "border-color 0.20s" }}>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, background: act ? `radial-gradient(circle at 35% 30%,${GOLD}44,rgba(0,0,0,0.65))` : "rgba(255,255,255,0.06)", border: `1.5px solid ${act ? GOLD + "66" : "rgba(255,255,255,0.10)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🍃</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: act ? GOLD : "#F0E8D4", marginBottom: 1 }}>{cs.name}</div>
+                            <div style={{ fontSize: 11, color: "rgba(240,232,212,0.36)", marginBottom: 8 }}>{cs.tag}</div>
+                            {([{ l: "STRENGTH", v: cs.s }, { l: "FLAVOR", v: cs.f }, { l: "BURN", v: cs.b }, { l: "SMOOTHNESS", v: cs.sm }]).map(row => (
+                              <div key={row.l} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                                <span style={{ fontSize: 9, letterSpacing: "0.14em", color: "rgba(240,232,212,0.30)", textTransform: "uppercase", width: 64, flexShrink: 0 }}>{row.l}</span>
+                                <div style={{ flex: 1, height: 4, background: "rgba(255,255,255,0.07)", borderRadius: 2 }}>
+                                  <motion.div key={cs.id + row.l + seedId} initial={{ width: 0 }} animate={{ width: `${row.v}%` }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                                    style={{ height: "100%", background: act ? `linear-gradient(90deg,${GOLD}88,${GOLD})` : "rgba(212,175,55,0.40)", borderRadius: 2 }} />
                                 </div>
-                                <span style={{ fontSize:16, fontWeight:800, color:GOLD }}>{activeDrink.score}%</span>
                               </div>
-                            </div>
+                            ))}
                           </div>
-                        </motion.div>
-                      ) : (
-                        <motion.div key="no-selection"
-                          initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-                          transition={{ duration:0.22 }}
-                          style={{ padding:"12px 16px", borderRadius:10, background:"rgba(200,50,42,0.08)", border:"1px solid rgba(200,50,42,0.22)", display:"flex", gap:10, alignItems:"flex-start" }}>
-                          <span style={{ fontSize:16, color:"#C8322A", flexShrink:0, marginTop:1 }}>⚠</span>
-                          <span style={{ fontSize:16, color:"rgba(240,232,212,0.48)", lineHeight:1.55 }}>
-                            <span style={{ color:"#C8322A", fontWeight:700 }}>Pairing Warning: </span>{intel.warning}
-                          </span>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Master Notes */}
-                  <div style={{ padding:"14px 0 0" }}>
-                    <div style={{ fontSize:14, letterSpacing:"0.36em", color:GOLD, textTransform:"uppercase", fontWeight:800, marginBottom:12 }}>📝 Master Notes</div>
-                    <div style={{ display:"flex", gap:16, alignItems:"flex-start" }}>
-                      <div style={{ flex:1, padding:"16px 20px", background:"rgba(212,175,55,0.05)", border:`1px solid ${GOLD}22`, borderLeft:`3px solid ${GOLD}66`, borderRadius:"0 10px 10px 0" }}>
-                        <span style={{ fontSize:26, color:`${GOLD}55`, fontFamily:"Georgia,serif", lineHeight:1 }}>"</span>
-                        <p style={{ fontSize:20, color:"rgba(240,232,212,0.68)", lineHeight:1.65, margin:"-10px 0 0", fontStyle:"italic" }}>{intel.masterNote}</p>
-                      </div>
-                      <div style={{ width:64, height:64, flexShrink:0, borderRadius:10, background:"radial-gradient(circle at 35% 30%, rgba(212,175,55,0.24), rgba(0,0,0,0.60))", border:"1px solid rgba(212,175,55,0.24)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:30 }}>🚬</div>
-                    </div>
-                  </div>
-
-                  {/* CTA */}
-                  <div style={{ paddingTop:20 }}>
-                    <GoldBtn onClick={() => go("quiz")} fullWidth>BEGIN BLIND IDENTIFICATION TEST →</GoldBtn>
+                        </motion.button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
+
+              {/* RIGHT: radar + bars */}
+              <div style={{ width: "24%", flexShrink: 0, background: "rgba(5,3,1,0.97)", borderLeft: "1px solid rgba(212,175,55,0.12)", display: "flex", flexDirection: "column", padding: "18px 16px", overflowY: "auto" }}>
+
+                {/* Mini cigar photo */}
+                <div style={{ width: "100%", height: 86, borderRadius: 9, overflow: "hidden", marginBottom: 16, flexShrink: 0, position: "relative" }}>
+                  <img src={IMG("cigar_hero.png")} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.48)" }} />
+                  <div style={{ position: "absolute", top: 8, right: 10, fontSize: 9, letterSpacing: "0.26em", color: "rgba(212,175,55,0.70)", fontWeight: 800, textTransform: "uppercase", textAlign: "right", lineHeight: 1.5 }}>SMOKECRAFT 360<br />KIOSK EDITION</div>
+                </div>
+
+                <div style={{ fontSize: 10, letterSpacing: "0.34em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800, textAlign: "center", marginBottom: 12 }}>Flavor &amp; Aroma Spectrum</div>
+
+                {/* Radar SVG */}
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+                  <AnimatePresence mode="wait">
+                    <motion.svg key={seedId + "_radar"} width="176" height="176" viewBox="0 0 180 180"
+                      initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+                      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}>
+                      {[0.25, 0.50, 0.75, 1.0].map(r => (
+                        <polygon key={r} points={rGrid(r)} fill="none" stroke="rgba(212,175,55,0.15)" strokeWidth="1" />
+                      ))}
+                      {rAxes.map((ax, i) => (
+                        <line key={i} x1={RC} y1={RC} x2={ax.x2} y2={ax.y2} stroke="rgba(212,175,55,0.18)" strokeWidth="1" />
+                      ))}
+                      <polygon points={rPoly} fill="rgba(212,175,55,0.18)" stroke={GOLD} strokeWidth="1.5" />
+                      {rDots.map((d, i) => <circle key={i} cx={d.cx} cy={d.cy} r="3" fill={GOLD} />)}
+                      {rLbls.map((p, i) => (
+                        <text key={i} x={p.x} y={p.y} fontSize="8" fill="rgba(212,175,55,0.60)" textAnchor="middle" dominantBaseline="central" fontWeight="700" letterSpacing="0.5" fontFamily="'Inter',sans-serif">{RLABELS[i]}</text>
+                      ))}
+                    </motion.svg>
+                  </AnimatePresence>
+                </div>
+
+                {/* Smoke Density */}
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 7 }}>
+                    <span style={{ fontSize: 13 }}>🔥</span>
+                    <span style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>Smoke Density</span>
+                  </div>
+                  <div style={{ height: 7, background: "rgba(255,255,255,0.07)", borderRadius: 4, overflow: "hidden" }}>
+                    <motion.div key={seedId + "_sd"} initial={{ width: 0 }} animate={{ width: `${cr.s}%` }} transition={{ duration: 0.50, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ height: "100%", background: `linear-gradient(90deg,${GOLD}66,${GOLD})`, boxShadow: `0 0 8px ${GOLD}55` }} />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                    <span style={{ fontSize: 9, color: "rgba(240,232,212,0.28)", letterSpacing: "0.12em", textTransform: "uppercase" }}>LIGHT</span>
+                    <span style={{ fontSize: 9, color: "rgba(240,232,212,0.28)", letterSpacing: "0.12em", textTransform: "uppercase" }}>DENSE</span>
+                  </div>
+                </div>
+
+                {/* Burn Speed */}
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 7 }}>
+                    <span style={{ fontSize: 13 }}>🕯</span>
+                    <span style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>Burn Speed</span>
+                  </div>
+                  <div style={{ height: 7, background: "rgba(255,255,255,0.07)", borderRadius: 4, overflow: "hidden" }}>
+                    <motion.div key={seedId + "_bs"} initial={{ width: 0 }} animate={{ width: `${cr.b}%` }} transition={{ duration: 0.50, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ height: "100%", background: `linear-gradient(90deg,${GOLD}66,${GOLD})`, boxShadow: `0 0 8px ${GOLD}55` }} />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                    <span style={{ fontSize: 9, color: "rgba(240,232,212,0.28)", letterSpacing: "0.12em", textTransform: "uppercase" }}>SLOW</span>
+                    <span style={{ fontSize: 9, color: "rgba(240,232,212,0.28)", letterSpacing: "0.12em", textTransform: "uppercase" }}>FAST</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Bottom nav bar ── */}
+            <div style={{ flexShrink: 0, background: "rgba(3,2,0,1)", borderTop: "1px solid rgba(212,175,55,0.18)", display: "flex", height: 62 }}>
+              <div style={{ flex: 1, display: "flex" }}>
+                {[
+                  { id: "leaf_ed", label: "LEAF EDUCATION",   sym: "🍃" },
+                  { id: "blend",   label: "BLENDING JOURNEY", sym: "🔬" },
+                  { id: "pairing", label: "PAIRING GUIDE",    sym: "🍷" },
+                  { id: "profile", label: "MY PROFILE",       sym: "👤" },
+                ].map(tab => {
+                  const act = seedTab === tab.id;
+                  return (
+                    <motion.button key={tab.id} type="button" onPointerDown={() => setSeedTab(tab.id)} whileTap={{ scale: 0.97 }}
+                      style={{ flex: 1, border: "none", cursor: "pointer", background: act ? "rgba(212,175,55,0.09)" : "transparent", borderBottom: act ? `2.5px solid ${GOLD}` : "2.5px solid transparent", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontFamily: "'Inter',sans-serif", transition: "background 0.18s,border-color 0.18s" }}>
+                      <span style={{ fontSize: 15 }}>{tab.sym}</span>
+                      <span style={{ fontSize: 11, fontWeight: act ? 800 : 500, letterSpacing: "0.16em", color: act ? GOLD : "rgba(240,232,212,0.32)", textTransform: "uppercase" }}>{tab.label}</span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+              <motion.button type="button" onPointerDown={() => go("quiz")} whileTap={{ scale: 0.97 }}
+                style={{ flexShrink: 0, padding: "0 32px", background: `linear-gradient(135deg,${GOLD} 0%,#B8920A 100%)`, border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, fontSize: 14, fontWeight: 800, color: "#0A0600", letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: `-4px 0 28px rgba(212,175,55,0.22)` }}>
+                CONTINUE JOURNEY <span style={{ fontSize: 17 }}>→</span>
+              </motion.button>
             </div>
           </motion.div>
           );
