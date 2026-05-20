@@ -1,19 +1,25 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const G   = "#D4AF37";
-const RED = "#F07070";
+const G        = "#D4AF37";
+const G_STAFF  = "#D48B00";
+const RED      = "#F07070";
 
 export type PinRole = "staff" | "management" | "developer";
 
-const STAFF_PINS  = new Set(["1234", "2580", "7890"]);
-const MGMT_PIN    = "9999";
-const DEV_PIN     = "0000";
+// Staff PINs are 4-digit. Management PIN is 6-digit.
+const STAFF_PINS = new Set(["1234", "2580", "7890"]);
+const MGMT_PIN   = "999999";
+const DEV_PIN    = "0000";
+
+function getMaxDigits(level: PinRole): number {
+  if (level === "management") return 6;
+  return 4;
+}
 
 function resolveRole(pin: string, level: PinRole): PinRole | null {
   if (level === "staff") {
     if (STAFF_PINS.has(pin)) return "staff";
-    if (pin === MGMT_PIN)    return "management";
     if (pin === DEV_PIN)     return "developer";
   }
   if (level === "management") {
@@ -27,12 +33,12 @@ function resolveRole(pin: string, level: PinRole): PinRole | null {
 }
 
 const LABELS: Record<PinRole, { title: string; sub: string; icon: string }> = {
-  staff:      { title: "STAFF ACCESS",           sub: "Enter your 4-digit staff credential",               icon: "⊞" },
-  management: { title: "MANAGEMENT CLEARANCE",   sub: "Enter management authorization code",              icon: "◈" },
-  developer:  { title: "DEVELOPER ROOT OVERRIDE", sub: "Enter developer root access credential",          icon: "⟡" },
+  staff:      { title: "STAFF ACCESS",            sub: "Enter your 4-digit staff credential",       icon: "⊞" },
+  management: { title: "MANAGEMENT CLEARANCE",    sub: "Enter your 6-digit authorization code",     icon: "◈" },
+  developer:  { title: "DEVELOPER ROOT OVERRIDE", sub: "Enter developer root access credential",    icon: "⟡" },
 };
 
-interface RippleState { x: number; y: number; key: number }
+interface RippleRing { x: number; y: number; key: number; color: string }
 
 interface Props {
   level: PinRole;
@@ -41,43 +47,70 @@ interface Props {
 }
 
 export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
+  const maxDigits = getMaxDigits(level);
+  const accentColor = level === "management" ? G : G_STAFF;
+
   const [pin,      setPin]      = useState<string[]>([]);
   const [shake,    setShake]    = useState(false);
   const [error,    setError]    = useState("");
   const [failures, setFailures] = useState(0);
   const [locked,   setLocked]   = useState(false);
-  const [ripple,   setRipple]   = useState<RippleState | null>(null);
+  const [rings,    setRings]    = useState<RippleRing[]>([]);
   const [success,  setSuccess]  = useState(false);
-  const rippleKey = useRef(0);
+  const ringKey   = useRef(0);
   const lockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => { if (lockTimer.current) clearTimeout(lockTimer.current); }, []);
 
+  function logFailedManagement() {
+    if (level === "management") {
+      fetch("/api/audit", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ action: "auth.management_pin_failed", detail: "Failed management PIN attempt", severity: "warn" }),
+      }).catch(() => { /* silent */ });
+    }
+  }
+
   const tryPin = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
     if (locked || success) return;
     const entered = pin.join("");
-    if (entered.length < 4) { setError("Enter all 4 digits"); triggerShake(); return; }
+    if (entered.length < maxDigits) {
+      setError(`Enter all ${maxDigits} digits`);
+      triggerShake();
+      return;
+    }
     const role = resolveRole(entered, level);
     if (role) {
       const rect = (e.currentTarget as HTMLElement).closest("[data-ripple-origin]")?.getBoundingClientRect();
-      const rx = rect ? e.clientX : window.innerWidth / 2;
+      const rx = rect ? e.clientX : window.innerWidth  / 2;
       const ry = rect ? e.clientY : window.innerHeight / 2;
-      rippleKey.current += 1;
-      setRipple({ x: rx, y: ry, key: rippleKey.current });
+
+      // 3 concentric rings — staggered 80ms each
+      const baseKey = ++ringKey.current;
+      const color   = level === "management" ? G : G_STAFF;
+      setRings([
+        { x: rx, y: ry, key: baseKey,     color },
+        { x: rx, y: ry, key: baseKey + 1, color },
+        { x: rx, y: ry, key: baseKey + 2, color },
+      ]);
       setSuccess(true);
-      setTimeout(() => onSuccess(role), 900);
+      setTimeout(() => onSuccess(role), 950);
     } else {
+      logFailedManagement();
       const next = failures + 1;
       setFailures(next);
       triggerShake();
-      setError(next >= 5 ? "Terminal locked — contact supervisor" : `Invalid credential (${5 - next} attempts remaining)`);
+      setError(next >= 5
+        ? "Terminal locked — contact supervisor"
+        : `Invalid credential (${5 - next} attempt${5 - next !== 1 ? "s" : ""} remaining)`);
       if (next >= 5) {
         setLocked(true);
-        lockTimer.current = setTimeout(() => { setLocked(false); setFailures(0); setError(""); }, 30000);
+        lockTimer.current = setTimeout(() => { setLocked(false); setFailures(0); setError(""); }, 30_000);
       }
       setPin([]);
     }
-  }, [pin, locked, success, failures, level, onSuccess]);
+  }, [pin, locked, success, failures, level, maxDigits, onSuccess]);
 
   function triggerShake() {
     setShake(true);
@@ -85,7 +118,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
   }
 
   function pushDigit(d: string) {
-    if (locked || success || pin.length >= 4) return;
+    if (locked || success || pin.length >= maxDigits) return;
     setError("");
     setPin(p => [...p, d]);
   }
@@ -121,31 +154,33 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
         }}
         onPointerDown={e => { if (e.target === e.currentTarget) onCancel(); }}
       >
-        {/* Ripple layer */}
+
+        {/* ── Concentric ripple rings ── */}
         <AnimatePresence>
-          {ripple && (
+          {rings.map((ring, idx) => (
             <motion.div
-              key={ripple.key}
-              initial={{ scale: 0, opacity: 0.85 }}
-              animate={{ scale: 18, opacity: 0 }}
+              key={ring.key}
+              initial={{ scale: 0, opacity: 0.80 }}
+              animate={{ scale: 24, opacity: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.88, ease: [0.12, 0.90, 0.18, 1.0] }}
+              transition={{ duration: 0.72, delay: idx * 0.08, ease: [0.12, 0.90, 0.18, 1.0] }}
               style={{
                 position: "fixed",
-                left: ripple.x - 40, top: ripple.y - 40,
+                left: ring.x - 40, top: ring.y - 40,
                 width: 80, height: 80,
                 borderRadius: "50%",
-                background: `radial-gradient(circle, ${G}CC 0%, ${G}55 40%, transparent 70%)`,
+                background: `radial-gradient(circle, ${ring.color}CC 0%, ${ring.color}44 50%, transparent 70%)`,
                 pointerEvents: "none",
                 zIndex: 9600,
                 transformOrigin: "center center",
                 willChange: "transform, opacity",
+                transform: "translateZ(0)",
               }}
             />
-          )}
+          ))}
         </AnimatePresence>
 
-        {/* Card */}
+        {/* ── Card ── */}
         <motion.div
           data-ripple-origin
           animate={shake ? { x: [-16, 16, -12, 12, -7, 7, 0] } : { x: 0 }}
@@ -153,11 +188,11 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
           initial={{ scale: 0.90, y: 24, opacity: 0 }}
           style={{
             background: "rgba(8,5,2,0.97)",
-            border: `1.5px solid ${G}55`,
+            border: `1.5px solid ${accentColor}55`,
             borderRadius: 18,
             padding: "40px 40px 36px",
             width: 460,
-            boxShadow: `0 0 80px rgba(212,175,55,0.22), 0 32px 80px rgba(0,0,0,0.90)`,
+            boxShadow: `0 0 80px ${accentColor}22, 0 32px 80px rgba(0,0,0,0.90)`,
             position: "relative",
             overflow: "hidden",
           }}
@@ -165,32 +200,37 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
           {/* Ambient top glow */}
           <div style={{
             position: "absolute", top: 0, left: 0, right: 0, height: 120,
-            background: `radial-gradient(ellipse at 50% 0%, ${G}18 0%, transparent 70%)`,
+            background: `radial-gradient(ellipse at 50% 0%, ${accentColor}18 0%, transparent 70%)`,
             pointerEvents: "none",
           }} />
 
+          {/* Management mode indicator stripe */}
+          {level === "management" && (
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: 3,
+              background: `linear-gradient(90deg, transparent, ${G}, transparent)`,
+              opacity: 0.7,
+            }} />
+          )}
+
           {/* Close */}
-          <button
-            type="button"
-            onPointerDown={onCancel}
-            style={{
-              position: "absolute", top: 16, right: 16,
-              background: "none", border: `1px solid rgba(212,175,55,0.20)`,
-              borderRadius: 7, width: 32, height: 32,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", color: `${G}88`, fontSize: 16,
-            }}
-          >×</button>
+          <button type="button" onPointerDown={onCancel} style={{
+            position: "absolute", top: 16, right: 16,
+            background: "none", border: `1px solid rgba(212,175,55,0.20)`,
+            borderRadius: 7, width: 32, height: 32,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer", color: `${G}88`, fontSize: 16,
+          }}>×</button>
 
           {/* Icon */}
           <div style={{
             width: 64, height: 64, borderRadius: "50%",
-            background: `rgba(212,175,55,0.12)`,
-            border: `2px solid ${G}55`,
+            background: `${accentColor}12`,
+            border: `2px solid ${accentColor}55`,
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "0 auto 24px",
-            boxShadow: `0 0 24px ${G}33`,
-            fontSize: 26, color: G,
+            boxShadow: `0 0 24px ${accentColor}33`,
+            fontSize: 26, color: accentColor,
           }}>
             {lbl.icon}
           </div>
@@ -199,7 +239,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
           <div style={{
             textAlign: "center", marginBottom: 6,
             fontSize: 13, fontWeight: 900, letterSpacing: "0.22em",
-            color: G, fontFamily: "'Inter',sans-serif", textTransform: "uppercase",
+            color: accentColor, fontFamily: "'Inter',sans-serif", textTransform: "uppercase",
           }}>{lbl.title}</div>
           <div style={{
             textAlign: "center", marginBottom: 28,
@@ -207,9 +247,9 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
             fontFamily: "'Inter',sans-serif", letterSpacing: "0.10em",
           }}>{lbl.sub}</div>
 
-          {/* PIN dots */}
-          <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 28 }}>
-            {[0,1,2,3].map(i => {
+          {/* PIN dots — dynamic count based on level */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 14, marginBottom: 28 }}>
+            {Array.from({ length: maxDigits }).map((_, i) => {
               const filled = i < pin.length;
               return (
                 <motion.div
@@ -217,10 +257,10 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
                   animate={filled ? { scale: [1, 1.3, 1] } : { scale: 1 }}
                   transition={{ duration: 0.22 }}
                   style={{
-                    width: 18, height: 18, borderRadius: "50%",
-                    background: filled ? (success ? "#32B45A" : G) : "transparent",
-                    border: `2px solid ${filled ? (success ? "#32B45A" : G) : "rgba(212,175,55,0.35)"}`,
-                    boxShadow: filled ? `0 0 12px ${success ? "#32B45A" : G}88` : "none",
+                    width: 16, height: 16, borderRadius: "50%",
+                    background: filled ? (success ? "#32B45A" : accentColor) : "transparent",
+                    border: `2px solid ${filled ? (success ? "#32B45A" : accentColor) : "rgba(212,175,55,0.30)"}`,
+                    boxShadow: filled ? `0 0 10px ${success ? "#32B45A" : accentColor}88` : "none",
                     transition: "all 0.18s",
                   }}
                 />
@@ -228,7 +268,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
             })}
           </div>
 
-          {/* Error */}
+          {/* Error message */}
           <AnimatePresence>
             {error && (
               <motion.div
@@ -256,13 +296,12 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
                   whileTap={{ scale: 0.90 }}
                   style={{
                     height: 62,
-                    background: isBack ? "rgba(240,112,112,0.10)" : "rgba(212,175,55,0.08)",
-                    border: `1px solid ${isBack ? "rgba(240,112,112,0.30)" : `${G}33`}`,
+                    background: isBack ? "rgba(240,112,112,0.10)" : `${accentColor}0d`,
+                    border: `1px solid ${isBack ? "rgba(240,112,112,0.30)" : `${accentColor}33`}`,
                     borderRadius: 10,
                     cursor: locked ? "not-allowed" : "pointer",
-                    fontSize: 22,
-                    fontWeight: 800,
-                    color: isBack ? RED : G,
+                    fontSize: 22, fontWeight: 800,
+                    color: isBack ? RED : accentColor,
                     fontFamily: "'Inter',sans-serif",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     opacity: locked ? 0.35 : 1,
@@ -277,19 +316,20 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
           <motion.button
             type="button"
             onPointerDown={tryPin}
-            disabled={locked || pin.length < 4}
+            disabled={locked || pin.length < maxDigits}
             whileTap={{ scale: 0.96 }}
             style={{
-              marginTop: 14, width: "100%",
-              height: 56,
-              background: success ? "rgba(50,180,90,0.28)" : pin.length === 4 ? `linear-gradient(135deg, ${G}, #A87B0A)` : "rgba(212,175,55,0.08)",
-              border: `1px solid ${success ? "#32B45A88" : pin.length === 4 ? `${G}` : `${G}30`}`,
+              marginTop: 14, width: "100%", height: 56,
+              background: success
+                ? "rgba(50,180,90,0.28)"
+                : pin.length === maxDigits
+                  ? `linear-gradient(135deg, ${accentColor}, ${level === "management" ? "#8B7000" : "#A87B0A"})`
+                  : `${accentColor}08`,
+              border: `1px solid ${success ? "#32B45A88" : pin.length === maxDigits ? accentColor : `${accentColor}30`}`,
               borderRadius: 12,
-              cursor: pin.length === 4 && !locked ? "pointer" : "not-allowed",
-              fontSize: 13,
-              fontWeight: 900,
-              letterSpacing: "0.22em",
-              color: pin.length === 4 ? (success ? "#32B45A" : "#0A0604") : `${G}44`,
+              cursor: pin.length === maxDigits && !locked ? "pointer" : "not-allowed",
+              fontSize: 13, fontWeight: 900, letterSpacing: "0.22em",
+              color: pin.length === maxDigits ? (success ? "#32B45A" : "#0A0604") : `${accentColor}44`,
               textTransform: "uppercase",
               fontFamily: "'Inter',sans-serif",
               transition: "all 0.25s",
@@ -298,13 +338,13 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
             {success ? "✓ AUTHORIZED" : locked ? "TERMINAL LOCKED" : "AUTHENTICATE"}
           </motion.button>
 
-          {/* Level indicator */}
+          {/* Footer */}
           <div style={{
             marginTop: 18, textAlign: "center",
-            fontSize: 9, color: "rgba(212,175,55,0.22)",
+            fontSize: 9, color: "rgba(212,175,55,0.20)",
             fontFamily: "'Inter',sans-serif", letterSpacing: "0.18em", textTransform: "uppercase",
           }}>
-            NOVEE OS · SECURITY TIER {level === "staff" ? "1" : level === "management" ? "2" : "3"} · ENCRYPTED
+            NOVEE OS · SECURITY TIER {level === "staff" ? "1" : level === "management" ? "2" : "3"} · {maxDigits}-DIGIT · ENCRYPTED
           </div>
         </motion.div>
       </motion.div>

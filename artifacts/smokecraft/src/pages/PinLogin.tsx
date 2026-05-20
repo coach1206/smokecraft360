@@ -34,8 +34,9 @@ interface PinLoginResponse {
   retryAfterSeconds?: number;
 }
 
-async function validatePin(pin: string, venueId?: string): Promise<PinLoginResponse> {
-  const res = await fetch("/api/auth/pin-login", {
+async function validatePin(pin: string, mode: "staff" | "management" = "staff", venueId?: string): Promise<PinLoginResponse> {
+  const endpoint = mode === "management" ? "/api/auth/founder-verify" : "/api/auth/pin-login";
+  const res = await fetch(endpoint, {
     method:  "POST",
     headers: { "Content-Type": "application/json" },
     body:    JSON.stringify({ pin, ...(venueId ? { venueId } : {}) }),
@@ -330,14 +331,37 @@ export default function PinLogin() {
 
   const [submitting, setSubmitting] = useState(false);
 
+  const [loginMode, setLoginMode]         = useState<"staff" | "management">("staff");
+  const activePinMax                       = loginMode === "management" ? 6 : 4;
+  const [rippleOrigin, setRippleOrigin]   = useState<{ x: number; y: number } | null>(null);
+  const lastClickRef  = useRef({ x: 400, y: 300 });
+  const longPressRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if ("touches" in e) {
+        const t = (e as TouchEvent).touches[0];
+        if (t) lastClickRef.current = { x: t.clientX, y: t.clientY };
+      } else {
+        lastClickRef.current = { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
+      }
+    };
+    window.addEventListener("click", handler);
+    window.addEventListener("touchstart", handler as EventListener, { passive: true });
+    return () => {
+      window.removeEventListener("click", handler);
+      window.removeEventListener("touchstart", handler as EventListener);
+    };
+  }, []);
+
   const handleKey = useCallback((key: string) => {
     if (success || isLocked || submitting) return;
     setError(false);
     if (key === "CLR") { setPin(""); return; }
     if (key === "GO") {
-      if (pin.length !== MAX_PIN) return;
+      if (pin.length !== activePinMax) return;
       setSubmitting(true);
-      validatePin(pin)
+      validatePin(pin, loginMode)
         .then(data => {
           if (data.ok && data.token) {
             // Store JWT for downstream auth
@@ -349,12 +373,15 @@ export default function PinLogin() {
             setFailedAttempts(0);
             setSuccess(data.role ?? "staff");
             cc.addAuditEntry("auth.pin_login", `${data.name ?? "Staff"} authenticated (${data.role ?? "staff"})`, data.name ?? "Staff");
+            setRippleOrigin({ x: lastClickRef.current.x, y: lastClickRef.current.y });
             const EAT_ROLES = ["admin", "super_admin", "venue_owner", "sovereign", "manager"];
-            const dest = data.redirectTo ?? (
-              data.role === "staff" ? "/pos" :
-              EAT_ROLES.includes(data.role ?? "") ? "/titan-eat" :
-              "/dashboard"
-            );
+            const dest = loginMode === "management"
+              ? "/control-chamber"
+              : data.redirectTo ?? (
+                  data.role === "staff" ? "/pos" :
+                  EAT_ROLES.includes(data.role ?? "") ? "/titan-eat" :
+                  "/dashboard"
+                );
             setTimeout(() => navigate(dest), 950);
           } else if (data.error === "too_many_attempts") {
             const until = Date.now() + (data.retryAfterSeconds ?? LOCKOUT_SECONDS) * 1000;
@@ -380,8 +407,8 @@ export default function PinLogin() {
         });
       return;
     }
-    if (pin.length < MAX_PIN) setPin(p => p + key);
-  }, [pin, success, isLocked, submitting, failedAttempts, setCurrentUser, navigate, cc]);
+    if (pin.length < activePinMax) setPin(p => p + key);
+  }, [pin, success, isLocked, submitting, failedAttempts, loginMode, activePinMax, setCurrentUser, navigate, cc]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -402,6 +429,32 @@ export default function PinLogin() {
       overflow: "hidden",
       background: "#2A1A08",
     }}>
+
+      {/* GPU concentric ripple — fires on successful authentication */}
+      <AnimatePresence>
+        {rippleOrigin && [0, 1, 2].map(i => (
+          <motion.div
+            key={i}
+            initial={{ scale: 0, opacity: 0.80 }}
+            animate={{ scale: 50, opacity: 0 }}
+            transition={{ duration: 0.60, delay: i * 0.08, ease: [0.22, 0.61, 0.36, 1] }}
+            style={{
+              position: "fixed",
+              left: rippleOrigin.x - 40, top: rippleOrigin.y - 40,
+              width: 80, height: 80,
+              borderRadius: "50%",
+              background: loginMode === "management"
+                ? `radial-gradient(circle, ${GOLD}BB 0%, ${GOLD}44 50%, transparent 70%)`
+                : `radial-gradient(circle, ${GOLD}BB 0%, rgba(212,139,0,0.44) 50%, transparent 70%)`,
+              pointerEvents: "none",
+              zIndex: 9999,
+              transformOrigin: "center center",
+              willChange: "transform, opacity",
+              transform: "translateZ(0)",
+            }}
+          />
+        ))}
+      </AnimatePresence>
 
       {/* Atmospheric lounge layer */}
       <motion.div
@@ -549,21 +602,35 @@ export default function PinLogin() {
         </div>
 
         {/* Title */}
-        <h1 style={{
-          fontSize: 24, fontWeight: 400, color: INK,
-          margin: "0 0 4px",
-          fontFamily: "'Cormorant Garamond', serif",
-          letterSpacing: "0.04em",
-        }}>
-          Operational Authentication
+        <h1
+          onPointerDown={() => {
+            longPressRef.current = setTimeout(() => {
+              setLoginMode(m => m === "staff" ? "management" : "staff");
+              setPin("");
+            }, 500);
+          }}
+          onPointerUp={() => { if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; } }}
+          onPointerLeave={() => { if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; } }}
+          style={{
+            fontSize: 24, fontWeight: 400,
+            color: loginMode === "management" ? GOLD : INK,
+            margin: "0 0 4px",
+            fontFamily: "'Cormorant Garamond', serif",
+            letterSpacing: "0.04em",
+            userSelect: "none", cursor: "default",
+            transition: "color 0.35s",
+          }}
+        >
+          {loginMode === "management" ? "Executive Clearance" : "Operational Authentication"}
         </h1>
 
         {/* Sub-label */}
         <div style={{
           fontSize: 8.5, letterSpacing: "0.22em", textTransform: "uppercase",
-          color: INK_FAINT, marginBottom: 28, fontWeight: 600,
+          color: loginMode === "management" ? GOLD_MID : INK_FAINT, marginBottom: 28, fontWeight: 600,
+          transition: "color 0.35s",
         }}>
-          Venue Access · Verified Identity
+          {loginMode === "management" ? "Executive Clearance · 6-Digit Code" : "Venue Access · Verified Identity"}
         </div>
 
         {/* PIN dots */}
@@ -572,7 +639,7 @@ export default function PinLogin() {
           transition={{ duration: 0.42, ease: "easeOut" }}
           style={{ display: "flex", gap: 16, justifyContent: "center", marginBottom: 28 }}
         >
-          {Array.from({ length: MAX_PIN }).map((_, i) => {
+          {Array.from({ length: activePinMax }).map((_, i) => {
             const filled = pin.length > i;
             return (
               <motion.div

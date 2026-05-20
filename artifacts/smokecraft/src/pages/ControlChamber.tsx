@@ -14,19 +14,19 @@ export default function ControlChamber() {
   const [error, setError] = useState("");
 
   const verifyPin = async () => {
-    if (pin.length < 4) { setError("ENTER FULL PIN"); return; }
+    if (pin.length < 6) { setError("ENTER 6-DIGIT FOUNDER PIN"); return; }
     try {
-      const res = await fetch("/api/auth/pin-login", {
+      const res = await fetch("/api/auth/founder-verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pin }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok && data.tier === "sovereign") {
+      if (res.ok && data.ok) {
         setIsAuthorized(true);
         setError("");
       } else {
-        setError(data.message || "INVALID FOUNDER PIN");
+        setError(data.error || "INVALID FOUNDER PIN");
         setPin("");
       }
     } catch {

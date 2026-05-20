@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { saveSessionCheckpoint } from "../lib/sessionRestore";
 import { trackEvent } from "../lib/analyticsEngine";
+import { calcDifficultyTier } from "../lib/xpEngine";
 
 export type Phase =
   | "crafthub"
@@ -121,6 +122,7 @@ interface GuestProfileCtx {
   setPhase: (p: Phase) => void;
   updateProfile: (partial: Partial<GuestProfile>) => void;
   addPoints: (n: number) => void;
+  addMerit: (delta: number) => void;
   applyPenalty: (n: number) => void;
   applyCheatCode: (code: 1 | 2 | 3) => void;
   resetProfile: () => void;
@@ -185,6 +187,17 @@ export function NoveeGuestProfileProvider({ children }: { children: React.ReactN
     }));
   }, []);
 
+  const addMerit = useCallback((delta: number) => {
+    setProfile(prev => {
+      const newMerit = Math.max(0, prev.merit + delta);
+      const newTier  = calcDifficultyTier(newMerit);
+      const newSkip  = delta >= 15 && prev.pairingHistory.filter(p => p.xp >= 20).length >= 3
+        ? prev.skipTokens + 1
+        : prev.skipTokens;
+      return { ...prev, merit: newMerit, difficultyTier: newTier, skipTokens: newSkip };
+    });
+  }, []);
+
   const applyPenalty = useCallback((n: number) => {
     setProfile(prev => ({
       ...prev,
@@ -221,6 +234,7 @@ export function NoveeGuestProfileProvider({ children }: { children: React.ReactN
         setPhase,
         updateProfile,
         addPoints,
+        addMerit,
         applyPenalty,
         applyCheatCode,
         resetProfile,
