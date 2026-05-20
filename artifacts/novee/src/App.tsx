@@ -313,6 +313,122 @@ function SystemBar() {
 }
 
 /* ─────────────────────────────────────────────
+   Bottom bar — ticker tape + Day One 360
+───────────────────────────────────────────── */
+const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
+
+const TICKER_ITEMS = [
+  { cat: "🚬 CIGAR",   text: "Arturo Fuente Opus X — Limited Reserve · Tonight Only" },
+  { cat: "🥃 SPIRITS", text: "Hennessy XO Cognac — Complimentary First Pour with Session" },
+  { cat: "🍽 KITCHEN", text: "Wagyu Beef Sliders · Chef's Feature — Available Until 11 PM" },
+  { cat: "🚬 CIGAR",   text: "Padron 1964 Aniversario Natural — 2 for $68 this Evening" },
+  { cat: "🥂 DRINKS",  text: "Añejo Old Fashioned — House Cocktail Special $16" },
+  { cat: "🍤 BITES",   text: "Lobster Bisque Shots · Truffle Deviled Eggs — Lounge Menu" },
+  { cat: "🚬 CIGAR",   text: "Rocky Patel Vintage 1990 — Staff Recommendation Tonight" },
+  { cat: "🍷 WINE",    text: "Opus One 2019 — Sommelier Select · Limited Bottles Available" },
+  { cat: "🍽 KITCHEN", text: "Pan-Seared Sea Bass — Market Price · Reserve at the Bar" },
+  { cat: "✈️ TRAVEL",  text: "Book your next luxury getaway with Day One 360 Travel — Ask staff for details" },
+];
+
+function BottomBar() {
+  const tickerContent = TICKER_ITEMS.map((item, i) => (
+    <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "0 40px", flexShrink: 0 }}>
+      <span style={{
+        fontSize: 10, fontWeight: 900, letterSpacing: "0.18em",
+        color: GOLD, fontFamily: "'Inter',sans-serif", textTransform: "uppercase",
+        background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}44`,
+        borderRadius: 4, padding: "2px 8px", flexShrink: 0,
+      }}>{item.cat}</span>
+      <span style={{
+        fontSize: 13, fontWeight: 500, letterSpacing: "0.06em",
+        color: "rgba(240,232,212,0.85)", fontFamily: "'Cormorant Garamond',Georgia,serif",
+        whiteSpace: "nowrap",
+      }}>{item.text}</span>
+      <span style={{ color: `${GOLD}55`, fontSize: 10, marginLeft: 10 }}>◆</span>
+    </span>
+  ));
+
+  return (
+    <div style={{
+      width: "100%", flexShrink: 0, height: 52,
+      background: "rgba(2,1,0,0.97)",
+      backdropFilter: "blur(24px)",
+      WebkitBackdropFilter: "blur(24px)",
+      borderTop: `1px solid rgba(212,175,55,0.22)`,
+      display: "flex", flexDirection: "row", alignItems: "center",
+      position: "relative", zIndex: 200, overflow: "hidden",
+    }}>
+
+      {/* Top gold accent line */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 1,
+        background: `linear-gradient(90deg, transparent 0%, ${GOLD}88 20%, ${GOLD} 50%, ${GOLD}88 80%, transparent 100%)`,
+      }} />
+
+      {/* CSS keyframe for ticker scroll */}
+      <style>{`
+        @keyframes novee-ticker {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .novee-ticker-track {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          white-space: nowrap;
+          animation: novee-ticker 60s linear infinite;
+          will-change: transform;
+        }
+      `}</style>
+
+      {/* SPECIALS label */}
+      <div style={{
+        flexShrink: 0, padding: "0 14px",
+        borderRight: "1px solid rgba(212,175,55,0.20)",
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        height: "100%", gap: 2,
+      }}>
+        <span style={{ fontSize: 8, letterSpacing: "0.26em", color: `${GOLD}88`, fontWeight: 900, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>TONIGHT'S</span>
+        <span style={{ fontSize: 11, letterSpacing: "0.18em", color: GOLD, fontWeight: 800, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>SPECIALS</span>
+      </div>
+
+      {/* Scrolling ticker */}
+      <div style={{ flex: 1, overflow: "hidden", height: "100%", display: "flex", alignItems: "center", position: "relative" }}>
+        {/* Left fade */}
+        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 40, background: "linear-gradient(90deg, rgba(2,1,0,0.97) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
+        {/* Right fade */}
+        <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 40, background: "linear-gradient(270deg, rgba(2,1,0,0.97) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
+
+        <div className="novee-ticker-track">
+          {tickerContent}
+          {tickerContent}
+        </div>
+      </div>
+
+      {/* Day One 360 Travel referral */}
+      <div style={{
+        flexShrink: 0,
+        borderLeft: "1px solid rgba(212,175,55,0.20)",
+        height: "100%",
+        display: "flex", flexDirection: "row", alignItems: "center",
+        padding: "0 14px", gap: 10,
+        background: "rgba(10,16,40,0.60)",
+      }}>
+        <img
+          src={IMG("dayone360.png")}
+          alt="Day One 360 Travel"
+          style={{ height: 34, width: 34, borderRadius: 8, objectFit: "contain", background: "#fff", padding: 2 }}
+        />
+        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+          <span style={{ fontSize: 11, fontWeight: 900, color: "#C8D8F0", fontFamily: "'Inter',sans-serif", letterSpacing: "0.04em", whiteSpace: "nowrap" }}>DAY ONE 360</span>
+          <span style={{ fontSize: 9, fontWeight: 600, color: "rgba(180,200,230,0.70)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.12em", textTransform: "uppercase" }}>Travel Partner</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
    Root app
 ───────────────────────────────────────────── */
 function handlePointerDown() { playClick(); hapticClick(); }
@@ -352,6 +468,9 @@ export default function App() {
               <PhaseRouter />
             </div>
           </div>
+
+          {/* ── Bottom ticker + Day One 360 ── */}
+          <BottomBar />
         </div>
       </GuestProfileProvider>
     </QueryClientProvider>
