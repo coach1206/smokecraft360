@@ -96,11 +96,11 @@ function OsRail() {
 
   return (
     <div style={{
-      width: 72, flexShrink: 0, height: "100%",
+      width: 96, flexShrink: 0, height: "100%",
       background: "rgba(3,2,0,0.98)",
       backdropFilter: "blur(32px)",
       WebkitBackdropFilter: "blur(32px)",
-      borderRight: "1px solid rgba(212,175,55,0.16)",
+      borderRight: "1px solid rgba(212,175,55,0.22)",
       display: "flex", flexDirection: "column", alignItems: "center",
       position: "relative", zIndex: 200,
       overflow: "hidden",
@@ -115,33 +115,33 @@ function OsRail() {
 
       {/* NOVEE OS logo block */}
       <div style={{
-        width: "100%", padding: "14px 0 12px",
+        width: "100%", padding: "16px 0 13px",
         display: "flex", flexDirection: "column", alignItems: "center",
-        borderBottom: "1px solid rgba(212,175,55,0.10)",
+        borderBottom: "1px solid rgba(212,175,55,0.14)",
         flexShrink: 0,
       }}>
         <div style={{
-          width: 38, height: 38, borderRadius: 10,
-          background: `linear-gradient(135deg, ${GOLD}44 0%, rgba(0,0,0,0.70) 100%)`,
-          border: `1.5px solid ${GOLD}88`,
+          width: 44, height: 44, borderRadius: 12,
+          background: `linear-gradient(135deg, ${GOLD}55 0%, rgba(0,0,0,0.70) 100%)`,
+          border: `1.5px solid ${GOLD}99`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: `0 0 18px ${GOLD}33`,
-          marginBottom: 5,
+          boxShadow: `0 0 22px ${GOLD}44`,
+          marginBottom: 6,
         }}>
           <span style={{
             fontFamily: "'Cormorant Garamond',Georgia,serif",
-            fontSize: 20, fontWeight: 700, color: GOLD, lineHeight: 1,
+            fontSize: 24, fontWeight: 700, color: GOLD, lineHeight: 1,
           }}>N</span>
         </div>
         <div style={{
-          fontSize: 7, letterSpacing: "0.22em", color: `${GOLD}55`,
+          fontSize: 9, letterSpacing: "0.20em", color: `${GOLD}88`,
           fontWeight: 800, textTransform: "uppercase",
           fontFamily: "'Inter',sans-serif",
         }}>NOVEE OS</div>
       </div>
 
       {/* Nav items */}
-      <div style={{ flex: 1, width: "100%", display: "flex", flexDirection: "column", padding: "6px 0", overflowY: "auto" }}>
+      <div style={{ flex: 1, width: "100%", display: "flex", flexDirection: "column", padding: "8px 0", overflowY: "auto" }}>
         {RAIL_ITEMS.map((item) => {
           const active  = item.isActive(phase);
           const enabled = item.targetPhase !== null;
@@ -154,19 +154,17 @@ function OsRail() {
               }}
               whileTap={enabled ? { scale: 0.91 } : {}}
               animate={{
-                background: active
-                  ? `rgba(212,175,55,0.13)`
-                  : "transparent",
+                background: active ? `rgba(212,175,55,0.15)` : "transparent",
               }}
               transition={{ duration: 0.18 }}
               style={{
                 width: "100%", border: "none",
                 cursor: enabled ? "pointer" : "default",
-                padding: "11px 0",
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 5,
-                borderLeft: active ? `2.5px solid ${GOLD}` : "2.5px solid transparent",
+                padding: "12px 0",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+                borderLeft: active ? `3px solid ${GOLD}` : "3px solid transparent",
                 fontFamily: "'Inter',sans-serif",
-                opacity: enabled ? 1 : 0.28,
+                opacity: enabled ? 1 : 0.45,
                 position: "relative",
                 flexShrink: 0,
               }}
@@ -177,7 +175,7 @@ function OsRail() {
                   layoutId="rail-active-glow"
                   style={{
                     position: "absolute", inset: 0,
-                    background: `radial-gradient(ellipse at 30% 50%, ${GOLD}20 0%, transparent 65%)`,
+                    background: `radial-gradient(ellipse at 30% 50%, ${GOLD}22 0%, transparent 65%)`,
                     pointerEvents: "none",
                   }}
                   transition={{ type: "spring", stiffness: 380, damping: 28 }}
@@ -186,30 +184,30 @@ function OsRail() {
 
               {/* Icon badge */}
               <div style={{
-                width: 34, height: 34, borderRadius: 9,
+                width: 42, height: 42, borderRadius: 11,
                 background: active
-                  ? `rgba(212,175,55,0.22)`
-                  : "rgba(255,255,255,0.04)",
-                border: `1px solid ${active ? GOLD + "77" : "rgba(255,255,255,0.07)"}`,
+                  ? `rgba(212,175,55,0.24)`
+                  : "rgba(255,255,255,0.07)",
+                border: `1.5px solid ${active ? GOLD + "88" : "rgba(255,255,255,0.14)"}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: active ? `0 0 12px ${GOLD}44, inset 0 1px 0 ${GOLD}22` : "none",
+                boxShadow: active ? `0 0 16px ${GOLD}55, inset 0 1px 0 ${GOLD}33` : "none",
                 transition: "all 0.20s",
                 position: "relative",
               }}>
                 <span style={{
-                  fontSize: 10, fontWeight: 900, letterSpacing: "0.04em",
-                  color: active ? GOLD : "rgba(240,232,212,0.38)",
+                  fontSize: 12, fontWeight: 900, letterSpacing: "0.06em",
+                  color: active ? GOLD : "rgba(240,232,212,0.70)",
                   fontFamily: "'Inter',sans-serif",
                 }}>{item.abbr}</span>
               </div>
 
               {/* Label */}
               <span style={{
-                fontSize: 8, letterSpacing: "0.08em",
-                color: active ? GOLD : "rgba(240,232,212,0.28)",
-                textTransform: "uppercase", fontWeight: active ? 800 : 500,
-                textAlign: "center", lineHeight: 1.25,
-                maxWidth: 60,
+                fontSize: 10, letterSpacing: "0.06em",
+                color: active ? GOLD : "rgba(240,232,212,0.60)",
+                textTransform: "uppercase", fontWeight: active ? 800 : 600,
+                textAlign: "center", lineHeight: 1.2,
+                maxWidth: 80,
               }}>{item.label}</span>
             </motion.button>
           );
