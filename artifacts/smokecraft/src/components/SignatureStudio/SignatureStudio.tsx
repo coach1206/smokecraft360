@@ -439,7 +439,7 @@ export default function SignatureStudio({
                 <div className="flex items-center gap-2 mb-0.5">
                   <Sparkles size={13} style={{ color: GOLD }} />
                   <p className="text-[9px] uppercase tracking-[0.32em]" style={{ color: GOLD_DIM }}>
-                    {CRAFT_LABEL[craft]} · Signature Studio
+                    {CRAFT_LABEL[craft]} · Your Legacy Reserve
                   </p>
                 </div>
                 <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.95)", fontWeight: 300 }}>
@@ -450,7 +450,7 @@ export default function SignatureStudio({
                 {/* Score badge */}
                 <div className="px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.18em]"
                   style={{ background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.28)", color: GOLD_DIM }}>
-                  Score {(score / 10).toFixed(1)}
+                  Mastery {(score / 10).toFixed(1)}
                 </div>
                 <button onClick={onClose}
                   className="w-8 h-8 rounded-full flex items-center justify-center"
@@ -769,7 +769,7 @@ export default function SignatureStudio({
                   whileHover={!submitting ? { scale: 1.02 } : {}}
                   whileTap={!submitting ? { scale: 0.97 } : {}}>
                   <Send size={12} />
-                  {submitting ? "Submitting…" : "Submit to Venue"}
+                  {submitting ? "Sealing…" : "Seal Your Legacy"}
                 </motion.button>
               ) : (
                 <motion.div

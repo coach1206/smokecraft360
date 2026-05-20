@@ -811,7 +811,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
                 <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(2.2rem,4.5vw,3.6rem)", fontWeight: 300,
                   color: "#ffffff", letterSpacing: "0.12em", margin: "0 0 6px" }}>CraftHub</h2>
                 <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.18em",
-                  color: "rgba(255,255,255,0.28)", textTransform: "uppercase" as const, margin: "0 0 24px" }}>Operational Dashboard</p>
+                  color: "rgba(255,255,255,0.28)", textTransform: "uppercase" as const, margin: "0 0 24px" }}>Lounge Command</p>
                 <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" as const }}>
                   {["INVENTORY", "RESERVATIONS", "SESSIONS", "TELEMETRY"].map(s => (
                     <span key={s} style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.2em",
@@ -4879,7 +4879,7 @@ function GatewayMovement1Gate({
               transition={{ delay: 0.55 }}
               style={{ color: GOLD, fontSize: 12, letterSpacing: "0.32em", textTransform: "uppercase" as const, marginBottom: 28 }}
             >
-              Complete
+              Arrived
             </motion.p>
 
             {/* Dynamic Scoreboard */}
@@ -5149,7 +5149,7 @@ function GatewayMovement2Gate({
           <span style={{ color: GOLD, fontSize: 32, fontWeight: 800 }}>{xp} XP</span>
           <div style={{ width: 1, height: 32, background: `${GOLD}25` }} />
           <span style={{ color: "rgba(240,232,212,0.65)", fontSize: 14, lineHeight: 1.4 }}>
-            Running Score<br/>Movement II Locked
+            Current Mastery<br/>Movement II Locked
           </span>
         </motion.div>
 
@@ -5322,7 +5322,7 @@ function GatewayMovement3Gate({
                 pointerEvents: "none" }}
             />
             <p style={{ color: `${GOLD}60`, fontSize: 10, letterSpacing: "0.28em",
-              textTransform: "uppercase" as const, marginBottom: 8 }}>Intelligence Score</p>
+              textTransform: "uppercase" as const, marginBottom: 8 }}>Mastery Level</p>
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.55, type: "spring", stiffness: 350 }}

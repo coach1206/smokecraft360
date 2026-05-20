@@ -3,6 +3,11 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 export type Phase =
   | "crafthub"
   | "eat_dashboard"
+  | "executive_command"
+  | "pairing_view"
+  | "lounge_view"
+  | "profile_view"
+  | "settings_view"
   | "s1_demo"
   | "s1_rules"
   | "s1_leaderboard"

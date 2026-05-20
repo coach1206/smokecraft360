@@ -1,0 +1,23 @@
+EXECUTE ROOT ARCHITECTURAL SYSTEM BIND: DEPLOY GLOBAL POS ROUTER, MULTI-TIER REVERSE TUNNEL REMOTE ACCESS, AND TRIPLE-KITCHEN HARDWARE TELEMETRY (ZERO STUBS)
+
+1. UNIVERSAL POS CORE ROUTER ENGINE (OMNI-CHANNEL INTEGRATION)
+- Unified Transaction Interface: Implement an abstract data translation layer (`POSRouterEngine`) capable of normalizing webhooks and API payloads from universal POS backends (Clover, Toast, Lightspeed, Square). 
+- Active Telemetry Synchronization: When a receipt is scanned or an order is fired at a physical table, parse the payload items instantly. Map itemized spend directly to active guest profiles to update real-time loyalty scores, cross-check pairing suggestions, and auto-apply the active session point multipliers (2x, 3x, 5x cheat codes).
+
+2. EXECUTIVE COMMAND CENTER: EXCLUSIVE MANAGEMENT & DEVELOPER TIERS
+- Developer Root Override (Full Remote Command): Establish an explicit, high-security authorization layer (`type UserRole = 'Guest' | 'Staff' | 'Manager' | 'Developer'`). 
+  * The Developer role grants total root clearance across every terminal cluster globally. 
+  * Integrate an active WebSocket or WebRTC signaling channel to enable secure, reverse-tunnel remote adjustments. Developers must be able to view system health, clear memory blocks, and manually override stuck client states remotely from any location to assist staff.
+- Manager Command Dashboard (Granular Staff Scoping): Managers must have an exclusive dashboard layout protected by their unique management PIN. From this dashboard, managers can dynamically configure the interface permissions of subordinate staff in real time. They can toggle visibility, lock out modules, or completely add/remove specific features within the E.A.T. framework and backend inventory viewports.
+
+3. TRIPLE-AXIS BACKEND INVENTORY ENGINE (HUMIDOR, BAR, KITCHEN)
+Integrate all venue asset centers directly into the unified E.A.T. Intelligence state model, removing all isolated tracking sheets:
+- HUMIDOR TRACKING: Live electronic leaf and box volume calculations tracking premium puros, tracking specific vitola alerts, wrapper allocation metrics, and cabinet humidity alarms.
+- BAR TELEMETRY: Live fluid level weight trackers or pour logs monitoring high-end spirits, wine reserve stock counts, and dynamic availability updates sent directly to the Pairing Engine.
+- KITCHEN INVENTORY: Real-time inventory tracking for ingredients, small plates, and sensory pairings, automatically updating food availability based on live POS sales data.
+
+4. SYSTEM-WIDE VISUAL CONTRAST & TYPOGRAPHY STANDARDS
+- Advanced Readability Scale: Enforce massive typography sizing across all newly engineered dashboard grids. Structural titles must sit at 28px minimum, control nodes/buttons at 22px, and data parameters at 18px-20px to ensure flawless glanceability for operators working in low-light environments.
+- Optimized Eye Comfort: Maintain deep, high-contrast True Obsidian (#010101) backdrops overlaid with smoke-tinted translucent glass containers and illuminated gold accents to maximize structural clarity without inducing screen-glare eye strain.
+
+Execute a comprehensive file-by-file compile block across the workspace tree. Ensure zero broken TypeScript imports, strict type safety, no duplicate code loops, and 100% active operational code.
