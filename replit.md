@@ -6,6 +6,9 @@ SmokeCraft is a luxury cigar and spirits recommendation platform designed for up
 
 I prefer concise and direct communication. When making changes, prioritize core functionality and architectural integrity. For any significant architectural decisions or major feature implementations, please ask for approval before proceeding. I prefer that you do not make changes to files related to changelogs or update logs.
 
+## Cross-Platform Sync Rule (MANDATORY)
+Any change made to SmokeCraft (`artifacts/smokecraft`) must also be applied to NOVEE (`artifacts/novee`), and vice versa. This applies to UI changes, new features, images, components, flow updates, copy, and design changes. No exceptions — both platforms stay in sync at all times.
+
 ## Global Design Constants (DO NOT DEROGATE)
 
 These laws apply across ALL sub-interfaces, modules, and generated code. Functional logic must never overwrite or deprioritize this aesthetic layer.

@@ -99,6 +99,7 @@ const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
 const DesignerPage          = lazy(() => import('@/pages/DesignerPage'));
 const UpgradePage           = lazy(() => import('@/pages/UpgradePage'));
 const UpgradeRequired       = lazy(() => import('@/pages/UpgradeRequired'));
+const NoveeOsShell          = lazy(() => import('@/pages/NoveeOsShell'));
 
 /* ── Lazy-loaded pages previously unregistered in router ───── */
 const PaymentSuccess        = lazy(() => import('@/pages/PaymentSuccess'));
@@ -1017,6 +1018,9 @@ export default function App() {
           </Route>
           <Route path="/settings">
             <SubPageProviders><SettingsModule /></SubPageProviders>
+          </Route>
+          <Route path="/novee-os">
+            <NoveeOsShell />
           </Route>
           <Route path="/operations-manual">
             <SubPageProviders><OperationsManual /></SubPageProviders>

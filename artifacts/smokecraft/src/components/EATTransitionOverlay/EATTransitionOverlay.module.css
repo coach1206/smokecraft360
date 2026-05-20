@@ -1,12 +1,10 @@
-/* EATTransitionOverlay — 4-stage cinematic management handoff
- * ─────────────────────────────────────────────────────────── */
+/* EATTransitionOverlay — NOVEE OS cinematic management handoff */
 
-/* ── Root overlay ────────────────────────────────────────────────────────── */
 .root {
   position:        fixed;
   inset:           0;
   background:      #000000;
-  z-index:         9998;      /* just below SplashController (9999) */
+  z-index:         9998;
   display:         flex;
   align-items:     center;
   justify-content: center;
@@ -21,12 +19,10 @@
 }
 
 @keyframes eatRootFade {
-  0%   { opacity: 1; }
-  100% { opacity: 0; }
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 
-/* ── Stage 1 — CSS perspective flip panel ────────────────────────────────── */
-/* Framer Motion drives rotateY via inline style; this provides GPU layering. */
 .flipPanel {
   position:            absolute;
   inset:               0;
@@ -37,7 +33,6 @@
   will-change:         transform, opacity;
 }
 
-/* ── Stage 1 — Canvas liquid ripple ─────────────────────────────────────── */
 .rippleCanvas {
   position:       absolute;
   inset:          0;
@@ -47,7 +42,6 @@
   will-change:    contents;
 }
 
-/* ── Ambient gold radial pulse (Stages 2–4) ──────────────────────────────── */
 .goldenPulse {
   position:       absolute;
   top:            50%;
@@ -74,38 +68,30 @@
   100% { transform: translate(-50%, -50%) scale(0.68); opacity: 0;    }
 }
 
-/* ── Logo wrapper — GPU layer ────────────────────────────────────────────── */
 .logoWrap {
-  position:            absolute;
-  top:                 50%;
-  left:                50%;
-  transform:           translate(-50%, -50%);
-  display:             flex;
-  align-items:         center;
-  justify-content:     center;
-  transform-style:     preserve-3d;
-  will-change:         transform, opacity;
+  position:        absolute;
+  top:             50%;
+  left:            50%;
+  transform:       translate(-50%, -50%);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  will-change:     transform, opacity;
 }
 
-/* ── Logo base ───────────────────────────────────────────────────────────── */
 .logo {
-  /* Transparent background asset — keep white areas of logo visible */
   background-color:    transparent;
   width:               min(42vmin, 380px);
   height:              auto;
   object-fit:          contain;
-  /* GPU promotion — eliminates sub-pixel shimmer during scale animation */
   transform:           translate3d(0, 0, 0);
   will-change:         transform, opacity, filter;
   backface-visibility: hidden;
   image-rendering:     -webkit-optimize-contrast;
-  /* Framer Motion drives opacity/scale/filter */
 }
 
-/* ── Reduced-motion fallback ─────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .root,
   .flipPanel,
   .goldenPulse { animation: none !important; }
-  .root        { transition: none !important; }
 }
