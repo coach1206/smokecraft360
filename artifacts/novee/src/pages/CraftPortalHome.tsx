@@ -50,13 +50,13 @@ const PILLARS = [
 ];
 
 export default function CraftPortalHome() {
-  const { setPhase, resetProfile } = useGuest();
+  const { setPhase } = useGuest();
   const [activeNav, setActiveNav] = useState("lounge");
   const [showReturn, setShowReturn] = useState(false);
   const [retLast,    setRetLast]    = useState("");
   const [retPin,     setRetPin]     = useState("");
 
-  function beginNew() { playTactile(); hapticMilestone(); resetProfile(); setPhase("reentry"); }
+  function beginNew() { playTactile(); hapticMilestone(); setPhase("reentry"); }
   function resumeSession() { setShowReturn(true); }
 
   return (

@@ -234,10 +234,10 @@ type Step = "demo" | "rules" | "leaderboard" | "mentor" | "seed_canvas" | "quiz"
 export function S1_InitGate() {
   const { updateProfile, setPhase, addPoints, applyPenalty, profile } = useGuest();
   const [step,       setStep]      = useState<Step>("demo");
-  const [firstName,  setFirstName] = useState(profile.firstName || "");
-  const [lastName,   setLastName]  = useState(profile.lastName  || "");
-  const [phone4,     setPhone4]    = useState(profile.phone4    || "");
-  const [age,        setAge]       = useState(profile.age ? String(profile.age) : "");
+  const [firstName,  setFirstName] = useState("");
+  const [lastName,   setLastName]  = useState("");
+  const [phone4,     setPhone4]    = useState("");
+  const [age,        setAge]       = useState("");
   const [mentor,     setMentor]    = useState<string | null>(profile.mentor);
   const [seedId,     setSeedId]    = useState("criollo");
   const [selectedNote,    setSelectedNote]    = useState<string | null>(null);
