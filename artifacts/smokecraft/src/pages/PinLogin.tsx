@@ -52,7 +52,7 @@ async function validatePin(pin: string, mode: "staff" | "management" = "staff", 
 
 const KEYS            = ["1","2","3","4","5","6","7","8","9","CLR","0","GO"];
 const MAX_PIN         = 4;
-const MAX_ATTEMPTS    = 5;
+const MAX_ATTEMPTS    = 3;
 const LOCKOUT_SECONDS = 60;
 
 // ── Lockout persistence ───────────────────────────────────────────────────────

@@ -7,29 +7,10 @@ const RED      = "#F07070";
 
 export type PinRole = "staff" | "management" | "developer";
 
-// Staff PINs are 4-digit. Management PIN is 6-digit.
-const STAFF_PINS = new Set(["1234", "2580", "7890"]);
-const MGMT_PIN   = "999999";
-const DEV_PIN    = "0000";
-
+// PIN length is display-only; all credential validation is server-side.
 function getMaxDigits(level: PinRole): number {
   if (level === "management") return 6;
   return 4;
-}
-
-function resolveRole(pin: string, level: PinRole): PinRole | null {
-  if (level === "staff") {
-    if (STAFF_PINS.has(pin)) return "staff";
-    if (pin === DEV_PIN)     return "developer";
-  }
-  if (level === "management") {
-    if (pin === MGMT_PIN) return "management";
-    if (pin === DEV_PIN)  return "developer";
-  }
-  if (level === "developer") {
-    if (pin === DEV_PIN) return "developer";
-  }
-  return null;
 }
 
 const LABELS: Record<PinRole, { title: string; sub: string; icon: string }> = {
@@ -53,7 +34,8 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
   const [failures, setFailures] = useState(0);
   const [locked,   setLocked]   = useState(false);
   const [rings,    setRings]    = useState<RippleRing[]>([]);
-  const [success,  setSuccess]  = useState(false);
+  const [success,    setSuccess]    = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const ringKey          = useRef(0);
   const lockTimer        = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTitleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -68,55 +50,88 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
     if (longPressTitleRef.current) clearTimeout(longPressTitleRef.current);
   }, []);
 
-  function logFailedManagement() {
-    if (activeLevel === "management") {
-      fetch("/api/audit", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ action: "auth.management_pin_failed", detail: "Failed management PIN attempt", severity: "warn" }),
-      }).catch(() => { /* silent */ });
-    }
-  }
-
-  const tryPin = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
-    if (locked || success) return;
+  // All PIN validation is server-side — no credentials ever in client code.
+  const tryPin = useCallback(async (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (locked || success || submitting) return;
     const entered = pin.join("");
     if (entered.length < maxDigits) {
       setError(`Enter all ${maxDigits} digits`);
       triggerShake();
       return;
     }
-    const role = resolveRole(entered, activeLevel);
-    if (role) {
-      const rect = (e.currentTarget as HTMLElement).closest("[data-ripple-origin]")?.getBoundingClientRect();
-      const rx = rect ? e.clientX : window.innerWidth  / 2;
-      const ry = rect ? e.clientY : window.innerHeight / 2;
 
-      // 3 concentric rings — staggered 80ms each
-      const baseKey = ++ringKey.current;
-      const color   = activeLevel === "management" ? G : G_STAFF;
-      setRings([
-        { x: rx, y: ry, key: baseKey,     color },
-        { x: rx, y: ry, key: baseKey + 1, color },
-        { x: rx, y: ry, key: baseKey + 2, color },
-      ]);
-      setSuccess(true);
-      setTimeout(() => onSuccess(role), 600);
-    } else {
-      logFailedManagement();
-      const next = failures + 1;
-      setFailures(next);
-      triggerShake();
-      setError(next >= 3
-        ? "Terminal locked — contact supervisor"
-        : `Invalid credential (${3 - next} attempt${3 - next !== 1 ? "s" : ""} remaining)`);
-      if (next >= 3) {
-        setLocked(true);
-        lockTimer.current = setTimeout(() => { setLocked(false); setFailures(0); setError(""); }, 30_000);
+    setSubmitting(true);
+    try {
+      type PinResponse = {
+        ok?: boolean; error?: string; role?: string; tier?: string;
+        token?: string; attemptsRemaining?: number; retryAfterSeconds?: number;
+      };
+
+      let data: PinResponse;
+      if (activeLevel === "management") {
+        // Management: verify against founder secret (server-side bcrypt)
+        const res = await fetch("/api/auth/founder-verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pin: entered }),
+        });
+        data = await res.json() as PinResponse;
+      } else {
+        // Staff/developer: DB-backed via venueStaffTable
+        const res = await fetch("/api/auth/pin-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pin: entered }),
+        });
+        data = await res.json() as PinResponse;
       }
-      setPin([]);
+
+      if (data.ok) {
+        // Store JWT if provided (staff login returns one; management/founder-verify does not)
+        if (data.token) localStorage.setItem("axiom_token", data.token);
+
+        const resolvedRole: PinRole = activeLevel === "management"
+          ? "management"
+          : (data.role === "super_admin" ? "developer" : (data.role as PinRole | undefined)) ?? "staff";
+
+        // 3 concentric ripple rings
+        const rect = (e.currentTarget as HTMLElement).closest("[data-ripple-origin]")?.getBoundingClientRect();
+        const rx   = rect ? e.clientX : window.innerWidth  / 2;
+        const ry   = rect ? e.clientY : window.innerHeight / 2;
+        const baseKey = ++ringKey.current;
+        const color   = activeLevel === "management" ? G : G_STAFF;
+        setRings([
+          { x: rx, y: ry, key: baseKey,     color },
+          { x: rx, y: ry, key: baseKey + 1, color },
+          { x: rx, y: ry, key: baseKey + 2, color },
+        ]);
+        setSuccess(true);
+        setTimeout(() => onSuccess(resolvedRole), 600);
+      } else if (data.error === "too_many_attempts") {
+        setLocked(true);
+        const retryMs = (data.retryAfterSeconds ?? 30) * 1_000;
+        lockTimer.current = setTimeout(() => { setLocked(false); setFailures(0); setError(""); }, retryMs);
+        setError("Terminal locked — contact supervisor");
+      } else {
+        const next = failures + 1;
+        setFailures(next);
+        triggerShake();
+        setError(next >= 3
+          ? "Terminal locked — contact supervisor"
+          : `Invalid credential (${3 - next} attempt${3 - next !== 1 ? "s" : ""} remaining)`);
+        if (next >= 3) {
+          setLocked(true);
+          lockTimer.current = setTimeout(() => { setLocked(false); setFailures(0); setError(""); }, 30_000);
+        }
+        setPin([]);
+      }
+    } catch {
+      setError("Connection error — try again");
+      triggerShake();
+    } finally {
+      setSubmitting(false);
     }
-  }, [pin, locked, success, failures, activeLevel, maxDigits, onSuccess]);
+  }, [pin, locked, success, submitting, failures, activeLevel, maxDigits, onSuccess]);
 
   function triggerShake() {
     setShake(true);
@@ -335,8 +350,8 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
           {/* Confirm button */}
           <motion.button
             type="button"
-            onPointerDown={tryPin}
-            disabled={locked || pin.length < maxDigits}
+            onPointerDown={(e) => { void tryPin(e); }}
+            disabled={locked || submitting || pin.length < maxDigits}
             whileTap={{ scale: 0.96 }}
             style={{
               marginTop: 14, width: "100%", height: 56,
