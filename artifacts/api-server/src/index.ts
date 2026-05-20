@@ -987,6 +987,10 @@ const { registerIntelligenceRooms } = await import("./realtime/websocketRooms");
 const { getIO } = await import("./lib/socketServer");
 registerIntelligenceRooms(getIO());
 
+// Developer remote protocol — /developer namespace (JWT-gated)
+const { initDeveloperNamespace } = await import("./socket/developerNamespace");
+initDeveloperNamespace(getIO());
+
 // Initialize transport-abstracted event bus (postgres by default, redis-swappable)
 const { initEventBus } = await import("./realtime/transport/eventBus");
 await initEventBus();

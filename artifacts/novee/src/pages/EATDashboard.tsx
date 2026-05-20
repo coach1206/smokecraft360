@@ -187,6 +187,8 @@ interface EATDashboardProps {
 export default function EATDashboard({ onBack }: EATDashboardProps) {
   // ── Engine state ──────────────────────────────────────────────────────────
   const [wsConnected,    setWsConnected]    = useState(socket.connected);
+  type PanelVis = "on" | "muted" | "hidden";
+  const [panelVis, setPanelVis] = useState<{ environment: PanelVis; asset: PanelVis; transaction: PanelVis }>({ environment: "on", asset: "on", transaction: "on" });
   const [liveInventory,  setLiveInventory]  = useState<InventoryProduct[]>([]);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
 
@@ -237,12 +239,23 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
     const unsubEnv = eatEngine.subscribeEnvironment(s => setEnvState(s));
     const onConn    = () => setWsConnected(true);
     const onDisconn = () => setWsConnected(false);
-    socket.on("connect",    onConn);
-    socket.on("disconnect", onDisconn);
+    const onPanelVis = (d: { environment?: PanelVis; asset?: PanelVis; transaction?: PanelVis }) =>
+      setPanelVis(prev => ({ ...prev, ...d }));
+    socket.on("connect",          onConn);
+    socket.on("disconnect",       onDisconn);
+    socket.on("panel_visibility", onPanelVis);
+    const _pvToken = localStorage.getItem("axiom_token") ?? "";
+    fetch("/api/admin/panel-config", { headers: _pvToken ? { Authorization: `Bearer ${_pvToken}` } : {} })
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { environment?: PanelVis; asset?: PanelVis; transaction?: PanelVis } | null) => {
+        if (d) setPanelVis(prev => ({ ...prev, ...d }));
+      })
+      .catch(() => {});
     return () => {
       unsubInv(); unsubEnv();
-      socket.off("connect", onConn);
-      socket.off("disconnect", onDisconn);
+      socket.off("connect",          onConn);
+      socket.off("disconnect",       onDisconn);
+      socket.off("panel_visibility", onPanelVis);
       eatEngine.stop();
     };
   }, []);
@@ -351,13 +364,24 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
 
       {/* ── 3-column grid ── */}
       <main style={{
-        flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
+        flex: 1, display: "flex",
         gap: 14, padding: 14, overflow: "hidden", position: "relative", zIndex: 10,
       }}>
 
         {/* ════════════ LEFT · ENVIRONMENT ════════════ */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, overflow: "auto" }}>
-          <ModLabel n="01" label="ENVIRONMENT" />
+        <AnimatePresence>
+          {panelVis.environment !== "hidden" && (
+            <motion.div key="env-col"
+              style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12, overflow: "auto", position: "relative" }}
+              initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -18, transition: { duration: 0.22 } }}
+              transition={{ duration: 0.22 }}>
+              {panelVis.environment === "muted" && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.52)", zIndex: 99, borderRadius: 10, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontSize: 22, fontWeight: 900, color: "#F5A623", letterSpacing: "0.22em" }}>MUTED</span>
+                </div>
+              )}
+              <ModLabel n="01" label="ENVIRONMENT" />
 
           {/* Climate tile */}
           <Card highlight style={{ padding: "22px 24px" }}>
@@ -435,11 +459,24 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
               </div>
             </div>
           </Card>
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ════════════ CENTER · ASSET VAULT ════════════ */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, overflow: "auto" }}>
-          <ModLabel n="02" label="ASSET VAULT" />
+        <AnimatePresence>
+          {panelVis.asset !== "hidden" && (
+            <motion.div key="asset-col"
+              style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12, overflow: "auto", position: "relative" }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.22 } }}
+              transition={{ duration: 0.22 }}>
+              {panelVis.asset === "muted" && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.52)", zIndex: 99, borderRadius: 10, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontSize: 22, fontWeight: 900, color: "#F5A623", letterSpacing: "0.22em" }}>MUTED</span>
+                </div>
+              )}
+              <ModLabel n="02" label="ASSET VAULT" />
 
           {/* Hero puro count */}
           <Card highlight style={{ padding: "22px 24px", boxShadow: `0 0 60px rgba(212,175,55,0.09)` }}>
@@ -536,11 +573,24 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
               </div>
             </div>
           </Card>
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ════════════ RIGHT · TRANSACTION ════════════ */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, overflow: "auto" }}>
-          <ModLabel n="03" label="TRANSACTION" />
+        <AnimatePresence>
+          {panelVis.transaction !== "hidden" && (
+            <motion.div key="txn-col"
+              style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12, overflow: "auto", position: "relative" }}
+              initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 18, transition: { duration: 0.22 } }}
+              transition={{ duration: 0.22 }}>
+              {panelVis.transaction === "muted" && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.52)", zIndex: 99, borderRadius: 10, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontSize: 22, fontWeight: 900, color: "#F5A623", letterSpacing: "0.22em" }}>MUTED</span>
+                </div>
+              )}
+              <ModLabel n="03" label="TRANSACTION" />
 
           {/* Shift metrics */}
           <Card highlight style={{ padding: "18px 22px" }}>
@@ -675,7 +725,9 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
               )}
             </div>
           </Card>
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </main>
 

@@ -9,6 +9,7 @@ import EATDashboard from "@/pages/EATDashboard";
 import ExecutiveCommandCenter from "@/pages/ExecutiveCommandCenter";
 import type { EATModuleFlags } from "@/pages/ExecutiveCommandCenter";
 import { DEFAULT_FLAGS } from "@/pages/ExecutiveCommandCenter";
+import DevConsole from "@/pages/DevConsole";
 import { StaffPinGate } from "@/components/StaffPinGate";
 import type { PinRole } from "@/components/StaffPinGate";
 import KioskBootSequence from "@/pages/KioskBootSequence";
@@ -468,6 +469,7 @@ function phaseKey(phase: string): string {
   if (phase === "profile_view")      return "profile_view";
   if (phase === "settings_view")     return "settings_view";
   if (phase === "control-chamber")   return "control-chamber";
+  if (phase === "dev_console")       return "dev_console";
   if (S1_PHASES.has(phase))          return "s1";
   if (S2_PHASES.has(phase))          return "s2";
   if (S3_PHASES.has(phase))          return "s3";
@@ -486,6 +488,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; on
   if (phase === "profile_view")      return <ProfileView />;
   if (phase === "settings_view")     return <SettingsView />;
   if (phase === "control-chamber")   return <ControlChamber />;
+  if (phase === "dev_console")       return <DevConsole />;
   if (S1_PHASES.has(phase))          return <S1_InitGate />;
   if (S2_PHASES.has(phase))          return <S2_TerroirMatrix />;
   if (S3_PHASES.has(phase))          return <S3_FormulationLab />;

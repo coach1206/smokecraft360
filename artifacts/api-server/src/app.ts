@@ -43,6 +43,7 @@ import memoriesRouter           from "./routes/memories";
 import voiceQueueRouter         from "./routes/voiceQueue";
 import notificationsRouter      from "./routes/notifications";
 import auditLogRouter           from "./routes/auditLog";
+import adminPanelConfigRouter  from "./routes/adminPanelConfig";
 import supportTicketsRouter     from "./routes/supportTickets";
 import supportTicketMessagesRouter from "./routes/supportTicketMessages";
 import deviceHardwareRouter,        { deviceHardwareReportRouter } from "./routes/deviceHardware";
@@ -387,6 +388,7 @@ app.use("/api/notifications",               notificationsRouter);
 // flow exclusively through lib/audit.ts#logAudit on the server side; there
 // is intentionally no public write endpoint here (G6).
 app.use("/api/audit-log",                   auditLogRouter);
+app.use("/api/admin/panel-config",          adminPanelConfigRouter);
 // Help Center Slice 1 — venue staff open tickets, super_admin works them.
 // Per-venue 50 open|in_progress cap inside POST.
 app.use("/api/support-tickets",             supportTicketsRouter);

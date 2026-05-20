@@ -65,6 +65,7 @@ const CraftHub              = lazy(() => import('@/pages/CraftHub'));
 const DemoWalkthrough       = lazy(() => import('@/pages/DemoWalkthrough'));
 const MasterOperations      = lazy(() => import('@/pages/MasterOperations'));
 const CommandCenter         = lazy(() => import('@/pages/CommandCenter'));
+const DevConsole            = lazy(() => import('@/pages/DevConsole'));
 const CentralCommand        = lazy(() => import('@/pages/CentralCommand'));
 const PosMode               = lazy(() => import('@/pages/PosMode'));
 const PinLogin              = lazy(() => import('@/pages/PinLogin'));
@@ -1108,6 +1109,9 @@ export default function App() {
           </Route>
           <Route path="/command">
             <SubPageProviders><CommandCenter /></SubPageProviders>
+          </Route>
+          <Route path="/dev-console">
+            <SubPageProviders><DevConsole /></SubPageProviders>
           </Route>
           <Route path="/command-center">
             <SubPageProviders><SovereignRoute featureName="Command Center"><CentralCommand /></SovereignRoute></SubPageProviders>

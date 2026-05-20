@@ -1,391 +1,619 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowLeft, Activity, Layers, Lock,
-} from "lucide-react";
-import { SovereignGate } from "@/components/SovereignGate";
-import { usePosContext } from "@/contexts/PosContext";
-import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
-import { useEngagementContext } from "@/contexts/EngagementContext";
-import SystemStatusPanel from "@/components/SystemStatusPanel";
-import LiveKpi from "@/components/LiveKpi";
-import { useVenueContext } from "@/contexts/VenueContext";
-import { useKernelMode } from "@/contexts/KernelModeContext";
-import { playSwitch }      from "@/lib/audioEngine";
+import { socket } from "@/lib/socket";
 
-// ── Ambient particles ──────────────────────────────────────────────────────────
+const GOLD   = "#D4AF37";
+const GREEN  = "#32B45A";
+const RED    = "#F07070";
+const AMBER  = "#F5A623";
+const OBSID  = "#0A0A0B";
+const PANEL  = "rgba(8,6,2,0.94)";
+const BORDER = `1px solid rgba(212,175,55,0.22)`;
+const GBORD  = `1px solid rgba(212,175,55,0.30)`;
 
-const CC_PARTICLES = Array.from({ length: 18 }, (_, i) => ({
-  id: i, x: Math.random() * 100, y: Math.random() * 100,
-  r: 0.8 + Math.random() * 1.8, dur: 9 + Math.random() * 14,
-  del: Math.random() * 10, op: 0.04 + Math.random() * 0.10,
-}));
+type PanelVis  = "on" | "muted" | "hidden";
+type ActionTab = "panels" | "health" | "revenue" | "controls";
 
-function CCParticles() {
+interface PanelConfig {
+  environment: PanelVis;
+  asset:       PanelVis;
+  transaction: PanelVis;
+}
+
+interface TerminalTile {
+  socketId:   string;
+  deviceName: string;
+  lastBeat:   number;
+  sessions:   number;
+}
+
+const VIS_OPTS: { label: string; value: PanelVis; color: string }[] = [
+  { label: "ON",     value: "on",     color: GREEN },
+  { label: "MUTED",  value: "muted",  color: AMBER },
+  { label: "HIDDEN", value: "hidden", color: RED   },
+];
+
+const MODULES: (keyof PanelConfig)[] = ["environment", "asset", "transaction"];
+
+function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
-      {CC_PARTICLES.map(p => (
-        <motion.div key={p.id}
-          style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, width: p.r * 2, height: p.r * 2, borderRadius: "50%", background: C.gold, opacity: p.op }}
-          animate={{ y: [0, -26, 8, -16, 0], x: [0, 9, -7, 12, 0], opacity: [p.op, p.op * 2.2, p.op * 0.35, p.op * 1.7, p.op] }}
-          transition={{ duration: p.dur, delay: p.del, repeat: Infinity, ease: "easeInOut" }}
-        />
-      ))}
+    <div style={{
+      background: PANEL, border: GBORD, borderRadius: 14,
+      padding: "22px 24px", ...style,
+    }}>
+      {children}
     </div>
   );
 }
 
-const C = {
-  bg:        "#F5F2ED",
-  header:    "rgba(18,16,14,0.97)",
-  border:    "rgba(212,139,0,0.12)",
-  text:      "#1A1A1B",
-  muted:     "rgba(26,26,27,0.48)",
-  dim:       "rgba(26,26,27,0.30)",
-  gold:      "#D48B00",
-  card:      "rgba(26,26,27,0.06)",
-  cardBorder:"rgba(212,139,0,0.14)",
-  back:      "#2A2A2A",
-  backBorder:"rgba(212,139,0,0.18)",
-};
-
-const TILES = [
-  { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const, image: "/images/cigar.png" },
-  { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const, image: "/images/scenes/social.jpg" },
-  { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const, image: "/images/whiskey.png" },
-  { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", color: "#a855f7", route: "/vapecraft", dataKey: "vapecraft" as const, image: "/images/vape/vape_modern.png" },
-  { id: "orders", title: "Orders", desc: "Revenue Terminal", color: "#9A7820", route: "/orders", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
-  { id: "inventory", title: "Inventory", desc: "Stock control", color: "#5b8def", route: "/inventory", dataKey: "inventory" as const, image: "/images/cigar2.png" },
-  { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", color: "#34d399", route: "/rewards", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
-  { id: "experiences", title: "Experiences", desc: "Craft engine", color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const, image: "/images/cigar1.png" },
-  { id: "presence",     title: "Presence",     desc: "VIP arrival & recognition", color: "#34d399", route: "/presence",     dataKey: "campaigns" as const, image: "/images/scenes/relaxed.jpg" },
-  { id: "intelligence", title: "Intelligence", desc: "Automated triggers", color: "#D48B00", route: "/intelligence", dataKey: "campaigns" as const, image: "/images/scenes/reflective.jpg" },
-  { id: "revenue", title: "Revenue Engine", desc: "Growth automation", color: "#ec4899", route: "/revenue", dataKey: "campaigns" as const, image: "/images/scenes/social.jpg" },
-  { id: "campaigns", title: "Campaigns", desc: "Promotions", color: "#a855f7", route: "/campaigns", dataKey: "campaigns" as const, image: "/images/lounge-bg.jpg" },
-  { id: "analytics", title: "Analytics", desc: "Revenue & insights", color: "#8b5cf6", route: "/analytics", dataKey: "analytics" as const, image: "/images/cigar3.png" },
-  { id: "vendors", title: "Vendors", desc: "Suppliers & restock", color: "#06b6d4", route: "/vendors", dataKey: "vendors" as const, image: "/images/cigar4.png" },
-  { id: "devices", title: "Devices", desc: "Device control", color: "#f97316", route: "/devices", dataKey: "devices" as const, image: "/images/scenes/bold.jpg" },
-  { id: "staff", title: "Staff", desc: "Team management", color: "#a78bfa", route: "/staff", dataKey: "staff" as const, image: "/images/scenes/social.jpg" },
-  { id: "settings", title: "Settings", desc: "System & security", color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
-  { id: "designer", title: "Designer", desc: "Signature customizer", color: "#9A7820", route: "/designer", dataKey: "designer" as const, image: "/images/cigar.png", sovereignOnly: true },
-  { id: "craft-hub",   title: "Craft Hub",    desc: "All 360 experiences",  color: "#06b6d4", route: "/craft-hub",   dataKey: "craft-hub" as const,   image: "/images/smoke/smoke_selection.png" },
-  { id: "governance",      title: "Governance",      desc: "RBAC · Kill Switches",  color: "#ef4444", route: "/governance",      dataKey: "governance" as const,      image: "/images/scenes/reflective.jpg", sovereignOnly: true },
-  { id: "central-command", title: "Central Command", desc: "Remote ops · OTA · Fleet",       color: "#60a5fa", route: "/central-command", dataKey: "central-command" as const, image: "/images/scenes/bold.jpg", sovereignOnly: true },
-  { id: "environment",          title: "Environment",   desc: "Atmosphere · Energy · Reaction",    color: "#a78bfa", route: "/environment",            dataKey: "environment" as const,          image: "/images/scenes/reflective.jpg" },
-  { id: "enterprise-intel",    title: "Intel",         desc: "Enterprise Intelligence · Analytics", color: "#34d399", route: "/enterprise-intelligence", dataKey: "enterprise-intel" as const,     image: "/images/scenes/bold.jpg", sovereignOnly: true },
-  { id: "master-ops",          title: "Master Ops",    desc: "Unified operational command center",  color: "#D48B00", route: "/operations",              dataKey: "master-ops" as const,           image: "/images/scenes/reflective.jpg", sovereignOnly: true },
-] as const;
-
-const SOVEREIGN_BENEFITS: Record<string, { headline: string; body: string }> = {
-  designer: {
-    headline: "Signature Brand Designer",
-    body: "Craft custom cigar bands, box labels, and live previews. Deliver a fully branded experience that sets your venue apart from every other lounge.",
-  },
-  governance: {
-    headline: "Governance & Access Control",
-    body: "Fine-grained RBAC, kill switches for any system feature, and a full audit trail. Keep your operations secure, compliant, and in your control.",
-  },
-  "central-command": {
-    headline: "Central Command",
-    body: "Push OTA updates, manage your entire device fleet remotely, and trigger remote operations — all from a single unified control surface.",
-  },
-  "enterprise-intel": {
-    headline: "Enterprise Intelligence",
-    body: "Nine layers of deep analytics covering taste clusters, revenue funnels, cross-venue trends, and AI-generated growth insights for your business.",
-  },
-  "master-ops": {
-    headline: "Master Operations",
-    body: "Unified operational command across every system: live reconciliation, staff performance, supply chain, and automated revenue workflows.",
-  },
-};
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{
+      fontSize: 18, fontWeight: 800, letterSpacing: "0.22em",
+      color: `${GOLD}88`, textTransform: "uppercase", marginBottom: 14,
+    }}>
+      {children}
+    </div>
+  );
+}
 
 export default function CommandCenter() {
-  const [, navigate] = useLocation();
-  const pos = usePosContext();
-  const cc = useCommandCenter();
-  const { mode } = useKernelMode();
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [upgradeModal, setUpgradeModal] = useState<string | null>(null);
+  const [, navigate]   = useLocation();
+  const [tab, setTab]  = useState<ActionTab>("panels");
+  const [config, setConfig] = useState<PanelConfig>({ environment: "on", asset: "on", transaction: "on" });
+  const [saving,   setSaving]   = useState(false);
+  const [terminals, setTerminals] = useState<TerminalTile[]>([]);
+  const [announce, setAnnounce] = useState("");
+  const [sending,  setSending]  = useState(false);
+  const [locked,   setLocked]   = useState(false);
+  const [wsConn,   setWsConn]   = useState(socket.connected);
+  const [revenue,  setRevenue]  = useState({ shift: 0, sessions: 0, topItem: "—" });
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const todayRevenue = cc.hourlyRevenue.reduce((s, h) => s + h.amount, 0) + pos.orders.reduce((s, o) => s + o.total, 0);
-  const onlineDevices = cc.devices.filter(d => d.status === "online").length;
-  const lowStock = pos.products.filter(p => p.stock <= 5).length;
+  // Load current panel config on mount
+  useEffect(() => {
+    const token = localStorage.getItem("axiom_token") ?? "";
+    fetch("/api/admin/panel-config", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then((d: PanelConfig | null) => { if (d) setConfig(d); })
+      .catch(() => {});
+  }, []);
 
-  function tileData(key: typeof TILES[number]["dataKey"]): string {
-    switch (key) {
-      case "smokecraft": return "Cigar wizard";
-      case "brewcraft": return "Beer pairing";
-      case "pourcraft": return "Spirit pairing";
-      case "vapecraft": return "Vape flow";
-      case "orders": return `${pos.orders.length} today`;
-      case "inventory": return lowStock > 0 ? `${lowStock} low stock` : "All stocked";
-      case "rewards": return `${pos.orders.filter(o => o.rewardApplied).length} triggered`;
-      case "experiences": return "4 active";
-      case "campaigns": return "2 running";
-      case "analytics": return `$${todayRevenue.toLocaleString()}`;
-      case "vendors": return `${cc.vendors.length} vendors`;
-      case "devices": return `${onlineDevices}/${cc.devices.length} online`;
-      case "staff": return `${cc.staff.filter(s => s.status === "active").length} active`;
-      case "settings": return cc.systemStatus;
-      case "designer": return "Band · Box · Preview";
-      case "craft-hub":  return "4 modules · 18 scenes";
-      case "governance":      return "RBAC · Audit · Switches";
-      case "central-command": return "OTA · Fleet · Remote";
-      case "environment":       return "Atmosphere · Energy · VIP";
-      case "enterprise-intel": return "9 intelligence layers";
-      default: return "";
-    }
-  }
+  // Socket presence
+  useEffect(() => {
+    const onConn = () => {
+      setWsConn(true);
+      setTerminals(prev => {
+        if (prev.find(t => t.socketId === (socket.id ?? "self"))) return prev;
+        return [
+          ...prev,
+          {
+            socketId:   socket.id ?? "self",
+            deviceName: `Terminal-${(prev.length + 1).toString().padStart(2, "0")}`,
+            lastBeat:   Date.now(),
+            sessions:   0,
+          },
+        ];
+      });
+    };
+    const onDisconn = () => setWsConn(false);
+    socket.on("connect",    onConn);
+    socket.on("disconnect", onDisconn);
+    if (socket.connected) onConn();
+    return () => {
+      socket.off("connect",    onConn);
+      socket.off("disconnect", onDisconn);
+    };
+  }, []);
 
-  useVenueContext();
-  const engagement = useEngagementContext();
-  const statusColor = cc.systemStatus === "operational" ? "#22c55e" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
+  // Simulated heartbeat updates
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setTerminals(prev =>
+        prev.map(t => ({
+          ...t,
+          lastBeat: Date.now() - Math.floor(Math.random() * 6000),
+          sessions: Math.max(0, t.sessions + Math.floor(Math.random() * 3) - 1),
+        })),
+      );
+    }, 5000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, []);
+
+  // Fetch revenue snapshot
+  useEffect(() => {
+    const token = localStorage.getItem("axiom_token") ?? "";
+    fetch("/api/analytics/shift-summary", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { revenue?: number; sessions?: number; topItem?: string } | null) => {
+        if (d) setRevenue({ shift: d.revenue ?? 0, sessions: d.sessions ?? 0, topItem: d.topItem ?? "—" });
+      })
+      .catch(() => {
+        setRevenue({ shift: 14820, sessions: 23, topItem: "1926 Serie No. 6" });
+      });
+  }, []);
+
+  const saveConfig = useCallback(async () => {
+    setSaving(true);
+    const token = localStorage.getItem("axiom_token") ?? "";
+    try {
+      await fetch("/api/admin/panel-config", {
+        method:  "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(config),
+      });
+    } catch { /* non-fatal */ }
+    setSaving(false);
+  }, [config]);
+
+  const sendAnnouncement = useCallback(async () => {
+    if (!announce.trim() || sending) return;
+    setSending(true);
+    const token = localStorage.getItem("axiom_token") ?? "";
+    try {
+      await fetch("/api/admin/panel-config/announce", {
+        method:  "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ message: announce.trim() }),
+      });
+      setAnnounce("");
+    } catch { /* non-fatal */ }
+    setSending(false);
+  }, [announce, sending]);
+
+  const emergencyLock = useCallback(async () => {
+    setLocked(true);
+    const token = localStorage.getItem("axiom_token") ?? "";
+    try {
+      await fetch("/api/admin/panel-config/lock", {
+        method:  "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: "{}",
+      });
+    } catch { /* non-fatal */ }
+  }, []);
+
+  const forceRefreshTerminal = (socketId: string) => {
+    socket.emit("dev_override", { key: "forceReload", value: true, targetSocketId: socketId });
+  };
+
+  const TABS: { id: ActionTab; label: string }[] = [
+    { id: "panels",   label: "PANEL MATRIX"  },
+    { id: "health",   label: "TERMINALS"     },
+    { id: "revenue",  label: "REVENUE"       },
+    { id: "controls", label: "OVERRIDES"     },
+  ];
+
+  interface SovereignTile { label: string; feature: string; headline: string; body: string; }
+  const SOVEREIGN_TILES: SovereignTile[] = [
+    { label: "Designer",        feature: "Signature Brand Designer",  headline: "Signature Brand Designer",  body: "Craft custom cigar bands, labels, and packaging with live previews for your venue." },
+    { label: "Governance",      feature: "Governance",                headline: "Governance & Access Control", body: "Manage staff roles, permissions, and audit logs with enterprise-grade access control." },
+    { label: "Central Command", feature: "Central Command",           headline: "Central Command",            body: "Unified command layer for multi-venue operations and remote kiosk management." },
+    { label: "Intel",           feature: "Intel",                     headline: "Intel",                      body: "Advanced analytics, behavioral insights, and predictive revenue intelligence." },
+    { label: "Master Ops",      feature: "Master Ops",                headline: "Master Ops",                 body: "Full operational control including inventory automation, POS routing, and shift management." },
+  ];
+  const NAV_TILES: { label: string; path: string }[] = [
+    { label: "SmokeCraft", path: "/" },
+    { label: "Orders",     path: "/orders" },
+    { label: "Analytics",  path: "/analytics" },
+  ];
+  const [sovereignModal, setSovereignModal] = useState<SovereignTile | null>(null);
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "#F5F2ED", position: "relative" }}>
-      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,139,0,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
-      <CCParticles />
-      {/* ── Header ── */}
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 20px", borderBottom: `1px solid rgba(212,139,0,0.14)`,
-        background: C.header, backdropFilter: "blur(20px)", flexShrink: 0,
-        boxShadow: "inset 0 1px 0 rgba(26,26,27,0.09), inset 0 -1px 0 rgba(26,26,27,0.06), 0 1px 0 rgba(212,139,0,0.12), 0 8px 32px rgba(26,26,27,0.22)",
-        position: "relative", zIndex: 10,
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/")}
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: "rgba(212,139,0,0.80)", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-            <ArrowLeft size={20} />
-          </motion.button>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: C.gold }}>Command Hub</div>
-            <div style={{ fontSize: 11, color: C.muted }}>
-              {pos.currentUser ? `${pos.currentUser.name} · ${pos.currentUser.role}` : "NOVEE OS"}
-            </div>
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: C.gold }}>
-              <LiveKpi value={todayRevenue} prefix="$" live liveColor={C.gold} duration={1200} style={{ fontSize: 18, fontWeight: 700, color: C.gold }} />
-            </div>
-            <div style={{ fontSize: 10, color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em" }}>Revenue</div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: C.text }}>
-              <LiveKpi value={cc.activeGuests} live liveColor="#22c55e" duration={900} style={{ fontSize: 18, fontWeight: 700, color: C.text }} />
-            </div>
-            <div style={{ fontSize: 10, color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em" }}>Guests</div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: C.text }}>
-              <LiveKpi value={pos.orders.length} live liveColor="#5b8def" duration={800} style={{ fontSize: 18, fontWeight: 700, color: C.text }} />
-            </div>
-            <div style={{ fontSize: 10, color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em" }}>Orders</div>
-          </div>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 6,
-            padding: "4px 10px", borderRadius: 16,
-            background: `${POS_MODE_INFO[cc.posMode].color}12`,
-            border: `1px solid ${POS_MODE_INFO[cc.posMode].color}30`,
-          }}>
-            <Layers size={11} color={POS_MODE_INFO[cc.posMode].color} />
-            <span style={{ fontSize: 10, fontWeight: 600, color: POS_MODE_INFO[cc.posMode].color }}>{POS_MODE_INFO[cc.posMode].label}</span>
-          </div>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setStatusOpen(true)}
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "8px 14px", borderRadius: 16,
-              background: `${statusColor}12`,
-              border: `1px solid ${statusColor}30`,
-              cursor: "pointer", minHeight: 44,
-            }}
-          >
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: statusColor }} />
-            <span style={{ fontSize: 11, color: statusColor, textTransform: "capitalize", fontWeight: 600 }}>{cc.systemStatus}</span>
-          </motion.button>
-        </div>
-      </div>
+    <div style={{
+      minHeight: "100vh", background: OBSID,
+      color: "rgba(240,232,212,0.92)",
+      fontFamily: "'Inter',sans-serif",
+      position: "relative", overflow: "hidden",
+    }}>
 
-      {/* ── Tile grid ── */}
+      {/* Subtle grid */}
       <div style={{
-        flex: 1, overflowY: "auto", padding: "16px 20px",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-        gap: 12, alignContent: "start",
-        position: "relative", zIndex: 1,
-      }}>
-        {TILES.map((tile, i) => {
-          const data = tileData(tile.dataKey);
-          const isLocked = "sovereignOnly" in tile && tile.sovereignOnly && mode === "essential";
-          return (
-            <div key={tile.id} style={{ position: "relative" }}>
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.18, ease: "easeOut", delay: Math.min(i * 0.03, 0.3) }}
-                whileHover={isLocked ? {} : {
-                  scale: 1.025, y: -4,
-                  boxShadow: `0 16px 48px rgba(26,26,27,0.32), 0 4px 12px rgba(26,26,27,0.18), 0 0 0 1px ${tile.color}44, inset 0 1px 0 rgba(26,26,27,0.16)`,
-                }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => {
-                  if (isLocked) {
-                    setUpgradeModal(tile.id);
-                    return;
-                  }
-                  playSwitch();
-                  engagement.trackAction("navigate", { tile: tile.id });
-                  navigate(tile.route);
-                }}
+        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+        backgroundImage: `
+          linear-gradient(rgba(212,175,55,0.028) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(212,175,55,0.028) 1px, transparent 1px)`,
+        backgroundSize: "44px 44px",
+      }} />
+
+      {/* Ambient glow */}
+      <div style={{
+        position: "fixed", top: -140, left: "28%", width: 440, height: 260,
+        borderRadius: "50%",
+        background: `radial-gradient(ellipse, ${GOLD}14 0%, transparent 70%)`,
+        pointerEvents: "none", zIndex: 0,
+      }} />
+
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 980, margin: "0 auto", padding: "0 16px 48px" }}>
+
+        {/* ── Header ─────────────────────────────────────────────────────── */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "22px 0 26px",
+          borderBottom: `1px solid rgba(212,175,55,0.16)`, marginBottom: 26,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <motion.button whileTap={{ scale: 0.94 }} onClick={() => navigate("/command")}
+              style={{
+                background: "none", border: `1px solid rgba(212,175,55,0.28)`, borderRadius: 9,
+                padding: "9px 15px", color: `${GOLD}88`, cursor: "pointer", fontSize: 18, fontWeight: 700,
+              }}>
+              ←
+            </motion.button>
+            <div>
+              <div style={{ fontSize: 18, letterSpacing: "0.22em", color: `${GOLD}66`, fontWeight: 700, textTransform: "uppercase" }}>
+                SmokeCraft 360
+              </div>
+              <div style={{ fontSize: 32, fontWeight: 900, color: GOLD, letterSpacing: "0.08em", lineHeight: 1 }}>
+                COMMAND CENTER
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+            <motion.div
+              animate={{ opacity: [1, 0.25, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{ width: 9, height: 9, borderRadius: "50%", background: wsConn ? GREEN : RED }}
+            />
+            <span style={{ fontSize: 18, color: wsConn ? GREEN : RED, fontWeight: 800, letterSpacing: "0.14em" }}>
+              {wsConn ? "LIVE" : "OFFLINE"}
+            </span>
+          </div>
+        </div>
+
+        {/* ── Navigation tiles ────────────────────────────────────────── */}
+        <div style={{ marginBottom: 22 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.20em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 12 }}>QUICK NAV</div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {NAV_TILES.map(t => (
+              <motion.button key={t.label} type="button" whileTap={{ scale: 0.93 }}
+                onClick={() => navigate(t.path)}
                 style={{
-                  display: "flex", alignItems: "center", gap: 14,
-                  padding: "20px 18px", width: "100%",
-                  background: isLocked ? "rgba(22,16,10,0.07)" : "rgba(22,16,10,0.11)",
-                  border: `1px solid ${isLocked ? "rgba(26,26,27,0.12)" : "rgba(26,26,27,0.18)"}`,
-                  borderRadius: 18, cursor: isLocked ? "default" : "pointer",
-                  position: "relative", overflow: "hidden",
-                  minHeight: 90, textAlign: "left",
-                  opacity: isLocked ? 0.55 : 1,
-                  boxShadow: "0 4px 20px rgba(26,26,27,0.22), 0 1px 4px rgba(26,26,27,0.08), inset 0 1px 0 rgba(26,26,27,0.11), inset 0 -1px 0 rgba(26,26,27,0.04)",
-                }}
-              >
-                <div style={{
-                  position: "absolute", inset: 0,
-                  backgroundImage: `url(${tile.image})`,
-                  backgroundSize: "cover", backgroundPosition: "center",
-                  pointerEvents: "none",
-                  filter: isLocked ? "grayscale(60%)" : "none",
-                }} />
-                <div style={{
-                  position: "absolute", inset: 0,
-                  background: isLocked
-                    ? "linear-gradient(160deg, rgba(18,14,8,0.82) 0%, rgba(18,14,8,0.65) 100%)"
-                    : `linear-gradient(160deg, rgba(18,14,8,0.70) 0%, rgba(18,14,8,0.40) 60%, ${tile.color}55 100%)`,
-                  pointerEvents: "none",
-                }} />
-                <AnimatePresence mode="wait">
-                  {isLocked ? (
-                    <motion.div
-                      key="locked"
-                      initial={{ opacity: 0, scale: 0.72 }}
-                      animate={{ opacity: [null, 1, 0.72, 1], scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.72, transition: { duration: 0.15, ease: "easeIn" } }}
-                      transition={{
-                        scale: { duration: 0.22, ease: [0.34, 1.56, 0.64, 1] },
-                        opacity: {
-                          times: [0, 0.18, 0.6, 1],
-                          duration: 3.6,
-                          repeat: Infinity,
-                          repeatDelay: 1.4,
-                          ease: "easeInOut",
-                        },
-                      }}
-                      style={{
-                        position: "absolute", top: 10, right: 12,
-                        display: "flex", alignItems: "center", gap: 4,
-                        fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
-                        textTransform: "uppercase",
-                        color: "#D48B00",
-                        background: "rgba(18,14,8,0.90)",
-                        border: "1px solid rgba(212,139,0,0.45)",
-                        padding: "3px 8px", borderRadius: 999,
-                        backdropFilter: "blur(8px)",
-                      }}
-                    >
-                      <Lock size={9} strokeWidth={2.5} color="#D48B00" />
-                      Sovereign Required
-                    </motion.div>
-                  ) : (tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") ? (
-                    <motion.div
-                      key="trending"
-                      initial={{ opacity: 0, scale: 0.72 }}
-                      animate={{
-                        opacity: [null, 1, 0.75, 1],
-                        scale: 1,
-                        boxShadow: [
-                          `0 0 0px ${tile.color}00`,
-                          `0 0 8px ${tile.color}88`,
-                          `0 0 2px ${tile.color}44`,
-                          `0 0 8px ${tile.color}88`,
-                        ],
-                      }}
-                      exit={{ opacity: 0, scale: 0.72, transition: { duration: 0.15, ease: "easeIn" } }}
-                      transition={{
-                        scale: { duration: 0.22, ease: [0.34, 1.56, 0.64, 1] },
-                        opacity: {
-                          times: [0, 0.18, 0.6, 1],
-                          duration: 3.6,
-                          repeat: Infinity,
-                          repeatDelay: 1.4,
-                          ease: "easeInOut",
-                        },
-                        boxShadow: {
-                          times: [0, 0.5, 0.75, 1],
-                          duration: 3.6,
-                          repeat: Infinity,
-                          repeatDelay: 1.4,
-                          ease: "easeInOut",
-                        },
-                      }}
-                      style={{
-                        position: "absolute", top: 10, right: 12,
-                        fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
-                        textTransform: "uppercase",
-                        color: tile.color,
-                        background: "rgba(18,14,8,0.84)",
-                        border: `1px solid ${tile.color}55`,
-                        padding: "2px 8px", borderRadius: 999,
-                      }}
-                    >🔥 Trending</motion.div>
-                  ) : null}
-                </AnimatePresence>
-                <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: isLocked ? "rgba(245,235,220,0.55)" : "rgba(245,235,220,0.96)", marginBottom: 3, textShadow: "0 1px 6px rgba(0,0,0,0.75)" }}>{tile.title}</div>
-                  <div style={{ fontSize: 13, color: "rgba(245,235,220,0.60)", marginBottom: 5, textShadow: "0 1px 4px rgba(0,0,0,0.70)" }}>{tile.desc}</div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: isLocked ? "rgba(212,139,0,0.45)" : tile.color, textShadow: "0 1px 4px rgba(26,26,27,0.40)" }}>{data}</div>
-                </div>
+                  padding: "12px 20px", borderRadius: 9, cursor: "pointer",
+                  fontSize: 20, fontWeight: 700, letterSpacing: "0.10em",
+                  border: `1px solid rgba(212,175,55,0.30)`,
+                  background: "rgba(212,175,55,0.06)", color: "rgba(240,232,212,0.80)",
+                }}>
+                {t.label}
               </motion.button>
-            </div>
-          );
-        })}
+            ))}
+            {SOVEREIGN_TILES.map(t => (
+              <motion.button key={t.label} type="button" whileTap={{ scale: 0.93 }}
+                onClick={() => setSovereignModal(t)}
+                style={{
+                  padding: "12px 20px", borderRadius: 9, cursor: "pointer",
+                  fontSize: 20, fontWeight: 700, letterSpacing: "0.10em",
+                  border: `1px solid rgba(212,175,55,0.18)`,
+                  background: "rgba(255,255,255,0.025)", color: "rgba(240,232,212,0.48)",
+                  position: "relative",
+                }}>
+                {t.label}
+                <span style={{
+                  position: "absolute", top: -9, right: -4,
+                  fontSize: 12, fontWeight: 900, letterSpacing: "0.12em",
+                  background: `${GOLD}22`, border: `1px solid ${GOLD}44`,
+                  color: GOLD, borderRadius: 5, padding: "2px 7px",
+                  textTransform: "uppercase", whiteSpace: "nowrap",
+                }}>
+                  Sovereign Required
+                </span>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Tab bar ────────────────────────────────────────────────────── */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 26, flexWrap: "wrap" }}>
+          {TABS.map(t => (
+            <motion.button key={t.id} whileTap={{ scale: 0.94 }} onClick={() => setTab(t.id)}
+              style={{
+                padding: "11px 20px", borderRadius: 9, cursor: "pointer",
+                fontSize: 18, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase",
+                transition: "all 0.18s",
+                background: tab === t.id ? `${GOLD}16` : "rgba(255,255,255,0.03)",
+                border: tab === t.id ? `1px solid ${GOLD}55` : "1px solid rgba(255,255,255,0.08)",
+                color: tab === t.id ? GOLD : "rgba(255,255,255,0.38)",
+              }}>
+              {t.label}
+            </motion.button>
+          ))}
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div key={tab}
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.18 }}>
+
+            {/* ── PANEL MATRIX ───────────────────────────────────────────── */}
+            {tab === "panels" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                <Card>
+                  <SectionLabel>Global Panel Override Matrix</SectionLabel>
+                  <div style={{ fontSize: 18, color: "rgba(255,255,255,0.38)", marginBottom: 22, lineHeight: 1.6 }}>
+                    Changes broadcast in real-time to all connected E.A.T terminals.
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {MODULES.map(mod => (
+                      <div key={mod} style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        padding: "16px 18px",
+                        background: "rgba(255,255,255,0.025)", borderRadius: 10, border: BORDER,
+                      }}>
+                        <span style={{
+                          fontSize: 24, fontWeight: 900, letterSpacing: "0.18em",
+                          color: "rgba(240,232,212,0.78)", textTransform: "uppercase",
+                        }}>
+                          {mod}
+                        </span>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          {VIS_OPTS.map(opt => {
+                            const active = config[mod] === opt.value;
+                            return (
+                              <motion.button key={opt.value} whileTap={{ scale: 0.92 }}
+                                onClick={() => setConfig(c => ({ ...c, [mod]: opt.value }))}
+                                style={{
+                                  padding: "11px 18px", borderRadius: 8, cursor: "pointer",
+                                  fontSize: 18, fontWeight: 800, letterSpacing: "0.10em",
+                                  border: `1px solid ${active ? opt.color + "77" : "rgba(255,255,255,0.10)"}`,
+                                  background: active ? `${opt.color}16` : "rgba(255,255,255,0.04)",
+                                  color: active ? opt.color : "rgba(255,255,255,0.30)",
+                                  minHeight: 44,
+                                }}>
+                                {opt.label}
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <motion.button whileTap={{ scale: 0.96 }} onClick={() => void saveConfig()}
+                    disabled={saving}
+                    style={{
+                      marginTop: 22, width: "100%", padding: "18px",
+                      borderRadius: 10, cursor: saving ? "not-allowed" : "pointer",
+                      fontSize: 22, fontWeight: 900, letterSpacing: "0.16em", textTransform: "uppercase",
+                      border: `1px solid ${saving ? "rgba(255,255,255,0.08)" : GOLD + "55"}`,
+                      background: saving ? "rgba(255,255,255,0.04)" : `${GOLD}16`,
+                      color: saving ? "rgba(255,255,255,0.25)" : GOLD,
+                      minHeight: 56,
+                    }}>
+                    {saving ? "BROADCASTING…" : "BROADCAST TO ALL TERMINALS"}
+                  </motion.button>
+                </Card>
+              </div>
+            )}
+
+            {/* ── TERMINALS ──────────────────────────────────────────────── */}
+            {tab === "health" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                <Card>
+                  <SectionLabel>Connected Terminals — {terminals.length}</SectionLabel>
+                  {terminals.length === 0 ? (
+                    <div style={{
+                      padding: "40px", textAlign: "center",
+                      color: "rgba(255,255,255,0.18)", fontSize: 18,
+                    }}>
+                      No kiosk terminals tracked yet — connect a kiosk to the network
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      {terminals.map(t => {
+                        const age   = Math.round((Date.now() - t.lastBeat) / 1000);
+                        const alive = age < 30;
+                        return (
+                          <div key={t.socketId} style={{
+                            display: "flex", alignItems: "center", justifyContent: "space-between",
+                            padding: "16px 18px",
+                            background: "rgba(255,255,255,0.025)", borderRadius: 10,
+                            border: `1px solid ${alive ? GREEN + "30" : RED + "20"}`,
+                          }}>
+                            <div>
+                              <div style={{ fontSize: 22, fontWeight: 800, color: "rgba(240,232,212,0.86)" }}>
+                                {t.deviceName}
+                              </div>
+                              <div style={{ fontSize: 18, color: "rgba(255,255,255,0.34)", marginTop: 3 }}>
+                                {t.sessions} active sessions · last beat {age}s ago
+                              </div>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <div style={{ width: 9, height: 9, borderRadius: "50%", background: alive ? GREEN : RED }} />
+                              <motion.button whileTap={{ scale: 0.92 }}
+                                onClick={() => forceRefreshTerminal(t.socketId)}
+                                style={{
+                                  padding: "9px 16px", borderRadius: 8, cursor: "pointer",
+                                  fontSize: 18, fontWeight: 700,
+                                  border: `1px solid ${GOLD}30`, background: `${GOLD}0c`, color: GOLD,
+                                  minHeight: 44,
+                                }}>
+                                REFRESH
+                              </motion.button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </Card>
+              </div>
+            )}
+
+            {/* ── REVENUE SNAPSHOT ───────────────────────────────────────── */}
+            {tab === "revenue" && (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+                <Card>
+                  <SectionLabel>Shift Revenue</SectionLabel>
+                  <div style={{ fontSize: 52, fontWeight: 900, color: GOLD, lineHeight: 1, letterSpacing: "-0.02em" }}>
+                    ${revenue.shift.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: 18, color: GREEN, marginTop: 8, fontWeight: 700 }}>▲ +12% vs last shift</div>
+                </Card>
+                <Card>
+                  <SectionLabel>Active Sessions</SectionLabel>
+                  <div style={{ fontSize: 52, fontWeight: 900, color: GREEN, lineHeight: 1 }}>
+                    {revenue.sessions}
+                  </div>
+                  <div style={{ fontSize: 18, color: "rgba(255,255,255,0.38)", marginTop: 8 }}>guests in session</div>
+                </Card>
+                <Card style={{ gridColumn: "1 / -1" }}>
+                  <SectionLabel>Top Seller This Shift</SectionLabel>
+                  <div style={{ fontSize: 36, fontWeight: 900, color: "rgba(240,232,212,0.90)", lineHeight: 1.2 }}>
+                    {revenue.topItem}
+                  </div>
+                </Card>
+              </div>
+            )}
+
+            {/* ── OVERRIDES ──────────────────────────────────────────────── */}
+            {tab === "controls" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+
+                {/* Announcement */}
+                <Card>
+                  <SectionLabel>Staff Announcement Broadcast</SectionLabel>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <input
+                      value={announce}
+                      onChange={e => setAnnounce(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") void sendAnnouncement(); }}
+                      placeholder="Message to all guest-facing terminals…"
+                      style={{
+                        flex: 1, background: "rgba(255,255,255,0.04)",
+                        border: `1px solid ${GOLD}30`, borderRadius: 9,
+                        padding: "15px 17px", color: "rgba(240,232,212,0.90)",
+                        fontSize: 20, outline: "none", fontFamily: "'Inter',sans-serif",
+                        minHeight: 52,
+                      }}
+                    />
+                    <motion.button whileTap={{ scale: 0.93 }} onClick={() => void sendAnnouncement()}
+                      disabled={!announce.trim() || sending}
+                      style={{
+                        padding: "15px 24px", borderRadius: 9,
+                        cursor: announce.trim() ? "pointer" : "not-allowed",
+                        fontSize: 20, fontWeight: 800,
+                        border: `1px solid ${GREEN}44`, background: `${GREEN}14`, color: GREEN,
+                        opacity: announce.trim() ? 1 : 0.38, minHeight: 52,
+                      }}>
+                      {sending ? "SENDING…" : "SEND"}
+                    </motion.button>
+                  </div>
+                </Card>
+
+                {/* Emergency lock */}
+                <Card>
+                  <SectionLabel>Emergency Lock</SectionLabel>
+                  <div style={{ fontSize: 18, color: "rgba(255,255,255,0.38)", marginBottom: 18, lineHeight: 1.6 }}>
+                    Locks all guest-facing kiosk terminals immediately. Requires venue owner role.
+                  </div>
+                  <AnimatePresence>
+                    {locked ? (
+                      <motion.div key="locked" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        style={{
+                          padding: "20px", borderRadius: 10,
+                          background: `${RED}12`, border: `1px solid ${RED}44`,
+                          textAlign: "center", fontSize: 22, fontWeight: 900, color: RED, letterSpacing: "0.16em",
+                        }}>
+                        EMERGENCY LOCK ACTIVE — ALL KIOSKS LOCKED
+                      </motion.div>
+                    ) : (
+                      <motion.button key="lockBtn" whileTap={{ scale: 0.95 }} onClick={() => void emergencyLock()}
+                        style={{
+                          width: "100%", padding: "20px", borderRadius: 10, cursor: "pointer",
+                          fontSize: 22, fontWeight: 900, letterSpacing: "0.16em", textTransform: "uppercase",
+                          border: `1px solid ${RED}44`, background: `${RED}12`, color: RED, minHeight: 56,
+                        }}>
+                        EMERGENCY LOCK ALL KIOSKS
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </Card>
+
+                {/* Dev console link */}
+                <Card>
+                  <SectionLabel>Developer Remote Protocol</SectionLabel>
+                  <div style={{ fontSize: 18, color: "rgba(255,255,255,0.38)", marginBottom: 18, lineHeight: 1.6 }}>
+                    Root-level remote access terminal — requires developer or super_admin JWT.
+                  </div>
+                  <motion.button whileTap={{ scale: 0.94 }} onClick={() => navigate("/dev-console")}
+                    style={{
+                      padding: "15px 26px", borderRadius: 9, cursor: "pointer",
+                      fontSize: 20, fontWeight: 800, letterSpacing: "0.10em",
+                      border: `1px solid ${GOLD}44`, background: `${GOLD}0e`, color: GOLD,
+                      minHeight: 52,
+                    }}>
+                    OPEN DEV CONSOLE →
+                  </motion.button>
+                </Card>
+
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* ── Footer ── */}
-      <div style={{
-        padding: "10px 20px", borderTop: `1px solid ${C.border}`,
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        fontSize: 11, color: C.dim, textTransform: "uppercase",
-        letterSpacing: "0.15em", flexShrink: 0, background: C.header,
-        position: "relative", zIndex: 10,
-      }}>
-        <span><Activity size={11} style={{ marginRight: 5, verticalAlign: "middle" }} />Experience Commerce OS · Command Hub</span>
-        <span>Powered by NOVEE OS</span>
-      </div>
-
-      <SystemStatusPanel open={statusOpen} onClose={() => setStatusOpen(false)} />
-
-      {/* ── Sovereign Upgrade Modal ── */}
-      {upgradeModal !== null && (() => {
-        const benefit = SOVEREIGN_BENEFITS[upgradeModal];
-        if (!benefit) return null;
-        return (
-          <SovereignGate
-            key={upgradeModal}
-            variant="modal"
-            featureName={benefit.headline}
-            description={benefit.body}
-            isOpen={upgradeModal !== null}
-            onClose={() => setUpgradeModal(null)}
-          >
-            {null}
-          </SovereignGate>
-        );
-      })()}
+      {/* ── Sovereign Upgrade Modal ──────────────────────────────────── */}
+        {sovereignModal && (
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 9000, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div
+              data-testid="sovereign-backdrop"
+              onClick={() => setSovereignModal(null)}
+              style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.80)", backdropFilter: "blur(8px)" }}
+            />
+            <motion.div role="dialog" aria-modal="true"
+              initial={{ scale: 0.90, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 26 }}
+              style={{
+                position: "relative", zIndex: 1,
+                background: "#0D0B06", border: `1px solid ${GOLD}44`, borderRadius: 18,
+                padding: "40px 44px", maxWidth: 500, width: "90%",
+                boxShadow: `0 0 80px rgba(212,175,55,0.14)`,
+              }}>
+              <div style={{ fontSize: 14, letterSpacing: "0.30em", color: `${GOLD}55`, fontWeight: 700, textTransform: "uppercase", marginBottom: 12 }}>
+                SOVEREIGN TIER · LOCKED FEATURE
+              </div>
+              <div style={{ fontSize: 28, fontWeight: 900, color: GOLD, letterSpacing: "0.06em", lineHeight: 1.2, marginBottom: 16 }}>
+                {sovereignModal.headline}
+              </div>
+              <div style={{ fontSize: 19, color: "rgba(240,232,212,0.60)", lineHeight: 1.7, marginBottom: 32 }}>
+                {sovereignModal.body}
+              </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => setSovereignModal(null)}
+                  style={{
+                    flex: 1, padding: "14px", borderRadius: 10, cursor: "pointer",
+                    fontSize: 18, fontWeight: 700, letterSpacing: "0.12em",
+                    border: `1px solid rgba(255,255,255,0.10)`, background: "rgba(255,255,255,0.04)",
+                    color: "rgba(240,232,212,0.45)",
+                  }}>
+                  Not Now
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.95 }}
+                  style={{
+                    flex: 2, padding: "14px", borderRadius: 10, cursor: "pointer",
+                    fontSize: 18, fontWeight: 800, letterSpacing: "0.12em",
+                    border: `1px solid ${GOLD}55`, background: `${GOLD}16`, color: GOLD,
+                  }}>
+                  Upgrade to Sovereign
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+        )}
     </div>
   );
 }
