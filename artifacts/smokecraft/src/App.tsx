@@ -38,6 +38,8 @@ import TabletViewport                from '@/components/TabletViewport';
 import GlobalSmokeCanvas             from '@/components/GlobalSmokeCanvas';
 import GlobalEmberFixture            from '@/components/GlobalEmberFixture';
 import GuestAmbientOverlay           from '@/components/GuestAmbientOverlay';
+import { AshParticles }              from '@/components/AshParticles';
+import { RevenueOptimizationOverlay } from '@/components/RevenueOptimizationOverlay';
 
 /* ── Lazy-loaded overlays (removed from critical path) ────── */
 const EeisOverlay          = lazy(() => import('@/components/EeisOverlay'));
@@ -100,6 +102,7 @@ const DesignerPage          = lazy(() => import('@/pages/DesignerPage'));
 const UpgradePage           = lazy(() => import('@/pages/UpgradePage'));
 const UpgradeRequired       = lazy(() => import('@/pages/UpgradeRequired'));
 const NoveeOsShell          = lazy(() => import('@/pages/NoveeOsShell'));
+const ControlChamber        = lazy(() => import('@/pages/ControlChamber'));
 
 /* ── Lazy-loaded pages previously unregistered in router ───── */
 const PaymentSuccess        = lazy(() => import('@/pages/PaymentSuccess'));
@@ -197,7 +200,9 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <TabletViewport />
                                           <GlobalSmokeCanvas />
                                           <GlobalEmberFixture />
+                                          <AshParticles />
                                           <GuestAmbientOverlay />
+                                          <RevenueOptimizationOverlay />
                                           <UniversalTouchAnchors />
                                           <UniversalBackButton />
                                           {children}
@@ -1018,6 +1023,9 @@ export default function App() {
           </Route>
           <Route path="/settings">
             <SubPageProviders><SettingsModule /></SubPageProviders>
+          </Route>
+          <Route path="/control-chamber">
+            <SubPageProviders><ControlChamber /></SubPageProviders>
           </Route>
           <Route path="/novee-os">
             <NoveeOsShell />

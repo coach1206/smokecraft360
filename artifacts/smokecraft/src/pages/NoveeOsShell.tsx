@@ -12,6 +12,7 @@ const S3_FormulationLab = lazy(() => import("@/pages/S3_FormulationLab").then((m
 const S4_DesignStudio = lazy(() => import("@/pages/S4_DesignStudio").then((m: any) => ({ default: m.S4_DesignStudio || m.default || m })));
 const NoveeEATDashboard = lazy(() => import("@/pages/NoveeEATDashboard").then((m: any) => ({ default: m.default || m })));
 const NoveeExecutiveCommandCenter = lazy(() => import("@/pages/NoveeExecutiveCommandCenter").then((m: any) => ({ default: m.default || m })));
+const ControlChamber = lazy(() => import("@/pages/ControlChamber").then((m: any) => ({ default: m.default || m })));
 const NoveeStaffPinGate = lazy(() => import("@/components/NoveeStaffPinGate").then(m => ({ default: m.NoveeStaffPinGate })));
 import type { PinRole } from "@/components/NoveeStaffPinGate";
 
@@ -408,6 +409,7 @@ function phaseKey(phase: string): string {
   if (phase === "lounge_view")       return "lounge_view";
   if (phase === "profile_view")      return "profile_view";
   if (phase === "settings_view")     return "settings_view";
+  if (phase === "control-chamber")   return "control-chamber";
   if (S1_PHASES.has(phase))          return "s1";
   if (S2_PHASES.has(phase))          return "s2";
   if (S3_PHASES.has(phase))          return "s3";
@@ -436,6 +438,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange
       {phase === "lounge_view" && <LoungeView />}
       {phase === "profile_view" && <ProfileView />}
       {phase === "settings_view" && <SettingsView />}
+      {phase === "control-chamber" && <ControlChamber />}
       {(S1_PHASES.has(phase) || (phase as string) === "s1") && <Comp1 />}
       {(S2_PHASES.has(phase) || (phase as string) === "s2") && <Comp2 />}
       {(S3_PHASES.has(phase) || (phase as string) === "s3") && <Comp3 />}
@@ -486,6 +489,41 @@ function OsShellContent() {
 
   interface PinTarget { phase: Phase; level: PinRole }
   const [pinGate, setPinGate] = useState<PinTarget | null>(null);
+  const [gestures, setGestures] = useState({ topLeft: 0, bottomRight: 0 });
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setGestures(prev => ({
+        ...prev,
+        topLeft: Math.max(0, prev.topLeft - 100),
+      }));
+    }, 100);
+    return () => clearInterval(timer);
+  }, []);
+
+  function handleTopLeftDown() {
+    const start = Date.now();
+    const interval = setInterval(() => {
+      if (Date.now() - start >= 3000) {
+        clearInterval(interval);
+        setPhase("control-chamber");
+      }
+    }, 100);
+    const up = () => clearInterval(interval);
+    window.addEventListener("pointerup", up, { once: true });
+  }
+
+  function handleBottomRightClick() {
+    setGestures(prev => {
+      const count = prev.bottomRight + 1;
+      if (count >= 3) {
+        setPhase("control-chamber");
+        return { ...prev, bottomRight: 0 };
+      }
+      return { ...prev, bottomRight: count };
+    });
+    setTimeout(() => setGestures(prev => ({ ...prev, bottomRight: 0 })), 1000);
+  }
 
   function navigate(phase: Phase, pinLevel?: PinRole) {
     if (pinLevel) {
@@ -519,6 +557,16 @@ function OsShellContent() {
     <NoveeNavContext.Provider value={navCtx}>
       <div onPointerDown={handlePointerDown}
         style={{ position: "fixed", inset: 0, cursor: "none", userSelect: "none", WebkitUserSelect: "none", overscrollBehavior: "none", touchAction: "manipulation", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+
+        {/* Hidden Gesture Zones */}
+        <div 
+          onPointerDown={handleTopLeftDown}
+          style={{ position: "absolute", top: 0, left: 0, width: 100, height: 100, zIndex: 1000 }} 
+        />
+        <div 
+          onPointerDown={handleBottomRightClick}
+          style={{ position: "absolute", bottom: 0, right: 0, width: 100, height: 100, zIndex: 1000 }} 
+        />
 
         <OsNavBar />
 

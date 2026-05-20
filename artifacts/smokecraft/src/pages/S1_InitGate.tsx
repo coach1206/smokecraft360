@@ -21,30 +21,44 @@ const PT = { type: "spring" as const, mass: 0.9, stiffness: 240, damping: 28 };
 /* ─── Mentors ─── */
 const MENTORS = [
   {
-    id: "dominican", name: "The Dominican Maestro", flag: "🇩🇴",
+    id: "dominican", name: "Señor Alejandro", flag: "🇩🇴",
     country: "Dominican Republic", valley: "Cibao Valley",
-    bio: "Old-world master of aged Olor Dominicano. Multi-leaf complexity with deep earth-tone transitions and slow fermentation curves.",
+    bio: "Earthy, cedar, medium body. Old-world master of aged Olor Dominicano. Multi-leaf complexity with deep earth-tone transitions.",
     tags: ["Aged Profiles", "Earth Transitions", "Multi-Leaf"],
     hue: "#1B4BD4", soilTop: "#110A02", soilBot: "#1E1008",
     photo: "mentor_dominican.png",
+    soilTarget: { n: [35, 50], ph: [5.8, 6.8], m: [50, 65] }
   },
   {
-    id: "nicaraguan", name: "The Nicaraguan Puro Boss", flag: "🇳🇮",
+    id: "nicaraguan", name: "Doña Rosa", flag: "🇳🇮",
     country: "Nicaragua", valley: "Estelí",
-    bio: "Commands volcanic mineral-rich soils for maximum Ligero density. Full-bodied, uncompromising palate intensity with volcanic earth notes.",
+    bio: "Volcanic, spicy, full body. Commands volcanic mineral-rich soils for maximum Ligero density. Uncompromising palate intensity.",
     tags: ["Volcanic Soil", "Heavy Ligero", "Full-Body"],
     hue: "#1A8C3A", soilTop: "#061006", soilBot: "#0C1C0A",
     photo: "mentor_nicaraguan.png",
+    soilTarget: { n: [60, 75], ph: [5.5, 6.5], m: [55, 70] }
   },
   {
-    id: "honduran", name: "The Traditionalist Wrapper", flag: "🇭🇳",
+    id: "honduran", name: "Maestro Cortés", flag: "🇭🇳",
     country: "Honduras", valley: "Jamastran Valley",
-    bio: "Flawless sun-grown wrapper selection with microscopic vein concealment and aerodynamic draw precision unmatched in the Americas.",
+    bio: "Creamy, smooth, mild-medium. Flawless sun-grown wrapper selection with microscopic vein concealment and aerodynamic draw precision.",
     tags: ["Wrapper Perfection", "Vein Concealment", "Draw Precision"],
     hue: "#2A7ABF", soilTop: "#060A12", soilBot: "#0C1020",
     photo: "mentor_honduran.png",
+    soilTarget: { n: [40, 55], ph: [6.0, 7.0], m: [45, 60] }
+  },
+  {
+    id: "venezuelan", name: "Don Estéban", flag: "🇻🇪",
+    country: "Venezuela", valley: "Aragua Valley",
+    bio: "Rich, complex, full body. Master of rare Venezuelan Criollo, bringing deep cocoa and dark fruit complexity to every blend.",
+    tags: ["Rich Cocoa", "Dark Fruit", "Complex"],
+    hue: "#D48C1E", soilTop: "#1A1005", soilBot: "#2A1A08",
+    photo: "mentor_venezuelan.png",
+    soilTarget: { n: [50, 65], ph: [5.7, 6.7], m: [60, 75] }
   },
 ];
+
+const COUNTRIES = MENTORS;
 
 /* ─── Seeds ─── */
 const SEED_PHOTOS: Record<string,string> = {
@@ -229,7 +243,7 @@ function Split({ left, right, leftFr = "1fr", rightFr = "1fr" }: { left: React.R
   );
 }
 
-type Step = "demo" | "rules" | "leaderboard" | "mentor" | "seed_canvas" | "quiz" | "posgate";
+type Step = "demo" | "rules" | "country_select" | "mentor" | "soil_calibration" | "pilon_game" | "quiz" | "posgate" | "leaderboard" | "seed_canvas";
 
 export function S1_InitGate() {
   const { updateProfile, setPhase, addPoints, applyPenalty, profile } = useNoveeGuest();
@@ -238,29 +252,82 @@ export function S1_InitGate() {
   const [lastName,    setLastName]   = useState("");
   const [phone4,      setPhone4]     = useState("");
   const [age,         setAge]        = useState("");
-  const [flavorNotes, setFlavorNotes] = useState("");
-  const [expLevel,    setExpLevel]   = useState("");
-  const [seedTab,     setSeedTab]    = useState("leaf_ed");
+  
+  const [country1,    setCountry1]   = useState<string | null>(profile.blendCountry1);
+  const [country2,    setCountry2]   = useState<string | null>(profile.blendCountry2);
+
+  const [soilN,       setSoilN]      = useState(60);
+  const [soilPH,      setSoilPH]     = useState(6.0);
+  const [soilMoisture, setSoilMoisture] = useState(60);
+
+  const [pilonHeat,   setPilonHeat]  = useState(0);
+  const [pilonStatus, setPilonStatus] = useState<"idle" | "running" | "venting" | "success" | "fail">("idle");
+  const [ventWindows, setVentWindows] = useState<number[]>([]);
+
   const [mentor,     setMentor]    = useState<string | null>(profile.mentor);
   const [seedId,     setSeedId]    = useState("criollo");
-  const [selectedNote,    setSelectedNote]    = useState<string | null>(null);
-  const [selectedPairing, setSelectedPairing] = useState<string | null>(null);
-  useEffect(() => { setSelectedNote(null); setSelectedPairing(null); }, [seedId]);
   const [qIdx,       setQIdx]      = useState(0);
   const [answered,   setAnswered]  = useState<number[]>([]);
   const [wrongFlash, setWrongFlash]= useState(false);
   const [showPOS,    setShowPOS]   = useState(false);
   const [quizPts,    setQuizPts]   = useState(0);
+  const [flavorNotes, setFlavorNotes] = useState("");
+  const [expLevel,   setExpLevel]  = useState("");
+  const [seedTab,    setSeedTab]   = useState("leaf_ed");
 
   const go = (s: Step) => setStep(s);
-  const canSubmit = firstName.trim() && lastName.trim() && phone4.trim().length === 4 && age;
-  const seed = SEEDS.find(s => s.id === seedId)!;
+  const canSubmitProfile = firstName.trim() && lastName.trim() && phone4.trim().length === 4 && age;
+  const canSubmit = !!canSubmitProfile;
 
   function submitDemo() {
-    if (!canSubmit) return;
+    if (!canSubmitProfile) return;
     updateProfile({ firstName: firstName.trim(), lastName: lastName.trim(), phone4: phone4.trim().slice(-4), age: parseInt(age) });
     addPoints(10);
     go("rules");
+  }
+
+  function selectCountry(id: string) {
+    if (id === country1) {
+      setCountry1(null);
+      return;
+    }
+    if (id === country2) {
+      setCountry2(null);
+      return;
+    }
+    if (!country1) setCountry1(id);
+    else if (!country2) setCountry2(id);
+  }
+
+  function confirmCountries() {
+    if (!country1 || !country2) return;
+    updateProfile({ blendCountry1: country1, blendCountry2: country2, mentor: country1 });
+    setMentor(country1);
+    go("mentor");
+  }
+
+  function startPilon() {
+    setPilonStatus("running");
+    let heat = 0;
+    const interval = setInterval(() => {
+      heat += 2;
+      setPilonHeat(heat);
+      if (heat >= 100) {
+        clearInterval(interval);
+        setPilonStatus("fail");
+        applyPenalty(3);
+      }
+    }, 200);
+  }
+
+  function ventPilon() {
+    if (pilonStatus !== "running") return;
+    setPilonHeat(prev => Math.max(0, prev - 20));
+    setVentWindows(prev => [...prev, pilonHeat]);
+    if (ventWindows.length >= 2) {
+      setPilonStatus("success");
+      addPoints(20);
+    }
   }
 
   function answerQuiz(oi: number) {
@@ -281,8 +348,7 @@ export function S1_InitGate() {
     setPhase("s2_terroir");
   }
 
-  /* ── Step progress dots ── */
-  const STEPS: Step[] = ["demo","rules","leaderboard","mentor","seed_canvas","quiz","posgate"];
+  const STEPS: Step[] = ["demo", "rules", "country_select", "mentor", "soil_calibration", "pilon_game", "quiz", "posgate"];
 
   return (
     <div style={{ position: "absolute", inset: 0, fontFamily: "'Inter', sans-serif", overflow: "hidden" }}>
@@ -1295,6 +1361,7 @@ export function S1_InitGate() {
               meta: { origin: "CT, USA", seedType: "Shade", crop: "Shade", aging: "12–18 Months" },
             },
           };
+          const seed  = SEEDS.find(s => s.id === seedId) || SEEDS[0];
           const intel = INTEL[seedId] || INTEL.criollo;
           const FLAVOR_ICONS: Record<string, {sym:string;label:string}[]> = {
             criollo:     [{sym:"🌍",label:"EARTH"},{sym:"🌿",label:"CEDAR"},{sym:"🍫",label:"COCOA"},{sym:"🌶",label:"PEPPER"}],

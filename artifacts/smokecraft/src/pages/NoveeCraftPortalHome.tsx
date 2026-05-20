@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNoveeGuest } from "@/contexts/NoveeGuestProfileContext";
 import { hapticMilestone } from "@/hooks/useNoveeHaptic";
+import { restoreSession, SessionCheckpoint } from "@/lib/sessionRestore";
 
 const EASE_CINEMA = [0.22, 1, 0.36, 1] as const;
 
@@ -124,7 +125,7 @@ const MENTOR = {
 };
 
 export default function CraftPortalHome() {
-  const { setPhase } = useNoveeGuest();
+  const { setPhase, updateProfile, profile } = useNoveeGuest();
   const [activeCraft,    setActiveCraft]    = useState("smoke");
   const [showReturn,     setShowReturn]     = useState(false);
   const [retLast,        setRetLast]        = useState("");
@@ -134,6 +135,22 @@ export default function CraftPortalHome() {
     try { return sessionStorage.getItem("novee_golden_box_seen") === "1"; } catch { return false; }
   });
   const [showMentorPort, setShowMentorPort] = useState(false);
+  const [checkpoint, setCheckpoint] = useState<SessionCheckpoint | null>(null);
+
+  useEffect(() => {
+    const cp = restoreSession();
+    if (cp) {
+      setCheckpoint(cp);
+    }
+  }, []);
+
+  function handleRestore() {
+    if (checkpoint) {
+      updateProfile(checkpoint.profile);
+      setPhase(checkpoint.phase);
+      setCheckpoint(null);
+    }
+  }
 
   function dismissGoldenBox() {
     playTactile(); hapticMilestone();
@@ -254,6 +271,13 @@ export default function CraftPortalHome() {
 
           {/* CTAs */}
           <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 480 }}>
+            {checkpoint && (
+              <motion.button type="button" onPointerDown={handleRestore} whileTap={{ scale: 0.97 }}
+                style={{ width: "100%", padding: "22px 32px", background: `linear-gradient(135deg, #4A90E2 0%, #357ABD 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#FFFFFF", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(74,144,226,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
+                <span>RESTORE SESSION</span>
+                <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>↺</div>
+              </motion.button>
+            )}
             <motion.button type="button" onPointerDown={beginNew} whileTap={{ scale: 0.97 }}
               style={{ width: "100%", padding: "22px 32px", background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#090600", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
               <span>BEGIN NEW SESSION</span>

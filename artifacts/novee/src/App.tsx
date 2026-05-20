@@ -1,4 +1,4 @@
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
@@ -15,6 +15,10 @@ import { S1_InitGate } from "@/pages/S1_InitGate";
 import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
 import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
 import { S4_DesignStudio } from "@/pages/S4_DesignStudio";
+import ControlChamber from "@/pages/ControlChamber";
+import { AmbientEmberField } from "@/components/AmbientEmberField";
+import { AshParticles } from "@/components/AshParticles";
+import { RevenueOptimizationOverlay } from "@/components/RevenueOptimizationOverlay";
 import { playClick } from "@/hooks/useAudio";
 import { hapticClick } from "@/hooks/useHaptic";
 
@@ -461,6 +465,7 @@ function phaseKey(phase: string): string {
   if (phase === "lounge_view")       return "lounge_view";
   if (phase === "profile_view")      return "profile_view";
   if (phase === "settings_view")     return "settings_view";
+  if (phase === "control-chamber")   return "control-chamber";
   if (S1_PHASES.has(phase))          return "s1";
   if (S2_PHASES.has(phase))          return "s2";
   if (S3_PHASES.has(phase))          return "s3";
@@ -478,6 +483,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; on
   if (phase === "lounge_view")       return <LoungeView />;
   if (phase === "profile_view")      return <ProfileView />;
   if (phase === "settings_view")     return <SettingsView />;
+  if (phase === "control-chamber")   return <ControlChamber />;
   if (S1_PHASES.has(phase))          return <S1_InitGate />;
   if (S2_PHASES.has(phase))          return <S2_TerroirMatrix />;
   if (S3_PHASES.has(phase))          return <S3_FormulationLab />;
@@ -528,6 +534,41 @@ function OsShell() {
   /* PIN gate state */
   interface PinTarget { phase: Phase; level: PinRole }
   const [pinGate, setPinGate] = useState<PinTarget | null>(null);
+  const [gestures, setGestures] = useState({ topLeft: 0, bottomRight: 0 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setGestures(prev => ({
+        ...prev,
+        topLeft: Math.max(0, prev.topLeft - 100),
+      }));
+    }, 100);
+    return () => clearInterval(timer);
+  }, []);
+
+  function handleTopLeftDown() {
+    const start = Date.now();
+    const interval = setInterval(() => {
+      if (Date.now() - start >= 3000) {
+        clearInterval(interval);
+        setPhase("control-chamber");
+      }
+    }, 100);
+    const up = () => clearInterval(interval);
+    window.addEventListener("pointerup", up, { once: true });
+  }
+
+  function handleBottomRightClick() {
+    setGestures(prev => {
+      const count = prev.bottomRight + 1;
+      if (count >= 3) {
+        setPhase("control-chamber");
+        return { ...prev, bottomRight: 0 };
+      }
+      return { ...prev, bottomRight: count };
+    });
+    setTimeout(() => setGestures(prev => ({ ...prev, bottomRight: 0 })), 1000);
+  }
 
   function navigate(phase: Phase, pinLevel?: PinRole) {
     if (pinLevel) {
@@ -561,6 +602,16 @@ function OsShell() {
     <NoveeNavContext.Provider value={navCtx}>
       <div onPointerDown={handlePointerDown}
         style={{ position: "fixed", inset: 0, cursor: "none", userSelect: "none", WebkitUserSelect: "none", overscrollBehavior: "none", touchAction: "manipulation", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+
+        {/* Hidden Gesture Zones */}
+        <div 
+          onPointerDown={handleTopLeftDown}
+          style={{ position: "absolute", top: 0, left: 0, width: 100, height: 100, zIndex: 1000 }} 
+        />
+        <div 
+          onPointerDown={handleBottomRightClick}
+          style={{ position: "absolute", bottom: 0, right: 0, width: 100, height: 100, zIndex: 1000 }} 
+        />
 
         {/* Top OS navigation bar */}
         <OsNavBar />
@@ -625,6 +676,9 @@ export default function App() {
               transition={{ duration: 1.20, ease: [0.22, 1, 0.36, 1] }}
               style={{ position: "fixed", inset: 0 }}>
               <OsShell />
+              <AmbientEmberField />
+              <AshParticles />
+              <RevenueOptimizationOverlay />
             </motion.div>
           )}
         </AnimatePresence>

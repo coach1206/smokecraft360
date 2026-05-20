@@ -365,7 +365,7 @@ function ReportModal({ revenue, onClose }: { revenue: number; onClose: () => voi
 }
 
 /* ══════════════════════════ MAIN COMPONENT ══════════════════════════ */
-export default function EATDashboard() {
+export default function EATDashboard({ eatFlags }: { eatFlags?: any }) {
   const [envMode,        setEnvMode]       = useState("jazz");
   const [selectedTable,  setSelectedTable]  = useState<number | null>(12);
   const [selectedStaff,  setSelectedStaff]  = useState("daniel");

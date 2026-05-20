@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { saveSessionCheckpoint } from "../lib/sessionRestore";
+import { trackEvent } from "../lib/analyticsEngine";
 
 export type Phase =
   | "crafthub"
@@ -22,7 +24,21 @@ export type Phase =
   | "s3_leafsliders"
   | "s4_vitola"
   | "s4_designstudio"
-  | "s4_results";
+  | "s4_results"
+  | "s1_country_select"
+  | "s1_soil_calibration"
+  | "s1_pilon_game"
+  | "control-chamber";
+
+export type DifficultyTier = "beginner" | "apprentice" | "blender" | "master" | "architect";
+export type SessionType = "live" | "demo" | "investor" | "qa" | "presentation";
+
+export interface PairingEntry {
+  cigar: string;
+  drink: string | null;
+  food: string | null;
+  xp: number;
+}
 
 export interface GuestProfile {
   firstName: string;
@@ -31,6 +47,7 @@ export interface GuestProfile {
   age: number | null;
   mentor: string | null;
   points: number;
+  merit: number;
   penalties: number;
   multiplier: number;
   cheatCodesUsed: number[];
@@ -38,6 +55,7 @@ export interface GuestProfile {
   soilN: number;
   soilK: number;
   soilPH: number;
+  soilMoisture: number;
   volado: number;
   seco: number;
   ligero: number;
@@ -48,6 +66,15 @@ export interface GuestProfile {
   receiptCode: string;
   voucherCode: string;
   quizScore: number;
+  visitPairings: number;
+  difficultyTier: DifficultyTier;
+  sessionType: SessionType;
+  blendCountry1: string | null;
+  blendCountry2: string | null;
+  pairingHistory: PairingEntry[];
+  skipTokens: number;
+  wrapper: string | null;
+  flavorProfile: string[];
 }
 
 const DEFAULT_PROFILE: GuestProfile = {
@@ -57,6 +84,7 @@ const DEFAULT_PROFILE: GuestProfile = {
   age: null,
   mentor: null,
   points: 0,
+  merit: 0,
   penalties: 0,
   multiplier: 1,
   cheatCodesUsed: [],
@@ -64,6 +92,7 @@ const DEFAULT_PROFILE: GuestProfile = {
   soilN: 40,
   soilK: 35,
   soilPH: 6,
+  soilMoisture: 60,
   volado: 30,
   seco: 40,
   ligero: 30,
@@ -74,6 +103,15 @@ const DEFAULT_PROFILE: GuestProfile = {
   receiptCode: "",
   voucherCode: "",
   quizScore: 0,
+  visitPairings: 0,
+  difficultyTier: "beginner",
+  sessionType: "live",
+  blendCountry1: null,
+  blendCountry2: null,
+  pairingHistory: [],
+  skipTokens: 0,
+  wrapper: null,
+  flavorProfile: [],
 };
 
 const STORAGE_KEY = "novee_guest_profile_v6";
@@ -118,8 +156,16 @@ export function GuestProfileProvider({ children }: { children: React.ReactNode }
     (p: Phase) => {
       setHistory(prev => [...prev, profile.phase]);
       setProfile(prev => ({ ...prev, phase: p }));
+      saveSessionCheckpoint(profile, p);
+      trackEvent({
+        type: "phase_enter",
+        phase: p,
+        data: { from: profile.phase },
+        timestamp: Date.now(),
+        sessionType: profile.sessionType,
+      });
     },
-    [profile.phase],
+    [profile.phase, profile.sessionType, profile],
   );
 
   const goBack = useCallback(() => {

@@ -1,0 +1,487 @@
+BUILD A FULLY IMMERSIVE CINEMATIC LUXURY EXPERIENCE SYSTEM CALLED SMOKECRAFT 360 INSIDE NOVEE OS.
+
+THIS IS NOT A WEBSITE.
+THIS IS A LIVING INTERACTIVE CIGAR EXPERIENCE OPERATING SYSTEM.
+
+STYLE:
+Apple meets luxury cigar lounge meets cinematic sci-fi hospitality.
+
+VISUAL LANGUAGE:
+Dark obsidian environments
+Warm amber glow
+Premium metallic textures
+Glassmorphism UI
+Realistic cigar photography
+Volumetric smoke layers
+Persistent ember animations
+Large readable fonts
+Luxury motion transitions
+NO emojis
+NO flat design
+NO generic hero sections
+
+GLOBAL EXPERIENCE FLOW:
+
+1. PROFUND INNOVATIONS INTRO
+2. NOVEE OS BOOT SEQUENCE
+3. CRAFTHUB PORTAL
+4. SMOKECRAFT 360 ENTRY
+5. MENTOR SELECTION
+6. FOUR-PHASE CIGAR RITUAL
+7. PAIRING ENGINE
+8. GOLDEN BOX REVEAL
+9. LEADERBOARD + REWARDS
+10. SESSION ANALYTICS STORAGE
+
+THE FOUR MASTER PHASES:
+
+PHASE 1 — THE AGRONOMIST
+“THE ORIGIN”
+
+PURPOSE:
+Teach users how tobacco is grown.
+
+USERS MUST SELECT:
+TWO COUNTRIES FOR THEIR BLEND.
+
+COUNTRIES:
+Dominican Republic
+Nicaragua
+Honduras
+Venezuela
+
+MENTORS:
+Each country has a dedicated regional mentor.
+
+MENTORS EXPLAIN:
+Soil
+Climate
+Humidity
+Altitude
+Harvest timing
+Fermentation behavior
+Flavor influence
+Burn consistency
+
+PHASE 1 VISUALS:
+
+1. Country cinematic intro
+2. Tobacco sunrise farm
+3. Soil calibration system
+4. Seed selection chamber
+5. Barn curing cinematic
+6. Pilon fermentation mini-game
+7. Mentor hologram overlays
+8. Regional comparison displays
+9. Country blend selector
+10. XP gain/loss overlays
+
+PHASE 1 MINI-GAMES:
+
+SOIL CALIBRATION:
+Balance:
+Nitrogen
+pH
+Moisture
+
+PILON FERMENTATION:
+Prevent overheating.
+Vent correctly.
+
+PHASE 1 QUIZ SYSTEM:
+
+Mentors ask retention questions.
+
+EXAMPLE:
+“What profile comes from volcanic Nicaraguan soil?”
+
+ANSWERS:
+Earthy
+Creamy
+Citrus
+Mint
+
+CORRECT:
++1 Merit
+
+WRONG:
+-2 Merit
+
+PHASE 2 — THE ALCHEMIST
+“THE CRAFT”
+
+PURPOSE:
+Teach cigar architecture and blending physics.
+
+PHASE 2 VISUALS:
+
+1. Leaf anatomy chamber
+2. Wrapper selection wall
+3. Binder selection table
+4. Filler balancing room
+5. Ligero vs Volado comparisons
+6. Density pressure mini-game
+7. Aging room cinematic
+8. Flavor wheel interaction
+9. Mentor correction sequences
+10. Blend stability warnings
+
+PHASE 2 GAMEPLAY:
+
+Users engineer cigar structure.
+
+MENTOR CHALLENGES:
+“Build a medium-bodied blend using Dominican + Honduran leaf.”
+
+SCORING:
+
+Perfect balance:
++5 Merit
+
+Poor balance:
+-3 Merit
+
+Too much Ligero:
+Mentor interrupts with cinematic warning.
+
+PHASE 3 — THE ARCHITECT
+“THE RITUAL”
+
+PURPOSE:
+Teach cutting, lighting, pairing, and cigar culture.
+
+PHASE 3 VISUALS:
+
+1. Vitola wall
+2. Ring gauge visualizer
+3. V-cut vs straight cut vs punch cut
+4. Torch-light cinematic
+5. Toasting mini-game
+6. Draw simulation
+7. Beverage pairing room
+8. Live venue inventory interface
+9. Food pairing presentation
+10. Pairing Affinity meter
+
+PAIRING ENGINE:
+
+CONGRUENT:
+Matching dominant notes.
+
+CONTRAST:
+Balancing opposing notes.
+
+XP SYSTEM:
+
+Cigar only:
++5 XP
+
+Cigar + drink:
++10 XP
+
+Cigar + drink + food:
++20 XP
+
+Two drinks:
++5 bonus XP
+
+Two cigars:
++8 bonus XP
+
+Perfect pairing:
++15 Merit
+
+Poor pairing:
+-5 Merit
+
+VISIT RULES:
+
+Users receive:
+ONLY TWO OFFICIAL PAIRINGS PER VISIT.
+
+After two:
+Session locks until next lounge visit.
+
+PHASE 4 — THE GOLDEN BOX
+“THE LEGACY”
+
+PURPOSE:
+Reward status, competition, and prestige.
+
+PHASE 4 VISUALS:
+
+1. Golden Box reveal
+2. Personalized cigar presentation
+3. Rank badge animations
+4. Venue leaderboard
+5. Regional leaderboard
+6. XP progression wall
+7. Lounge champion showcase
+8. Elite Vault unlock cinematic
+9. Manufacturer spotlight overlays
+10. Smoke celebration finale
+
+RANKING SYSTEM:
+
+Beginner
+Apprentice
+Blender
+Master Blender
+Grand Architect
+
+ADVANCED RULE:
+
+3 successful pairings:
+Chance to skip next phase.
+
+BUT:
+Future penalties become heavier.
+
+DYNAMIC XP + MERIT SYSTEM:
+
+THE GAME MUST:
+Allow users to gain and lose points throughout the SAME session.
+
+NO PERFECT RUNS.
+
+EARLY GAME:
+Easy wins.
+Bell chimes.
+Starbursts.
+Smoke pulses.
+
+LATER GAME:
+Harder questions.
+Bigger penalties.
+More advanced pairing logic.
+
+LEADERBOARD SYSTEM:
+
+Venue leaderboard resets nightly.
+
+Scores averaged against everyone in venue.
+
+Users compete socially.
+
+ALLOW:
+Bragging rights.
+Regional rankings.
+Venue champions.
+
+REAL VENUE MONETIZATION ENGINE:
+
+TRACK:
+Cigar purchases
+Drink purchases
+Food purchases
+Pairing combinations
+Premium inventory engagement
+Time spent on products
+Session dwell time
+
+GOAL:
+Increase venue revenue per guest.
+
+BEHAVIORAL ANALYTICS LEDGER:
+
+TRACK:
+Flavor preferences
+Pairing trends
+Country popularity
+Session duration
+Leaderboard competitiveness
+Most selected pairings
+Most abandoned blends
+Purchase timing
+Repeat visit patterns
+
+ALL DATA:
+Stored centrally under NOVEE OS.
+
+VENUE ACCESS:
+Paid premium analytics subscription.
+
+MANUFACTURER INTELLIGENCE SYSTEM:
+
+GENERATE REPORTS FOR:
+Manufacturers
+Distributors
+Brands
+
+REPORTS INCLUDE:
+Flavor trends
+Regional interest
+Pairing success rates
+Inventory demand spikes
+High-performing products
+Behavioral engagement heatmaps
+
+PERSISTENT AMBIENT ENGINE:
+
+BUILD:
+60fps volumetric smoke
+Persistent ember fixture
+Bottom-screen smoke rise
+Ambient ash particles
+Obsidian vignette overlays
+
+NEVER UNMOUNT THESE ELEMENTS.
+
+OPERATOR OVERRIDE SYSTEM
+“THE CONTROL CHAMBER”
+
+HIDDEN ADMIN SYSTEM.
+
+ACCESS:
+Founder
+Super Admin
+Venue Admin
+Demo Operator
+
+PROTECTED BY:
+PIN
+Founder Lock Key
+Role-Based Access
+
+OPERATOR FUNCTIONS:
+
+ALLOW:
+Jump to any phase
+Jump to any mini-game
+Jump to any leaderboard
+Jump to any mentor
+Trigger cinematics instantly
+Preview inventory systems
+Simulate scores
+Inject fake competitors
+Fast-forward sessions
+Pause/resume progression
+Rewind rituals
+
+DEMO MODES:
+
+1. Live Venue Mode
+2. Investor Demo Mode
+3. QA Testing Mode
+4. Presentation Mode
+
+SECRET TOUCH GESTURES:
+
+Top-left hold:
+Open Control Chamber
+
+Bottom-right triple tap:
+Quick phase jump
+
+Two-finger hold:
+Mentor selector
+
+CONTROL CHAMBER VISUAL STYLE:
+
+Dark obsidian glass
+Amber/gold lighting
+Military-grade cinematic UI
+Floating metallic controls
+Animated smoke background
+
+DEBUG RULES:
+
+ALL TEST SESSIONS:
+Separated from live analytics.
+
+PREVENT:
+Leaderboard corruption
+XP farming
+Fake engagement data
+
+TRANSITION ENGINE:
+
+NO HARD CUTS.
+
+USE:
+Smoke dissolves
+Torch flare wipes
+Heatwave transitions
+Glass morph effects
+Ember fade transitions
+
+AUDIO + HAPTIC FEEDBACK:
+
+XP gain:
+Bell + shimmer
+
+XP loss:
+Subtle ash crack
+
+Perfect pairing:
+Deep lounge chime
+
+Rare unlock:
+Golden resonance pulse
+
+REQUIRED BACKEND SYSTEMS:
+
+1. Session State Engine
+2. XP + Merit Calculation Service
+3. Mentor Dialogue Engine
+4. Phase Progression Engine
+5. Pairing Affinity Calculator
+6. Venue Leaderboard Engine
+7. Analytics Ledger Storage
+8. Operator Override System
+9. Cinematic Transition Layer
+10. Dynamic Difficulty Scaling
+11. Session Locking + Visit Validation
+12. Real Inventory Pairing Hooks
+13. Fake Competitor Simulator
+14. Reward + Badge Unlock System
+15. Persistent Ambient Smoke Layer
+16. Quiz Engine + Retention Tracking
+
+FILE STRUCTURE:
+
+server/
+ ├── engines/
+ │    ├── smokeCraftEngine.ts
+ │    ├── pairingEngine.ts
+ │    ├── leaderboardEngine.ts
+ │    ├── mentorEngine.ts
+ │    ├── analyticsEngine.ts
+ │    ├── operatorEngine.ts
+ │
+ ├── routes/
+ │    ├── smokecraft.routes.ts
+ │
+ ├── types/
+ │    ├── smokecraft.types.ts
+
+client/
+ ├── src/
+ │    ├── pages/
+ │    │    ├── SmokeCraft360.tsx
+ │    │
+ │    ├── components/
+ │    │    ├── MentorPanel.tsx
+ │    │    ├── XPOverlay.tsx
+ │    │    ├── PhaseNavigator.tsx
+ │    │    ├── GoldenBox.tsx
+ │    │    ├── OperatorControlChamber.tsx
+
+FINAL EXPERIENCE GOAL:
+
+Users should feel:
+Like they traveled through cigar countries.
+Like they learned authentic craftsmanship.
+Like they built a personalized cigar.
+Like they competed inside an elite cigar culture.
+Like they earned status.
+Like they want to return again.
+
+THIS SYSTEM MUST FEEL:
+Alive.
+Luxury.
+Cinematic.
+Educational.
+Competitive.
+Profitable.
+Addictive in a premium way.

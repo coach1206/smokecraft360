@@ -23,3 +23,20 @@ export function playClick() {
     // silently ignore in non-AudioContext environments
   }
 }
+
+export function playHologram() {
+  try {
+    const ctx = getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(440, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 2);
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 2);
+  } catch {}
+}

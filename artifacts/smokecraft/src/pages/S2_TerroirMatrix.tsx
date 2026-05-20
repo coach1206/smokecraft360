@@ -4,488 +4,249 @@ import { useNoveeGuest } from "@/contexts/NoveeGuestProfileContext";
 import { NoveeBackButton } from "@/components/NoveeBackButton";
 import { hapticMilestone } from "@/hooks/useNoveeHaptic";
 
-const GOLD  = "#D4AF37";
-const GREEN = "#3DAA6A";
+const GOLD = "#D4AF37";
+const AMBER = "#C8762A";
+const RED = "#C8322A";
 
 const PV = {
-  enter:  { opacity: 0, x: 60,  scale: 0.95 },
-  active: { opacity: 1, x: 0,   scale: 1    },
-  exit:   { opacity: 0, x: -50, scale: 0.98 },
+  enter: { opacity: 0, x: 60, scale: 0.95 },
+  active: { opacity: 1, x: 0, scale: 1 },
+  exit: { opacity: 0, x: -50, scale: 0.98 },
 };
 const PT = { type: "spring" as const, mass: 0.9, stiffness: 260, damping: 28 };
 
-/* ── Telemetry cards keyed to soil state ── */
-interface Card {
-  id:       string;
-  title:    string;
-  subtitle: string;
-  body:     string;
-  color:    string;
-  icon:     string;
-  bgTop:    string;
-  bgBot:    string;
-  grainColor: string;
-}
-
-function getTelemetry(n: number, k: number, ph: number): Card {
-  if (n >= 65) return {
-    id:       "high_n",
-    title:    "High Nitrogen Balance",
-    subtitle: "Dark Maduro Formation Active",
-    body:     "Deepens leaf oil saturation, resulting in a dark maduro leaf format with thick texture and high nicotine strength. Maximum nitrogen forces a dense, waxy cuticle — expect dark chocolate, earth, and leather transition notes with elevated aromatic combustion across the full smoke.",
-    color:    "#C87820",
-    icon:     "N",
-    bgTop:    "#1A0A02",
-    bgBot:    "#2E1408",
-    grainColor: "rgba(200,120,32,0.15)",
-  };
-  if (k >= 65) return {
-    id:       "high_k",
-    title:    "High Potassium Balance",
-    subtitle: "Combustion Elasticity Optimized",
-    body:     "Optimizes burn elasticity and ash structure stability, preventing structural tunneling, canoeing, or wrapper splits. The ash holds a long, firm, pearl-white column under draw pressure — the mark of elite blend construction and precision terroir control.",
-    color:    GREEN,
-    icon:     "K",
-    bgTop:    "#071408",
-    bgBot:    "#0E2210",
-    grainColor: "rgba(61,170,106,0.14)",
-  };
-  if (ph >= 7.2) return {
-    id:       "alkaline",
-    title:    "Alkaline Soil Profile",
-    subtitle: "Reduced Fermentation Depth",
-    body:     "High pH inhibits enzymatic chlorophyll breakdown during fermentation, producing lighter-colored leaves with reduced nicotine conversion. Expect a milder, restrained aromatic profile — ideal for Connecticut Shade and natural wrapper constructions.",
-    color:    "#4A90D9",
-    icon:     "pH↑",
-    bgTop:    "#080E1A",
-    bgBot:    "#101822",
-    grainColor: "rgba(74,144,217,0.12)",
-  };
-  if (ph <= 5.0) return {
-    id:       "acid",
-    title:    "Acidic Volcanic Soil",
-    subtitle: "Maximum Mineral Complexity",
-    body:     "High volcanic acidity supercharges microbial activity in the root zone, producing mineral-dense leaf with complex secondary flavor compounds. This is the signature of Estelí, Nicaragua — full-body, volcanic earth, and a robust palate intensity.",
-    color:    "#C8322A",
-    icon:     "pH↓",
-    bgTop:    "#180604",
-    bgBot:    "#280A08",
-    grainColor: "rgba(200,50,42,0.13)",
-  };
-  return {
-    id:       "balanced",
-    title:    "Balanced Terroir Profile",
-    subtitle: "Optimal Multi-Leaf Architecture",
-    body:     "The equilibrium between N/K/pH produces consistently complex, balanced leaf with even oil distribution and predictable fermentation curves. This profile supports the widest range of blend architectures — from Robusto to Churchill formats.",
-    color:    GOLD,
-    icon:     "⚖",
-    bgTop:    "#0C1008",
-    bgBot:    "#141C0E",
-    grainColor: "rgba(212,175,55,0.11)",
-  };
-}
-
-const HUMIDOR: Record<string, { name: string; origin: string; strength: string }[]> = {
-  rich:     [{ name: "Arturo Fuente Opus X",     origin: "Dominican Republic", strength: "Full"        },
-             { name: "Padron 1964 Anniversary",   origin: "Nicaragua",          strength: "Full-Medium" }],
-  balanced: [{ name: "Davidoff Nicaragua",        origin: "Nicaragua",          strength: "Medium"      },
-             { name: "Rocky Patel Vintage 1990",  origin: "Honduras",           strength: "Medium"      }],
-  mild:     [{ name: "Macanudo Café",             origin: "Jamaica/Dominican",  strength: "Mild"        },
-             { name: "Ashton Classic",             origin: "Dominican Republic", strength: "Mild-Medium" }],
-};
-
-function getHumidorKey(n: number, k: number, ph: number) {
-  const r = (n + k) / 2;
-  if (r > 65 && ph < 6.5) return "rich";
-  if (r < 35 || ph > 7.0) return "mild";
-  return "balanced";
-}
-
-const IMG_SOIL = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
-
-/* ── Volcanic soil photo panel ── */
-function SoilTexture({ card }: { card: Card }) {
-  return (
-    <>
-      {/* Real volcanic soil photograph */}
-      <img
-        src={IMG_SOIL("volcanic_soil.png")}
-        alt="Volcanic soil"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", zIndex: 0 }}
-        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-      />
-      {/* Tinted color overlay keyed to current telemetry state */}
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 1,
-        background: `linear-gradient(160deg, ${card.bgTop}CC 0%, ${card.bgBot}99 100%)`,
-        mixBlendMode: "multiply",
-      }} />
-      {/* Top rim glow */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 3, zIndex: 2,
-        background: `linear-gradient(90deg, transparent, ${card.color}99, transparent)`,
-      }} />
-    </>
-  );
-}
-
-type Step = "sliders" | "results" | "voucher";
+const WRAPPERS = [
+  { id: "connecticut", name: "Connecticut Shade", body: "mild", notes: ["creamy", "cedar", "nutty"], img: "tobacco_connecticut.png" },
+  { id: "corojo", name: "Corojo", body: "medium", notes: ["spice", "pepper", "earth"], img: "tobacco_corojo.png" },
+  { id: "criollo", name: "Criollo", body: "full", notes: ["cocoa", "molasses", "pepper"], img: "tobacco_criollo.png" },
+  { id: "maduro", name: "Maduro", body: "full", notes: ["chocolate", "sweetness", "dark fruit"], img: "tobacco_criollo.png" },
+  { id: "habano", name: "Habano", body: "full", notes: ["spice", "wood", "leather"], img: "tobacco_corojo.png" },
+];
 
 export function S2_TerroirMatrix() {
   const { profile, updateProfile, setPhase, addPoints } = useNoveeGuest();
+  const [step, setStep] = useState<"intro" | "wrapper" | "anatomy" | "balancing" | "aging" | "wheel">("intro");
 
-  const [step,   setStep]   = useState<Step>("sliders");
-  const [soilN,  setSoilN]  = useState(profile.soilN);
-  const [soilK,  setSoilK]  = useState(profile.soilK);
-  const [soilPH, setSoilPH] = useState(profile.soilPH);
+  const [wrapper, setWrapper] = useState<string | null>(profile.wrapper);
+  const [volado, setVolado] = useState(profile.volado);
+  const [seco, setSeco] = useState(profile.seco);
+  const [ligero, setLigero] = useState(profile.ligero);
+  const [selectedNotes, setSelectedNotes] = useState<string[]>(profile.flavorProfile || []);
 
-  const telemetry  = useMemo(() => getTelemetry(soilN, soilK, soilPH), [soilN, soilK, soilPH]);
-  const humidorKey = useMemo(() => getHumidorKey(soilN, soilK, soilPH), [soilN, soilK, soilPH]);
-  const matches    = HUMIDOR[humidorKey];
+  const totalLeaf = volado + seco + ligero;
 
-  function handleAnalyze() {
-    updateProfile({ soilN, soilK, soilPH });
-    addPoints(25);
-    setStep("results");
+  function handleWrapperSelect(w: typeof WRAPPERS[0]) {
+    setWrapper(w.id);
+    updateProfile({ wrapper: w.id });
+    hapticMilestone();
+    setStep("anatomy");
   }
 
-  const SLIDERS = [
-    { label: "Nitrogen",   sub: "Leaf Growth Catalyst",  val: soilN,  set: setSoilN,  color: "#8AAA4A", min: 10, max: 90, step: 1,   unit: "mg/kg" },
-    { label: "Potassium",  sub: "Combustion Control",    val: soilK,  set: setSoilK,  color: "#4A90D9", min: 10, max: 90, step: 1,   unit: "mg/kg" },
-    { label: "pH Balance", sub: "Soil Acidity Index",    val: soilPH, set: setSoilPH, color: "#C8762A", min: 4,  max: 8,  step: 0.1, unit: "pH"    },
-  ] as const;
+  function handleFinishBalancing() {
+    if (ligero > 40) {
+      // Trigger mentor warning overlay (simplified for now)
+      console.warn("Too much ligero! Blend stability at risk.");
+    }
+    updateProfile({ volado, seco, ligero });
+    setStep("aging");
+  }
 
   return (
-    <div style={{ position: "absolute", inset: 0, overflow: "hidden", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#050505", color: "#F0E8D4", fontFamily: "'Inter', sans-serif" }}>
       <NoveeBackButton />
 
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 2,
-        background: `linear-gradient(90deg, transparent, ${GREEN}66 30%, ${GREEN}AA 50%, ${GREEN}66 70%, transparent)`,
-        boxShadow: `0 0 28px 2px rgba(61,170,106,0.20)`,
-      }} />
+      <AnimatePresence mode="wait">
+        {step === "intro" && (
+          <motion.div key="intro" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={FullScreenCenter}>
+            <p style={EyebrowStyle(GOLD)}>THE ALCHEMIST</p>
+            <h1 style={HeadingStyle}>THE CRAFT</h1>
+            <p style={SubStyle}>Transforming raw terroir into a masterwork of construction.</p>
+            <motion.button onClick={() => setStep("wrapper")} whileTap={{ scale: 0.95 }} style={PrimaryBtnStyle}>
+              BEGIN COMPOSITION →
+            </motion.button>
+          </motion.div>
+        )}
 
-      <div style={{
-        position: "absolute", inset: 0,
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        padding: "100px 48px 60px",
-        overflowY: "auto",
-      }}>
-        <AnimatePresence mode="wait">
-
-          {/* ── Soil Sliders + Live Telemetry ── */}
-          {step === "sliders" && (
-            <motion.div key="sliders" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
-              style={{ width: "100%", maxWidth: 1020 }}>
-              <p style={EyebrowStyle("rgba(61,170,106,0.80)")}>Session 2 · Terroir Matrix · Step 1.6</p>
-              <h2 style={HeadingStyle}>Soil Chemistry Lab</h2>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 24 }}>
-                {/* Sliders */}
-                <div style={{
-                  background:     "rgba(255,255,255,0.024)",
-                  backdropFilter: "blur(20px)",
-                  WebkitBackdropFilter: "blur(20px)",
-                  border:         "1px solid rgba(255,255,255,0.09)",
-                  borderRadius:   18,
-                  padding:        "28px",
-                  boxShadow:      "0 8px 48px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.05)",
-                  display:        "flex",
-                  flexDirection:  "column",
-                  gap:            30,
-                }}>
-                  {SLIDERS.map(sl => (
-                    <div key={sl.label}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
-                        <div>
-                          <span style={{ color: sl.color, fontSize: 22, fontWeight: 700, letterSpacing: "0.06em" }}>{sl.label}</span>
-                          <span style={{ color: "rgba(240,232,212,0.35)", fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", marginLeft: 12, fontWeight: 700 }}>{sl.sub}</span>
-                        </div>
-                        <motion.span key={sl.val} initial={{ scale: 1.22 }} animate={{ scale: 1 }}
-                          style={{ color: sl.color, fontSize: 28, fontWeight: 900, letterSpacing: "0.04em" }}>
-                          {sl.label === "pH Balance" ? (sl.val as number).toFixed(1) : sl.val}{" "}{sl.unit}
-                        </motion.span>
-                      </div>
-
-                      <div style={{ position: "relative", height: 52, display: "flex", alignItems: "center" }}>
-                        {/* Track */}
-                        <div style={{ position: "absolute", left: 0, right: 0, height: 7, background: "rgba(255,255,255,0.07)", borderRadius: 4, boxShadow: "inset 0 1px 2px rgba(0,0,0,0.40)" }} />
-                        {/* Fill */}
-                        <div style={{
-                          position: "absolute", left: 0,
-                          width: `${((sl.val - sl.min) / (sl.max - sl.min)) * 100}%`,
-                          height: 7,
-                          background: `linear-gradient(90deg, ${sl.color}55, ${sl.color})`,
-                          borderRadius: 4,
-                          boxShadow: `0 0 14px ${sl.color}70`,
-                          transition: "width 0.08s",
-                        }} />
-                        {/* Hidden native range */}
-                        <input type="range" min={sl.min} max={sl.max} step={sl.step} value={sl.val}
-                          onChange={e => sl.set(Number(e.target.value))}
-                          style={{ position: "absolute", left: 0, right: 0, width: "100%", height: 52, opacity: 0, zIndex: 3, cursor: "pointer", touchAction: "none", margin: 0, padding: 0 }} />
-                        {/* Premium thumb */}
-                        <motion.div
-                          animate={{ left: `calc(${((sl.val - sl.min) / (sl.max - sl.min)) * 100}% - 16px)` }}
-                          transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                          style={{
-                            position: "absolute", width: 32, height: 32, borderRadius: "50%",
-                            background: `
-                              radial-gradient(circle at 30% 25%, rgba(255,255,255,0.55) 0%, ${sl.color} 45%, color-mix(in srgb, ${sl.color} 60%, #000) 100%)
-                            `,
-                            border: `2px solid rgba(255,255,255,0.30)`,
-                            boxShadow: `0 0 24px ${sl.color}99, 0 4px 12px rgba(0,0,0,0.70), inset 0 1px 0 rgba(255,255,255,0.30)`,
-                            pointerEvents: "none",
-                            top: "50%", transform: "translateY(-50%)", zIndex: 2,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-
-                  <motion.button type="button" onPointerDown={handleAnalyze} whileTap={{ scale: 0.97 }}
-                    style={{
-                      padding: "22px",
-                      background: `linear-gradient(135deg, ${GREEN} 0%, #1C7A40 100%)`,
-                      border: "none", borderRadius: 13,
-                      color: "#fff", fontSize: 20, fontWeight: 900,
-                      letterSpacing: "0.22em", textTransform: "uppercase",
-                      cursor: "pointer", fontFamily: "'Inter', sans-serif",
-                      boxShadow: `0 0 40px rgba(61,170,106,0.28), 0 8px 28px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.20)`,
-                      position: "relative", overflow: "hidden",
-                    }}>
-                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "50%", background: "linear-gradient(180deg, rgba(255,255,255,0.14) 0%, transparent 100%)", borderRadius: "13px 13px 0 0" }} />
-                    ANALYZE TERROIR PROFILE →
-                  </motion.button>
-                </div>
-
-                {/* ── Live Telemetry Card ── */}
-                <AnimatePresence mode="wait">
-                  <motion.div key={telemetry.id}
-                    initial={{ opacity: 0, x: 28, scale: 0.95 }}
-                    animate={{ opacity: 1, x: 0,  scale: 1 }}
-                    exit={{ opacity: 0, x: -20, scale: 0.96 }}
-                    transition={{ type: "spring", mass: 0.7, stiffness: 340, damping: 30 }}
-                    style={{
-                      borderRadius:   18,
-                      overflow:       "hidden",
-                      border:         `1.5px solid ${telemetry.color}44`,
-                      boxShadow:      `0 0 50px ${telemetry.color}18, 0 12px 48px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.06)`,
-                      display:        "flex",
-                      flexDirection:  "column",
-                      position:       "relative",
-                    }}
-                  >
-                    {/* Photorealistic soil top panel */}
-                    <div style={{ height: 180, position: "relative", overflow: "hidden", flexShrink: 0 }}>
-                      <SoilTexture card={telemetry} />
-
-                      {/* Chemical symbol */}
-                      <div style={{
-                        position:  "absolute",
-                        top:       "50%",
-                        left:      "50%",
-                        transform: "translate(-50%, -50%)",
-                        fontSize:  telemetry.icon.length <= 1 ? 72 : 42,
-                        fontWeight: 900,
-                        color:     telemetry.color,
-                        fontFamily: "'Inter', sans-serif",
-                        letterSpacing: "0",
-                        opacity:   0.60,
-                        textShadow: `0 0 40px ${telemetry.color}`,
-                        zIndex:    3,
-                      }}>
-                        {telemetry.icon}
-                      </div>
-
-                      {/* Rim light */}
-                      <div style={{
-                        position: "absolute", top: 0, left: 0, right: 0, height: 2,
-                        background: `linear-gradient(90deg, transparent, ${telemetry.color}88, transparent)`,
-                      }} />
-                    </div>
-
-                    {/* Card body */}
-                    <div style={{
-                      background:     "rgba(8,8,6,0.92)",
-                      backdropFilter: "blur(16px)",
-                      padding:        "20px 20px 24px",
-                      flex:           1,
-                    }}>
-                      <div style={{ fontSize: 12, letterSpacing: "0.30em", color: `${telemetry.color}CC`, textTransform: "uppercase", fontWeight: 800, marginBottom: 8 }}>
-                        {telemetry.subtitle}
-                      </div>
-                      <h4 style={{
-                        fontFamily:    "'Cormorant Garamond', Georgia, serif",
-                        fontSize:      28,
-                        fontWeight:    400,
-                        color:         "#F0E8D4",
-                        margin:        "0 0 12px",
-                        lineHeight:    1.20,
-                        letterSpacing: "0.03em",
-                      }}>
-                        {telemetry.title}
-                      </h4>
-                      <p style={{ fontSize: 18, color: "rgba(240,232,212,0.60)", lineHeight: 1.62, margin: "0 0 18px" }}>
-                        {telemetry.body}
-                      </p>
-
-                      {/* Live metric bars */}
-                      {[
-                        { l: "N", pct: Math.round(((soilN  - 10) / 80) * 100), c: "#8AAA4A" },
-                        { l: "K", pct: Math.round(((soilK  - 10) / 80) * 100), c: "#4A90D9" },
-                        { l: "pH", pct: Math.round(((soilPH - 4)  / 4)  * 100), c: "#C8762A" },
-                      ].map(m => (
-                        <div key={m.l} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                          <span style={{ fontSize: 14, fontWeight: 900, color: m.c, width: 28, letterSpacing: "0.08em" }}>{m.l}</span>
-                          <div style={{ flex: 1, height: 7, background: "rgba(255,255,255,0.07)", borderRadius: 4 }}>
-                            <motion.div
-                              animate={{ width: `${m.pct}%` }}
-                              transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                              style={{
-                                height: "100%", background: m.c, borderRadius: 4,
-                                boxShadow: `0 0 8px ${m.c}80`,
-                              }}
-                            />
-                          </div>
-                          <span style={{ fontSize: 14, color: m.c, fontWeight: 800, width: 34, textAlign: "right" }}>{m.pct}%</span>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          )}
-
-          {/* ── Humidor Match ── */}
-          {step === "results" && (
-            <motion.div key="results" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
-              style={{ width: "100%", maxWidth: 720 }}>
-              <p style={EyebrowStyle("rgba(61,170,106,0.80)")}>Session 2 · Humidor Inventory Match</p>
-              <h2 style={HeadingStyle}>
-                Soil Profile ·{" "}
-                <span style={{ color: GREEN }}>{humidorKey.charAt(0).toUpperCase() + humidorKey.slice(1)}</span>
-              </h2>
-
-              <div style={{ display: "flex", gap: 12, marginBottom: 24, background: "rgba(255,255,255,0.025)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: "18px 24px", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)" }}>
-                {[
-                  { l: "Nitrogen",  v: soilN,              c: "#8AAA4A", u: " mg" },
-                  { l: "Potassium", v: soilK,              c: "#4A90D9", u: " mg" },
-                  { l: "pH",        v: soilPH.toFixed(1),  c: "#C8762A", u: "" },
-                ].map(s => (
-                  <div key={s.l} style={{ flex: 1, textAlign: "center" }}>
-                    <div style={{ fontSize: 26, fontWeight: 900, color: s.c }}>{s.v}{s.u}</div>
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.30)", letterSpacing: "0.20em", textTransform: "uppercase" }}>{s.l}</div>
-                  </div>
-                ))}
-              </div>
-
-              {matches.map((m, i) => (
-                <motion.div key={m.name}
-                  initial={{ opacity: 0, x: -24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.08 + i * 0.14, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  style={{
-                    background:   "rgba(61,170,106,0.05)",
-                    backdropFilter: "blur(12px)",
-                    border:       "1.5px solid rgba(61,170,106,0.28)",
-                    borderRadius: 14,
-                    padding:      "22px 26px",
-                    display:      "flex",
-                    alignItems:   "center",
-                    justifyContent: "space-between",
-                    marginBottom: 14,
-                    boxShadow:    "0 4px 20px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.04)",
-                  }}
-                >
-                  <div>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: "#F0E8D4", marginBottom: 4 }}>{m.name}</div>
-                    <div style={{ fontSize: 13, color: "rgba(240,232,212,0.42)", letterSpacing: "0.10em" }}>{m.origin} · {m.strength} Strength</div>
-                  </div>
-                  <div style={{
-                    background: "rgba(61,170,106,0.14)", border: `1px solid ${GREEN}55`,
-                    borderRadius: 8, padding: "7px 16px", fontSize: 11, fontWeight: 800,
-                    color: GREEN, letterSpacing: "0.14em", textTransform: "uppercase",
-                    boxShadow: `0 0 14px rgba(61,170,106,0.20)`,
-                  }}>
-                    IN STOCK
+        {step === "wrapper" && (
+          <motion.div key="wrapper" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={PhaseContainer}>
+            <h2 style={PhaseHeading}>Select Your Wrapper</h2>
+            <div style={WrapperGrid}>
+              {WRAPPERS.map(w => (
+                <motion.div key={w.id} onClick={() => handleWrapperSelect(w)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  style={{ ...WrapperCard, border: wrapper === w.id ? `2px solid ${GOLD}` : "1px solid rgba(255,255,255,0.1)" }}>
+                  <img src={`${import.meta.env.BASE_URL}images/${w.img}`} alt={w.name} style={WrapperImg} />
+                  <div style={WrapperInfo}>
+                    <h3>{w.name}</h3>
+                    <p>{w.body.toUpperCase()} BODY</p>
                   </div>
                 </motion.div>
               ))}
+            </div>
+          </motion.div>
+        )}
 
-              <motion.button type="button" onPointerDown={() => setStep("voucher")} whileTap={{ scale: 0.97 }}
-                style={{
-                  marginTop: 8, width: "100%", padding: "22px",
-                  background: `linear-gradient(135deg, ${GOLD} 0%, #9A7A14 100%)`,
-                  border: "none", borderRadius: 13,
-                  color: "#080501", fontSize: 20, fontWeight: 900,
-                  letterSpacing: "0.22em", textTransform: "uppercase",
-                  cursor: "pointer", fontFamily: "'Inter', sans-serif",
-                  boxShadow: `0 0 40px rgba(212,175,55,0.22), 0 8px 32px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.20)`,
-                  position: "relative", overflow: "hidden",
-                }}>
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "50%", background: "linear-gradient(180deg, rgba(255,255,255,0.14) 0%, transparent 100%)", borderRadius: "13px 13px 0 0" }} />
-                CLAIM SESSION VOUCHER →
-              </motion.button>
-            </motion.div>
-          )}
+        {step === "anatomy" && (
+          <motion.div key="anatomy" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={PhaseContainer}>
+            <h2 style={PhaseHeading}>Leaf Anatomy</h2>
+            <div style={AnatomyVisual}>
+               {/* Simplified Diagram */}
+               <div style={AnatomySection}>
+                 <div style={AnatomyLabel}>WRAPPER</div>
+                 <div style={AnatomyBar}>Outer Leaf - Aesthetic & Flavor</div>
+               </div>
+               <div style={AnatomySection}>
+                 <div style={AnatomyLabel}>BINDER</div>
+                 <div style={AnatomyBar}>Structural Integrity</div>
+               </div>
+               <div style={AnatomySection}>
+                 <div style={AnatomyLabel}>FILLER</div>
+                 <div style={AnatomyBar}>Volado / Seco / Ligero</div>
+               </div>
+            </div>
+            <motion.button onClick={() => setStep("balancing")} style={PrimaryBtnStyle}>
+              PROCEED TO BALANCING →
+            </motion.button>
+          </motion.div>
+        )}
 
-          {/* ── Voucher ── */}
-          {step === "voucher" && (
-            <motion.div key="voucher" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
-              style={{ width: "100%", maxWidth: 640, textAlign: "center" }}>
-              <div style={{ fontSize: 56, marginBottom: 20 }}>🍽</div>
-              <p style={EyebrowStyle("rgba(212,175,55,0.70)")}>Session 2 · Complete</p>
-              <h2 style={HeadingStyle}>Premium Appetizer Voucher</h2>
-              <div style={{
-                background: "rgba(212,175,55,0.06)",
-                backdropFilter: "blur(18px)",
-                border: `2px dashed ${GOLD}44`,
-                borderRadius: 18, padding: "36px",
-                margin: "0 0 32px",
-                boxShadow: `0 0 40px rgba(212,175,55,0.12), inset 0 1px 0 rgba(255,255,255,0.05)`,
-              }}>
-                <div style={{ fontSize: 34, fontWeight: 900, color: GOLD, letterSpacing: "0.22em", marginBottom: 10, textShadow: `0 0 30px rgba(212,175,55,0.50)` }}>
-                  SMKTERR-{Math.random().toString(36).substring(2,8).toUpperCase()}
-                </div>
-                <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 17, margin: 0, lineHeight: 1.5 }}>
-                  Present to your server · Complimentary premium appetizer
-                </p>
-              </div>
-              <motion.button type="button"
-                onPointerDown={() => { hapticMilestone(); setPhase("s3_spiritquiz"); }}
-                whileTap={{ scale: 0.97 }}
-                style={{
-                  width: "100%", padding: "23px",
-                  background: `linear-gradient(135deg, ${GOLD} 0%, #B8960A 55%, #9A7A14 100%)`,
-                  border: "none", borderRadius: 13,
-                  color: "#080501", fontSize: 20, fontWeight: 900,
-                  letterSpacing: "0.24em", textTransform: "uppercase",
-                  cursor: "pointer", fontFamily: "'Inter', sans-serif",
-                  boxShadow: `0 0 50px rgba(212,175,55,0.30), 0 8px 36px rgba(0,0,0,0.60), inset 0 1px 0 rgba(255,255,255,0.22)`,
-                  position: "relative", overflow: "hidden",
-                }}>
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "50%", background: "linear-gradient(180deg, rgba(255,255,255,0.14) 0%, transparent 100%)", borderRadius: "13px 13px 0 0" }} />
-                BEGIN SESSION 3 →
-              </motion.button>
-            </motion.div>
-          )}
+        {step === "balancing" && (
+          <motion.div key="balancing" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={PhaseContainer}>
+            <h2 style={PhaseHeading}>Filler Equilibrium</h2>
+            <p style={SubStyle}>Balance the strength and burn rate of your blend.</p>
+            
+            <div style={SliderGroup}>
+              <LeafSlider label="Volado" sub="Combustion" val={volado} set={setVolado} color="#8AAA4A" />
+              <LeafSlider label="Seco" sub="Aroma" val={seco} set={setSeco} color="#4A90D9" />
+              <LeafSlider label="Ligero" sub="Strength" val={ligero} set={setLigero} color="#C8322A" />
+            </div>
 
-        </AnimatePresence>
-      </div>
+            {ligero > 40 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={WarningPanel}>
+                <span style={{ color: RED, fontWeight: 900 }}>MENTOR WARNING:</span> Excessive Ligero will impact draw stability and burn temperature.
+              </motion.div>
+            )}
+
+            <motion.button onClick={handleFinishBalancing} style={PrimaryBtnStyle}>
+              FINALIZE BLEND →
+            </motion.button>
+          </motion.div>
+        )}
+
+        {step === "aging" && (
+          <motion.div key="aging" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={FullScreenCenter}>
+            <h1 style={HeadingStyle}>AGING CHAMBER</h1>
+            <div style={AgingAnimation} />
+            <p style={SubStyle}>Allowing the oils to marry and flavors to mature...</p>
+            <motion.button onClick={() => setStep("wheel")} style={PrimaryBtnStyle}>
+              TEST MATURITY →
+            </motion.button>
+          </motion.div>
+        )}
+
+        {step === "wheel" && (
+          <motion.div key="wheel" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={PhaseContainer}>
+            <h2 style={PhaseHeading}>Flavor Calibration</h2>
+            <div style={FlavorGrid}>
+               {["Earth", "Cedar", "Spice", "Cocoa", "Leather", "Floral", "Cream", "Pepper"].map(f => (
+                 <motion.div key={f} 
+                   onClick={() => setSelectedNotes(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f])}
+                   style={{ ...FlavorNode, background: selectedNotes.includes(f) ? GOLD : "transparent", color: selectedNotes.includes(f) ? "#000" : GOLD }}>
+                   {f}
+                 </motion.div>
+               ))}
+            </div>
+            <motion.button onClick={() => {
+              updateProfile({ flavorProfile: selectedNotes });
+              setPhase("s3_spiritquiz"); // Transition to next phase
+            }} style={PrimaryBtnStyle}>
+              LOCK BLEND PROFILE →
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
+function LeafSlider({ label, sub, val, set, color }: any) {
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+        <span>{label} <small style={{ opacity: 0.5 }}>{sub}</small></span>
+        <span style={{ color, fontWeight: 800 }}>{val}%</span>
+      </div>
+      <input type="range" min="0" max="100" value={val} onChange={e => set(Number(e.target.value))} style={SliderInput} />
+    </div>
+  );
+}
+
+// STYLES
+const FullScreenCenter: React.CSSProperties = {
+  position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 48, textAlign: "center"
+};
+const PhaseContainer: React.CSSProperties = {
+  width: "100%", maxWidth: 1000, margin: "100px auto", padding: "0 24px"
+};
 const EyebrowStyle = (color: string): React.CSSProperties => ({
-  fontSize: 10, letterSpacing: "0.42em", color,
-  textTransform: "uppercase", fontWeight: 700, margin: "0 0 10px",
+  fontSize: 14, letterSpacing: "0.3em", color, marginBottom: 12, fontWeight: 800
 });
 const HeadingStyle: React.CSSProperties = {
-  fontFamily: "'Cormorant Garamond', Georgia, serif",
-  fontSize: "clamp(28px, 4vw, 46px)",
-  fontWeight: 300, color: "#F0E8D4",
-  margin: "0 0 32px", letterSpacing: "0.05em",
-  textShadow: "0 0 40px rgba(212,175,55,0.08)",
+  fontSize: 64, fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 24
+};
+const SubStyle: React.CSSProperties = {
+  fontSize: 20, opacity: 0.6, marginBottom: 40, maxWidth: 600
+};
+const PrimaryBtnStyle: React.CSSProperties = {
+  padding: "20px 40px", background: GOLD, color: "#000", border: "none", borderRadius: 4, fontSize: 18, fontWeight: 900, cursor: "pointer", letterSpacing: "0.1em"
+};
+const PhaseHeading: React.CSSProperties = {
+  fontSize: 32, fontWeight: 400, fontFamily: "Cormorant Garamond, serif", marginBottom: 32, borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: 16
+};
+const WrapperGrid: React.CSSProperties = {
+  display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 16, marginBottom: 40
+};
+const WrapperCard: React.CSSProperties = {
+  background: "rgba(255,255,255,0.03)", borderRadius: 12, overflow: "hidden", cursor: "pointer", transition: "all 0.2s"
+};
+const WrapperImg: React.CSSProperties = {
+  width: "100%", height: 140, objectFit: "cover"
+};
+const WrapperInfo: React.CSSProperties = {
+  padding: 16
+};
+const AnatomyVisual: React.CSSProperties = {
+  background: "rgba(255,255,255,0.02)", borderRadius: 20, padding: 40, marginBottom: 40, border: "1px solid rgba(255,255,255,0.05)"
+};
+const AnatomySection: React.CSSProperties = {
+  marginBottom: 20
+};
+const AnatomyLabel: React.CSSProperties = {
+  fontSize: 12, letterSpacing: "0.2em", color: GOLD, marginBottom: 8
+};
+const AnatomyBar: React.CSSProperties = {
+  padding: 16, background: "rgba(255,255,255,0.05)", borderRadius: 4, fontSize: 14, opacity: 0.8
+};
+const SliderGroup: React.CSSProperties = {
+  background: "rgba(255,255,255,0.02)", padding: 32, borderRadius: 16, marginBottom: 32
+};
+const SliderInput: React.CSSProperties = {
+  width: "100%", height: 4, background: "rgba(255,255,255,0.1)", appearance: "none", borderRadius: 2
+};
+const WarningPanel: React.CSSProperties = {
+  background: "rgba(200,50,42,0.1)", border: "1px solid #C8322A", padding: 20, borderRadius: 8, marginBottom: 32, fontSize: 14
+};
+const AgingAnimation: React.CSSProperties = {
+  width: 200, height: 200, borderRadius: "50%", border: `2px solid ${GOLD}22`, marginBottom: 40, borderTop: `2px solid ${GOLD}`, animation: "spin 4s linear infinite"
+};
+const FlavorGrid: React.CSSProperties = {
+  display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 40
+};
+const FlavorNode: React.CSSProperties = {
+  padding: "20px", border: `1px solid ${GOLD}`, borderRadius: 8, textAlign: "center", cursor: "pointer", fontWeight: 700, letterSpacing: "0.1em"
 };

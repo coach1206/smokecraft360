@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNoveeGuest } from "@/contexts/NoveeGuestProfileContext";
 import { NoveeBackButton } from "@/components/NoveeBackButton";
 import { NoveeCheatCodeEngine } from "@/components/NoveeCheatCodeEngine";
-import { playClick } from "@/hooks/useNoveeAudio";
-import { hapticClick, hapticMilestone } from "@/hooks/useNoveeHaptic";
+import { playClick, playHologram } from "@/hooks/useNoveeAudio";
+import { hapticClick, hapticMilestone, hapticPulse } from "@/hooks/useNoveeHaptic";
+import { submitScore, getVenueLeaderboard, getRegionalLeaderboard } from "@/lib/leaderboardEngine";
+import { calcDifficultyTier } from "@/lib/xpEngine";
 
 const GOLD = "#D4AF37";
+
+const RANK_DATA = {
+  beginner: { label: "Beginner", color: "#A0A0A0", icon: "◈" },
+  apprentice: { label: "Apprentice", color: "#4A90E2", icon: "◈◈" },
+  blender: { label: "Blender", color: "#50E3C2", icon: "◈◈◈" },
+  master: { label: "Master Blender", color: "#D4AF37", icon: "◈◈◈◈" },
+  architect: { label: "Grand Architect", color: "#FFD700", icon: "◈◈◈◈◈" },
+};
 
 const VITOLAS = [
   { id: "robusto",   label: "Robusto",   dims: "5″ × 50",  temp: "820°F", desc: "Classic short smoke, intense draw" },
@@ -30,7 +40,7 @@ const WOOD_GRAINS = [
   { id: "maple_burl",    label: "Maple Burl",     color: "#C89A60" },
 ];
 
-type Step = "vitola" | "designstudio" | "results";
+type Step = "vitola" | "designstudio" | "golden_box" | "results";
 
 export function S4_DesignStudio() {
   const { profile, updateProfile, setPhase, addPoints } = useNoveeGuest();
@@ -66,12 +76,36 @@ export function S4_DesignStudio() {
     updateProfile({ woodGrain, goldFoil });
     addPoints(ds);
     hapticMilestone();
-    setStep("results");
+    setStep("golden_box");
   }
 
   const finalPoints = profile.points;
+  const currentTier = calcDifficultyTier(profile.merit);
   const selectedVitola = VITOLAS.find(v => v.id === vitola);
   const selectedGrain  = WOOD_GRAINS.find(g => g.id === woodGrain);
+
+  useEffect(() => {
+    if (step === "golden_box") {
+      playHologram();
+      hapticPulse();
+      const timer = setTimeout(() => {
+        submitScore({
+          name: `${profile.firstName} ${profile.lastName}`.trim() || "Anonymous",
+          score: profile.points,
+          tier: currentTier,
+          venueId: "default_venue",
+          region: "Global",
+          sessionType: profile.sessionType
+        });
+        setStep("results");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [step, profile, currentTier]);
+
+  const venueLeaderboard = useMemo(() => getVenueLeaderboard("default_venue"), [step]);
+  const regionalLeaderboard = useMemo(() => getRegionalLeaderboard("Global"), [step]);
 
   return (
     <div style={{
@@ -101,7 +135,7 @@ export function S4_DesignStudio() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "100px 48px 48px",
+        padding: step === "results" ? "80px 48px 48px" : "100px 48px 48px",
         overflowY: "auto",
       }}>
         <AnimatePresence mode="wait">
@@ -506,136 +540,242 @@ export function S4_DesignStudio() {
                   transition: "all 0.2s",
                 }}
               >
-                FINALIZE & PUSH TO LEADERBOARD →
+                CRAFT YOUR LEGACY →
               </motion.button>
             </motion.div>
           )}
 
-          {/* ── Results / Score Push ── */}
+          {/* ── Golden Box Reveal Cinematic ── */}
+          {step === "golden_box" && (
+            <motion.div
+              key="golden_box"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                position: "absolute", inset: 0,
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center",
+                background: "radial-gradient(circle, #1A100A 0%, #000 100%)",
+                zIndex: 100,
+              }}
+            >
+              <motion.div
+                initial={{ y: 300, opacity: 0, scale: 0.8 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ duration: 2, ease: "easeOut" }}
+                style={{ position: "relative" }}
+              >
+                {/* Spotlight effect */}
+                <div style={{
+                  position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)",
+                  width: 400, height: 600,
+                  background: "radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.2) 0%, transparent 70%)",
+                  pointerEvents: "none", zIndex: 0
+                }} />
+                
+                <motion.div
+                  animate={{ 
+                    boxShadow: ["0 0 20px rgba(212,175,55,0.3)", "0 0 60px rgba(212,175,55,0.6)", "0 0 20px rgba(212,175,55,0.3)"]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  style={{
+                    width: 320, height: 440,
+                    background: woodGrain ? WOOD_GRAINS.find(g=>g.id===woodGrain)?.color : "#2A1810",
+                    border: `2px solid ${GOLD}`,
+                    borderRadius: 20,
+                    position: "relative",
+                    zIndex: 1,
+                    overflow: "hidden",
+                    display: "flex", flexDirection: "column"
+                  }}
+                >
+                  <div style={{ padding: "30px 20px", borderBottom: `1px solid ${GOLD}44`, textAlign: "center" }}>
+                    <div style={{ fontSize: 12, letterSpacing: "0.4em", color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>SmokeCraft 360</div>
+                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, color: "#F0E8D4", marginTop: 10 }}>{profile.firstName}</div>
+                  </div>
+                  <div style={{ flex: 1, padding: "20px", display: "flex", flexDirection: "column", gap: 15 }}>
+                     <div style={{ fontSize: 14, color: `${GOLD}88`, textTransform: "uppercase", letterSpacing: "0.1em" }}>Master Composition</div>
+                     <div style={{ color: "#F0E8D4", fontSize: 18 }}>{profile.blendCountry1} & {profile.blendCountry2}</div>
+                     <div style={{ color: "rgba(240,232,212,0.6)", fontSize: 14 }}>{selectedVitola?.label} · {selectedVitola?.dims}</div>
+                     <div style={{ color: "rgba(240,232,212,0.6)", fontSize: 14 }}>{capCut?.toUpperCase()} CUT</div>
+                  </div>
+                  <div style={{ padding: "20px", borderTop: `1px solid ${GOLD}44`, textAlign: "center" }}>
+                    <div style={{ fontSize: 12, color: GOLD, fontWeight: 700 }}>{RANK_DATA[currentTier].label}</div>
+                  </div>
+                </motion.div>
+
+                {/* Particle explosion placeholder (Visual cue) */}
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: [0, 2], opacity: [0, 1, 0] }}
+                  transition={{ duration: 1, delay: 0.5 }}
+                  style={{
+                    position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                    width: 200, height: 200, borderRadius: "50%",
+                    background: `radial-gradient(circle, ${GOLD} 0%, transparent 70%)`,
+                    zIndex: 2
+                  }}
+                />
+              </motion.div>
+              
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5 }}
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: 48, color: "#F0E8D4", marginTop: 40,
+                  letterSpacing: "0.1em"
+                }}
+              >
+                THE LEGACY REVEALED
+              </motion.h1>
+            </motion.div>
+          )}
+
+          {/* ── Results + Leaderboard ── */}
           {step === "results" && (
             <motion.div
               key="results"
-              initial={{ opacity: 0, scale: 0.94 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              style={{ width: "100%", maxWidth: 760, textAlign: "center" }}
+              transition={{ duration: 0.6 }}
+              style={{ width: "100%", maxWidth: 1000, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}
             >
-              {/* Glow burst */}
-              <motion.div
-                initial={{ scale: 0.4, opacity: 0 }}
-                animate={{ scale: [1, 1.15, 1], opacity: [0, 0.35, 0.18] }}
-                transition={{ duration: 1.4, ease: "easeOut" }}
-                style={{
-                  position: "absolute",
-                  width: 600,
-                  height: 600,
-                  borderRadius: "50%",
-                  background: `radial-gradient(circle, ${GOLD}44 0%, transparent 70%)`,
-                  left: "50%",
-                  top: "50%",
-                  transform: "translate(-50%, -50%)",
-                  pointerEvents: "none",
-                }}
-              />
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                <div style={{ 
+                  background: "rgba(255,255,255,0.03)", 
+                  border: "1px solid rgba(255,255,255,0.08)", 
+                  borderRadius: 20, 
+                  padding: 32,
+                  textAlign: "center"
+                }}>
+                  <p style={{ fontSize: 12, letterSpacing: "0.4em", color: GOLD, textTransform: "uppercase", fontWeight: 800, margin: "0 0 20px" }}>
+                    CRAFT ACHIEVED
+                  </p>
+                  
+                  <div style={{ position: "relative", display: "inline-block", marginBottom: 20 }}>
+                     <div style={{ fontSize: 80, fontWeight: 900, color: "#FFF", lineHeight: 1 }}>{finalPoints}</div>
+                     <div style={{ fontSize: 14, color: GOLD, fontWeight: 700, letterSpacing: "0.2em", marginTop: 4 }}>TOTAL MERIT</div>
+                  </div>
 
-              <div style={{ position: "relative", zIndex: 2 }}>
-                <div style={{ fontSize: 64, marginBottom: 20 }}>🏆</div>
-                <p style={{ fontSize: 10, letterSpacing: "0.42em", color: `${GOLD}80`, textTransform: "uppercase", fontWeight: 700, margin: "0 0 14px" }}>
-                  Session Complete · Score Pushed to Wall Display
-                </p>
-                <h1 style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontSize: "clamp(36px, 5vw, 64px)",
-                  fontWeight: 300,
-                  color: GOLD,
-                  margin: "0 0 8px",
-                  letterSpacing: "0.04em",
-                }}>
-                  {finalPoints} PTS
-                </h1>
-                <p style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontSize: 28,
-                  fontWeight: 300,
-                  color: "#F0E8D4",
-                  margin: "0 0 36px",
-                }}>
-                  {profile.firstName} · Table Experience Complete
-                </p>
+                  <div style={{ 
+                    marginTop: 20, 
+                    padding: "15px 30px", 
+                    background: `rgba(${currentTier === "beginner" ? "160,160,160" : "212,175,55"}, 0.1)`,
+                    border: `1px solid ${RANK_DATA[currentTier].color}44`,
+                    borderRadius: 50,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 12
+                  }}>
+                    <span style={{ fontSize: 24, color: RANK_DATA[currentTier].color }}>{RANK_DATA[currentTier].icon}</span>
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#F0E8D4", textTransform: "uppercase" }}>{RANK_DATA[currentTier].label}</span>
+                  </div>
+                </div>
 
-                {/* Score breakdown */}
-                <div style={{
-                  display: "flex",
-                  gap: 12,
-                  justifyContent: "center",
-                  marginBottom: 36,
-                  flexWrap: "wrap",
-                }}>
-                  {[
-                    { label: "Journey XP",    val: finalPoints, color: GOLD    },
-                    { label: "Design Synergy", val: designScore, color: "#4A90D9" },
-                    { label: "Penalties",      val: `-${profile.penalties}`, color: "#C8322A" },
-                    { label: "Multiplier",     val: `×${profile.multiplier}`, color: "#32B45A" },
-                  ].map(s => (
-                    <div key={s.label} style={{
-                      background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.10)",
-                      borderRadius: 12,
-                      padding: "16px 24px",
-                      minWidth: 130,
-                    }}>
-                      <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.val}</div>
-                      <div style={{ fontSize: 14, color: "rgba(240,232,212,0.45)", letterSpacing: "0.14em", textTransform: "uppercase", marginTop: 6 }}>{s.label}</div>
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: 24 }}>
+                  <h3 style={{ fontSize: 14, color: GOLD, textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: 20 }}>Session Progress</h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {profile.pairingHistory.map((h, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", color: "rgba(240,232,212,0.6)", fontSize: 14 }}>
+                        <span>{h.cigar} + {h.drink || "No drink"}</span>
+                        <span style={{ color: GOLD }}>+{h.xp} XP</span>
+                      </div>
+                    ))}
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "rgba(240,232,212,0.6)", fontSize: 14 }}>
+                      <span>Design Score</span>
+                      <span style={{ color: GOLD }}>+{designScore} XP</span>
                     </div>
-                  ))}
+                  </div>
                 </div>
 
-                {/* Receipt print simulation */}
-                <div style={{
-                  background: "rgba(212,175,55,0.06)",
-                  border: `1px dashed ${GOLD}44`,
-                  borderRadius: 12,
-                  padding: "20px 28px",
-                  marginBottom: 28,
-                  textAlign: "left",
-                }}>
-                  <p style={{ fontSize: 12, letterSpacing: "0.26em", color: `${GOLD}90`, textTransform: "uppercase", fontWeight: 800, margin: "0 0 10px", fontFamily: "'Inter',sans-serif" }}>
-                    Hardware Receipt Token
-                  </p>
-                  <p style={{ fontSize: 28, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.14em", margin: 0, fontFamily: "'Inter',sans-serif" }}>
-                    SC360-{profile.firstName.toUpperCase().slice(0, 3)}-
-                    {Math.random().toString(36).substring(2, 7).toUpperCase()}
-                  </p>
-                  <p style={{ fontSize: 20, color: "rgba(240,232,212,0.42)", margin: "8px 0 0", fontFamily: "'Inter',sans-serif" }}>
-                    Present to server · Valid tonight only
-                  </p>
+                {currentTier === "master" || currentTier === "architect" ? (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setPhase("executive_command")}
+                    style={{
+                      padding: "20px",
+                      background: "linear-gradient(135deg, #1A100A 0%, #000 100%)",
+                      border: `1.5px solid ${GOLD}`,
+                      borderRadius: 12,
+                      color: GOLD,
+                      fontSize: 18,
+                      fontWeight: 800,
+                      letterSpacing: "0.15em",
+                      cursor: "pointer"
+                    }}
+                  >
+                    ACCESS ELITE VAULT →
+                  </motion.button>
+                ) : null}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                {/* Leaderboards */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: 24, flex: 1 }}>
+                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                      <h3 style={{ fontSize: 14, color: GOLD, textTransform: "uppercase", letterSpacing: "0.2em" }}>Venue Top 10</h3>
+                      <span style={{ fontSize: 10, color: "rgba(240,232,212,0.3)" }}>RESETS DAILY</span>
+                   </div>
+                   
+                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      {venueLeaderboard.length > 0 ? venueLeaderboard.map((e, i) => (
+                        <div key={i} style={{ 
+                          display: "flex", alignItems: "center", gap: 12, 
+                          padding: "12px 16px", 
+                          background: i === 0 ? `rgba(212,175,55,0.1)` : "rgba(255,255,255,0.02)",
+                          borderRadius: 8,
+                          border: i === 0 ? `1px solid ${GOLD}44` : "1px solid transparent"
+                        }}>
+                           <span style={{ width: 20, color: i === 0 ? GOLD : "rgba(240,232,212,0.3)", fontWeight: 800 }}>{i+1}</span>
+                           <span style={{ flex: 1, color: "#F0E8D4", fontWeight: 500 }}>{e.name}</span>
+                           <span style={{ color: GOLD, fontWeight: 800 }}>{e.score}</span>
+                        </div>
+                      )) : (
+                        <div style={{ textAlign: "center", color: "rgba(240,232,212,0.2)", padding: 40 }}>No scores yet today</div>
+                      )}
+                   </div>
                 </div>
 
-                {/* Cheat codes at results */}
-                <NoveeCheatCodeEngine />
-
+                {venueLeaderboard.length > 0 && (
+                   <div style={{ 
+                     background: `linear-gradient(135deg, ${GOLD}22 0%, transparent 100%)`,
+                     border: `1px solid ${GOLD}44`,
+                     borderRadius: 20,
+                     padding: 24,
+                     position: "relative",
+                     overflow: "hidden"
+                   }}>
+                      <div style={{ fontSize: 10, color: GOLD, fontWeight: 900, letterSpacing: "0.2em", marginBottom: 12 }}>LOUNGE CHAMPION</div>
+                      <div style={{ fontSize: 24, color: "#F0E8D4", fontFamily: "'Cormorant Garamond', serif" }}>{venueLeaderboard[0].name}</div>
+                      <div style={{ fontSize: 14, color: GOLD, marginTop: 4 }}>{RANK_DATA[venueLeaderboard[0].tier].label}</div>
+                      
+                      <div style={{ 
+                        position: "absolute", right: -20, bottom: -20, 
+                        fontSize: 100, color: `${GOLD}11`, fontWeight: 900 
+                      }}>#1</div>
+                   </div>
+                )}
+                
                 <motion.button
-                  type="button"
-                  onPointerDown={() => { touch(); setPhase("crafthub"); }}
-                  whileTap={{ scale: 0.97 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setPhase("crafthub")}
                   style={{
-                    marginTop: 24,
-                    width: "100%",
                     padding: "20px",
                     background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.12)",
+                    border: "1px solid rgba(255,255,255,0.1)",
                     borderRadius: 12,
-                    color: "rgba(240,232,212,0.55)",
-                    fontSize: 18,
+                    color: "rgba(240,232,212,0.6)",
+                    fontSize: 16,
                     fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    cursor: "pointer",
-                    fontFamily: "'Inter', sans-serif",
+                    letterSpacing: "0.1em",
+                    cursor: "pointer"
                   }}
                 >
-                  START NEW SESSION
+                  RETURN TO HUB
                 </motion.button>
               </div>
             </motion.div>
@@ -643,6 +783,8 @@ export function S4_DesignStudio() {
 
         </AnimatePresence>
       </div>
+
+      <NoveeCheatCodeEngine />
     </div>
   );
 }
