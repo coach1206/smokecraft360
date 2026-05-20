@@ -737,3 +737,9 @@ id = "_wlxa0mBNCgTRX5jFAab0"
 uri = "file://attached_assets/stock_images/mentor_honduran.jpg"
 type = "image"
 title = "Hispanic man craftsman expert hands examining leaf dramatic light"
+
+[[outputs]]
+id = "dtcPh1YDfCkJqKu1vCJDA"
+uri = "file://attached_assets/novee_access_card.jpg"
+type = "image"
+title = "NOVEE OS — QR Access Card"

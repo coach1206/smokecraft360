@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NOVEE OS — Access Card</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0804;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .page-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      padding: 40px 20px;
+    }
+    .card {
+      width: 560px;
+      background: #0d0a06;
+      border: 1px solid #D4AF37;
+      position: relative;
+    }
+    .corner { position: absolute; width: 36px; height: 36px; border-color: #D4AF37; border-style: solid; }
+    .c-tl { top: 10px; left: 10px; border-width: 1px 0 0 1px; }
+    .c-tr { top: 10px; right: 10px; border-width: 1px 1px 0 0; }
+    .c-bl { bottom: 10px; left: 10px; border-width: 0 0 1px 1px; }
+    .c-br { bottom: 10px; right: 10px; border-width: 0 1px 1px 0; }
+    .card-inner {
+      position: relative;
+      padding: 44px 44px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .glow {
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 340px; height: 180px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header { text-align: center; margin-bottom: 28px; position: relative; z-index: 1; }
+    .wordmark {
+      font-family: 'Cinzel', serif;
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      color: #D4AF37;
+      line-height: 1;
+    }
+    .wordmark span { color: #F0E8D4; font-weight: 400; }
+    .edition-tag {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.35em;
+      color: rgba(212,175,55,0.55);
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+    .gold-rule {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+      margin-bottom: 28px;
+      position: relative; z-index: 1;
+    }
+    .qr-wrap {
+      background: #050301;
+      border: 1px solid rgba(212,175,55,0.4);
+      padding: 14px;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 8px;
+    }
+    .qr-wrap img { display: block; width: 240px; height: 240px; image-rendering: pixelated; }
+    .scan-label {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.42em;
+      color: rgba(212,175,55,0.5);
+      text-align: center;
+      margin-bottom: 26px;
+      position: relative; z-index: 1;
+      margin-top: 10px;
+    }
+    .instruction-block { width: 100%; position: relative; z-index: 1; }
+    .instruction-title {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      color: #D4AF37;
+      text-align: center;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    .steps { display: flex; flex-direction: column; gap: 11px; }
+    .step { display: flex; align-items: flex-start; gap: 14px; }
+    .step-num {
+      width: 24px; height: 24px;
+      border: 1px solid rgba(212,175,55,0.5);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      color: #D4AF37;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      color: rgba(240,232,212,0.80);
+      line-height: 1.4;
+      font-weight: 400;
+    }
+    .step-text strong { color: #F0E8D4; font-weight: 600; }
+    .url-strip {
+      width: 100%; margin-top: 22px; padding: 13px 16px;
+      background: rgba(212,175,55,0.06);
+      border: 1px solid rgba(212,175,55,0.22);
+      text-align: center;
+      position: relative; z-index: 1;
+    }
+    .url-strip a {
+      font-family: 'Cinzel', serif;
+      font-size: 11.5px;
+      letter-spacing: 0.04em;
+      color: rgba(212,175,55,0.75);
+      text-decoration: none;
+    }
+    .footer-rule {
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent);
+      margin: 22px 0 0;
+      position: relative; z-index: 1;
+    }
+    .footer-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      color: rgba(212,175,55,0.38);
+      text-align: center;
+      margin-top: 14px;
+      position: relative; z-index: 1;
+    }
+    .controls { display: flex; gap: 16px; }
+    .btn {
+      font-family: 'Cinzel', serif;
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 0.2em;
+      padding: 14px 32px;
+      cursor: pointer; border: none;
+      text-transform: uppercase; transition: all 0.2s;
+    }
+    .btn-primary { background: #D4AF37; color: #050301; }
+    .btn-primary:hover { background: #e8c84a; }
+    .btn-ghost { background: transparent; color: #D4AF37; border: 1px solid #D4AF37; }
+    .btn-ghost:hover { background: rgba(212,175,55,0.1); }
+    .caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      color: rgba(240,232,212,0.35);
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+    @media print {
+      body { background: #000; }
+      .controls, .caption { display: none; }
+      .page-wrap { padding: 0; }
+    }
+  </style>
+  </head>
+  <body>
+  <div class="page-wrap">
+    <div class="card">
+      <div class="corner c-tl"></div>
+      <div class="corner c-tr"></div>
+      <div class="corner c-bl"></div>
+      <div class="corner c-br"></div>
+      <div class="card-inner">
+        <div class="glow"></div>
+        <div class="header">
+          <div class="wordmark">NOVEE<span> OS</span></div>
+          <div class="edition-tag">Kiosk Edition &nbsp;·&nbsp; SmokeCraft 360</div>
+        </div>
+        <div class="gold-rule"></div>
+        <div class="qr-wrap">
+          <img src="data:image/png;base64,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" alt="NOVEE OS QR Code"/>
+        </div>
+        <div class="scan-label">SCAN TO LAUNCH</div>
+        <div class="instruction-block">
+          <div class="instruction-title">Access Instructions</div>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Scan</strong> the QR code with your device camera or any QR reader app.</div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Open</strong> the link — Chrome or Safari recommended for full cinematic experience.</div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Add to Home Screen</strong> via your browser menu to install it as a full-screen kiosk app.</div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>Staff access</strong> requires a venue PIN via the E.A.T Intel command center.</div>
+            </div>
+          </div>
+        </div>
+        <div class="url-strip">
+          <a href="https://modular-recommender-engine.replit.app/novee/" target="_blank">
+            modular-recommender-engine.replit.app/novee
+          </a>
+        </div>
+        <div class="footer-rule"></div>
+        <div class="footer-text">Luxury Cigar Science &nbsp;·&nbsp; Powered by Axiom OS</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-primary" onclick="window.print()">Print Card</button>
+    </div>
+    <div class="caption">Share this card with venue staff or display it at the kiosk station.</div>
+  </div>
+  </body>
+  </html>
