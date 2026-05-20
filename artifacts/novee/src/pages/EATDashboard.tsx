@@ -8,6 +8,7 @@ import {
   eatEngine,
   type InventoryProduct,
   type CheckoutRequest,
+  type EnvironmentState,
 } from "@/lib/eatEngine";
 import { socket } from "@/lib/socket";
 import type { EATModuleFlags } from "@/pages/ExecutiveCommandCenter";
@@ -228,11 +229,12 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
   // ── Inline qty edit ───────────────────────────────────────────────────────
   const [editId,  setEditId]  = useState<string | null>(null);
   const [editQty, setEditQty] = useState(0);
+  const [envState, setEnvState] = useState<EnvironmentState>(eatEngine.getEnvironment());
 
   useEffect(() => {
     eatEngine.start();
     const unsubInv = eatEngine.subscribeInventory(setLiveInventory);
-    const unsubEnv = eatEngine.subscribeEnvironment(() => { /* env update */ });
+    const unsubEnv = eatEngine.subscribeEnvironment(s => setEnvState(s));
     const onConn    = () => setWsConnected(true);
     const onDisconn = () => setWsConnected(false);
     socket.on("connect",    onConn);
@@ -362,8 +364,8 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
             <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 16, textTransform: "uppercase", fontWeight: 800 }}>LOUNGE CLIMATE</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               {[
-                { label: "Temperature", value: "68°",  unit: "FAHRENHEIT", color: GOLD },
-                { label: "Humidity",    value: "70%",  unit: "RELATIVE",   color: TEAL },
+                { label: "Temperature", value: `${Math.round(envState.temperature)}°`,  unit: "FAHRENHEIT", color: GOLD },
+                { label: "Humidity",    value: `${Math.round(envState.humidity)}%`,     unit: "RELATIVE",   color: TEAL },
               ].map(r => (
                 <div key={r.label}>
                   <div style={{ fontSize: 12, color: "rgba(255,255,255,0.38)", letterSpacing: "0.14em", marginBottom: 4, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
@@ -418,12 +420,12 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.10em", color: "rgba(255,255,255,0.55)" }}>AIR QUALITY INDEX</span>
-                <span style={{ fontSize: 30, fontWeight: 900, color: TEAL }}>94</span>
+                <span style={{ fontSize: 30, fontWeight: 900, color: TEAL }}>{envState.airQuality === "Good" ? 94 : envState.airQuality === "Fair" ? 68 : 42}</span>
               </div>
               <div style={{ borderTop: `1px solid rgba(212,175,55,0.09)`, paddingTop: 12 }}>
                 <div style={{ fontSize: 12, letterSpacing: "0.20em", color: "rgba(212,175,55,0.48)", marginBottom: 10, textTransform: "uppercase", fontWeight: 800 }}>HUMIDOR READINGS</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  {[{ label: "Temp", value: "65°F", color: GOLD }, { label: "Humidity", value: "72%", color: TEAL }].map(r => (
+                  {[{ label: "Temp", value: `${Math.round(envState.humidorTemp)}°F`, color: GOLD }, { label: "Humidity", value: `${Math.round(envState.humidorHumidity)}%`, color: TEAL }].map(r => (
                     <div key={r.label}>
                       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.36)", letterSpacing: "0.12em", marginBottom: 2, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
                       <div style={{ fontSize: 24, fontWeight: 800, color: r.color }}>{r.value}</div>
@@ -485,10 +487,21 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
                         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                           {(["−", "+"] as const).map((lbl, idx) => (
                             <button key={idx} onClick={() => setEditQty(q => idx === 0 ? Math.max(0, q - 1) : q + 1)}
-                              style={{ width: 30, height: 30, borderRadius: 6, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "white", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>{lbl}</button>
+                              style={{ width: 44, height: 44, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "white", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{lbl}</button>
                           ))}
                           <span style={{ fontSize: 20, fontWeight: 900, color, minWidth: 28, textAlign: "center" }}>{editQty}</span>
-                          <button onClick={() => setEditId(null)} style={{ padding: "5px 10px", borderRadius: 6, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 11, fontWeight: 800 }}>SAVE</button>
+                          <button onClick={() => {
+                            const id  = editId;
+                            const qty = editQty;
+                            setEditId(null);
+                            if (!id) return;
+                            setLiveInventory(inv => inv.map(p => p.id === id ? { ...p, qty } : p));
+                            void fetch(`/api/inventory/${encodeURIComponent(id)}`, {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ qty }),
+                            }).catch(() => {});
+                          }} style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 14, fontWeight: 800 }}>SAVE</button>
                         </div>
                       ) : (
                         <button onClick={() => { setEditId(s.id); setEditQty(s.qty); }} style={{ background: "none", border: "none", cursor: "pointer" }}>

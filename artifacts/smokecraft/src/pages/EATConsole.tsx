@@ -12,6 +12,7 @@ import {
   type InventoryProduct,
   type EnvironmentPreset,
   type CheckoutRequest,
+  type EnvironmentState,
 } from "@/lib/eatEngine";
 import { socket } from "@/lib/socket";
 
@@ -130,11 +131,43 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
   // ── Inline qty edit ───────────────────────────────────────────────────────
   const [editId,  setEditId]  = useState<string | null>(null);
   const [editQty, setEditQty] = useState(0);
+  const [envState,      setEnvState]      = useState<EnvironmentState>(eatEngine.getEnvironment());
+  const [pendingAction, setPendingAction] = useState<"open_tab" | "close_tab" | "void_item" | null>(null);
+  const [pinEntry,      setPinEntry]      = useState("");
+  const [pinSubmitting, setPinSubmitting] = useState(false);
+  const [pinError,      setPinError]      = useState("");
+
+  const handlePinConfirm = useCallback(async () => {
+    if (pinSubmitting || pinEntry.length < 4) return;
+    setPinSubmitting(true);
+    setPinError("");
+    try {
+      const res  = await fetch("/api/auth/pin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ pin: pinEntry }),
+      });
+      const data = await res.json() as { ok?: boolean; error?: string; tier?: string };
+      if (data.ok) {
+        if (pendingAction === "open_tab")  void fetch("/api/tabs/open",  { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
+        if (pendingAction === "close_tab") void fetch("/api/tabs/close", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
+        if (pendingAction === "void_item") void fetch("/api/tabs/void",  { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
+        setPendingAction(null); setPinEntry(""); setPinError("");
+      } else {
+        setPinError(data.error === "too_many_attempts" ? "TOO MANY ATTEMPTS — WAIT" : "INVALID PIN");
+        setPinEntry("");
+      }
+    } catch {
+      setPinError("NETWORK ERROR — RETRY");
+    } finally {
+      setPinSubmitting(false);
+    }
+  }, [pinEntry, pendingAction, pinSubmitting]);
 
   useEffect(() => {
     eatEngine.start();
     const unsubInv = eatEngine.subscribeInventory(setLiveInventory);
-    const unsubEnv = eatEngine.subscribeEnvironment(() => setLivePresets(eatEngine.getPresets()));
+    const unsubEnv = eatEngine.subscribeEnvironment(s => { setEnvState(s); setLivePresets(eatEngine.getPresets()); });
     const onConn    = () => setWsConnected(true);
     const onDisconn = () => setWsConnected(false);
     socket.on("connect",    onConn);
@@ -260,8 +293,8 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
             <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 16, textTransform: "uppercase", fontWeight: 800 }}>LOUNGE CLIMATE</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               {[
-                { label: "Temperature", value: "68°",  unit: "FAHRENHEIT", color: GOLD },
-                { label: "Humidity",    value: "70%",  unit: "RELATIVE",   color: TEAL },
+                { label: "Temperature", value: `${Math.round(envState.temperature)}°`,  unit: "FAHRENHEIT", color: GOLD },
+                { label: "Humidity",    value: `${Math.round(envState.humidity)}%`,     unit: "RELATIVE",   color: TEAL },
               ].map(r => (
                 <div key={r.label}>
                   <div style={{ fontSize: 12, color: "rgba(255,255,255,0.38)", letterSpacing: "0.14em", marginBottom: 4, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
@@ -320,12 +353,12 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.10em", color: "rgba(255,255,255,0.55)" }}>AIR QUALITY INDEX</span>
-                <span style={{ fontSize: 30, fontWeight: 900, color: TEAL }}>94</span>
+                <span style={{ fontSize: 30, fontWeight: 900, color: TEAL }}>{envState.airQuality === "Good" ? 94 : envState.airQuality === "Fair" ? 68 : 42}</span>
               </div>
               <div style={{ borderTop: `1px solid rgba(212,175,55,0.09)`, paddingTop: 12 }}>
                 <div style={{ fontSize: 12, letterSpacing: "0.20em", color: "rgba(212,175,55,0.48)", marginBottom: 10, textTransform: "uppercase", fontWeight: 800 }}>HUMIDOR READINGS</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  {[{ label: "Temp", value: "65°F", color: GOLD }, { label: "Humidity", value: "72%", color: TEAL }].map(r => (
+                  {[{ label: "Temp", value: `${Math.round(envState.humidorTemp)}°F`, color: GOLD }, { label: "Humidity", value: `${Math.round(envState.humidorHumidity)}%`, color: TEAL }].map(r => (
                     <div key={r.label}>
                       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.36)", letterSpacing: "0.12em", marginBottom: 2, textTransform: "uppercase", fontWeight: 700 }}>{r.label}</div>
                       <div style={{ fontSize: 24, fontWeight: 800, color: r.color }}>{r.value}</div>
@@ -389,7 +422,18 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
                             <button key={idx} onClick={fn} style={{ width: 44, height: 44, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "white", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>{lbl}</button>
                           ))}
                           <span style={{ fontSize: 20, fontWeight: 900, color, minWidth: 28, textAlign: "center" }}>{editQty}</span>
-                          <button onClick={() => setEditId(null)} style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 14, fontWeight: 800 }}>SAVE</button>
+                          <button onClick={() => {
+                            const id  = editId;
+                            const qty = editQty;
+                            setEditId(null);
+                            if (!id) return;
+                            setLiveInventory(inv => inv.map(p => p.id === id ? { ...p, qty } : p));
+                            void fetch(`/api/inventory/${encodeURIComponent(id)}`, {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ qty }),
+                            }).catch(() => {});
+                          }} style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(50,180,90,0.18)", border: "1px solid rgba(50,180,90,0.40)", color: GREEN, cursor: "pointer", fontSize: 14, fontWeight: 800 }}>SAVE</button>
                         </div>
                       ) : (
                         <button onClick={() => { setEditId(s.id); setEditQty(s.qty); }} style={{ background: "none", border: "none", cursor: "pointer" }}>
@@ -487,13 +531,13 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
           <Card style={{ padding: "15px 16px" }}>
             <div style={{ fontSize: 13, letterSpacing: "0.22em", color: "rgba(212,175,55,0.55)", marginBottom: 11, textTransform: "uppercase", fontWeight: 800 }}>QUICK ACTIONS · PIN REQUIRED</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9 }}>
-              {[
-                { label: "OPEN TAB",  color: GREEN   },
-                { label: "CLOSE TAB", color: GOLD    },
-                { label: "VOID ITEM", color: RED_H   },
-              ].map(a => (
+              {([
+                { label: "OPEN TAB",  color: GREEN,  action: "open_tab"  },
+                { label: "CLOSE TAB", color: GOLD,   action: "close_tab" },
+                { label: "VOID ITEM", color: RED_H,  action: "void_item" },
+              ] as const).map(a => (
                 <motion.button key={a.label} whileTap={{ scale: 0.93 }}
-                  onClick={() => navigate("/pin-login")}
+                  onClick={() => setPendingAction(a.action)}
                   style={{
                     minHeight: 72, padding: "14px 8px", cursor: "pointer",
                     background: `${a.color}0d`, border: `1px solid ${a.color}44`,
@@ -566,6 +610,66 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
         </div>
 
       </main>
+
+      {/* ── Inline PIN Gate Overlay ──────────────────────────────────── */}
+      <AnimatePresence>
+        {pendingAction && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.88)", zIndex: 9999,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+            <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }} transition={{ type: "spring", stiffness: 480, damping: 28 }}
+              style={{ background: "#0D0D0D", border: `1px solid ${GOLD}44`, borderRadius: 16,
+                padding: "36px 40px", width: 360, textAlign: "center",
+                boxShadow: `0 0 60px rgba(212,175,55,0.15)` }}>
+              <div style={{ fontSize: 12, letterSpacing: "0.26em", color: `${GOLD}88`, marginBottom: 8, textTransform: "uppercase", fontWeight: 700 }}>STAFF AUTHORIZATION</div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, letterSpacing: "0.12em", marginBottom: 24, textTransform: "uppercase" }}>
+                {pendingAction === "open_tab" ? "OPEN TAB" : pendingAction === "close_tab" ? "CLOSE TAB" : "VOID ITEM"}
+              </div>
+              <input
+                type="password"
+                inputMode="numeric"
+                maxLength={6}
+                value={pinEntry}
+                onChange={e => setPinEntry(e.target.value.replace(/\D/g, ""))}
+                onKeyDown={e => e.key === "Enter" && void handlePinConfirm()}
+                placeholder="· · · ·"
+                style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: `1px solid ${GOLD}33`,
+                  borderRadius: 10, padding: "16px 18px", color: GOLD, fontSize: 28, textAlign: "center",
+                  letterSpacing: "0.3em", outline: "none", marginBottom: pinError ? 10 : 18, fontFamily: "monospace",
+                  boxSizing: "border-box" }}
+                autoFocus
+              />
+              {pinError && (
+                <div style={{ fontSize: 13, color: RED_H, marginBottom: 14, letterSpacing: "0.12em", fontWeight: 700 }}>{pinError}</div>
+              )}
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  onClick={() => { setPendingAction(null); setPinEntry(""); setPinError(""); }}
+                  style={{ flex: 1, padding: "14px", background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.12)", borderRadius: 9,
+                    color: "rgba(255,255,255,0.50)", cursor: "pointer", fontSize: 14,
+                    fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                  CANCEL
+                </button>
+                <button
+                  onClick={() => void handlePinConfirm()}
+                  disabled={pinSubmitting || pinEntry.length < 4}
+                  style={{ flex: 1, padding: "14px",
+                    background: pinEntry.length >= 4 ? `${GOLD}18` : "rgba(255,255,255,0.03)",
+                    border: `1px solid ${pinEntry.length >= 4 ? GOLD + "44" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius: 9, color: pinEntry.length >= 4 ? GOLD : "rgba(255,255,255,0.25)",
+                    cursor: pinEntry.length >= 4 ? "pointer" : "not-allowed",
+                    fontSize: 14, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase",
+                    opacity: pinSubmitting ? 0.6 : 1 }}>
+                  {pinSubmitting ? "VERIFYING..." : "CONFIRM"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
