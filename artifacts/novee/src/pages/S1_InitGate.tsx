@@ -233,11 +233,13 @@ type Step = "demo" | "rules" | "leaderboard" | "mentor" | "seed_canvas" | "quiz"
 
 export function S1_InitGate() {
   const { updateProfile, setPhase, addPoints, applyPenalty, profile } = useGuest();
-  const [step,       setStep]      = useState<Step>("demo");
-  const [firstName,  setFirstName] = useState("");
-  const [lastName,   setLastName]  = useState("");
-  const [phone4,     setPhone4]    = useState("");
-  const [age,        setAge]       = useState("");
+  const [step,        setStep]       = useState<Step>("demo");
+  const [firstName,   setFirstName]  = useState("");
+  const [lastName,    setLastName]   = useState("");
+  const [phone4,      setPhone4]     = useState("");
+  const [age,         setAge]        = useState("");
+  const [flavorNotes, setFlavorNotes] = useState("");
+  const [expLevel,    setExpLevel]   = useState("");
   const [mentor,     setMentor]    = useState<string | null>(profile.mentor);
   const [seedId,     setSeedId]    = useState("criollo");
   const [selectedNote,    setSelectedNote]    = useState<string | null>(null);
@@ -299,68 +301,162 @@ export function S1_InitGate() {
 
       <AnimatePresence mode="wait">
 
-        {/* ══════════════ DEMO ══════════════ */}
+        {/* ══════════════ DEMO — YOUR PROFILE ══════════════ */}
         {step === "demo" && (
           <motion.div key="demo" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
-            style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 48px", overflowY: "auto" }}>
-            <div style={{ width: "100%", maxWidth: 720, background: "rgba(10,7,2,0.92)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 14, padding: "48px 52px 44px", boxShadow: "0 32px 80px rgba(0,0,0,0.70)" }}>
+            style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", overflow: "hidden" }}>
+
+            {/* ── LEFT PANEL: Cigar Photo ── */}
+            <div style={{ width: "38%", flexShrink: 0, position: "relative", overflow: "hidden" }}>
+              <img src={IMG("cigar_hero.png")} alt=""
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(5,3,0,0.60) 60%, rgba(0,0,0,0.78) 100%)" }} />
+
+              {/* Back button */}
+              <div style={{ position: "absolute", top: 24, left: 24 }}>
+                <motion.button type="button" onPointerDown={() => setPhase("crafthub")} whileTap={{ scale: 0.94 }}
+                  style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(0,0,0,0.55)", border: "1px solid rgba(212,175,55,0.30)", borderRadius: 8, padding: "10px 18px", color: "#F0E8D4", fontSize: 14, fontWeight: 700, letterSpacing: "0.12em", cursor: "pointer" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  BACK
+                </motion.button>
+              </div>
+
+              {/* Bottom text block */}
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "32px 28px" }}>
+                <div style={{ fontSize: 11, letterSpacing: "0.44em", color: GOLD, textTransform: "uppercase", fontWeight: 800, marginBottom: 10, opacity: 0.85 }}>GUEST REGISTRATION</div>
+                <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", lineHeight: 1.05, marginBottom: 16 }}>
+                  <div style={{ fontSize: 54, fontWeight: 700, color: "#F0E8D4" }}>Your</div>
+                  <div style={{ fontSize: 54, fontWeight: 700, color: GOLD }}>Profile</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 4 13C4 9 9 4 12 2c3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 2c0 6-4 10-4 10"/></svg>
+                  <div style={{ height: 1, flex: 1, background: `linear-gradient(90deg, ${GOLD}55, transparent)` }} />
+                </div>
+                <p style={{ fontSize: 15, color: "rgba(240,232,212,0.55)", lineHeight: 1.65, margin: "0 0 28px" }}>
+                  Create your profile to begin your 4-session cigar science journey. Your progress and scores will be saved to your profile.
+                </p>
+                <div style={{ background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.20)", borderRadius: 10, padding: "16px 18px", display: "flex", alignItems: "flex-start", gap: 12 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 2, flexShrink: 0 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <div>
+                    <div style={{ fontSize: 13, color: GOLD, fontStyle: "italic", fontWeight: 500, marginBottom: 4 }}>Your journey. Your palate. Your legacy.</div>
+                    <div style={{ fontSize: 12, color: "rgba(240,232,212,0.45)" }}>4 sessions. Countless discoveries.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── RIGHT PANEL: Form ── */}
+            <div style={{ flex: 1, background: "#080500", overflowY: "auto", padding: "36px 40px 40px" }}>
 
               {/* Header */}
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 24 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 20 }}>
                 <div style={{ width: 52, height: 52, borderRadius: "50%", flexShrink: 0, background: "rgba(212,175,55,0.10)", border: "1.5px solid rgba(212,175,55,0.30)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 20A7 7 0 0 1 4 13C4 9 9 4 12 2c3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 2c0 6-4 10-4 10"/>
-                  </svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 4 13C4 9 9 4 12 2c3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 2c0 6-4 10-4 10"/></svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, letterSpacing: "0.44em", color: "rgba(212,175,55,0.70)", textTransform: "uppercase", fontWeight: 800, marginBottom: 6 }}>GUEST REGISTRATION</div>
-                  <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 42, fontWeight: 700, color: "#F0E8D4", lineHeight: 1.0, marginBottom: 4 }}>Your Profile</div>
-                  <div style={{ fontSize: 15, color: "rgba(240,232,212,0.38)", fontWeight: 300 }}>Let's get to know you.</div>
+                  <div style={{ fontSize: 11, letterSpacing: "0.44em", color: "rgba(212,175,55,0.70)", textTransform: "uppercase", fontWeight: 800, marginBottom: 4 }}>GUEST REGISTRATION</div>
+                  <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 38, fontWeight: 700, color: "#F0E8D4", lineHeight: 1.0, marginBottom: 2 }}>Your Profile</div>
+                  <div style={{ fontSize: 14, color: "rgba(240,232,212,0.38)", fontWeight: 300 }}>Let's get to know you.</div>
                 </div>
               </div>
 
-              {/* Divider */}
-              <div style={{ height: 1, background: "linear-gradient(90deg, rgba(212,175,55,0.40), transparent)", marginBottom: 28 }} />
+              {/* Gold divider */}
+              <div style={{ height: 1, background: `linear-gradient(90deg, ${GOLD}55, transparent)`, marginBottom: 24 }} />
 
-              {/* Name row */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
-                {[
-                  { icon: "M", label: "FIRST NAME", val: firstName, set: setFirstName, ph: "Enter first name", t: "text" },
-                  { icon: "M", label: "LAST NAME",  val: lastName,  set: setLastName,  ph: "Enter last name",  t: "text" },
-                ].map(f => (
-                  <div key={f.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 72, overflow: "hidden" }}>
-                    <div style={{ width: 52, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a9 9 0 0 1 13 0"/></svg>
+              {/* Required fields */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                {([
+                  { label: "FIRST NAME",  val: firstName, set: setFirstName, ph: "Enter first name",  t: "text", icon: <><circle cx="12" cy="7" r="4"/><path d="M5.5 21a9 9 0 0 1 13 0"/></> },
+                  { label: "LAST NAME",   val: lastName,  set: setLastName,  ph: "Enter last name",   t: "text", icon: <><circle cx="12" cy="7" r="4"/><path d="M5.5 21a9 9 0 0 1 13 0"/></> },
+                ] as const).map(f => (
+                  <div key={f.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 68, overflow: "hidden" }}>
+                    <div style={{ width: 48, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{f.icon}</svg>
                     </div>
-                    <div style={{ flex: 1, padding: "12px 16px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
-                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>{f.label}</div>
-                      <input type={f.t} placeholder={f.ph} value={f.val} onChange={e => f.set(e.target.value)}
-                        style={{ background: "transparent", border: "none", outline: "none", color: "#E8DECA", fontSize: 17, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%" }} />
+                    <div style={{ flex: 1, padding: "10px 14px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 3 }}>
+                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>{f.label}</div>
+                      <input type={f.t} placeholder={f.ph} value={f.val}
+                        onChange={e => f.set(e.target.value)}
+                        style={{ background: "transparent", border: "none", outline: "none", color: "#E8DECA", fontSize: 16, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%" }} />
                     </div>
                   </div>
                 ))}
               </div>
-
-              {/* Phone + Age row */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 32 }}>
-                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 72, overflow: "hidden" }}>
-                  <div style={{ width: 52, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+                {/* Last 4 */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 68, overflow: "hidden" }}>
+                  <div style={{ width: 48, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
                   </div>
-                  <div style={{ flex: 1, padding: "12px 16px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>LAST 4 DIGITS (PHONE)</div>
-                    <input type="tel" placeholder="Enter last 4 digits" value={phone4} maxLength={4} onChange={e => setPhone4(e.target.value.replace(/\D/g,"").slice(0,4))}
-                      style={{ background: "transparent", border: "none", outline: "none", color: "#E8DECA", fontSize: 17, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%", letterSpacing: "0.20em" }} />
+                  <div style={{ flex: 1, padding: "10px 14px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 3 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>LAST 4 DIGITS (PHONE)</div>
+                    <input type="tel" placeholder="Enter last 4 digits" value={phone4} maxLength={4}
+                      onChange={e => setPhone4(e.target.value.replace(/\D/g,"").slice(0,4))}
+                      style={{ background: "transparent", border: "none", outline: "none", color: "#E8DECA", fontSize: 16, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%", letterSpacing: "0.20em" }} />
                   </div>
                 </div>
-                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 72, overflow: "hidden" }}>
-                  <div style={{ width: 52, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                {/* Age */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 68, overflow: "hidden" }}>
+                  <div style={{ width: 48, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                   </div>
-                  <div style={{ flex: 1, padding: "12px 16px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>AGE</div>
-                    <input type="tel" placeholder="Enter your age" value={age} onChange={e => setAge(e.target.value.replace(/\D/g,"").slice(0,3))}
-                      style={{ background: "transparent", border: "none", outline: "none", color: "#E8DECA", fontSize: 17, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%" }} />
+                  <div style={{ flex: 1, padding: "10px 14px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 3 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>AGE</div>
+                    <select value={age} onChange={e => setAge(e.target.value)}
+                      style={{ background: "transparent", border: "none", outline: "none", color: age ? "#E8DECA" : "rgba(240,232,212,0.30)", fontSize: 16, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%", appearance: "none", cursor: "pointer" }}>
+                      <option value="" style={{ background: "#0A0600", color: "#E8DECA" }}>Select your age</option>
+                      {Array.from({ length: 63 }, (_, i) => i + 18).map(a => (
+                        <option key={a} value={String(a)} style={{ background: "#0A0600", color: "#E8DECA" }}>{a}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Optional section divider */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <div style={{ flex: 1, height: 1, background: "rgba(212,175,55,0.18)" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 700 }}>OPTIONAL — IMPROVES RECOMMENDATIONS</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.55 }}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <div style={{ flex: 1, height: 1, background: "rgba(212,175,55,0.18)" }} />
+              </div>
+
+              {/* Optional fields */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+                {/* Flavor notes */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.12)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 68, overflow: "hidden" }}>
+                  <div style={{ width: 48, flexShrink: 0, background: "rgba(212,175,55,0.04)", borderRight: "1px solid rgba(212,175,55,0.10)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.65 }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  </div>
+                  <div style={{ flex: 1, padding: "10px 14px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 3, position: "relative" }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.50)" }}>PREFERRED FLAVOR NOTES</div>
+                    <select value={flavorNotes} onChange={e => setFlavorNotes(e.target.value)}
+                      style={{ background: "transparent", border: "none", outline: "none", color: flavorNotes ? "#E8DECA" : "rgba(240,232,212,0.28)", fontSize: 15, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%", appearance: "none", cursor: "pointer" }}>
+                      <option value="" style={{ background: "#0A0600", color: "#E8DECA" }}>Select your notes</option>
+                      {["Earth & Cedar", "Pepper & Spice", "Cream & Nuts", "Dark Chocolate", "Coffee & Mocha", "Leather & Oak", "Sweet & Floral", "Mineral & Grass"].map(n => (
+                        <option key={n} value={n} style={{ background: "#0A0600", color: "#E8DECA" }}>{n}</option>
+                      ))}
+                    </select>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", opacity: 0.45, pointerEvents: "none" }}><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                </div>
+                {/* Experience level */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.12)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 68, overflow: "hidden" }}>
+                  <div style={{ width: 48, flexShrink: 0, background: "rgba(212,175,55,0.04)", borderRight: "1px solid rgba(212,175,55,0.10)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.65 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  </div>
+                  <div style={{ flex: 1, padding: "10px 14px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 3, position: "relative" }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.50)" }}>EXPERIENCE LEVEL</div>
+                    <select value={expLevel} onChange={e => setExpLevel(e.target.value)}
+                      style={{ background: "transparent", border: "none", outline: "none", color: expLevel ? "#E8DECA" : "rgba(240,232,212,0.28)", fontSize: 15, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%", appearance: "none", cursor: "pointer" }}>
+                      <option value="" style={{ background: "#0A0600", color: "#E8DECA" }}>Select your level</option>
+                      {["First time smoker", "Casual enthusiast", "Regular aficionado", "Seasoned connoisseur", "Master blender"].map(l => (
+                        <option key={l} value={l} style={{ background: "#0A0600", color: "#E8DECA" }}>{l}</option>
+                      ))}
+                    </select>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", opacity: 0.45, pointerEvents: "none" }}><polyline points="6 9 12 15 18 9"/></svg>
                   </div>
                 </div>
               </div>
@@ -369,19 +465,44 @@ export function S1_InitGate() {
               <motion.button type="button" onPointerDown={submitDemo} whileTap={{ scale: 0.97 }}
                 disabled={!canSubmit}
                 style={{
-                  width: "100%", padding: "22px 32px",
-                  background: canSubmit ? `linear-gradient(135deg, ${GOLD} 0%, #A87C00 100%)` : "rgba(212,175,55,0.15)",
-                  border: canSubmit ? "none" : "1px solid rgba(212,175,55,0.25)",
+                  width: "100%", padding: "20px 32px", marginBottom: 28,
+                  background: canSubmit ? `linear-gradient(135deg, ${GOLD} 0%, #B8920A 100%)` : "rgba(212,175,55,0.10)",
+                  border: canSubmit ? "none" : "1px solid rgba(212,175,55,0.20)",
                   borderRadius: 8, cursor: canSubmit ? "pointer" : "default",
-                  fontSize: 18, fontWeight: 800, color: canSubmit ? "#0A0600" : "rgba(212,175,55,0.40)",
+                  fontSize: 17, fontWeight: 800, color: canSubmit ? "#0A0600" : "rgba(212,175,55,0.30)",
                   letterSpacing: "0.22em", textTransform: "uppercase",
                   fontFamily: "'Inter',sans-serif",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 14,
-                  boxShadow: canSubmit ? "0 8px 48px rgba(212,175,55,0.30)" : "none",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+                  boxShadow: canSubmit ? "0 8px 40px rgba(212,175,55,0.28)" : "none",
                   transition: "all 0.25s",
                 }}>
-                CONTINUE <span style={{ fontSize: 22 }}>→</span>
+                CONTINUE <span style={{ fontSize: 20 }}>→</span>
               </motion.button>
+
+              {/* WHAT TO EXPECT */}
+              <div style={{ borderTop: "1px solid rgba(212,175,55,0.14)", paddingTop: 22 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+                  <div style={{ flex: 1, height: 1, background: "rgba(212,175,55,0.14)" }} />
+                  <span style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(212,175,55,0.50)", textTransform: "uppercase", fontWeight: 700 }}>WHAT TO EXPECT</span>
+                  <div style={{ flex: 1, height: 1, background: "rgba(212,175,55,0.14)" }} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10 }}>
+                  {[
+                    { num: "1", icon: <><path d="M11 20A7 7 0 0 1 4 13C4 9 9 4 12 2c3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 2c0 6-4 10-4 10"/></>, label: "DISCOVER",    desc: "Explore premium flavor, body, aroma, and structure" },
+                    { num: "2", icon: <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,            label: "ANALYZE",     desc: "Understand flavor transitions, depth, and blend notes" },
+                    { num: "3", icon: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,              label: "CRAFT",       desc: "Build your blend profile through guided selections" },
+                    { num: "4", icon: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></>,                          label: "EXPERIENCE",  desc: "Score your blends and refine your last palate" },
+                  ].map(s => (
+                    <div key={s.label} style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(212,175,55,0.10)", borderRadius: 10, padding: "16px 12px", textAlign: "center" }}>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.22)", margin: "0 auto 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{s.icon}</svg>
+                      </div>
+                      <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.24em", color: GOLD, textTransform: "uppercase", marginBottom: 6 }}>{s.num} {s.label}</div>
+                      <div style={{ fontSize: 11, color: "rgba(240,232,212,0.40)", lineHeight: 1.5 }}>{s.desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
             </div>
           </motion.div>
