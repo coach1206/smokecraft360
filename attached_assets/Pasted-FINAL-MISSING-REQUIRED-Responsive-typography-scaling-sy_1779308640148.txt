@@ -1,0 +1,224 @@
+FINAL
+
+MISSING / REQUIRED
+• Responsive typography scaling system for tablets + desktop
+• Dynamic touch-target sizing for nightclub environments
+• Accessibility scaling for dark rooms and low-light operation
+• Real image upload directory + media manager
+• Pairing Engine visual rendering system
+• HVAC / environment integration layer
+• Device telemetry manager
+• Multi-zone seating engine
+• Touchscreen kiosk mode
+• Offline failover cache for unstable WiFi
+• WebSocket live sync layer
+• GPU-safe animation system
+• Large-format typography hierarchy
+• Cream / walnut / amber visual theme system
+• Modular architecture for future expansion
+
+FAILURE PREVENTION CHECKLIST
+✔ No tiny fonts under 18px
+✔ All touch targets minimum 56px
+✔ Responsive scaling from tablet → desktop
+✔ No dark muddy UI panels
+✔ No generic POS appearance
+✔ Real image rendering support
+✔ Inventory synced live
+✔ Device tracking included
+✔ HVAC/environment hooks included
+✔ Stripe-ready payment architecture
+✔ Pairing engine visual cards
+✔ Drag/drop seating layout
+✔ Touchscreen optimized
+✔ Smooth animation performance
+✔ Future module expansion ready
+✔ Zero duplicate layouts
+✔ Operational hierarchy preserved
+
+MASTER REPLIT PROMPT
+
+EXECUTE PREMIUM RESPONSIVE E.A.T SYSTEM UI REFACTOR
+BUILD A FULLY RESPONSIVE TOUCHSCREEN-FIRST HOSPITALITY OPERATING SYSTEM USING:
+React 18 + TypeScript + TailwindCSS + Framer Motion + Zustand + Socket.IO
+
+CORE OBJECTIVE:
+Create a luxury touchscreen hospitality operating system that combines:
+• POS
+• Environment controls
+• Inventory intelligence
+• Pairing engine
+• Device management
+• Stripe payments
+• Seating management
+• Live operational analytics
+
+This must NOT look like a traditional POS dashboard.
+This must feel like:
+“Luxury hospitality intelligence software.”
+
+GLOBAL UI RULES
+
+TYPOGRAPHY SCALE:
+• Main headers: 34px minimum
+• Section headers: 28px minimum
+• Card titles: 22px minimum
+• Operational data: 18px minimum
+• Buttons: 20px minimum
+• NEVER render text smaller than 18px anywhere in the application
+
+TOUCH TARGETS:
+• Minimum button height: 56px
+• Tablet optimized spacing
+• Finger-friendly navigation
+• Swipe-compatible interactions
+• Drag/drop seating support
+
+VISUAL THEME:
+• Upper navigation: dark walnut / espresso gradient
+• Main content: warm cream + smoked glass
+• Accent colors:
+
+* Amber gold
+* Bronze
+* Copper
+* Soft champagne
+  • Remove harsh black backgrounds
+  • Add soft illumination shadows
+  • Maintain premium cinematic atmosphere without eye fatigue
+
+CORE MODULES
+
+1. PAIRING ENGINE
+   Create visual pairing cards containing:
+   • High-resolution cigar image
+   • Drink pairing image
+   • Food pairing image
+   • Flavor notes
+   • Strength indicators
+   • Origin region
+   • Suggested atmosphere preset
+   • “Add Full Experience” CTA
+
+2. ENVIRONMENT MODULE
+   Display:
+   • HVAC status
+   • Humidity
+   • Temperature
+   • Air quality
+   • Scent presets
+   • Music presets
+   • Lighting presets
+
+Prepare API integration hooks for:
+• Lutron
+• Philips Hue
+• Sonos
+• Nest
+• Smart HVAC systems
+
+3. DEVICE TELEMETRY
+   Track:
+   • Tablet ID
+   • Device location
+   • Staff assignment
+   • Battery percentage
+   • Signal strength
+   • Online/offline state
+   • Last sync timestamp
+
+4. DRAG & DROP FLOOR PLAN
+   Allow:
+   • Dragging tables
+   • Reassign seating
+   • VIP section coloring
+   • Active guest indicators
+   • Live table status
+
+5. INVENTORY SYSTEM
+   Create unified inventory panels for:
+   • Kitchen
+   • Bar
+   • Humidor
+   • Wine cellar
+
+Each inventory item must support:
+• Product image
+• Stock count
+• Low stock alerts
+• Sales velocity
+• Pairing compatibility
+
+6. MEDIA DIRECTORY SYSTEM
+   Create admin upload manager:
+   • Upload cigar images
+   • Upload drink images
+   • Upload food images
+   • Replace images dynamically
+   • Organize by category
+   • Store image metadata
+
+7. STRIPE PAYMENT LAYER
+   Integrate:
+   • Apple Pay
+   • Google Pay
+   • QR checkout
+   • Split tabs
+   • Tap to pay
+   • Saved cards
+
+8. LIVE SYNC ENGINE
+   Use Socket.IO for:
+   • Real-time inventory updates
+   • Live seating sync
+   • Device sync
+   • Order updates
+   • Environment updates
+
+9. RESPONSIVE MODES
+   Create:
+   • Tablet Mode
+   • Wall Terminal Mode
+   • Executive Desktop Mode
+   • Kiosk Mode
+
+10. LEFT NAVIGATION RAIL
+    Persistent navigation:
+    • CraftHub
+    • SmokeCraft
+    • Pairing Engine
+    • Environment
+    • Inventory
+    • Transactions
+    • Lounge Control
+    • Staffing
+    • Analytics
+    • Settings
+
+DESIGN DIRECTION
+The interface should feel like:
+• Apple Hospitality OS
+• Luxury lounge software
+• Calm operational intelligence
+• Cinematic but usable
+• Warm and expensive
+• Responsive and tactile
+
+DO NOT:
+• Use tiny charts
+• Use cramped tables
+• Use cyberpunk neon overload
+• Use muddy black UI
+• Use generic restaurant POS layouts
+
+FINAL OUTPUT REQUIREMENTS
+• Fully responsive
+• Zero TypeScript errors
+• Touchscreen optimized
+• Replit-ready
+• Modular architecture
+• Real image support
+• Live state management
+• Animation optimized
+• Future expansion ready
+• Clean scalable component structure
