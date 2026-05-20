@@ -11,6 +11,7 @@ import {
 } from "@/lib/eatEngine";
 import { socket } from "@/lib/socket";
 import type { EATModuleFlags } from "@/pages/ExecutiveCommandCenter";
+import { StaffPinGate } from "@/components/StaffPinGate";
 
 // ── Design constants ──────────────────────────────────────────────────────────
 const BG         = "#0D0D0D";
@@ -188,6 +189,38 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
   const [liveInventory,  setLiveInventory]  = useState<InventoryProduct[]>([]);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
 
+  // ── Live tabs (fetched from API, fallback to static TABLES data) ─────────
+  const [liveTabs,      setLiveTabs]      = useState(TABLES);
+  const [pendingAction, setPendingAction] = useState<"open_tab" | "close_tab" | "void_item" | null>(null);
+
+  useEffect(() => {
+    const venueId = localStorage.getItem("axiom_venue_id") ?? "default";
+    const token   = localStorage.getItem("axiom_token") ?? "";
+    fetch(`/api/tabs/venue/${encodeURIComponent(venueId)}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) return;
+        const tabs = (d.tabs ?? d) as Array<{
+          id: number; guestName?: string; totalAmount?: number;
+          status?: string; guestCount?: number;
+        }>;
+        if (tabs.length > 0) {
+          setLiveTabs(tabs.map(t => ({
+            id:      t.id,
+            status:  t.status ?? "active",
+            vip:     false,
+            guests:  t.guestCount ?? 2,
+            spend:   Math.round((t.totalAmount ?? 0) / 100),
+            name:    t.guestName ?? `Tab #${t.id}`,
+            loyalty: "Gold",
+          })));
+        }
+      })
+      .catch(() => { /* keep static fallback */ });
+  }, []);
+
   // ── Transaction state ─────────────────────────────────────────────────────
   const [billTableId,  setBillTableId]  = useState<number | null>(null);
   const [checkoutBusy, setCheckoutBusy] = useState(false);
@@ -227,7 +260,7 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
   const totalPuros = cigars.reduce((n, c) => n + c.qty, 0);
   const lowStock   = displayStock.filter(s => s.qty / s.par < 0.35);
 
-  const activeTables = TABLES.filter(t => t.status === "active");
+  const activeTables = liveTabs.filter(t => t.status === "active");
   const shiftTotal   = activeTables.reduce((s, t) => s + t.spend, 0);
   const avgSpend     = activeTables.length > 0 ? Math.round(shiftTotal / activeTables.length) : 0;
 
@@ -552,9 +585,9 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
             <div style={{ fontSize: 10, letterSpacing: "0.22em", color: "rgba(212,175,55,0.48)", marginBottom: 11, textTransform: "uppercase" }}>QUICK ACTIONS</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9 }}>
               {[
-                { label: "OPEN TAB",  color: GREEN,    action: () => {} },
-                { label: "CLOSE TAB", color: GOLD,     action: () => { if (activeTables[0]) setBillTableId(activeTables[0].id); } },
-                { label: "VOID ITEM", color: RED_H,    action: () => {} },
+                { label: "OPEN TAB",  color: GREEN,    action: () => setPendingAction("open_tab")  },
+                { label: "CLOSE TAB", color: GOLD,     action: () => setPendingAction("close_tab") },
+                { label: "VOID ITEM", color: RED_H,    action: () => setPendingAction("void_item") },
               ].map(a => (
                 <motion.button key={a.label} whileTap={{ scale: 0.93 }}
                   onClick={a.action}
@@ -604,6 +637,22 @@ export default function EATDashboard({ onBack }: EATDashboardProps) {
             tableId={billTableId}
             onClose={() => setBillTableId(null)}
             onSendBill={() => { void handleSendBill(billTableId); }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Action PIN Gate — staff must authenticate before OPEN/CLOSE/VOID ── */}
+      <AnimatePresence>
+        {pendingAction !== null && (
+          <StaffPinGate
+            level="staff"
+            onSuccess={() => {
+              if (pendingAction === "close_tab" && activeTables[0]) {
+                setBillTableId(activeTables[0].id);
+              }
+              setPendingAction(null);
+            }}
+            onCancel={() => setPendingAction(null)}
           />
         )}
       </AnimatePresence>

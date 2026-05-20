@@ -47,9 +47,6 @@ interface Props {
 }
 
 export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
-  const maxDigits = getMaxDigits(level);
-  const accentColor = level === "management" ? G : G_STAFF;
-
   const [pin,      setPin]      = useState<string[]>([]);
   const [shake,    setShake]    = useState(false);
   const [error,    setError]    = useState("");
@@ -57,10 +54,19 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
   const [locked,   setLocked]   = useState(false);
   const [rings,    setRings]    = useState<RippleRing[]>([]);
   const [success,  setSuccess]  = useState(false);
-  const ringKey   = useRef(0);
-  const lockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const ringKey          = useRef(0);
+  const lockTimer        = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTitleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => () => { if (lockTimer.current) clearTimeout(lockTimer.current); }, []);
+  const [activeLevel, setActiveLevel] = useState<PinRole>(level);
+
+  const maxDigits   = getMaxDigits(activeLevel);
+  const accentColor = activeLevel === "management" ? G : G_STAFF;
+
+  useEffect(() => () => {
+    if (lockTimer.current)        clearTimeout(lockTimer.current);
+    if (longPressTitleRef.current) clearTimeout(longPressTitleRef.current);
+  }, []);
 
   function logFailedManagement() {
     if (level === "management") {
@@ -80,7 +86,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
       triggerShake();
       return;
     }
-    const role = resolveRole(entered, level);
+    const role = resolveRole(entered, activeLevel);
     if (role) {
       const rect = (e.currentTarget as HTMLElement).closest("[data-ripple-origin]")?.getBoundingClientRect();
       const rx = rect ? e.clientX : window.innerWidth  / 2;
@@ -88,29 +94,29 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
 
       // 3 concentric rings — staggered 80ms each
       const baseKey = ++ringKey.current;
-      const color   = level === "management" ? G : G_STAFF;
+      const color   = activeLevel === "management" ? G : G_STAFF;
       setRings([
         { x: rx, y: ry, key: baseKey,     color },
         { x: rx, y: ry, key: baseKey + 1, color },
         { x: rx, y: ry, key: baseKey + 2, color },
       ]);
       setSuccess(true);
-      setTimeout(() => onSuccess(role), 950);
+      setTimeout(() => onSuccess(role), 600);
     } else {
       logFailedManagement();
       const next = failures + 1;
       setFailures(next);
       triggerShake();
-      setError(next >= 5
+      setError(next >= 3
         ? "Terminal locked — contact supervisor"
-        : `Invalid credential (${5 - next} attempt${5 - next !== 1 ? "s" : ""} remaining)`);
-      if (next >= 5) {
+        : `Invalid credential (${3 - next} attempt${3 - next !== 1 ? "s" : ""} remaining)`);
+      if (next >= 3) {
         setLocked(true);
         lockTimer.current = setTimeout(() => { setLocked(false); setFailures(0); setError(""); }, 30_000);
       }
       setPin([]);
     }
-  }, [pin, locked, success, failures, level, maxDigits, onSuccess]);
+  }, [pin, locked, success, failures, activeLevel, maxDigits, onSuccess]);
 
   function triggerShake() {
     setShake(true);
@@ -129,7 +135,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
     setPin(p => p.slice(0, -1));
   }
 
-  const lbl = LABELS[level];
+  const lbl = LABELS[activeLevel];
 
   const PAD: (string | null)[] = [
     "1","2","3",
@@ -205,7 +211,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
           }} />
 
           {/* Management mode indicator stripe */}
-          {level === "management" && (
+          {activeLevel === "management" && (
             <div style={{
               position: "absolute", top: 0, left: 0, right: 0, height: 3,
               background: `linear-gradient(90deg, transparent, ${G}, transparent)`,
@@ -235,12 +241,26 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
             {lbl.icon}
           </div>
 
-          {/* Title */}
-          <div style={{
-            textAlign: "center", marginBottom: 6,
-            fontSize: 13, fontWeight: 900, letterSpacing: "0.22em",
-            color: accentColor, fontFamily: "'Inter',sans-serif", textTransform: "uppercase",
-          }}>{lbl.title}</div>
+          {/* Title — long-press to escalate staff → management */}
+          <div
+            onPointerDown={() => {
+              if (activeLevel === "staff") {
+                longPressTitleRef.current = setTimeout(() => {
+                  setActiveLevel("management");
+                  setPin([]);
+                  setError("");
+                }, 700);
+              }
+            }}
+            onPointerUp={() => { if (longPressTitleRef.current) { clearTimeout(longPressTitleRef.current); longPressTitleRef.current = null; } }}
+            onPointerLeave={() => { if (longPressTitleRef.current) { clearTimeout(longPressTitleRef.current); longPressTitleRef.current = null; } }}
+            style={{
+              textAlign: "center", marginBottom: 6,
+              fontSize: 13, fontWeight: 900, letterSpacing: "0.22em",
+              color: accentColor, fontFamily: "'Inter',sans-serif", textTransform: "uppercase",
+              userSelect: "none", cursor: "default",
+            }}
+          >{lbl.title}</div>
           <div style={{
             textAlign: "center", marginBottom: 28,
             fontSize: 11, color: "rgba(240,232,212,0.45)",
@@ -323,7 +343,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
               background: success
                 ? "rgba(50,180,90,0.28)"
                 : pin.length === maxDigits
-                  ? `linear-gradient(135deg, ${accentColor}, ${level === "management" ? "#8B7000" : "#A87B0A"})`
+                  ? `linear-gradient(135deg, ${accentColor}, ${activeLevel === "management" ? "#8B7000" : "#A87B0A"})`
                   : `${accentColor}08`,
               border: `1px solid ${success ? "#32B45A88" : pin.length === maxDigits ? accentColor : `${accentColor}30`}`,
               borderRadius: 12,
@@ -344,7 +364,7 @@ export function StaffPinGate({ level, onSuccess, onCancel }: Props) {
             fontSize: 9, color: "rgba(212,175,55,0.20)",
             fontFamily: "'Inter',sans-serif", letterSpacing: "0.18em", textTransform: "uppercase",
           }}>
-            NOVEE OS · SECURITY TIER {level === "staff" ? "1" : level === "management" ? "2" : "3"} · {maxDigits}-DIGIT · ENCRYPTED
+            NOVEE OS · SECURITY TIER {activeLevel === "staff" ? "1" : activeLevel === "management" ? "2" : "3"} · {maxDigits}-DIGIT · ENCRYPTED
           </div>
         </motion.div>
       </motion.div>

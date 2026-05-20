@@ -363,16 +363,18 @@ export default function PinLogin() {
       setSubmitting(true);
       validatePin(pin, loginMode)
         .then(data => {
-          if (data.ok && data.token) {
-            // Store JWT for downstream auth
-            localStorage.setItem("axiom_token", data.token);
-            if (data.role) localStorage.setItem("axiom_role", data.role);
-            if (data.venueId) localStorage.setItem("axiom_venue_id", data.venueId);
-            setCurrentUser({ name: data.name ?? "Staff", role: data.role ?? "staff", pin: "" });
+          if (data.ok && (data.token || loginMode === "management")) {
+            // Store JWT for downstream auth (not available in management/founder mode)
+            if (data.token) {
+              localStorage.setItem("axiom_token", data.token);
+              if (data.role) localStorage.setItem("axiom_role", data.role);
+              if (data.venueId) localStorage.setItem("axiom_venue_id", data.venueId);
+              setCurrentUser({ name: data.name ?? "Staff", role: data.role ?? "staff", pin: "" });
+            }
             saveLockout(0, null);
             setFailedAttempts(0);
-            setSuccess(data.role ?? "staff");
-            cc.addAuditEntry("auth.pin_login", `${data.name ?? "Staff"} authenticated (${data.role ?? "staff"})`, data.name ?? "Staff");
+            setSuccess(data.role ?? (loginMode === "management" ? "sovereign" : "staff"));
+            cc.addAuditEntry("auth.pin_login", `${data.name ?? "Founder"} authenticated (${data.role ?? loginMode})`, data.name ?? "Founder");
             setRippleOrigin({ x: lastClickRef.current.x, y: lastClickRef.current.y });
             const EAT_ROLES = ["admin", "super_admin", "venue_owner", "sovereign", "manager"];
             const dest = loginMode === "management"
@@ -382,7 +384,7 @@ export default function PinLogin() {
                   EAT_ROLES.includes(data.role ?? "") ? "/titan-eat" :
                   "/dashboard"
                 );
-            setTimeout(() => navigate(dest), 950);
+            setTimeout(() => navigate(dest), 600);
           } else if (data.error === "too_many_attempts") {
             const until = Date.now() + (data.retryAfterSeconds ?? LOCKOUT_SECONDS) * 1000;
             setLockedUntil(until);
