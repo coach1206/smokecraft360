@@ -24,6 +24,15 @@ import { getAdapter, type PosAdapterConfig, type PosInventoryItem, type PosOrder
 import { NeuralEventBus } from "./neuralEventBus";
 import { logger }         from "../lib/logger";
 
+// Lazy-import getIO to avoid circular deps at module load time
+function tryEmitPosOrderComplete(payload: Record<string, unknown>): void {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getIO } = require("../lib/socketServer") as { getIO: () => import("socket.io").Server };
+    getIO().emit("pos_order_complete", payload);
+  } catch { /* socket not ready or circular — silent */ }
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type PosHealthStatus = "HEALTHY" | "DEGRADED" | "OFFLINE" | "UNCONFIGURED";
@@ -245,6 +254,23 @@ export const UnifiedPOSBridge = {
         `${reg.provider}:pushOrder:${venueId}`,
       );
       recordSuccess(reg.provider, venueId, 0);
+
+      // Broadcast enriched order event so frontend POSRouterEngine can compute
+      // flavor synergy XP, decrement inventory state, and scale multipliers.
+      tryEmitPosOrderComplete({
+        vendor:         reg.provider,
+        venueId,
+        lineItems:      order.items.map(i => ({
+          name:       i.name,
+          productId:  i.productId,
+          qty:        i.quantity,
+          priceCents: i.priceCents,
+        })),
+        totalCents:     order.totalCents,
+        guestSessionId: null,
+        timestamp:      new Date().toISOString(),
+      });
+
       return result;
     } catch (err) {
       recordFailure(reg.provider, venueId, String(err));

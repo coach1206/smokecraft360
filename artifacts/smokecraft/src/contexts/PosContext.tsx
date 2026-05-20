@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 import { getStoredUser, fetchWithRetry } from "@/services/auth";
+import { posRouterEngine, type SynergyResult } from "@/lib/posRouterEngine";
 
 export interface Product {
   id: string;
@@ -50,6 +51,8 @@ interface PosState {
   rewardCooldownActive: boolean;
   processingLock: boolean;
   paymentError: string | null;
+  synergyXP: SynergyResult | null;
+  dismissSynergyXP: () => void;
   setCurrentUser: (u: { name: string; role: string; pin: string } | null) => void;
   addToCart: (productId: string) => boolean;
   removeFromCart: (productId: string) => void;
@@ -112,6 +115,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
   const [processingLock, setProcessingLock] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [rewardCooldownActive, setRewardCooldownActive] = useState(false);
+  const [synergyXP, setSynergyXP] = useState<SynergyResult | null>(null);
   const lockRef = useRef(false);
   const cartRef = useRef<CartItem[]>([]);
   const ordersRef = useRef<Order[]>([]);
@@ -547,11 +551,35 @@ export function PosProvider({ children }: { children: ReactNode }) {
   const dismissReward = useCallback(() => setRewardMessage(null), []);
   const dismissRewardBlocked = useCallback(() => setRewardBlocked(null), []);
   const clearPaymentError = useCallback(() => setPaymentError(null), []);
+  const dismissSynergyXP = useCallback(() => setSynergyXP(null), []);
+
+  // ── Wire POSRouterEngine — subscribe on mount, destroy on unmount ──────────
+  useEffect(() => {
+    posRouterEngine.subscribe({
+      onSynergyXP: (result) => {
+        if (result.xpAwarded > 0) setSynergyXP(result);
+      },
+      onInventoryDecrement: (itemNames) => {
+        // Find products whose names match any of the incoming item names
+        // and decrement stock by 1 per matched item (external POS deduction)
+        const lower = itemNames.map(n => n.toLowerCase());
+        for (const prod of productsRef.current) {
+          const pLower = prod.name.toLowerCase();
+          const matched = lower.filter(n => pLower.includes(n) || n.includes(pLower));
+          if (matched.length > 0) {
+            applyStockDelta(prod.id, -matched.length, "pos.external_order");
+          }
+        }
+      },
+    });
+    return () => posRouterEngine.destroy();
+  }, [applyStockDelta]);
 
   return (
     <PosContext.Provider value={{
       products, cart, orders, inventoryLog, currentUser,
       rewardMessage, rewardBlocked, rewardCooldownActive, processingLock, paymentError,
+      synergyXP, dismissSynergyXP,
       setCurrentUser: syncUser,
       addToCart, removeFromCart, updateQuantity,
       clearCart, checkout, retryCheckout, refundOrder,

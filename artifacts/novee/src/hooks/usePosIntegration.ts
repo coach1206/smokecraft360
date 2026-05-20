@@ -4,12 +4,12 @@
  * Wires the cinematic transition layer (smoke vortex + velvet slide tone) to
  * the server-side ledger injection and pgPubSub broadcast pipeline.
  *
- * Usage:
- *   const { executePosHandoff, isTransitioning, lastResult, error } = usePosIntegration();
- *   await executePosHandoff({ blendSelected, vitola, customEngraving, guestId }, e.clientX, e.clientY);
+ * Now also subscribes to live POS order events via socket.io for real-time
+ * flavor synergy XP computation and inventory state binding.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { noveePosRouterEngine, type SynergyResult } from "@/lib/posRouterEngine";
 
 const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
 
@@ -54,6 +54,29 @@ export function usePosIntegration() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [lastResult,      setLastResult]       = useState<HandoffResult | null>(null);
   const [error,           setError]            = useState<string | null>(null);
+  const [synergyXP,       setSynergyXP]        = useState<SynergyResult | null>(null);
+  const [lastOrderVendor, setLastOrderVendor]  = useState<string | null>(null);
+
+  // ── Subscribe to live POS order events on mount ───────────────────────────
+  useEffect(() => {
+    noveePosRouterEngine.subscribe({
+      onSynergyXP: (result) => {
+        if (result.xpAwarded > 0) setSynergyXP(result);
+      },
+      onInventoryDecrement: (_itemNames) => {
+        // NOVEE manages inventory via inventoryState.ts — signal update
+        window.dispatchEvent(new CustomEvent("novee:inventory_decrement", {
+          detail: { itemNames: _itemNames },
+        }));
+      },
+      onOrderReceived: (vendor, _totalCents) => {
+        if (vendor) setLastOrderVendor(vendor);
+      },
+    });
+    return () => noveePosRouterEngine.destroy();
+  }, []);
+
+  const dismissSynergyXP = useCallback(() => setSynergyXP(null), []);
 
   /**
    * executePosHandoff
@@ -72,7 +95,6 @@ export function usePosIntegration() {
     setIsTransitioning(true);
     setError(null);
 
-    // Cinematic layer — centred on the finger/cursor position
     window.accelerateSmokeVortex?.(touchX, touchY);
     _playVelvetSlide();
 
@@ -99,5 +121,13 @@ export function usePosIntegration() {
     }
   }, []);
 
-  return { executePosHandoff, isTransitioning, lastResult, error };
+  return {
+    executePosHandoff,
+    isTransitioning,
+    lastResult,
+    error,
+    synergyXP,
+    dismissSynergyXP,
+    lastOrderVendor,
+  };
 }
