@@ -1,12 +1,14 @@
 /**
  * posRouterEngine.ts — Frontend POS State-Binding Layer (NOVEE OS)
  *
- * subscribe(venueId, callbacks) joins `venue:<venueId>` and listens for:
- *   pos:ORDER_PLACED    — the ONLY event that triggers XP + inventory decrement
- *   pos:ITEM_ADDED / pos:TAB_CLOSED / pos:PAYMENT_COMPLETE — analytics only
- *   pos_order           — legacy webhook/direct-trigger compat
+ * CANONICAL CHANNEL: pos:ORDER_PLACED — the ONLY trigger for XP + inventory.
+ * All other channels are analytics-only (no side effects).
  *
- * Deduplication: short-lived Set of processed sessionIds prevents double-firing.
+ * Legacy pos_order is analytics-only to prevent double-processing:
+ * posOrders.ts emits both pos_order + pos:ORDER_PLACED for the same request.
+ * Processing side effects only in pos:ORDER_PLACED eliminates duplicate awards.
+ *
+ * Contract fields: vendor?, venueId?, lineItems[], totalCents, guestSessionId?, timestamp
  */
 
 import { socket } from "./socket";
@@ -65,19 +67,22 @@ export interface PosLineItem {
   priceCents: number;
 }
 
+// Contract fields match backend: guestSessionId, timestamp
 export interface PosLiveEvent {
-  eventType:  "ORDER_PLACED" | "ITEM_ADDED" | "TAB_CLOSED" | "PAYMENT_COMPLETE";
-  vendor?:    string;
-  venueId?:   string;
-  lineItems:  PosLineItem[];
-  totalCents: number;
-  sessionId?: string;
-  ts:         number;
+  eventType:       "ORDER_PLACED" | "ITEM_ADDED" | "TAB_CLOSED" | "PAYMENT_COMPLETE";
+  vendor?:         string;
+  venueId?:        string;
+  lineItems:       PosLineItem[];
+  totalCents:      number;
+  guestSessionId?: string;
+  timestamp:       string;
 }
 
 export interface NoveePOSCallbacks {
   onSynergyXP:          (result: SynergyResult) => void;
+  /** qty-accurate — fires only on ORDER_PLACED */
   onInventoryDecrement: (items: { name: string; qty: number }[]) => void;
+  /** Analytics-only — all event types */
   onLiveEvent?:         (event: PosLiveEvent) => void;
 }
 
@@ -97,7 +102,9 @@ class NoveePOSRouterEngineClass {
     socket.on("pos:ITEM_ADDED",      this._onLive);
     socket.on("pos:TAB_CLOSED",      this._onLive);
     socket.on("pos:PAYMENT_COMPLETE",this._onLive);
-    socket.on("pos_order",           this._onOrder);
+
+    // Legacy — analytics-only, no side effects
+    socket.on("pos_order",           this._onOrderAnalyticsOnly);
   }
 
   private _onLive = (ev: PosLiveEvent): void => {
@@ -107,13 +114,12 @@ class NoveePOSRouterEngineClass {
     this.cbs.onLiveEvent?.(ev);
     window.dispatchEvent(new CustomEvent("novee:pos_live_event", { detail: ev }));
 
-    // XP + inventory only for ORDER_PLACED
     if (ev.eventType !== "ORDER_PLACED") return;
 
-    if (ev.sessionId) {
+    if (ev.guestSessionId) {
       this._pruneProcessed();
-      if (this.processed.has(ev.sessionId)) return;
-      this.processed.set(ev.sessionId, Date.now());
+      if (this.processed.has(ev.guestSessionId)) return;
+      this.processed.set(ev.guestSessionId, Date.now());
     }
 
     const itemNames = ev.lineItems.map(i => i.name);
@@ -122,42 +128,35 @@ class NoveePOSRouterEngineClass {
 
     if (s.xpAwarded > 0) this.cbs.onSynergyXP(s);
 
-    const decrementItems = ev.lineItems
+    const decrements = ev.lineItems
       .filter(i => i.name && i.qty > 0)
       .map(i => ({ name: i.name, qty: i.qty }));
-    if (decrementItems.length) this.cbs.onInventoryDecrement(decrementItems);
+    if (decrements.length) this.cbs.onInventoryDecrement(decrements);
 
-    if (ev.sessionId) this._trackSpend(ev.sessionId, ev.totalCents);
+    if (ev.guestSessionId) this._trackSpend(ev.guestSessionId, ev.totalCents);
   };
 
-  private _onOrder = (ev: { orderType: string | null; items: string[]; venueId?: string; ts: number }): void => {
+  // Legacy: analytics-only — no XP, no inventory decrement
+  private _onOrderAnalyticsOnly = (ev: {
+    orderType: string | null; items: string[]; venueId?: string; ts: number;
+  }): void => {
     if (!this.cbs) return;
     if (ev.venueId && this.venueId && ev.venueId !== this.venueId) return;
 
-    const items = ev.items ?? [];
-    const m = getMultiplier();
-    const s = calcSynergyXP(items, m);
-
-    if (s.xpAwarded > 0) this.cbs.onSynergyXP(s);
-    if (items.length) {
-      this.cbs.onInventoryDecrement(items.map(n => ({ name: n, qty: 1 })));
-    }
-
     const liveEv: PosLiveEvent = {
-      eventType: "ORDER_PLACED",
-      venueId:   ev.venueId,
-      lineItems: items.map(n => ({ name: n, productId: "", qty: 1, priceCents: 0 })),
+      eventType:  "ORDER_PLACED",
+      venueId:    ev.venueId,
+      lineItems:  (ev.items ?? []).map(n => ({ name: n, productId: "", qty: 1, priceCents: 0 })),
       totalCents: 0,
-      ts: ev.ts,
+      timestamp:  new Date(ev.ts).toISOString(),
     };
     this.cbs.onLiveEvent?.(liveEv);
-    window.dispatchEvent(new CustomEvent("novee:pos_live_event", { detail: liveEv }));
   };
 
-  private _trackSpend(sessionId: string, totalCents: number): void {
-    const existing = this.sessions.get(sessionId);
-    this.sessions.set(sessionId, {
-      sessionId,
+  private _trackSpend(guestSessionId: string, totalCents: number): void {
+    const existing = this.sessions.get(guestSessionId);
+    this.sessions.set(guestSessionId, {
+      sessionId:    guestSessionId,
       totalSpent:   (existing?.totalSpent ?? 0) + totalCents,
       lastActivity: Date.now(),
     });
@@ -183,7 +182,7 @@ class NoveePOSRouterEngineClass {
     socket.off("pos:ITEM_ADDED",      this._onLive);
     socket.off("pos:TAB_CLOSED",      this._onLive);
     socket.off("pos:PAYMENT_COMPLETE",this._onLive);
-    socket.off("pos_order",           this._onOrder);
+    socket.off("pos_order",           this._onOrderAnalyticsOnly);
     this.cbs     = null;
     this.venueId = null;
     this.processed.clear();

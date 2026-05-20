@@ -193,11 +193,12 @@ router.post("/pos/order", (req: Request, res: Response) => {
     // Normalized live-event — routed to venue room when venueId is known,
     // global broadcast as fallback so clients without join_venue still receive
     const livePayload = {
-      eventType:  "ORDER_PLACED" as const,
-      venueId:    venueId ?? undefined,
-      lineItems:  (items ?? []).map((name: string) => ({ name, productId: "", qty: 1, priceCents: 0 })),
-      totalCents: 0,
-      ts,
+      eventType:      "ORDER_PLACED" as const,
+      venueId:        venueId ?? undefined,
+      lineItems:      (items ?? []).map((name: string) => ({ name, productId: "", qty: 1, priceCents: 0 })),
+      totalCents:     0,
+      guestSessionId: null,    // not available from direct trigger
+      timestamp:      new Date(ts).toISOString(),
     };
     if (venueId) {
       io.to(`venue:${venueId}`).emit("pos:ORDER_PLACED", livePayload);
@@ -243,11 +244,12 @@ router.post("/pos/webhook", (req: Request, res: Response) => {
 
     // Normalized live-event broadcast
     const livePayload = {
-      eventType:  "ORDER_PLACED" as const,
-      venueId:    webhookVenueId,
-      lineItems:  items.map((name: string) => ({ name, productId: "", qty: 1, priceCents: 0 })),
-      totalCents: 0,
-      ts,
+      eventType:      "ORDER_PLACED" as const,
+      venueId:        webhookVenueId,
+      lineItems:      items.map((name: string) => ({ name, productId: "", qty: 1, priceCents: 0 })),
+      totalCents:     0,
+      guestSessionId: null,    // not available from webhook
+      timestamp:      new Date(ts).toISOString(),
     };
     if (webhookVenueId) {
       io.to(`venue:${webhookVenueId}`).emit("pos:ORDER_PLACED", livePayload);

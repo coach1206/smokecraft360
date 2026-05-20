@@ -265,20 +265,21 @@ export const UnifiedPOSBridge = {
       // Using ORDER_PLACED (not PAYMENT_COMPLETE) ensures exactly one event fires
       // per pushOrder() call and matches the frontend engine's restriction to
       // ORDER_PLACED-only processing, preventing duplicate XP/decrement.
+      // Emit a single venue-scoped ORDER_PLACED event with the documented contract:
+      // vendor, venueId, lineItems[], totalCents, guestSessionId, timestamp
       tryEmitToVenueRoom(venueId, "pos:ORDER_PLACED", {
-        eventType:  "ORDER_PLACED",
-        vendor:     reg.provider,
+        eventType:      "ORDER_PLACED",
+        vendor:         reg.provider,
         venueId,
-        lineItems:  order.items.map(i => ({
+        lineItems:      order.items.map(i => ({
           name:       i.name,
           productId:  i.productId,
-          qty:        i.quantity,   // actual ordered quantity for accurate decrement
+          qty:        i.quantity,
           priceCents: i.priceCents,
         })),
-        totalCents:  order.totalCents,
-        // POS-side order ID as session correlation for spend ledger
-        sessionId:   order.id ?? order.externalId ?? null,
-        ts:          Date.now(),
+        totalCents:     order.totalCents,
+        guestSessionId: order.id ?? order.externalId ?? null,
+        timestamp:      new Date().toISOString(),
       });
 
       return result;

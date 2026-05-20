@@ -14,12 +14,23 @@ export default function ControlChamber() {
   const [error, setError] = useState("");
 
   const verifyPin = async () => {
-    // Simplified PIN check for now, can be enhanced with BCrypt via API later
-    if (pin === "777888") {
-      setIsAuthorized(true);
-      setError("");
-    } else {
-      setError("INVALID FOUNDER PIN");
+    if (pin.length < 4) { setError("ENTER FULL PIN"); return; }
+    try {
+      const res = await fetch("/api/auth/pin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.tier === "sovereign") {
+        setIsAuthorized(true);
+        setError("");
+      } else {
+        setError(data.message || "INVALID FOUNDER PIN");
+        setPin("");
+      }
+    } catch {
+      setError("NETWORK ERROR — RETRY");
       setPin("");
     }
   };

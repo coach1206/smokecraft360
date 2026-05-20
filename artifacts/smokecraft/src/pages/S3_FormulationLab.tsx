@@ -532,15 +532,24 @@ export function S3_FormulationLab() {
                  <div style={{ display: "flex", flexDirection: "column", gap: 15, position: "relative" }}>
                     <button 
                       onPointerDown={() => { touch(); setPhase("s4_designstudio"); }}
-                      style={{ padding: 20, background: GOLD, border: "none", borderRadius: 12, fontWeight: 900, fontSize: 16 }}
+                      style={{ padding: 20, background: GOLD, border: "none", borderRadius: 12, fontWeight: 900, fontSize: 16, cursor: "pointer" }}
                     >
                       VIEW SESSION SUMMARY
                     </button>
+                    {profile.skipTokens > 0 && profile.pairingHistory.filter(p => p.xp >= 20).length >= 3 && (
+                      <motion.button
+                        initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                        onPointerDown={() => { touch(); updateProfile({ skipTokens: profile.skipTokens - 1 }); setPhase("s4_designstudio"); }}
+                        style={{ padding: 20, background: "linear-gradient(135deg, #8B6914, #D4AF37, #8B6914)", border: "none", borderRadius: 12, fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: `0 0 24px ${GOLD}55`, color: "#000", letterSpacing: "0.08em" }}
+                      >
+                        ADVANCE TO LEGACY — SKIP TOKEN ({profile.skipTokens})
+                      </motion.button>
+                    )}
                     <button 
                       onPointerDown={handleOverride}
                       style={{ 
                         padding: 15, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", 
-                        borderRadius: 12, color: "rgba(255,255,255,0.2)", fontSize: 12, fontWeight: 700 
+                        borderRadius: 12, color: "rgba(255,255,255,0.2)", fontSize: 12, fontWeight: 700, cursor: "pointer"
                       }}
                     >
                       STAFF OVERRIDE (PIN REQUIRED)

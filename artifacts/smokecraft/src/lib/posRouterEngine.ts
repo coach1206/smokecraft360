@@ -1,19 +1,18 @@
 /**
  * posRouterEngine.ts — Frontend POS State-Binding Layer (SmokeCraft)
  *
- * subscribe(venueId, callbacks) opens a venue-scoped socket channel.
- * The engine joins `venue:<venueId>` and listens for four normalized event types:
+ * CANONICAL CHANNEL: pos:ORDER_PLACED (via Socket.IO rooms at /api/socket.io)
+ * This is the ONLY event that triggers XP awards and inventory decrements.
  *
- *   pos:ORDER_PLACED    — the ONLY event that triggers XP awards + inventory decrement
- *   pos:ITEM_ADDED      — analytics dispatch only (no side effects)
- *   pos:TAB_CLOSED      — analytics dispatch only (no side effects)
- *   pos:PAYMENT_COMPLETE — analytics dispatch only (no side effects)
+ * All other channels are analytics-only (no side effects):
+ *   pos:ITEM_ADDED | pos:TAB_CLOSED | pos:PAYMENT_COMPLETE
+ *   pos_order   — legacy backwards compat: analytics-only, NO XP/decrement
+ *                 (posOrders.ts emits both pos_order + pos:ORDER_PLACED for the
+ *                 same request; processing side effects only in pos:ORDER_PLACED
+ *                 prevents the duplicate-award bug)
  *
- * Legacy `pos_order` is handled for the webhook/direct-trigger path (backwards compat).
- * `pos_order_complete` is NOT consumed — the bridge now emits `pos:ORDER_PLACED` only.
- *
- * Deduplication: a short-lived Set of processed sessionIds prevents double-firing
- * if the same order somehow arrives via both legacy and normalized channels.
+ * Contract fields on PosLiveEvent (matches backend emission):
+ *   vendor?, venueId?, lineItems[], totalCents, guestSessionId?, timestamp
  */
 
 import { socket } from "@/lib/socket";
@@ -34,7 +33,7 @@ function classify(name: string): ItemCategory {
   return "other";
 }
 
-// ── Synergy XP table ──────────────────────────────────────────────────────────
+// ── Synergy XP ────────────────────────────────────────────────────────────────
 
 export interface SynergyResult {
   xpAwarded:  number;
@@ -81,34 +80,37 @@ export interface PosLineItem {
   priceCents: number;
 }
 
+// ── Normalized live event contract ────────────────────────────────────────────
+// Field names match backend emission: guestSessionId, timestamp (not sessionId/ts)
+
 export interface PosLiveEvent {
-  eventType:  "ORDER_PLACED" | "ITEM_ADDED" | "TAB_CLOSED" | "PAYMENT_COMPLETE";
-  vendor?:    string;
-  venueId?:   string;
-  lineItems:  PosLineItem[];
-  totalCents: number;
-  sessionId?: string;
-  ts:         number;
+  eventType:      "ORDER_PLACED" | "ITEM_ADDED" | "TAB_CLOSED" | "PAYMENT_COMPLETE";
+  vendor?:        string;
+  venueId?:       string;
+  lineItems:      PosLineItem[];
+  totalCents:     number;
+  guestSessionId?: string;
+  timestamp:      string;
 }
 
 // ── Callbacks ─────────────────────────────────────────────────────────────────
 
 export interface POSRouterCallbacks {
   onSynergyXP: (result: SynergyResult) => void;
-  /** qty-accurate line items for stock decrement — only fires on ORDER_PLACED */
+  /** qty-accurate line items — fires only on ORDER_PLACED */
   onInventoryDecrement: (items: { name: string; qty: number }[]) => void;
-  /** Analytics-only callback — fires on all event types */
+  /** Analytics-only — fires on all event types */
   onLiveEvent?: (event: PosLiveEvent) => void;
 }
 
 // ── Engine class ──────────────────────────────────────────────────────────────
 
 class POSRouterEngineClass {
-  private callbacks:   POSRouterCallbacks | null = null;
-  private venueId:     string | null             = null;
-  private sessions     = new Map<string, ActiveSession>();
-  /** Short-lived dedup cache: sessionId → timestamp. Expires after 30s. */
-  private processed    = new Map<string, number>();
+  private callbacks:  POSRouterCallbacks | null = null;
+  private venueId:    string | null             = null;
+  private sessions    = new Map<string, ActiveSession>();
+  /** 30s dedup cache keyed by guestSessionId to prevent double-firing */
+  private processed   = new Map<string, number>();
 
   subscribe(venueId: string, callbacks: POSRouterCallbacks): void {
     this.destroy();
@@ -116,30 +118,36 @@ class POSRouterEngineClass {
     this.callbacks = callbacks;
     socket.emit("join_venue", { venueId });
 
+    // Normalized channel — only source of XP + inventory side effects
     socket.on("pos:ORDER_PLACED",    this._handleLiveEvent);
     socket.on("pos:ITEM_ADDED",      this._handleLiveEvent);
     socket.on("pos:TAB_CLOSED",      this._handleLiveEvent);
     socket.on("pos:PAYMENT_COMPLETE",this._handleLiveEvent);
-    socket.on("pos_order",           this._handleOrder);    // legacy webhook/direct
+
+    // Legacy channel — analytics-only (NO XP, NO inventory decrement)
+    // posOrders.ts emits both pos_order + pos:ORDER_PLACED for the same request;
+    // restricting side effects to pos:ORDER_PLACED prevents duplicate processing.
+    socket.on("pos_order",           this._handleOrderAnalyticsOnly);
   }
 
-  // ── Normalized event handler ──────────────────────────────────────────────
+  // ── Normalized event: ORDER_PLACED triggers side effects; others = analytics ─
 
   private _handleLiveEvent = (ev: PosLiveEvent): void => {
     if (!this.callbacks) return;
     if (ev.venueId && this.venueId && ev.venueId !== this.venueId) return;
 
-    // Always forward for analytics regardless of event type
+    // Always forward for analytics
     this.callbacks.onLiveEvent?.(ev);
 
-    // XP + inventory side effects only on ORDER_PLACED
+    // Side effects (XP + inventory) ONLY on ORDER_PLACED
     if (ev.eventType !== "ORDER_PLACED") return;
 
-    // Deduplication: skip if same sessionId was processed within 30s
-    if (ev.sessionId) {
+    // Dedup by guestSessionId — prevents double-firing if the same order
+    // session somehow arrives twice (e.g. network retry)
+    if (ev.guestSessionId) {
       this._pruneProcessed();
-      if (this.processed.has(ev.sessionId)) return;
-      this.processed.set(ev.sessionId, Date.now());
+      if (this.processed.has(ev.guestSessionId)) return;
+      this.processed.set(ev.guestSessionId, Date.now());
     }
 
     const itemNames  = ev.lineItems.map(i => i.name);
@@ -148,44 +156,40 @@ class POSRouterEngineClass {
 
     if (synergy.xpAwarded > 0) this.callbacks.onSynergyXP(synergy);
 
-    const decrementItems = ev.lineItems
+    const decrements = ev.lineItems
       .filter(i => i.name && i.qty > 0)
       .map(i => ({ name: i.name, qty: i.qty }));
-    if (decrementItems.length) this.callbacks.onInventoryDecrement(decrementItems);
+    if (decrements.length) this.callbacks.onInventoryDecrement(decrements);
 
-    if (ev.sessionId) this._trackSpend(ev.sessionId, ev.totalCents);
+    if (ev.guestSessionId) this._trackSpend(ev.guestSessionId, ev.totalCents);
   };
 
-  // ── Legacy: pos_order (webhook/direct-trigger) ────────────────────────────
+  // ── Legacy: pos_order — analytics-only, ZERO side effects ────────────────
 
-  private _handleOrder = (ev: { orderType: string | null; items: string[]; venueId?: string; ts: number }): void => {
+  private _handleOrderAnalyticsOnly = (ev: {
+    orderType: string | null; items: string[]; venueId?: string; ts: number;
+  }): void => {
     if (!this.callbacks) return;
     if (ev.venueId && this.venueId && ev.venueId !== this.venueId) return;
 
-    const items      = ev.items ?? [];
-    const multiplier = getMultiplier();
-    const synergy    = calcSynergyXP(items, multiplier);
-
-    if (synergy.xpAwarded > 0) this.callbacks.onSynergyXP(synergy);
-    if (items.length) {
-      this.callbacks.onInventoryDecrement(items.map(n => ({ name: n, qty: 1 })));
-    }
-
+    // Forward as analytics event — no XP, no inventory decrement.
+    // The canonical pos:ORDER_PLACED event (also emitted for the same request)
+    // handles all side effects.
     this.callbacks.onLiveEvent?.({
-      eventType: "ORDER_PLACED",
-      venueId:   ev.venueId,
-      lineItems: items.map(n => ({ name: n, productId: "", qty: 1, priceCents: 0 })),
+      eventType:  "ORDER_PLACED",
+      venueId:    ev.venueId,
+      lineItems:  (ev.items ?? []).map(n => ({ name: n, productId: "", qty: 1, priceCents: 0 })),
       totalCents: 0,
-      ts: ev.ts,
+      timestamp:  new Date(ev.ts).toISOString(),
     });
   };
 
   // ── Session spend ledger ──────────────────────────────────────────────────
 
-  private _trackSpend(sessionId: string, totalCents: number): void {
-    const existing = this.sessions.get(sessionId);
-    this.sessions.set(sessionId, {
-      sessionId,
+  private _trackSpend(guestSessionId: string, totalCents: number): void {
+    const existing = this.sessions.get(guestSessionId);
+    this.sessions.set(guestSessionId, {
+      sessionId:    guestSessionId,
       totalSpent:   (existing?.totalSpent ?? 0) + totalCents,
       lastActivity: Date.now(),
     });
@@ -211,7 +215,7 @@ class POSRouterEngineClass {
     socket.off("pos:ITEM_ADDED",      this._handleLiveEvent);
     socket.off("pos:TAB_CLOSED",      this._handleLiveEvent);
     socket.off("pos:PAYMENT_COMPLETE",this._handleLiveEvent);
-    socket.off("pos_order",           this._handleOrder);
+    socket.off("pos_order",           this._handleOrderAnalyticsOnly);
     this.callbacks = null;
     this.venueId   = null;
     this.processed.clear();
