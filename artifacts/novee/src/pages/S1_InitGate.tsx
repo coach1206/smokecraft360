@@ -301,38 +301,90 @@ export function S1_InitGate() {
 
         {/* ══════════════ DEMO ══════════════ */}
         {step === "demo" && (
-          <Split key="demo"
-            leftFr="1.1fr" rightFr="0.9fr"
-            left={
-              <LeftPanel
-                eyebrow="Session 1 of 4 · Step 1.1"
-                headline={`Welcome\nto the\nBlend`}
-                sub="Register to begin your personal 4-session cigar science journey. Your score lives on the wall display for the entire table to see."
-              />
-            }
-            right={
-              <RightPanel>
-                <Eyebrow>Guest Registration</Eyebrow>
-                <SectionTitle>Your Profile</SectionTitle>
+          <motion.div key="demo" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
+            style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 48px", overflowY: "auto" }}>
+            <div style={{ width: "100%", maxWidth: 720, background: "rgba(10,7,2,0.92)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 14, padding: "48px 52px 44px", boxShadow: "0 32px 80px rgba(0,0,0,0.70)" }}>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
-                  <Row>
-                    <BigInput ph="FIRST NAME" val={firstName} fn={setFirstName} />
-                    <BigInput ph="LAST NAME"  val={lastName}  fn={setLastName} />
-                  </Row>
-                  <Row>
-                    <BigInput ph="LAST 4 DIGITS" val={phone4}
-                      fn={v => setPhone4(v.replace(/\D/g,"").slice(0,4))}
-                      extra={{ letterSpacing: "0.30em" }} maxLen={4} />
-                    <BigInput ph="AGE" val={age} fn={setAge} type="number"
-                      extra={{ width: 140, flexShrink: 0 }} />
-                  </Row>
+              {/* Header */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 24 }}>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", flexShrink: 0, background: "rgba(212,175,55,0.10)", border: "1.5px solid rgba(212,175,55,0.30)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 20A7 7 0 0 1 4 13C4 9 9 4 12 2c3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 2c0 6-4 10-4 10"/>
+                  </svg>
                 </div>
+                <div>
+                  <div style={{ fontSize: 11, letterSpacing: "0.44em", color: "rgba(212,175,55,0.70)", textTransform: "uppercase", fontWeight: 800, marginBottom: 6 }}>GUEST REGISTRATION</div>
+                  <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 42, fontWeight: 700, color: "#F0E8D4", lineHeight: 1.0, marginBottom: 4 }}>Your Profile</div>
+                  <div style={{ fontSize: 15, color: "rgba(240,232,212,0.38)", fontWeight: 300 }}>Let's get to know you.</div>
+                </div>
+              </div>
 
-                <GoldBtn disabled={!canSubmit} onClick={submitDemo}>CONTINUE →</GoldBtn>
-              </RightPanel>
-            }
-          />
+              {/* Divider */}
+              <div style={{ height: 1, background: "linear-gradient(90deg, rgba(212,175,55,0.40), transparent)", marginBottom: 28 }} />
+
+              {/* Name row */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+                {[
+                  { icon: "M", label: "FIRST NAME", val: firstName, set: setFirstName, ph: "Enter first name", t: "text" },
+                  { icon: "M", label: "LAST NAME",  val: lastName,  set: setLastName,  ph: "Enter last name",  t: "text" },
+                ].map(f => (
+                  <div key={f.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 72, overflow: "hidden" }}>
+                    <div style={{ width: 52, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a9 9 0 0 1 13 0"/></svg>
+                    </div>
+                    <div style={{ flex: 1, padding: "12px 16px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>{f.label}</div>
+                      <input type={f.t} placeholder={f.ph} value={f.val} onChange={e => f.set(e.target.value)}
+                        style={{ background: "transparent", border: "none", outline: "none", color: "#E8DECA", fontSize: 17, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%" }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Phone + Age row */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 32 }}>
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 72, overflow: "hidden" }}>
+                  <div style={{ width: 52, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+                  </div>
+                  <div style={{ flex: 1, padding: "12px 16px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>LAST 4 DIGITS (PHONE)</div>
+                    <input type="tel" placeholder="Enter last 4 digits" value={phone4} maxLength={4} onChange={e => setPhone4(e.target.value.replace(/\D/g,"").slice(0,4))}
+                      style={{ background: "transparent", border: "none", outline: "none", color: "#E8DECA", fontSize: 17, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%", letterSpacing: "0.20em" }} />
+                  </div>
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,175,55,0.18)", borderRadius: 10, display: "flex", alignItems: "stretch", minHeight: 72, overflow: "hidden" }}>
+                  <div style={{ width: 52, flexShrink: 0, background: "rgba(212,175,55,0.06)", borderRight: "1px solid rgba(212,175,55,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </div>
+                  <div style={{ flex: 1, padding: "12px 16px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)" }}>AGE</div>
+                    <input type="tel" placeholder="Enter your age" value={age} onChange={e => setAge(e.target.value.replace(/\D/g,"").slice(0,3))}
+                      style={{ background: "transparent", border: "none", outline: "none", color: "#E8DECA", fontSize: 17, fontFamily: "'Inter',sans-serif", padding: 0, width: "100%" }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* CONTINUE */}
+              <motion.button type="button" onPointerDown={submitDemo} whileTap={{ scale: 0.97 }}
+                disabled={!canSubmit}
+                style={{
+                  width: "100%", padding: "22px 32px",
+                  background: canSubmit ? `linear-gradient(135deg, ${GOLD} 0%, #A87C00 100%)` : "rgba(212,175,55,0.15)",
+                  border: canSubmit ? "none" : "1px solid rgba(212,175,55,0.25)",
+                  borderRadius: 8, cursor: canSubmit ? "pointer" : "default",
+                  fontSize: 18, fontWeight: 800, color: canSubmit ? "#0A0600" : "rgba(212,175,55,0.40)",
+                  letterSpacing: "0.22em", textTransform: "uppercase",
+                  fontFamily: "'Inter',sans-serif",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 14,
+                  boxShadow: canSubmit ? "0 8px 48px rgba(212,175,55,0.30)" : "none",
+                  transition: "all 0.25s",
+                }}>
+                CONTINUE <span style={{ fontSize: 22 }}>→</span>
+              </motion.button>
+
+            </div>
+          </motion.div>
         )}
 
         {/* ══════════════ RULES — THE GOLDEN BOX ══════════════ */}
