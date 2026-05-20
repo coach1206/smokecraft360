@@ -617,7 +617,7 @@ export function S4_DesignStudio() {
 
                 <motion.button
                   type="button"
-                  onPointerDown={() => { touch(); setPhase("reentry"); }}
+                  onPointerDown={() => { touch(); setPhase("crafthub"); }}
                   whileTap={{ scale: 0.97 }}
                   style={{
                     marginTop: 24,

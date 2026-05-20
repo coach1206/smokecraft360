@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
 import CraftPortalHome from "@/pages/CraftPortalHome";
 import EATDashboard from "@/pages/EATDashboard";
-import { ReentryGate } from "@/pages/ReentryGate";
 import { S1_InitGate } from "@/pages/S1_InitGate";
 import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
 import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
@@ -53,7 +52,6 @@ function EATWrapper() {
 function phaseKey(phase: string): string {
   if (phase === "crafthub")      return "crafthub";
   if (phase === "eat_dashboard") return "eat_dashboard";
-  if (phase === "reentry")       return "reentry";
   if (S1_PHASES.has(phase))      return "s1";
   if (S2_PHASES.has(phase))      return "s2";
   if (S3_PHASES.has(phase))      return "s3";
@@ -66,7 +64,6 @@ function PhaseScreen() {
   const { phase }   = profile;
   if (phase === "crafthub")      return <CraftPortalHome />;
   if (phase === "eat_dashboard") return <EATWrapper />;
-  if (phase === "reentry")       return <ReentryGate />;
   if (S1_PHASES.has(phase))      return <S1_InitGate />;
   if (S2_PHASES.has(phase))      return <S2_TerroirMatrix />;
   if (S3_PHASES.has(phase))      return <S3_FormulationLab />;

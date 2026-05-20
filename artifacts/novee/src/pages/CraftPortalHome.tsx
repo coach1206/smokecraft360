@@ -56,7 +56,7 @@ export default function CraftPortalHome() {
   const [retLast,    setRetLast]    = useState("");
   const [retPin,     setRetPin]     = useState("");
 
-  function beginNew() { playTactile(); hapticMilestone(); setPhase("reentry"); }
+  function beginNew() { playTactile(); hapticMilestone(); setPhase("s1_demo"); }
   function resumeSession() { setShowReturn(true); }
 
   return (
