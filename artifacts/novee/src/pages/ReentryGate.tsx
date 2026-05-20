@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGuest } from "@/context/GuestProfileContext";
 import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
@@ -92,9 +92,6 @@ export function ReentryGate() {
   const [flavorNotes,  setFlavorNotes]  = useState("");
   const [expLevel,     setExpLevel]     = useState("");
   const [error,        setError]        = useState(false);
-
-  /* Clear any stale profile data from a previous session on mount */
-  useEffect(() => { resetProfile(); }, []);
 
   function handleContinue() {
     if (!firstName.trim() || !lastName.trim()) {
