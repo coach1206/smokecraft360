@@ -1,0 +1,261 @@
+==========================================
+NOVEE OS ENTERPRISE PLATFORM BIBLE SCRIPT
+==========================================
+Purpose: This script serves as a single, continuous text layout optimized for mobile clipboard limits.
+Run this on Replit to generate an independent local text file ('Novee_OS_Master_Bible.txt') that captures the entire documentation ecosystem in a single continuous layout.
+This eliminates phone copy-paste limitations by printing everything into a dedicated text asset file.
+import os
+def generate_bible():
+bible_content = """# NOVEE OS ENTERPRISE PLATFORM STACK
+SYSTEM ARCHITECTURE, OPERATIONS, AND DEPLOYMENT BIBLE
+VERSION 4.2.0-RELEASE (PRODUCTION) · SECURE ENTERPRISE DOCUMENTATION
+INTRODUCTORY SYSTEM FRAMEWORK & ARCHITECTURE OVERVIEW
+This technical specification details the architecture, operation, deployment, and management of the NOVEE OS platform stack. NOVEE OS is a distributed, ambient, real-time operating system for luxury, experiential hospitality venues. It integrates spatial environment automation, inventory asset telemetry, and high-frequency hospitality transactions into a unified, high-readability ecosystem.
++-------------------------------------------------------------+
+|                  NOVEE OS LUXURY PLATFORM                   |
++-------------------------------------------------------------+
+|
++----------------------------+----------------------------+
+|                                                         |
+v                                                         v
++------------------+                                       +---------------+
+|     CRAFTHUB     |                                       |   E.A.T.      |
+|  Guest Platform  |                                       |   ENGINE      |
++------------------+                                       +---------------+
+|                                                         |
+|--> SmokeCraft 360                                       |--> Environment
+|--> PourCraft 360                                        |--> Asset
+|--> BrewCraft 360                                        |--> Transaction
+|--> WineCraft 360                                        |
+v                                                         v
++------------------+                                       +---------------+
+|  REVENUE BRAIN   | <==================================== |   EEIE RECT   |
+| Engine Optimiser |                                       | Inter. Engine |
++------------------+                                       +---------------+
+Core Architecture Components
+ NOVEE OS Platform Shell: The core operating environment executing native multi-threaded runtimes on localized display hubs, tableside tablets, and kiosk infrastructure.
+ CraftHub Experience & Navigation Engine: The universal touch interface guiding guests through tailored ritual pathways (SmokeCraft, PourCraft, BrewCraft, WineCraft 360).
+ E.A.T. Engine (Environment, Asset, Transaction): The primary automation controller. It coordinates environmental state changes, physical asset verification, and structural commerce processing.
+ EEIE (Experience Enhancement & Interaction Engine): The low-latency background runtime that drives spatial sensors, guest tracking, and localized environmental adjustments.
+ Revenue Brain & Commerce Intelligence Layer: The centralized data-processing kernel that analyzes transactional and behavioral data to optimize margins, automate upsells, and adjust venue pricing models dynamically.
+VOLUME 1 — NOVEE OS MASTER OPERATIONS BIBLE
+1.1 System Identity & Functional Purpose
+NOVEE OS is a purpose-built, high-readability hospitality operating system designed for low-light luxury lounge environments. It functions as an ambient intelligence layer rather than a passive utility. The system synchronizes venue hardware with software interfaces to optimize guest throughput, increase average order value (AOV), and reduce service friction.
+Architectural Imperatives
+ High-Readability UI Layout: Optimized specifically for high-contrast viewing at wide viewing angles under low ambient illumination (0.5 to 15 lux).
+ Sensory Cohesion: Ensures touch screens, lighting panels, sound fields, and scent generators operate as a single unified system.
+ Subsecond Intent Latency: Maximizes performance to register and process user inputs in under 12 milliseconds, eliminating interface drag.
+1.2 Structural Color Palette and Typography Systems
+The interface enforces strict structural contrast ratios (minimum 12:1) using a dark, premium aesthetic to eliminate glare and preserve dark adaptation in lounge settings.
+Color Coordinates & Material Tokens
+ Primary Background: True Obsidian (#010101), 100% solid, non-reflective base.
+ Secondary Containers: Smoked Chrome (#121214), with a subtle 1px inner stroke of Brushed Titanium (#2C2C30).
+ Accent / Active Highlights: Honey Amber (#D4AF37) and Deep Gold-Tinted Amber (#AA7C11).
+ Status Indicators: System Alert Red (#E53E3E), System Nominal Green (#38A169), and Processing Amber (#DD6B20).
+Typography Layout Specs
+ Primary Typeface: Inter Display (Custom-tracked, medium-to-bold cuts).
+ Secondary Typeface: SF Pro Text (Monospace for structured transactional matrices, numerical asset counts, and pricing grids).
+ Minimum Target Sizing: Body text must never drop below 14pt; user action points utilize a minimum of 18pt semi-bold type with an implicit line height of 1.5 times font size to guarantee clear readability for target demographics (ages 40 to 60) in dimmed lighting environments.
+1.3 Living Infrastructure & Behavioral Intelligence Kernel
++--------------------------------------------------------------------------+
+|                       BEHAVIORAL INTELLIGENCE KERNEL                     |
++--------------------------------------------------------------------------+
+|                                  |                        |
+v                                  v                        v
+[Dwell Time Matrix]             [Touch Force Telemetry]   [Pacing & Deliberation]
+|                                  |                        |
++----------------------------------+------------------------+
+|
+v
++----------------------------------+
+|     REVENUE BRAIN ENGAGEMENT     |
+|          VECTOR PROFILE          |
++----------------------------------+
+The system uses advanced analytical tracking to monitor user engagement patterns without collecting protected health or biometric identifiers. It processes physical interactions with the display surface to assess attention levels and intent.
++----------------------------+
+|  Interaction Telemetry Node |
++----------------------------+
+|
+v
++----------------------------+
+|    Feature Extraction &    |
+|     Kinematic Modeling     |
++----------------------------+
+|
++---------------------+---------------------+
+|                                           |
+v                                           v
++-----------------------+                    +--------------------+
+| Dynamic Classification|                    | Velocity Deviation |
+|    (Hidden Markov)    |                    |     Assessment     |
++-----------------------+                    +--------------------+
+|                                           |
++---------------------+---------------------+
+|
+v
++----------------------------+
+| Engagement State Vector V_e|
++----------------------------+
+Telemetry Matrix Data Points
+1 Dwell Time Matrix: Tracks micro-second dwell focus on individual interface tiles.
+2 Touch Force Telemetry: Gauges tactile response trends via capacitance delta rates.
+3 Pacing and Deliberation Vectors: Analyzes scroll velocity deviations to identify hesitation, selection confidence, or menu fatigue.
+Operational Adaptation Logic
+When the system detects hesitation during product selections, the behavioral engine shifts the layout to a simplified curation view. It reduces text density, increases screen contrast, and surfaces distinct tasting paths to guide the user's choice.
+1.4 Comprehensive Technical Architecture & Data Schema
+NOVEE OS utilizes an edge-computed micro-kernel model. Real-time data streams operate across local area networks (LAN) via low-overhead WebSockets, maintaining high availability even during external network drops.
+Core Data Schema (PostgreSQL Reference Implementation)
+CREATE TABLE venue_sessions (
+session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+venue_id VARCHAR(64) NOT NULL,
+station_id VARCHAR(64) NOT NULL,
+start_timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+end_timestamp TIMESTAMP WITH TIME ZONE,
+current_engagement_state VARCHAR(32) DEFAULT 'IDLE',
+ambient_lux_level NUMERIC(5,2) DEFAULT 10.0,
+cumulative_spend_cents INTEGER DEFAULT 0,
+behavioral_hesitation_index NUMERIC(3,2) DEFAULT 0.00
+);
+CREATE TABLE asset_telemetry_ledger (
+entry_id BIGSERIAL PRIMARY KEY,
+session_id UUID REFERENCES venue_sessions(session_id),
+rfid_tag_id VARCHAR(128) NOT NULL,
+asset_sku VARCHAR(64) NOT NULL,
+weight_grams NUMERIC(6,2),
+extraction_timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+return_timestamp TIMESTAMP WITH TIME ZONE,
+depletion_percentage NUMERIC(5,2) DEFAULT 0.00
+);
+CREATE TABLE environment_states (
+state_id BIGSERIAL PRIMARY KEY,
+venue_id VARCHAR(64) NOT NULL,
+zone_identifier VARCHAR(32) NOT NULL,
+lighting_lux NUMERIC(5,2),
+audio_zone_db NUMERIC(4,1),
+scent_diffusion_rate NUMERIC(3,2),
+temperature_fahrenheit NUMERIC(4,1),
+recorded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+1.5 System Event Trigger Matrix
+ Event Code: ENV_LUX_DROP | Event Origin: Ambient Sensor Array | Activation Trigger conditions: Light levels fall below 2.0 Lux for > 15 seconds | Automated System Action: Shift UI to High Contrast Obsidian Mode; scale Honey Amber glow vectors by +25%.
+ Event Code: AST_DRAW_START | Event Origin: Humidor/Cellar Lock | Activation Trigger conditions: RFID pull event detected on secure inventory item | Automated System Action: Activate corresponding CraftHub interface page; trigger specific pairing modules on the terminal.
+ Event Code: TRN_VAL_HIGH | Event Origin: Commerce Layer | Activation Trigger conditions: Transaction exceeding $500.00 single-item value | Automated System Action: Signal localized environment adjustments (dim nearby lighting by 10%, route staff notifications to Phantom HUD).
+ Event Code: BEH_HESITATION | Event Origin: Touch Matrix | Activation Trigger conditions: Scroll rate drops < 20px/sec while viewing premium options | Automated System Action: Launch AI Mentor curation overlay; surface localized upselling options tailored to the current selection.
+1.6 SOP: Core Failure and Redundancy Protocols
+Standard Operating Procedure (SOP) NO-OPS-001: Local Edge Disconnection Emergency Mitigation
+ Objective: Maintain core terminal operation and session history during external internet and wide-area-network (WAN) dropouts.
+ Scope: Applies to all localized terminal deployment configurations.
++----------------------------+
+|  Network Health Monitor    |
++----------------------------+
+|
+[WAN Ping Failure?]
+|
++------------+------------+
+|                         |
+(Yes)v                         v(No)
++--------------------------+    +-----------------------+
+|  Trigger Local Edge Mode |    | Maintain Normal State |
+|  (JSON Ledger Cache)     |    +-----------------------+
++--------------------------+
+|
+v
++--------------------------+
+| Broadcast Queue via Mesh |
++--------------------------+
+|
+[Local Storage Health Checks]
+|
+v
++--------------------------+
+| Re-sync Upon WAN Return  |
++--------------------------+
+Procedure Steps
+1 Detection Phase: The system monitors network health by sending background pings to local storage and remote hosts. If remote responses fail for more than three consecutive check intervals, it flags a WAN-offline event.
+2 Isolate & Cache: The system immediately diverts outbound transactional data streams into an on-disk SQLite cache. This database uses AES-256 encryption at the hardware level.
+3 Local Mesh Broadcast: The local server establishes direct connections with active terminals using a secure, local peer-to-peer network. This allows multi-seat tables to keep their orders synchronized without relying on outside web servers.
+4 Operational Continuation: The interface remains responsive to local touch events. It continues processing orders and matching assets, using stored local price sheets and configuration files.
+5 Re-synchronization: When WAN access is restored, the edge server verifies the integrity of the offline transactions against the remote platform using strict sequence numbers. Once validated, it pushes the cached data up to the cloud db in a controlled batch.
+VOLUME 2 — CRAFTHUB EXPERIENCE & NAVIGATION GUIDE
+2.1 UI Shell Boot Sequencing and Splash Optimization
+The CraftHub UI is the primary touch interface for guests interacting with the venue's craft ecosystems. The system initialization process ensures reliable network connectivity and hardware integration before loading the interface.
+[System Power-On] -> [Hardware POST Validation] -> [Local Edge Handshake (Port 8443)] -> [Asset Sensor Array Initialization] -> [Render Core UI Layer]
+Initial Initialization Pipeline
+1 Hardware POST Validation: Confirms local GPU memory boundaries, registers the capacitive touch layer, and reads peripheral diagnostic bytes over USB-C data loops.
+2 Local Edge Handshake: Establishes an encrypted local socket connection on port 8443, checking security tokens against the venue's core gateway.
+3 Asset Sensor Array Initialization: Initializes nearby localized RFID receivers, scale components, and ambient lighting controllers.
+4 Render Core UI Layer: Loads the core styling engines and clears the graphics pipeline, preparing the system to display the interface.
+UI Boot Matrix
+ Phase 1 (0-800ms): Displays a solid True Obsidian (#010101) background to prevent light bloom. Renders a fine-lined, gold-tinted logo badge centered on the screen at 15% opacity.
+ Phase 2 (800-1500ms): The interface runs connection tests in the background. The central emblem shifts smoothly up to 85% opacity using a weighted ease-out acceleration curve.
+ Phase 3 (1500-2200ms): Displays a low-contrast progress indicator at the base of the screen, flashing at 1Hz as modules load. Once confirmed, the splash screen transitions out to reveal the main workspace.
+2.2 Screen Configuration and User Interaction Design
++-----------------------------------------------------------------------+
+|                        CRAFTHUB UNIVERSAL SHELL                       |
++-----------------------------------------------------------------------+
+| [SYSTEM STATUS]                                      [SESSION PROFILE] |
++-----------------------------------------------------------------------+
+|                                                                       |
+|                       MAIN INTERACTIVE EXPANSION EYE                  |
+|                        (Smoke / Pour / Brew / Wine)                   |
+|                                                                       |
+|                                                                       |
++-----------------------------------------------------------------------+
+| [DYNAMIC FOOTER]                                     [CALL CONCIERGE] |
++-----------------------------------------------------------------------+
+The user interface uses a clear visual layout split into three distinct zones, maximizing usability in low-light environments.
+1. Global System Status Header
+Positioned at the upper boundary. Displays real-time connection telemetry, current session identifiers, and active asset indicators in clear, high-contrast monochrome typography.
+2. Main Interactive Expansion Eye
+The primary interactive canvas centered on the display screen. Features an adaptive layout that responds smoothly to multi-touch gestures, drag events, and radial menu selections. Items are displayed with generous padding to prevent accidental touches.
+3. Dynamic Navigation Footer
+The bottom menu bar containing primary application triggers, active craft selectors, and an attention-grabbing "Call Concierge" assistance action target.
+2.3 Guest Journey Walkthrough: Modular Initiation Pathway
+[STATION CHECK-IN / PIN ENTRY] -> [MENTOR AI PROFILE SELECTION] -> [EXPERIENCE RUNTIME INTERFACE]
+Step 1: Station Check-In / PIN Entry
+The user taps the inactive screen surface. The interface shifts from its idle state to display an account access prompt. The guest enters a personalized alphanumeric profile identifier or secure pin code.
+Step 2: Mentor AI Profile Selection
+The screen displays an array of virtual curation mentors, each tailored to distinct taste profiles and product styles.
++-----------------------------------------------------------------------+
+|                     SELECT YOUR CRAFT MENTOR                          |
++-----------------------------------------------------------------------+
+|   [ ALEXANDER ]           [ ELEANOR ]              [ VALERIE ]        |
+|  Traditionalist / Bold    Avant-Garde / Rare       Earthy / Organic   |
++-----------------------------------------------------------------------+
+ Alexander (The Traditionalist): Focuses on classic styles, historical flavor matches, and full-bodied profiles.
+ Eleanor (The Avant-Garde): Prioritizes rare limited releases, modern creative matches, and distinct tasting profiles.
+ Valerie (The Sommelier): Emphasizes balanced flavor mechanics, regional agricultural history, and precise pairing science.
+Step 3: Experience Runtime Interface
+Once a mentor is selected, the interface loads the core interaction space. The primary craft modules become accessible, showing personalized product recommendations based on the user's past choices and current venue availability.
+2.4 Golden Box System & Engagement Progression Metrics
+The Golden Box is a highlight frame that appears around premium curated pairing recommendations. It guides user attention toward high-margin items using smooth visual animations without interrupting the browsing experience.
++---------------------------------------------------------+
+|                  PREMIUM CRAFT RECOMMENDATION           |
+|  +---------------------------------------------------+  |
+|  |  [X] GOLDEN BOX CONTAINER                         |  |
+|  |  Material: #D4AF37 Honey Amber Edge               |  |
+|  |  Animation: 0.5Hz Subtle Pulse Loop               |  |
+|  |                                                   |  |
+|  |  "Padrón 1926 Serie Exclusive"                    |  |
+|  +---------------------------------------------------+  |
++---------------------------------------------------------+
+Layout Properties
+ Border: 1.5px solid stroke using the Honey Amber (#D4AF37) color profile.
+ Animation Particle Effect: Uses a steady 0.5Hz pulse loop that shifts edge brightness between 60% and 100% opacity.
+ Content Focus: Designed to display high-margin inventory items, rare vintage selections, and tailored premium pairings.
+Engagement Progression Metrics
+As guests interact with the platform, the system tracks their progression through different tasting flights and masterclasses. It updates experience points, unlocks milestones, and surfaces tailored product offerings based on their growing familiarity with the venue's collection.
+2.5 Staff Assistance Walkthrough and Support Scripts
+When a guest requires manual intervention or triggers an explicit service request, the interface adapts to support staff interactions.
+[Guest Interface: Taps "Call Concierge"] -> [Signal Routes via Local LAN Network] -> [Staff Cockpit HUD Vibrates / Alerts] -> [Concierge Approaches Table Terminal]
+Staff Verification Step
+The concierge approaches the table terminal and taps the hidden system access point in the lower-left corner of the interface. They enter their secure service passcode to pull up the system diagnostic overlay.
++-----------------------------------------------------------------------+
+|                    STAFF COCKPIT OVERLAY MODE                         |
++-----------------------------------------------------------------------+
+| Table Location: Lounge Zone 4B         Active Session ID: #88391      |
+| Guest Profile: Premium Member          Current Basket: $140.00        |
++-----------------------------------------------------------------------+
+|  [Override Unlock]   [Sync Humidor Drawer]   [Manual Transaction]     |
++-----------------------------------------------------------------------+
+Staff Assistance Script

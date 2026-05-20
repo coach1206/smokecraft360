@@ -1,0 +1,423 @@
+VOLUME 3 — SMOKECRAFT 360 STAFF TRAINING SYSTEM
+3.1 Technical Tobacco Sommelier Curriculum & Material Specifications
+Staff members undergo structured technical training to understand cigar construction, leaf processing, and flavor chemistry. This foundation ensures they can provide precise recommendations and maintain product quality across the venue's entire inventory.
++-------------------------------------------------------+
+|                 CIGAR LEAF ANATOMY                    |
++-------------------------------------------------------+
+|  [ WRAPPER ]  --> Exterior Aesthetic & Essential Oils |
+|  [ BINDER ]   --> Structural Integrity & Burn Rate    |
+|  [ FILLER ]   --> Core Flavor Profile & Volumetrics   |
++-------------------------------------------------------+
+1. The Wrapper (Capa)
+The outermost leaf that encases the cigar body. It provides visual appeal and contributes a significant percentage of the initial flavor profile due to concentrated essential oils. Key varieties include:
+ Connecticut Shade: Light straw-colored, grown under protective cloth tents. Delivers smooth, low-tannin characteristics with notes of cream, cedar, and mild white pepper.
+ Maduro: Dark, thick leaves subjected to prolonged high-temperature fermentation cycles. Delivers rich sweetness, dark cocoa, espresso bean, and molasses characteristics.
+ Habano: Darker, reddish-brown leaf grown from Cuban-seed stocks. Known for intense spice, leather, wood, and robust earthy undertones.
+2. The Binder (Capote)
+The structural leaf layer directly beneath the wrapper. It contains the filler leaves, maintains the cigar's shape, and regulates the burn rate to ensure even combustion.
+3. The Filler (Tripa)
+The core blend of tobacco leaves inside the cigar, responsible for its overall strength and flavor complexity.
+ Ligero: Leaves harvested from the top of the tobacco plant. They receive the most sunlight, producing thick, oily leaves that burn slowly and deliver high nicotine content and intense spice flavors.
+ Seco: Mild leaves harvested from the middle section of the plant. They offer balanced, nuanced flavors and provide excellent combustion properties.
+ Volado: Thin leaves from the base of the plant. They have minimal flavor impact but provide the burning qualities necessary to keep the cigar lit evenly.
+3.2 Global Flavor Wheel and Strength Scales
+The system categorizes cigar inventory using a standardized 3D matrix across five flavor groups and a linear nicotine strength scale. This classification helps map guest preferences to accurate product recommendations.
+[EARTH & OAK]
+|
+[SPICE] --------+-------- [CREAM & NUT]
+|
+[SWEET & COCOA]
+Flavor Categories
+1 Earth & Oak: Peat, damp forest loam, charred cedar, old leather, and dry hay.
+2 Spice: Black pepper, red pepper flake, cinnamon, clove, and ground cumin.
+3 Cream & Nut: Toasted almond, cashew, sweet cream, butter, and cedar wood shavings.
+4 Sweet & Cocoa: Dark chocolate, dark-roast coffee, molasses, caramel, and dried fruit.
+Nicotine Strength Scale (1-5)
+[1.0 - MILD] === [2.0 - MED-MILD] === [3.0 - MEDIUM] === [4.0 - MED-FULL] === [5.0 - BOLD]
+ 1.0 – Mild: High proportion of Volado/Seco leaves. Clean finish, low throat impact, suitable for early-day palate profiles.
+ 3.0 – Medium: Balanced blend of Seco and Ligero leaves. Noticeable body, complex mid-palate transitions, moderate spice.
+ 5.0 – Full/Bold: Dominant top-priming Ligero blend. High nicotine level, heavy palate weight, deep spice, and long finish.
+3.3 Multi-Level Tobacconist Certification Matrix
+[Beginner Level] --------> [Intermediate Level] --------> [Master Level]
+Module 1: Junior Tobacconist Certification (Level 1)
+ Core Competencies: Storage environment monitoring, soft-flame cutting and lighting, ring-gauge sizing, and simple wrappers identification.
+ Testing Benchmark: Must correctly identify five distinct wrapper types under blind test conditions and demonstrate proper cutting techniques without tearing the wrapper.
+Module 2: Advanced Lounge Specialist (Level 2)
+ Core Competencies: Managing moisture variations across multi-zone humidors, matching wrapper characteristics with selected premium spirits, and handling structural corrections for uneven burns.
+ Testing Benchmark: Pass a 50-question exam on global growing regions and demonstrate tableside service for a rare, fragile vintage cigar.
+Module 3: Master Tobacconist & Experience Director (Level 3)
+ Core Competencies: Custom blending dynamics, sensory analysis, managing high-value inventory aging programs, and configuring AI recommendation rules.
+ Testing Benchmark: Blind taste test mapping of region, leaf processing style, and estimated aging time for three unknown cigars, combined with creating a profitable 12-month inventory plan.
+3.4 Interactive Training Simulations and Examination Modules
+Certification Drill: Multi-Zone Storage Verification
++-----------------------------------------------------------------------+
+|                    HUMIDOR TEMPERATURE / RH CHECK                     |
++-----------------------------------------------------------------------+
+|  Zone A (Nicaraguan):  68°F / 69% RH  --> STATUS: OPTIMAL             |
+|  Zone B (Vintage):     65°F / 64% RH  --> STATUS: OPTIMAL             |
+|  Zone C (Dominican):   71°F / 73% RH  --> STATUS: RISK DEVIATION      |
++-----------------------------------------------------------------------+
+| ACTION REQUIRED: Reduce humidification output in Zone C by 12%.       |
++-----------------------------------------------------------------------+
+Practical Assessment Scenario
+A guest reports that their premium maduro cigar is burning unevenly down one side (canoeing) and has a tight draw.
+ Incorrect Response: Inform the guest it is an inherent manufacturing defect and offer a different item without examining it.
+ Correct Certified Procedure: Inspect the foot of the cigar to check the combustion pattern. Use a soft-flame lighter to gently torch the unburnt wrapper edge to even out the burn line. If the draw remains tight, use a specialized draw tool to clear internal airflow blocks along the center of the filler leaf.
+VOLUME 4 — E.A.T. SYSTEM TECHNICAL OPERATIONS GUIDE
+4.1 Functional Mechanics of the E.A.T. Integration Layer
+The E.A.T. framework coordinates the physical lounge space, inventory tracking, and sales operations into a single automated ecosystem.
++-----------------------------------------------------+
+|                    E.A.T. ENGINE                    |
++-----------------------------------------------------+
+|
++------------------------+------------------------+
+|                        |                        |
+v                        v                        v
++------------------+     +------------------+     +------------------+
+|   ENVIRONMENT    |     |      ASSET       |     |   TRANSACTION    |
+| Spatial Controls |     |  RFID Telemetry  |     |   Point-of-Sale  |
++------------------+     +------------------+     +------------------+
+ Environment Layer: Manages physical venue conditions via connected hardware, including addressable LED controllers, audio processors, and scent diffusion units.
+ Asset Layer: Monitors high-value physical inventory using real-time sensor arrays, including load cells and RFID tracking matrices built into display cabinets.
+ Transaction Layer: Connects directly with point-of-sale systems to track guest spending, handle open tabs, and analyze purchase patterns instantly.
+4.2 Automation Scripting and Structural Schema Specifications
+The environment controller adjusts space conditions using structured script payloads. This allows smooth transitions in lighting, sound, and scent based on lounge activity.
+{
+"environment_state_configuration": {
+"target_zone": "VIP_LOUNGE_4",
+"transition_duration_ms": 4500,
+"lighting_parameters": {
+"primary_circuit_lux": 3.2,
+"accent_amber_intensity_pct": 85.0,
+"color_temperature_kelvin": 2200
+},
+"audio_matrix_routing": {
+"zone_gain_db": -18.5,
+"frequency_shaping_profile": "DEEP_LOUNGE_LOWS",
+"dynamic_range_compression_ratio": 2.1
+},
+"scent_diffusion_profile": {
+"dispense_interval_sec": 12,
+"atomization_density_pct": 40.0,
+"aroma_fluid_identifier": "TERRANE_WOODS_04"
+}
+}
+}
+4.3 Spatial Sensing Hardware Layout and Telemetry Deployment
++-----------------------------------------------------------------------+
+|                     LOUNGE ZONE CEILING SENSOR MAP                    |
++-----------------------------------------------------------------------+
+|  [IR HEAT MAP]             [LUX SENSOR]            [DB AUDIO NODE]    |
+|   Tracks Occupancy          Measures Light          Monitors Noise    |
+|                                                                       |
+|         +-------------------------------------------+                 |
+|         |        ACTIVE GUEST TABLESIDE TERMINAL    |                 |
+|         +-------------------------------------------+                 |
+|                                                                       |
+|  [RFID MATRIX]             [LOAD SENSOR]           [SCENT DIFFUSER]   |
+|   Tracks Assets             Weighs Bottles          Disperses Aroma    |
++-----------------------------------------------------------------------+
+Installation Tolerances
+ Thermal Sensors: Mount at center ceiling points, at a height of 3.2 meters above the floor. Calibrate to filter out static heat sources like coffee machines or spotlights.
+ Lux Sensors: Position away from direct light fixtures. Place at table height (0.75 meters) to measure true ambient light levels accurately.
+ Decibel Collectors: Position 2.5 meters above seating areas to monitor crowd noise trends while ignoring localized high-frequency kitchen or service sounds.
+4.4 Sales-Triggered Environment Modulation Matrix
+The system monitors real-time sales thresholds across venue zones. When spending hits specific levels, it updates the local environment to match the shift in guest engagement.
++----------------------------+
+|  Sales Metrics Tracking    |
++----------------------------+
+|
+[Sales Target Achieved?]
+|
++------------+------------+
+|                         |
+(Yes)v                         v(No)
++--------------------------+    +-----------------------+
+| Adjust Lighting & Audio  |    | Maintain Base Ambient |
+| (Smooth Linear Ramp)     |    +-----------------------+
++--------------------------+
+Operational Transition Steps
+1 Monitor Target: The transaction engine tracks hourly sales performance across distinct venue sections.
+2 Evaluate Threshold: If sales in a zone increase by more than 40% due to premium orders, it flags an environment adjustment trigger.
+3 Execute Transition: The system updates local environmental controls. It lowers overhead lighting, increases accent warmth, and shifts the audio mix to deeper tones using a smooth, multi-second ramp to ensure the change is imperceptible to guests.
+VOLUME 5 — POS & COMMERCE INTELLIGENCE MANUAL
+5.1 Deep System Integration Framework with POS Gateways
+The commerce layer uses a bi-directional synchronization model to connect with core point-of-sale platforms. This layout separates customer bills from internal inventory balances, preventing transactional errors.
++------------------+       HTTPS / WebSockets       +--------------------+
+|  NOVEE COM LAYER | <============================> | POS ENGINE GATEWAY |
++------------------+       (Token Auth Loop)        +--------------------+
+|                                                    |
+|--> Local Order Sync                                |--> Transaction States
+|--> Vault Verification                              |--> Itemized Sync
+v                                                    v
++------------------------------------------------------------------------+
+|                      SHARED TRANSACTION LEDGER ENGINE                  |
++------------------------------------------------------------------------+
+Integration Checkpoints
+ Toast API / Clover REST Link: Uses an encrypted link with automatic authorization refreshes every 60 minutes.
+ Order Sync Protocol: Menu changes made on the POS update terminal pricing screens within 500 milliseconds.
+ Vault Verification Loop: Checking out a physical asset logs the item's details in the open POS ticket instantly, preventing unpaid inventory tracking errors.
+5.2 Dynamic Upselling Logic & Automated Revenue Recommendations
+The recommendation system uses a specialized decision matrix to suggest high-margin additions based on the guest's current order, basket value, and active session timeline.
++-----------------------------+
+|    GUEST BASKET DETECTED    |
+|    (Single Malt Scotch)     |
++-----------------------------+
+|
+v
++-----------------------------+
+|     REVENUE BRAIN MATRIX    |
+|  Checks Stock & Affinities  |
++-----------------------------+
+|
++---------------------+---------------------+
+|                                           |
+[Premium Cigar Match]                          [Alternative Match]
+|                                           |
+v                                           v
++------------------------------+             +------------------------------+
+| Curate Honey Amber Highlight |             | Surface Standard Menu Items  |
+|      (High-Margin Focus)     |             |      (No Visual Accent)      |
++------------------------------+             +------------------------------+
+Execution Pipeline Example
+1 Detect Selection: The guest adds a premium single-malt scotch to their selection interface.
+2 Analyze Affinities: The revenue engine cross-references available inventory to find high-margin cigars that match the flavor profile of the selected pour.
+3 Apply Layout Focus: Displays the recommended pairing inside a prominent Honey Amber container. The interface highlights the complementary flavor notes to guide the guest's choice.
+5.3 Cashier & Server Point-of-Sale System Manual
+SOP POS-002: Processing an Asset-Linked Order Verification
+1 Open Session: Open the customer's active lounge bill on the POS terminal interface screen.
+2 Scan Tag: Pass the selected premium asset over the counter's integrated sensor pad. The platform reads the secure identifier and verifies stock availability.
+3 Confirm Alignment: Verify that the item price on the POS interface matches the amount shown on the customer's tableside screen.
+4 Complete Order: Accept payment. The system marks the asset as sold, updates inventory counts, and closes out the active terminal session.
+5.4 Troubleshooting & Error Recovery Protocols
+ Error Indication: ERR_POS_TIMEOUT | Root Cause Analysis: Network dropped between the edge system and the central POS gateway. | Corrective Action Steps: Restart the local connection hub; confirm gateway ports are open; verify local security tokens. | Emergency Mode: Cache orders locally in an offline database; sync transactions once the gateway reconnects.
+ Error Indication: ERR_SKU_MISMATCH | Root Cause Analysis: The item barcode or asset identifier does not match the active menu database. | Corrective Action Steps: Run a manual inventory refresh from the admin menu; update product configuration fields. | Emergency Mode: Block individual item sales; allow standard manual line-item entries until fixed.
+VOLUME 6 — VENUE DEPLOYMENT & INSTALLATION HANDBOOK
+6.1 Hardware Component Specifications and Installation Rules
+Proper physical installation ensures reliable touch interfaces, accurate tracking, and consistent environment control across all venue zones.
++-----------------------------------------------------+
+|               CENTRAL ROUTER & GATEWAY              |
++-----------------------------------------------------+
+|
++------------------------+------------------------+
+|                        |                        |
+v                        v                        v
++------------------+     +------------------+     +------------------+
+| CAT6 Ethernet    |     | RS-485 Bus Loop  |     | PoC Power Lines  |
+| Core Terminals   |     | Sensor Matrices  |     | Smart Cabinets   |
++------------------+     +------------------+     +------------------+
+1. Tabletop & Kiosk Display Terminals
+ Mounting: Securely mount screens at an angle of 45 degrees relative to flat table surfaces using high-grade mechanical brackets to prevent glare and ensure comfortable viewing.
+ Wiring: Route all power and data cabling through internal table pillars to protect wiring and keep guest spaces clean.
+2. Sensor and Tracking Networks
+ Sensor Loops: Connect tracking pads and inventory matrices using shielded RS-485 data buses to eliminate signal noise in heavy electronic environments.
+ Power: Use dedicated Power-over-Cable installations to provide stable, clean power to all internal cabinet tracking hardware.
+6.2 Network Infrastructure, Ports, and Protocols
+The venue network requires a dedicated, isolated VLAN configuration to separate high-frequency hospitality data from public guest internet traffic.
+[MAIN SECURE OVERLAND INTERNET INBOUND] -> [FIREWALL / NETWORK ROUTER DEPLOYMENT ZONE]
+|
++--------+--------+
+|                 |
+(VLAN 100 - SECURE)     (VLAN 200 - PUBLIC)
+|                 |
+|--> NOVEE Core   |--> Guest WiFi
+|--> POS Links
+|--> Sensors
+Network Configuration Matrix
+ VLAN 100 (Internal Secure Core): Dedicated to terminal interfaces, tracking nodes, environments, and POS infrastructure. Broadcast isolation enabled.
+ VLAN 200 (Public Access): Isolated guest Wi-Fi access. Strictly blocked from accessing any management addresses on the local network.
+Required Security Port Configurations
+ Port 443 (TCP): Safe outbound traffic for encrypted cloud database synchronization loops.
+ Port 8443 (TCP): Local secure socket connections for real-time terminal updates.
+ Port 502 (TCP): Industrial automation protocols for managing lighting panels and environmental hardware.
+6.3 Comprehensive Pre-Launch Testing Checklist
+ [ ] Confirm all display terminals boot into the interface shell within 2.5 seconds of receiving power.
+ [ ] Verify capacitive touch response profiles across all screen areas, including corner boundaries.
+ [ ] Confirm tracking plates detect asset tags within 150 milliseconds of placement.
+ [ ] Test network failover by disconnecting the main internet line; verify local systems continue to cache transactions correctly.
+ [ ] Verify addressable lighting dimmers respond accurately to environment change commands across all configurations.
+VOLUME 7 — ADMIN COMMAND CENTER & SECURITY GUIDE
+7.1 Access Control and User Privilege Levels
+The platform uses a role-based access control system to manage administrative permissions. This keeps core configuration settings secure while giving service staff the tools they need.
+[SYSTEM LEVEL 4 - MASTER ADMIN] --> Complete DB Access & Infrastructure Overrides
+[SYSTEM LEVEL 3 - LOUNGE DIRECTOR] --> Price Configuration, Inventory Adjustments
+[SYSTEM LEVEL 2 - CONCIERGE STAFF] --> Station Resets, Ticket Overrides
+[SYSTEM LEVEL 1 - SERVICE BUSSER] --> Basic Interface Views, Status Reporting
+User Roles & Permissions Matrix
+ Level 1 (Service Staff): Access to view station statuses and check simple item availability.
+ Level 2 (Concierge Staff): Access to open custom tableside tickets, reset individual terminal connections, and override minor asset mismatches.
+ Level 3 (Lounge Director): Complete access to adjust item pricing, update local menu items, configure layout choices, and view real-time sales reports.
+ Level 4 (Master Admin): Unrestricted access to system configuration files, database structures, network properties, and security access keys.
+7.2 Core System Security Protocols & Data Protection
+All data transmission across the internal network uses strict encryption standards to secure system communications and protect business data.
++-----------------------------------------------------+
+|               ENCRYPTED SYSTEM TERMINAL             |
++-----------------------------------------------------+
+|
+[AES-256 Transport Layer]
+|
+v
++-----------------------------------------------------+
+|               SECURE CORE EDGE KERNEL               |
++-----------------------------------------------------+
+ Local Transport Encryption: All data moving between terminals and the edge hub uses TLS 1.3 encryption, protecting against unauthorized packet inspection.
+ Database Security: System databases store customer profile tokens securely using salt-hashed encryption. Financial details are never kept on local storage hubs, ensuring strict compliance with security standards.
+VOLUME 8 — AI INTELLIGENCE & REVENUE BRAIN GUIDE
+8.1 Curation Architecture & Smart Pairing Models
+The recommendation engine uses a multi-layered rule matrix to select item combinations, matching guest taste histories with live stock levels to optimize sales performance.
++----------------------------+
+|    INCOMING INQUIRY RADAR  |
++----------------------------+
+|
++----------------------------+
+|  Filter: Stock Availability|
++----------------------------+
+|
++----------------------------+
+|  Filter: Margin Priority   |
++----------------------------+
+|
++----------------------------+
+| Filter: Profile Match Logic|
++----------------------------+
+|
+v
++----------------------------+
+|  Target Curated Suggestion |
++----------------------------+
+Recommendation Rule Matrix
+1 Filter 1 (Stock Availability): Exclude any products that fall below set safety stock limits in the live inventory database.
+2 Filter 2 (Margin Priority): Sort qualifying items by gross margin contribution, prioritizing high-profit items.
+3 Filter 3 (Profile Match Logic): Cross-reference historical preference tags against selected items to ensure recommendations align with guest tastes.
+8.2 Feedback Systems & Predictive Demand Optimization
+The intelligence engine tracks guest acceptance rates to improve recommendation quality over time, helping venues manage stock more efficiently.
+[System Displays Curated Recommendation] -> [Guest Decision: Accept Order vs Decline Suggestion] -> [Update Preference Weight Vectors in Local Database]
+Inventory Projections
+The system monitors sales trends alongside external factors like seasonal weather patterns and local event calendars to project upcoming product demand. This helps management optimize stock levels and reduce holding costs for premium items.
+VOLUME 9 — FRANCHISE & MULTI-VENUE OPERATIONS MANUAL
+9.1 Global Data Management & Enterprise Inventory Scaling
+Multi-venue operators use a centralized configuration layer to maintain brand standards across different locations while allowing local flexibility.
++-----------------------------+
+| CENTRAL ENTERPRISE DIRECTORY|
++-----------------------------+
+|
++----------------------+----------------------+
+|                                             |
+v                                             v
++-------------------------------+             +-------------------------------+
+| VENUE SITE 1 DEPLOYMENT DATA  |             | VENUE SITE 2 DEPLOYMENT DATA  |
+| (Local Pricing & Stock Sync)  |             | (Local Pricing & Stock Sync)  |
++-------------------------------+             +-------------------------------+
+ Global Menu Records: Core product descriptions and pairing rules are managed from a central directory to ensure consistent brand experiences.
+ Localized Pricing Profiles: Individual locations can adjust pricing tiers and taxes to match local market conditions and operational costs.
+9.2 Quality Standards, Audits, and Operational Compliance
+Franchise locations undergo regular automated system audits to ensure technical setups and inventory management meet brand standards.
+Core Metrics Grid
+ [System Health Audit] ===> Minimum 99.9% uptime across active terminal sessions.
+ [Inventory Matching] ===> Less than 0.5% variance between digital stock and physical counts.
+ [Ambient Cohesion]  ===> Environment parameters must track within 5% of design standards.
+Locations that drop below target performance metrics receive automated maintenance alerts with detailed calibration instructions to resolve variations quickly.
+VOLUME 10 — SERVICE CERTIFICATION & STAFF TRAINING HANDBOOK
+10.1 Structured Onboarding Schedule for Service Staff
+[Day 1: Interface Basics] ---> [Week 1: System Workflows] ---> [Day 30: Full Certification]
+Day 1: Interface Basics & Display Interaction
+ Focus: Navigating the interface shell, checking station statuses, and understanding color meanings.
+ Milestone: Demonstrate how to clear user access states and access basic diagnostic data under 30 seconds.
+Week 1: Integrated System Workflows
+ Focus: Handling asset placement verification, resolving common mismatch alerts, and using staff support tools.
+ Milestone: Pass a practical test managing three simultaneous tableside transactions without service delays.
+Day 30: Full Platform Certification
+ Focus: Managing environment adjustment rules, handling unexpected offline situations, and using backend analytics tools.
+ Milestone: Complete the master hospitality operations review and demonstrate full system proficiency across all operational modules.
+10.2 Final Certification Review and Scenario Questions
+Scenario 1: A guest states the display terminal does not load their preferences after entering their access pin code.
+ Correct Protocol: Use the staff overlay tool to check local terminal connectivity. If the server connection is healthy, verify the customer profile status in the local management ledger. If the record is missing, create a temporary local session card to restore their lounge access immediately.
+Scenario 2: The ambient lighting array in a VIP zone freezes at high brightness during a premium group event.
+ Correct Protocol: Open the local environment override panel on the main operations hub and push a manual level reset command. If the system fails to respond, locate the local lighting controller panel and switch the zone to manual control mode, adjusting brightness levels to match standard design rules until technical support can address the issue.
+APPENDIX B — ENTERPRISE CONFIGURATION LAYER & COMMAND CENTER SYNC
+SECTION 11 — HIGH-READABILITY DIRECTIVE CONTROL INTERFACE (HR-DCI)
+EXECUTIVE ARCHITECTURAL SPECIFICATION
+This amendment details the integration of the High-Readability Directive Control Interface (HR-DCI) into the local hardware terminal setting suites and the master central Command Center platform. This configuration layer is purpose-built to enforce high-contrast operational rendering, larger interaction targets, and direct structural system overrides across the entire venue stack.
+11.1 Local Terminal Settings Interface (On-Device Configuration)
+To accommodate operational directors requiring maximized legibility and zero-friction navigation under low-light conditions, local devices running the NOVEE OS shell can be toggled into an enhanced structural viewing mode.
+UI Topology & Physical Layout Matrix
++-------------------------------------------------------------------------+
+| SYSTEM OVERRIDE PREFERENCES [HIGH-READABILITY DIRECTIVE CONTROL]        |
++-------------------------------------------------------------------------+
+|  [X] MODE ENFORCEMENT: TRUE OBSIDIAN FORCE (#010101 ONLY)               |
+|                                                                         |
+|  TEXT SCALE SELECTION:                                                  |
+|  [ MILD - 16PT ]    [ MEDIUM - 20PT ]    [  DIRECTIVE ENFORCED - 24PT  ] |
+|                                                                         |
+|  INTERACTION TARGET AREA CORRECTION:                                    |
+|  [ ] SYSTEM STANDARD (44px)        [X] HIGH-PAD DIRECTIVE (72px)        |
+|                                                                         |
+|  ACCENT CONTRAST BOOST:                                                 |
+|  [X] HONEY AMBER SOLID (#D4AF37)   [ ] CHROMATIC GOLD (#AA7C11)         |
++-------------------------------------------------------------------------+
+| [ APPLY CONFIGURATION TO THIS STATION ]       [ PUSH GLOBAL OVERRIDE ]  |
++-------------------------------------------------------------------------+
+UI Elements & Spatial Targets
+ Background Enforcement: Locks the terminal GPU display pipeline into an unblended, pure black state (#010101), bypassing standard gradients, transparency vectors, and blur shaders to eliminate optical scattering in smoky environments.
+ Enforced Typographic Scale: Bumps body elements to a base minimum of 24pt and interactive menus to 32pt semi-bold tracked text layers. Line-height is adjusted to an explicit factor of 1.75 times font size to guarantee immediate scannability.
+ High-Pad Target Architecture: Standard touch-boundary bounding boxes are expanded from a 44px layout envelope to a minimum 72px physical interaction square, isolating user action triggers to prevent adjacent touch errors.
+11.2 Command Center Executive Dashboard Integration
+The core enterprise Admin Command Center incorporates a centralized management pane designed for quick status checks and rapid, large-scale layout overrides. This portal enables direct multi-venue system adjustments without navigating deep nested data structures.
+Structural UI Blueprint (Executive Management Module)
++-------------------------------------------------------------------------+
+| COMMAND HUB EXECUTIVE PORTAL -- GLOBAL DIRECTIVE ACTIVE                |
++-------------------------------------------------------------------------+
+| VENUE RUNTIME PERMANENCE MATRIX:                                        |
+|  SITE-01: NOMINAL   [ FORCE HIGH-READABILITY ]   [ RESET ALL HUB SHELLS] |
+|  SITE-02: ACTIVE    [ FORCE HIGH-READABILITY ]   [ RESET ALL HUB SHELLS] |
++-------------------------------------------------------------------------+
+| GLOBAL ATMOSPHERE & E.A.T. DIRECT OVERRIDES:                            |
+|  [ DIM ZONE LIGHTING - ALL ] -> SETS LUX TO 1.5                         |
+|  [ BOOST AMBER GLOW - ALL ]  -> FORCES ACCENT HIGHLIGHTS TO 100% VALUE  |
++-------------------------------------------------------------------------+
+| MASTER COMMERCE REVENUE MONITOR (MONOSPACE ENFORCED):                   |
+|  GROSS REVENUE YTD: $4,829,100.50          LIVE ACTIVE TABS: 42         |
+|  MARGIN EFFICIENCY: 74.2%                  AVERAGE VALUE:    $385.00    |
++-------------------------------------------------------------------------+
+Functional Automation Capabilities
+1 Enforced High-Readability: Broadcasts a persistent JSON payload over the local network via WebSockets, instantly shifting all active lounge terminals into the high-contrast view mode.
+2 Global Ambiance Master Trigger: Bypasses local automated sensory loops to dim lighting to 1.5 lux and maximize gold/amber highlight channels venue-wide, matching low-light visibility needs immediately.
+3 High-Visibility Metrics Ledger: Displays real-time sales revenue data in a clean, high-contrast monochrome design, giving managers instant visibility into operational performance.
+11.3 SOP CC-041: Triggering Global High-Readability Overrides
+ Objective: Instantly change formatting rules across the entire venue display infrastructure from the Command Hub.
+ Scope: Applies to all active venue displays, including tableside tablets and point-of-sale systems.
+Operational Sequence
+[Access Executive Directive Module] -> [Select "FORCE HIGH-READABILITY"] -> [System Dispatches Encrypted Payload] -> [Display Terminals Clear Memory Cache] -> [UI Re-Renders at 24pt Base Contrast]
+Step-by-Step Execution Blueprint
+1 Authenticate Access: Open the Executive Settings panel on the primary Command Hub monitor and verify administrator permissions.
+2 Activate Mode Toggle: Locate the Global Rendering overrides and press the FORCE HIGH-READABILITY action option.
+3 Verify Network Broadcast: The Command Hub dispatches a high-priority system payload over the secure network channel (VLAN 100) to all active local endpoints:
+{
+"system_directive": "ENFORCE_HIGH_READABILITY",
+"global_constraints": {
+"override_ambient_lux_response": true,
+"base_font_size_pt": 24,
+"active_accent_hex": "#D4AF37",
+"surface_material_rendering": "TRUE_OBSIDIAN_SOLID"
+}
+}
+4 Confirm Terminal Refresh: Local terminals clear their active interface caches and re-render screens within 12 milliseconds, updating font sizes, contrast ratios, and touch targets across all zones.
+11.4 Security & Configuration Persistence Safeguards
+To prevent accidental layout resets or unauthorized modifications during service shifts, the High-Readability Directive Control Interface utilizes dedicated software protection rules.
+Performance & Persistence Safeguards
+ State Persistence Rule: Settings applied through the HR-DCI are saved directly to local flash storage on the device. This ensures the high-contrast layout remains active through power cycles and system updates until manually changed by management.
+ Permission Lockout: The UI adjustment panel requires Level 3 (Lounge Director) or Level 4 (Master Admin) passcodes to modify configuration settings, preventing accidental changes during cleaning or customer interactions.
+ Interface Stability: When high-readability mode is active, the system disables resource-heavy transition effects and background animations. This keeps terminal processing power focused on low-latency touch responses and fast menu navigation.
+SYSTEM CONFIGURATION REVISION REGISTRY
+ Revision Date: January 14, 2026 | Version Identifier: 4.0.0-INIT | Primary Technical Adjustments: Initial core documentation layout for system infrastructure. | Validation Sign-Off: J. Collins (Director)
+ Revision Date: March 22, 2026 | Version Identifier: 4.1.2-CORE | Primary Technical Adjustments: Updated environment scripts and added multi-zone sensor rules. | Validation Sign-Off: C. Vance (Systems Eng.)
+ Revision Date: May 20, 2026 | Version Identifier: 4.2.0-RELEASE | Primary Technical Adjustments: Added comprehensive training tracks and multi-platform backup protocols. | Validation Sign-Off: TECHNICAL PRODUCTION QA
+[ END OF SYSTEM SPECIFICATION DOCUMENTATION · PRODUCTION READY REVISION ]"""
+filename = "Novee_OS_Master_Bible.txt"
+with open(filename, "w", encoding="utf-8") as f:
+f.write(bible_content)
+print(f"\n[SUCCESS] Custom layout complete.")
+print(f"[SUCCESS] Total file asset written to: {os.path.abspath(filename)}")
+print("[SUCCESS] Open this file in your Replit editor workspace layout to highlight and copy the entire text block in one clean swipe.\n")
+if name == "main":
+generate_bible()
