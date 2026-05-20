@@ -1516,7 +1516,7 @@ export default function ExperiencePage() {
             fontSize: 13, cursor: "pointer",
           }}
         >
-          <ArrowLeft size={14} /> Back
+          <ArrowLeft size={14} /> Return
         </motion.button>
 
         <div style={{ textAlign: "center" }}>
@@ -1537,7 +1537,7 @@ export default function ExperiencePage() {
             fontSize: 11, color: "rgba(240,232,216,0.4)",
             fontVariantNumeric: "tabular-nums",
           }}>
-            {swipeCount} swiped
+            {swipeCount} explored
           </div>
           <AudioWaveToggle />
           {type === "smoke" && done && ExperienceFlowEngine.isSignatureStudioEligible() && (
@@ -1553,7 +1553,7 @@ export default function ExperiencePage() {
                 textTransform: "uppercase", color: "#d4af37", cursor: "pointer",
               }}
             >
-              ⚗ Your Reserve
+              ⚗ Your Legacy Reserve
             </motion.button>
           )}
         </div>
@@ -1922,7 +1922,7 @@ export default function ExperiencePage() {
                 boxShadow: `0 6px 28px ${theme.accent}40`,
               }}
             >
-              See Your Match →
+              Reveal Your Reserve →
             </motion.button>
           )}
           {!done && swipeCount < 6 && (

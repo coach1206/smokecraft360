@@ -322,7 +322,7 @@ function Scene4({ onNext, accent }: { onNext: () => void; accent: string }) {
 
       <div style={{ ...GLASS, width: "100%", maxWidth: 480, zIndex: 10 }}>
         <div style={{ fontFamily: C.serif, fontSize: "clamp(13px,2.4vw,18px)", color: C.gold, letterSpacing: "0.14em", textAlign: "center", marginBottom: 28 }}>
-          YOUR EXPERIENCE WILL BE SCORED ON
+          YOUR RITUAL WILL BE SHAPED BY
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {SCORING.map(s => <ScoringRing key={s.label} {...s} accent={accent} />)}
@@ -366,7 +366,7 @@ function Scene5({ onNext, accent }: { onNext: () => void; accent: string }) {
         </div>
         <div style={{ fontFamily: C.serif, fontSize: "clamp(12px,2vw,15px)", color: C.muted, letterSpacing: "0.06em", lineHeight: 1.55 }}>
           Your mentor will be assigned after calibration.<br />
-          They will shape your blend, your pairings, and your score.
+          They will shape your blend, your pairings, and your journey.
         </div>
       </div>
 
@@ -376,59 +376,64 @@ function Scene5({ onNext, accent }: { onNext: () => void; accent: string }) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// SCENE 6 — Challenge Path (lighting shift on hover)
+// SCENE 6 — The Private Lounge (atmospheric intention, no choices)
 // ══════════════════════════════════════════════════════════════════════════════
 
-const PATHS = [
-  { id: "guided",      label: "GUIDED RITUAL",        sub: "A Mentor-led journey through instinct and discovery.", glow: "#D4AF37" },
-  { id: "competitive", label: "COMPETITIVE CHALLENGE", sub: "Prove your palate against ranked scoring criteria.",   glow: "#e05a00" },
-  { id: "free",        label: "FREE BLEND",            sub: "Unconstrained construction. Pure expression.",         glow: "#8b5cf6" },
+const LOUNGE_LINES = [
+  "This is not an app.",
+  "It is a private lounge.",
+  "Your pace.\u2003Your instinct.\u2003Your ritual.",
 ];
 
 function Scene6({ onNext, accent }: { onNext: (mode: string) => void; accent: string }) {
-  const [hovered, setHovered] = useState<string | null>(null);
-  const activeGlow = PATHS.find(p => p.id === hovered)?.glow ?? accent;
+  const [shown, setShown] = useState(0);
+
+  useEffect(() => {
+    if (shown >= LOUNGE_LINES.length) return;
+    const t = setTimeout(() => setShown(s => s + 1), 2000);
+    return () => clearTimeout(t);
+  }, [shown]);
 
   return (
     <motion.div key="s6" initial={SE} animate={SA} exit={SX} transition={ST}
-      style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 28px" }}>
+      style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 40px" }}>
+      <Particles accent={accent} n={12} />
 
-      {/* Dynamic lighting shift */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.div key={hovered}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.55 }}
-            style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 50%, ${activeGlow}14 0%, transparent 72%)`, pointerEvents: "none" }}
-          />
-        )}
-      </AnimatePresence>
+      {/* Slow amber radial breath */}
+      <motion.div
+        animate={{ opacity: [0.06, 0.18, 0.06] }}
+        transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+        style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 55%, ${accent}20 0%, transparent 68%)`, pointerEvents: "none" }}
+      />
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ delay: 0.3 }}
-        style={{ fontFamily: C.mono, fontSize: 9, letterSpacing: "0.38em", color: accent, textTransform: "uppercase", marginBottom: 28, zIndex: 10 }}>
-        SELECT YOUR PATH
-      </motion.div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 500, zIndex: 10 }}>
-        {PATHS.map((p, i) => (
-          <motion.button key={p.id}
-            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 + i * 0.14, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            onHoverStart={() => setHovered(p.id)} onHoverEnd={() => setHovered(null)}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => onNext(p.id)}
-            style={{ display: "flex", gap: 18, padding: "20px 22px", background: hovered === p.id ? `${p.glow}10` : "rgba(255,255,255,0.03)", border: `1px solid ${hovered === p.id ? p.glow + "50" : "rgba(255,255,255,0.08)"}`, borderRadius: 12, cursor: "pointer", textAlign: "left", transition: "background 0.4s, border-color 0.4s" }}
-          >
-            <div>
-              <div style={{ fontFamily: C.mono, fontSize: 11, letterSpacing: "0.22em", color: hovered === p.id ? p.glow : C.ink, marginBottom: 5, transition: "color 0.3s" }}>
-                {p.label}
-              </div>
-              <div style={{ fontFamily: C.serif, fontSize: 13, color: C.muted }}>
-                {p.sub}
-              </div>
-            </div>
-          </motion.button>
+      <div style={{ ...GLASS, maxWidth: 560, textAlign: "center", zIndex: 10 }}>
+        {LOUNGE_LINES.map((line, i) => (
+          <AnimatePresence key={i}>
+            {shown > i && (
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  fontFamily:    C.serif,
+                  fontSize:      i === 0 ? "clamp(18px,3.5vw,30px)" : i === 2 ? "clamp(13px,2.2vw,19px)" : "clamp(15px,2.8vw,24px)",
+                  fontWeight:    i === 0 ? 600 : 300,
+                  color:         i === 2 ? accent : C.ink,
+                  letterSpacing: i === 2 ? "0.14em" : "0.06em",
+                  lineHeight:    1.6,
+                  marginBottom:  i < 2 ? 22 : 0,
+                }}
+              >
+                {line}
+              </motion.div>
+            )}
+          </AnimatePresence>
         ))}
       </div>
+
+      {shown >= LOUNGE_LINES.length && (
+        <ContinueBtn label="I AM READY ›" onClick={() => onNext("guided")} delay={0.4} color={accent} />
+      )}
     </motion.div>
   );
 }
@@ -584,7 +589,7 @@ function Scene8({ onComplete, accent }: { onComplete: () => void; accent: string
 
       <div style={{ ...GLASS, width: "100%", maxWidth: 460, zIndex: 10 }}>
         <div style={{ fontFamily: C.mono, fontSize: 8, letterSpacing: "0.38em", color: `${accent}70`, textAlign: "center", marginBottom: 28, textTransform: "uppercase" }}>
-          SYNCHRONIZATION · SCENE 8 OF 8
+          SYNCHRONIZATION
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 4 }}>
@@ -607,10 +612,10 @@ function Scene8({ onComplete, accent }: { onComplete: () => void; accent: string
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}
               style={{ textAlign: "center", paddingTop: 28, borderTop: "1px solid rgba(212,175,55,0.15)", marginTop: 20 }}>
               <div style={{ fontFamily: C.serif, fontSize: "clamp(16px,3vw,24px)", color: C.gold, letterSpacing: "0.1em", marginBottom: 6 }}>
-                SYNCHRONIZATION COMPLETE
+                THE RITUAL IS ARMED
               </div>
               <div style={{ fontFamily: C.serif, fontSize: "clamp(12px,2vw,15px)", color: C.muted }}>
-                The ritual is armed. Enter the smoke.
+                Enter the smoke.
               </div>
             </motion.div>
           )}
