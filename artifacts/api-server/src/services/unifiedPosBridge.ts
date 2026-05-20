@@ -24,15 +24,6 @@ import { getAdapter, type PosAdapterConfig, type PosInventoryItem, type PosOrder
 import { NeuralEventBus } from "./neuralEventBus";
 import { logger }         from "../lib/logger";
 
-// Lazy-import getIO to avoid circular deps at module load time
-function tryEmitPosOrderComplete(payload: Record<string, unknown>): void {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getIO } = require("../lib/socketServer") as { getIO: () => import("socket.io").Server };
-    getIO().emit("pos_order_complete", payload);
-  } catch { /* socket not ready or circular — silent */ }
-}
-
 /** Emit an event to a venue-scoped room; falls back to global broadcast. */
 function tryEmitToVenueRoom(venueId: string, event: string, payload: Record<string, unknown>): void {
   try {

@@ -112,6 +112,16 @@ export function getKitchenSummary(items: KitchenItem[]) {
   return { soldOut, low, available, totalSold };
 }
 
+// ── Module-level decrement dispatcher ────────────────────────────────────────
+// Called by usePosIntegration when an external POS ORDER_PLACED event fires.
+// Dispatches a CustomEvent that useInventory's listener picks up to mutate state.
+
+export interface InventoryDecrementItem { name: string; qty: number }
+
+export function decrementInventory(items: InventoryDecrementItem[]): void {
+  window.dispatchEvent(new CustomEvent("novee:inventory_decrement", { detail: { items } }));
+}
+
 /* ─────────────── React hook ─────────────── */
 export function useInventory() {
   const [humidor,  setHumidor]  = useState<HumidorItem[]>(HUMIDOR_INVENTORY);
@@ -119,6 +129,62 @@ export function useInventory() {
   const [kitchen,  setKitchen]  = useState<KitchenItem[]>(KITCHEN_INVENTORY);
   const [humidity, setHumidity] = useState(71);
   const [temp,     setTemp]     = useState(68);
+
+  // ── Listen for POS ORDER_PLACED decrements from usePosIntegration ─────────
+  useEffect(() => {
+    function handleDecrement(e: Event) {
+      const items = (e as CustomEvent<{ items: InventoryDecrementItem[] }>).detail?.items ?? [];
+      if (!items.length) return;
+
+      setHumidor(prev => {
+        let next = prev;
+        for (const item of items) {
+          const lower = item.name.toLowerCase();
+          const idx = next.findIndex(h => h.name.toLowerCase().includes(lower) || lower.includes(h.name.toLowerCase()));
+          if (idx >= 0) {
+            next = next.map((h, i) => i === idx
+              ? { ...h, qty: Math.max(0, h.qty - item.qty), status: h.qty - item.qty <= 2 ? "critical" : h.qty - item.qty <= 6 ? "low" : h.status }
+              : h
+            );
+          }
+        }
+        return next;
+      });
+
+      setBar(prev => {
+        let next = prev;
+        for (const item of items) {
+          const lower = item.name.toLowerCase();
+          const idx = next.findIndex(b => b.name.toLowerCase().includes(lower) || lower.includes(b.name.toLowerCase()));
+          if (idx >= 0) {
+            next = next.map((b, i) => i === idx
+              ? { ...b, pourCount: b.pourCount + item.qty, bottlesRemaining: Math.max(0, b.bottlesRemaining - (b.pourCount % 6 === 0 ? 1 : 0)) }
+              : b
+            );
+          }
+        }
+        return next;
+      });
+
+      setKitchen(prev => {
+        let next = prev;
+        for (const item of items) {
+          const lower = item.name.toLowerCase();
+          const idx = next.findIndex(k => k.name.toLowerCase().includes(lower) || lower.includes(k.name.toLowerCase()));
+          if (idx >= 0) {
+            next = next.map((k, i) => i === idx
+              ? { ...k, servingsRemaining: Math.max(0, k.servingsRemaining - item.qty), soldTonight: k.soldTonight + item.qty, status: k.servingsRemaining - item.qty <= 0 ? "sold_out" : k.servingsRemaining - item.qty <= 3 ? "low" : k.status }
+              : k
+            );
+          }
+        }
+        return next;
+      });
+    }
+
+    window.addEventListener("novee:inventory_decrement", handleDecrement);
+    return () => window.removeEventListener("novee:inventory_decrement", handleDecrement);
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => {

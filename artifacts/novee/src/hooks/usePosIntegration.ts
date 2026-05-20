@@ -10,6 +10,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { noveePosRouterEngine, type SynergyResult } from "@/lib/posRouterEngine";
+import { decrementInventory } from "@/lib/inventoryState";
 
 const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
 
@@ -71,10 +72,10 @@ export function usePosIntegration() {
         if (result.xpAwarded > 0) setSynergyXP(result);
       },
       onInventoryDecrement: (items) => {
-        // Dispatch with qty so inventoryState.ts consumers can apply accurate decrements
-        window.dispatchEvent(new CustomEvent("novee:inventory_decrement", {
-          detail: { items },
-        }));
+        // Directly trigger inventory state update via the module-level dispatcher.
+        // useInventory listens for "novee:inventory_decrement" and mutates
+        // humidor/bar/kitchen state with qty-accurate decrements.
+        decrementInventory(items);
       },
       onLiveEvent: (ev) => {
         if (ev.vendor) setLastOrderVendor(ev.vendor);
