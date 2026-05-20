@@ -69,7 +69,7 @@ router.get("/suggest", async (req, res) => {
 
   // Fetch available products (optionally filtered to venue inventory)
   // Products schema uses: id, name, category (enum), costCents, boostLevel, imageUrl
-  let products: { id: string; name: string; category: string | null; costCents: number | null }[] = [];
+  let products: { id: string; name: string; category: string | null; costCents: number | null; imageUrl: string | null }[] = [];
 
   try {
     if (query.venueId) {
@@ -79,6 +79,7 @@ router.get("/suggest", async (req, res) => {
           name:      productsTable.name,
           category:  productsTable.category,
           costCents: productsTable.costCents,
+          imageUrl:  productsTable.imageUrl,
         })
         .from(productsTable)
         .innerJoin(venueInventoryTable, eq(productsTable.id, venueInventoryTable.productId))
@@ -92,6 +93,7 @@ router.get("/suggest", async (req, res) => {
           name:      productsTable.name,
           category:  productsTable.category,
           costCents: productsTable.costCents,
+          imageUrl:  productsTable.imageUrl,
         })
         .from(productsTable)
         .limit(200);

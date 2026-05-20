@@ -51,6 +51,7 @@ const FEATURED_CIGAR = {
   name:"Padrón 1926 Serie 80", type:"Maduro", origin:"Nicaragua",
   body:"Full Bodied", strength:4, rating:4.5, price:36,
   description:"Rich, bold and complex. Notes of espresso, dark chocolate, earth and black pepper with a long creamy finish.",
+  imageUrl: undefined as string | undefined,
 };
 const PAIRINGS = [
   { name:"The Macallan 18",      sub:"Sherry Oak",            notes:"Rich · Dried Fruit · Oak",   price:42, accent:"#7B4515" },
@@ -232,6 +233,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
   const [liveEvents, setLiveEvents] = useState<EventRow[]>([]);
   const [envHistory, setEnvHistory] = useState<number[]>([28, 22, 25, 18, 20, 15, 17]);
   const [featuredCigar, setFeaturedCigar] = useState(FEATURED_CIGAR);
+  const [livePairings, setLivePairings]   = useState(PAIRINGS);
 
   // Center — inventory sub-tab
   const [invCat, setInvCat] = useState<"Kitchen"|"Bar"|"Humidor">("Kitchen");
@@ -286,13 +288,15 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
     fetchDevices();
     const devicePoll = setInterval(fetchDevices, 30000);
 
-    // Pairing engine — featured cigar
-    fetch(`/api/pairingEngine?type=cigar`, { headers:hdr(token) })
+    // Pairing engine — featured cigar + live pairings sidebar
+    fetch(`/api/pairing-engine/suggest`, { headers:hdr(token) })
       .then(r=>r.ok?r.json():null)
       .then(d=>{
         if(d && typeof d === "object") {
           const rec = d as Record<string,unknown>;
-          const item = (Array.isArray(rec.recommendations) ? rec.recommendations[0] : rec) as Record<string,unknown>;
+          const suggestions: unknown[] = Array.isArray(rec.suggestions) ? rec.suggestions
+            : Array.isArray(rec.recommendations) ? rec.recommendations : [];
+          const item = (suggestions[0] ?? rec) as Record<string,unknown>;
           if (item && item.name) {
             setFeaturedCigar(prev => ({
               ...prev,
@@ -303,7 +307,24 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
               description: String(item.description ?? item.flavorNotes ?? prev.description),
               strength:    Number(item.strength ?? prev.strength),
               rating:      Number(item.rating   ?? item.score ?? prev.rating),
-              price:       Number(item.price    ?? item.msrp  ?? prev.price),
+              price:       item.costCents != null ? Math.round(Number(item.costCents)/100)
+                         : item.price    != null ? Number(item.price) : prev.price,
+              imageUrl:    item.imageUrl ? String(item.imageUrl) : prev.imageUrl,
+            }));
+          }
+          // Wire Perfect Pairings sidebar to live API suggestions
+          if (suggestions.length > 0) {
+            setLivePairings(suggestions.slice(0, 3).map((s: unknown, i: number) => {
+              const sg = s as Record<string,unknown>;
+              return {
+                name:   String(sg.name ?? PAIRINGS[i]?.name ?? "House Pairing"),
+                sub:    String(sg.category ?? sg.sub ?? PAIRINGS[i]?.sub ?? ""),
+                notes:  String(sg.description ?? sg.notes ?? PAIRINGS[i]?.notes ?? "Premium pairing"),
+                price:  sg.costCents != null ? Math.round(Number(sg.costCents)/100)
+                       : sg.price    != null ? Number(sg.price)
+                       : (PAIRINGS[i]?.price ?? 18),
+                accent: PAIRINGS[i]?.accent ?? "#3D2B0A",
+              };
             }));
           }
         }
@@ -571,12 +592,15 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
                 <div style={{ fontSize:16, opacity: dev.online ? 1 : 0.4 }}>📱</div>
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ display:"flex", justifyContent:"space-between" }}>
-                    <span style={{ fontSize:12, fontWeight:700, color:DARK }}>{dev.name}</span>
-                    <span style={{ fontSize:10, color:LIGHT, fontFamily:"monospace" }}>{dev.id}</span>
+                    <span style={{ fontSize:22, fontWeight:700, color:DARK }}>{dev.name}</span>
+                    <span style={{ fontSize:22, color:LIGHT, fontFamily:"monospace" }}>{dev.id}</span>
                   </div>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:3 }}>
-                    <span style={{ fontSize:11, color:LIGHT, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:80 }}>{dev.room}</span>
-                    <BattBar pct={dev.battery} />
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:3, gap:4 }}>
+                    <span style={{ fontSize:22, color:LIGHT, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:80 }}>{dev.room}</span>
+                    <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                      <BattBar pct={dev.battery} />
+                      <span style={{ fontSize:22, color:LIGHT, fontWeight:700, minWidth:34, textAlign:"right" }}>{dev.signal * 25}%</span>
+                    </div>
                   </div>
                 </div>
                 <div style={{ width:7, height:7, borderRadius:"50%", background:dev.online?GREEN:RED_CLR, flexShrink:0 }} />
@@ -705,14 +729,33 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
           {/* Product card */}
           <div style={{ flex:1, padding:"14px", borderRight:`1px solid ${BORDER}` }}>
             <div style={{ display:"flex", gap:14 }}>
-              {/* Image */}
+              {/* Image — real Cloudinary pipeline; CSS frosted-glass fallback */}
               <div style={{
                 width:110, height:120, borderRadius:8, flexShrink:0,
                 background:"linear-gradient(145deg,#3D1F0A 0%,#5C2D0E 45%,#2A1106 100%)",
                 border:`1px solid rgba(180,140,80,0.25)`, overflow:"hidden",
                 display:"flex", alignItems:"center", justifyContent:"center",
+                position:"relative",
               }}>
-                <span style={{ fontSize:40 }}>🍂</span>
+                {featuredCigar.imageUrl ? (
+                  <img
+                    src={featuredCigar.imageUrl}
+                    alt={featuredCigar.name}
+                    style={{ width:"100%", height:"100%", objectFit:"cover", position:"absolute", inset:0 }}
+                    onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                ) : (
+                  <div style={{
+                    position:"absolute", inset:0,
+                    background:"linear-gradient(135deg,rgba(212,175,55,0.18) 0%,rgba(180,100,20,0.30) 50%,rgba(30,12,4,0.80) 100%)",
+                    backdropFilter:"blur(2px)",
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                  }}>
+                    <div style={{ width:48, height:48, borderRadius:8, border:`1px solid ${GOLD}44`, background:`rgba(212,175,55,0.10)`, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <div style={{ width:6, height:42, borderRadius:4, background:`linear-gradient(to bottom, ${GOLD}, ${AMBER}88)`, transform:"rotate(-8deg)" }} />
+                    </div>
+                  </div>
+                )}
               </div>
               {/* Details */}
               <div style={{ flex:1 }}>
@@ -749,13 +792,13 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
               </div>
             </div>
             <div style={{ padding:"8px" }}>
-              {PAIRINGS.map((p,i)=>(
-                <div key={i} style={{ padding:"8px 10px", borderRadius:8, marginBottom:6, background:CREAM, border:`1px solid ${BORDER}` }}>
-                  <div style={{ fontSize:13, fontWeight:800, color:DARK, marginBottom:2 }}>{p.name}</div>
-                  <div style={{ fontSize:11, color:LIGHT, marginBottom:4 }}>{p.sub}</div>
+              {livePairings.map((p,i)=>(
+                <div key={i} style={{ padding:"10px 10px", borderRadius:8, marginBottom:6, background:CREAM, border:`1px solid ${BORDER}` }}>
+                  <div style={{ fontSize:22, fontWeight:800, color:DARK, marginBottom:2 }}>{p.name}</div>
+                  <div style={{ fontSize:22, color:LIGHT, marginBottom:4 }}>{p.sub}</div>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                    <span style={{ fontSize:11, color:MED }}>{p.notes}</span>
-                    <span style={{ fontSize:13, fontWeight:900, color:AMBER }}>${p.price}.00</span>
+                    <span style={{ fontSize:22, color:MED }}>{p.notes}</span>
+                    <span style={{ fontSize:22, fontWeight:900, color:AMBER }}>${p.price}</span>
                   </div>
                 </div>
               ))}
@@ -766,20 +809,20 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
         {/* Action bar */}
         <div style={{ padding:"10px 14px", borderTop:`1px solid ${BORDER}`, display:"flex", gap:8 }}>
           <motion.button whileTap={{ scale:0.96 }} onClick={handleAddCigar}
-            style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.40)`,
-              background:"rgba(46,125,79,0.08)", color:GREEN, fontSize:14, fontWeight:800, cursor:"pointer", letterSpacing:"0.06em" }}>
-            Add Cigar<br/><span style={{ fontSize:12, fontWeight:600 }}>${featuredCigar.price}.00</span>
+            style={{ flex:1, minHeight:56, padding:"12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.40)`,
+              background:"rgba(46,125,79,0.08)", color:GREEN, fontSize:22, fontWeight:800, cursor:"pointer", letterSpacing:"0.06em" }}>
+            Add Cigar<br/><span style={{ fontSize:22, fontWeight:600 }}>${featuredCigar.price}.00</span>
           </motion.button>
           <motion.button whileTap={{ scale:0.96 }} onClick={handleAddPairing}
-            style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid rgba(180,140,80,0.35)`,
-              background:"rgba(180,140,80,0.08)", color:MED, fontSize:14, fontWeight:800, cursor:"pointer", letterSpacing:"0.06em" }}>
-            Add Pairing<br/><span style={{ fontSize:12, fontWeight:600 }}>From $16.00</span>
+            style={{ flex:1, minHeight:56, padding:"12px", borderRadius:8, border:`1px solid rgba(180,140,80,0.35)`,
+              background:"rgba(180,140,80,0.08)", color:MED, fontSize:22, fontWeight:800, cursor:"pointer", letterSpacing:"0.06em" }}>
+            Add Pairing<br/><span style={{ fontSize:22, fontWeight:600 }}>From $16.00</span>
           </motion.button>
           <motion.button whileTap={{ scale:0.96 }} onClick={handleAddFullExperience}
-            style={{ flex:2, padding:"12px", borderRadius:8, border:"none",
+            style={{ flex:2, minHeight:56, padding:"12px", borderRadius:8, border:"none",
               background:`linear-gradient(135deg,${GOLD},${AMBER})`,
-              color:ESPRESSO, fontSize:15, fontWeight:900, cursor:"pointer", letterSpacing:"0.08em" }}>
-            Add Full Experience<br/><span style={{ fontSize:13 }}>$70.00</span>
+              color:ESPRESSO, fontSize:22, fontWeight:900, cursor:"pointer", letterSpacing:"0.08em" }}>
+            Add Full Experience<br/><span style={{ fontSize:22 }}>$70.00</span>
           </motion.button>
         </div>
       </SCard>
@@ -797,7 +840,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
             {(["Active Tabs","Recent Orders","Payments"] as const).map(t=>(
               <button key={t} onClick={()=>setTxnTab(t)}
                 style={{
-                  flex:1, padding:"10px 4px", fontSize:12, fontWeight:700, cursor:"pointer",
+                  flex:1, minHeight:56, padding:"10px 4px", fontSize:22, fontWeight:700, cursor:"pointer",
                   border:"none", borderBottom:txnTab===t?`2px solid ${AMBER}`:"2px solid transparent",
                   background:"transparent", color:txnTab===t?AMBER:LIGHT, letterSpacing:"0.06em",
                 }}>
@@ -1235,7 +1278,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
                   borderBottom:activeTab===tab?`2px solid ${AMBER}`:"2px solid transparent",
                   background:"transparent",
                   color:activeTab===tab?GOLD:"rgba(212,175,55,0.45)",
-                  fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:"0.06em",
+                  fontSize:22, fontWeight:700, cursor:"pointer", letterSpacing:"0.06em",
                   whiteSpace:"nowrap", transition:"color 0.15s",
                 }}>
                 {tab}
@@ -1282,11 +1325,11 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
         zIndex:20,
       }}>
         <div style={{ display:"flex", gap:0, flex:1, justifyContent:"center" }}>
-          {["Menu","Reservations","Events","Messages","Reports","Settings"].map((item,i,arr)=>(
+          {["Menu","Reservations","Events","Messages","Reports","Settings"].map((item,i)=>(
             <button key={item}
               style={{
                 padding:"0 18px", height:56, border:"none", background:"transparent",
-                color:"rgba(212,175,55,0.45)", fontSize:12, fontWeight:700, cursor:"pointer",
+                color:"rgba(212,175,55,0.45)", fontSize:22, fontWeight:700, cursor:"pointer",
                 letterSpacing:"0.08em", display:"flex", alignItems:"center", gap:6,
               }}>
               {["📋","📅","🎭","✉️","📊","⚙️"][i]} {item}
