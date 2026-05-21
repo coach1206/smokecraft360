@@ -19,7 +19,9 @@ import type { PinRole } from "@/components/NoveeStaffPinGate";
 import { playClick } from "@/hooks/useNoveeAudio";
 import { hapticClick } from "@/hooks/useNoveeHaptic";
 
-const GOLD = "#D4AF37";
+const GOLD  = "#D4AF37";
+const AMBER = "#C4860A";
+const CREAM = "#F0E8D4";
 const G = GOLD;
 const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
@@ -76,11 +78,12 @@ interface PairingSuggestion {
 }
 
 const PAIRING_CATEGORIES = [
-  { id: "trending",    label: "Trending",     icon: "⟡" },
-  { id: "vip",         label: "VIP Pairings", icon: "◈" },
-  { id: "rare",        label: "Rare Reserve", icon: "⬡" },
-  { id: "seasonal",    label: "Seasonal",     icon: "◎" },
-  { id: "staff_picks", label: "Staff Picks",  icon: "◆" },
+  { id: "trending",         label: "Trending",         icon: "⟡" },
+  { id: "vip",              label: "VIP Pairings",     icon: "◈" },
+  { id: "rare",             label: "Rare Reserve",     icon: "⬡" },
+  { id: "seasonal",         label: "Seasonal",         icon: "◎" },
+  { id: "lounge_favorites", label: "Lounge Favorites", icon: "◉" },
+  { id: "staff_picks",      label: "Staff Picks",      icon: "◆" },
 ] as const;
 type PairingCat = (typeof PAIRING_CATEGORIES)[number]["id"];
 
@@ -230,22 +233,24 @@ function PairingView() {
                         </div>
                       ))}
                     </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
                       {[
-                        { label: "Add Full Experience", primary: true  },
-                        { label: "Save Pairing",        primary: false },
-                        { label: "Compare Pairings",    primary: false },
-                        { label: "AI Recommendation",   primary: false },
-                        { label: "Add To Tab",          primary: false },
+                        { label: "Add Full Experience",  primary: true  },
+                        { label: "Save Pairing",         primary: false },
+                        { label: "Compare Pairings",     primary: false },
+                        { label: "Pair With My Profile", primary: false },
+                        { label: "AI Recommendation",    primary: false },
+                        { label: "Add To Tab",           primary: false },
                       ].map(btn => (
                         <motion.button key={btn.label} type="button" whileTap={{ scale: 0.94 }}
                           style={{
-                            padding: btn.primary ? "14px 26px" : "11px 18px", borderRadius: 10, cursor: "pointer", fontFamily: "'Inter',sans-serif",
-                            fontSize: btn.primary ? 14 : 12, fontWeight: btn.primary ? 800 : 600, letterSpacing: "0.10em", textTransform: "uppercase",
+                            padding: btn.primary ? "16px 28px" : "14px 20px", borderRadius: 10, cursor: "pointer", fontFamily: "'Inter',sans-serif",
+                            fontSize: btn.primary ? 22 : 20, fontWeight: btn.primary ? 800 : 600, letterSpacing: "0.08em", textTransform: "uppercase",
                             background: btn.primary ? `linear-gradient(135deg, ${GOLD} 0%, #C87028 100%)` : "rgba(255,255,255,0.04)",
                             color: btn.primary ? "#0A0700" : `${GOLD}AA`,
                             border: `1px solid ${btn.primary ? GOLD : GOLD + "44"}`,
                             boxShadow: btn.primary ? `0 4px 22px ${GOLD}44` : "none",
+                            minHeight: 58,
                           }}>
                           {btn.label}
                         </motion.button>
@@ -674,6 +679,186 @@ function SettingsView() {
   );
 }
 
+/* ─────────────────────────────────────────────
+   Coach Help View
+───────────────────────────────────────────── */
+const COACH_TOPICS = [
+  {
+    id: "getting_started", icon: "◈", label: "Getting Started",
+    color: "#D4AF37",
+    steps: [
+      "Tap the CraftHub to begin a new session.",
+      "Complete your palate profile — it takes under 2 minutes.",
+      "Your mentor is assigned automatically based on your taste profile.",
+      "Use the SmokeCraft tab to start your guided experience.",
+    ],
+  },
+  {
+    id: "pairing", icon: "◆", label: "Pairing Guide",
+    color: "#C87028",
+    steps: [
+      "Navigate to the Pairing tab from the main nav bar.",
+      "Select a category: Classics, Vintage, etc.",
+      "Tap any pairing card to see full flavor notes and XP reward.",
+      "Use 'Pair With My Profile' to get AI-matched pairings.",
+    ],
+  },
+  {
+    id: "xp_levels", icon: "⬡", label: "XP & Levels",
+    color: "#32B45A",
+    steps: [
+      "Earn XP by completing sessions, pairings, and challenges.",
+      "Levels: Novice (0) → Enthusiast (1K) → Connoisseur (5K) → Aficionado (15K).",
+      "Higher tiers unlock exclusive blends and challenges.",
+      "View your current standing in the My Profile tab.",
+    ],
+  },
+  {
+    id: "lounge", icon: "◉", label: "Lounge Controls",
+    color: "#7B5EA7",
+    steps: [
+      "Staff can access the Lounge tab from the nav bar.",
+      "Select a mood preset: Jazz Mode, VIP Mode, After Hours, etc.",
+      "Adjust lighting, music, and scent intensity independently.",
+      "Presets apply instantly across all connected venue systems.",
+    ],
+  },
+  {
+    id: "golden_box", icon: "⌘", label: "Golden Box",
+    color: "#D4AF37",
+    steps: [
+      "Your Golden Box is a living record of your mastery.",
+      "Open Challenges to earn XP-gated rewards.",
+      "Compare your stats against the member average.",
+      "Rare blends and exclusive access unlock at higher tiers.",
+    ],
+  },
+  {
+    id: "staff_tools", icon: "⊹", label: "Staff Tools",
+    color: "#C87028",
+    steps: [
+      "Staff PIN unlocks the E.A.T Intel and Command Center tabs.",
+      "E.A.T Intel shows real-time sales intelligence and forecasts.",
+      "Command Center controls lounge environment and device status.",
+      "Management PIN required for billing and role management.",
+    ],
+  },
+];
+
+const COACH_FAQS = [
+  { q: "How do I reset my session?",               a: "Go to Settings → Session → tap 'Reset Session'. This clears your current profile and returns to the CraftHub." },
+  { q: "Can I save my pairing preferences?",        a: "Yes — any pairing you interact with is automatically saved to your taste profile for future recommendations." },
+  { q: "What is ElevenLabs audio?",                 a: "The platform uses ElevenLabs AI voice to narrate key moments, blend descriptions, and mentor guidance. It activates automatically." },
+  { q: "How do I unlock the Control Chamber?",      a: "Hold the top-left corner for 3 seconds, or triple-tap the bottom-right corner. A 6-digit Founder PIN is required to enter." },
+  { q: "Why are some nav items hidden?",            a: "Staff-only items like E.A.T Intel and Lounge are hidden from guests. Enter your staff PIN to reveal them." },
+  { q: "What is the Affinity Vector?",              a: "Your Affinity Vector is an AI-calculated taste fingerprint built from your session responses. It drives all recommendations." },
+];
+
+function CoachHelpView() {
+  const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"guides" | "faq">("guides");
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  const topic = COACH_TOPICS.find(t => t.id === activeTopic);
+
+  return (
+    <div style={{ position: "relative", inset: 0, flex: 1, minHeight: 0, display: "flex", flexDirection: "column", background: "linear-gradient(160deg,#0A0600 0%,#060400 100%)", overflow: "hidden" }}>
+      <div style={{ position: "absolute", top: -80, left: "30%", width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${GOLD}0A 0%, transparent 70%)`, pointerEvents: "none" }} />
+
+      <div style={{ padding: "20px 24px 0", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <div>
+            <div style={{ fontSize: 32, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", lineHeight: 1.1 }}>COACH HELP</div>
+            <div style={{ fontSize: 13, color: `${GOLD}66`, letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 3 }}>Guided tutorials &amp; platform mastery</div>
+          </div>
+          <div style={{ width: 54, height: 54, borderRadius: 14, background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>◈</div>
+        </div>
+        <div style={{ display: "flex", gap: 6, marginTop: 16, padding: 4, background: "rgba(255,255,255,0.03)", borderRadius: 10, border: `1px solid ${GOLD}1A` }}>
+          {(["guides", "faq"] as const).map(tab => (
+            <motion.button key={tab} type="button" whileTap={{ scale: 0.97 }} onClick={() => setActiveTab(tab)}
+              style={{ flex: 1, padding: "11px 0", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase",
+                background: activeTab === tab ? `linear-gradient(135deg, ${GOLD}22, ${AMBER}18)` : "transparent",
+                color: activeTab === tab ? GOLD : `${GOLD}55`,
+                boxShadow: activeTab === tab ? `inset 0 0 0 1px ${GOLD}33` : "none",
+              }}>
+              {tab === "guides" ? "⊹ GUIDES" : "◆ FAQ"}
+            </motion.button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "16px 24px 32px" }}>
+        <AnimatePresence mode="wait">
+          {activeTab === "guides" && (
+            <motion.div key="guides" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
+              {!activeTopic ? (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+                  {COACH_TOPICS.map((t, i) => (
+                    <motion.div key={t.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                      whileTap={{ scale: 0.97 }} onClick={() => setActiveTopic(t.id)}
+                      style={{ padding: "20px 18px", borderRadius: 14, border: `1px solid ${t.color}33`, background: "rgba(255,255,255,0.03)", cursor: "pointer", position: "relative", overflow: "hidden" }}>
+                      <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: `radial-gradient(circle, ${t.color}18 0%, transparent 70%)` }} />
+                      <div style={{ fontSize: 28, marginBottom: 10 }}>{t.icon}</div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: CREAM, letterSpacing: "0.06em", marginBottom: 4 }}>{t.label}</div>
+                      <div style={{ fontSize: 12, color: `${CREAM}55`, letterSpacing: "0.08em" }}>{t.steps.length} steps</div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <motion.div key={activeTopic} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
+                  <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setActiveTopic(null)}
+                    style={{ marginBottom: 18, display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: `1px solid ${GOLD}33`, background: "rgba(212,175,55,0.06)", color: GOLD, fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: "0.14em" }}>
+                    ← BACK
+                  </motion.button>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20, padding: "16px 18px", borderRadius: 12, background: `rgba(212,175,55,0.06)`, border: `1px solid ${topic?.color ?? GOLD}33` }}>
+                    <span style={{ fontSize: 32 }}>{topic?.icon}</span>
+                    <div>
+                      <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, letterSpacing: "0.06em" }}>{topic?.label}</div>
+                      <div style={{ fontSize: 12, color: `${GOLD}55`, letterSpacing: "0.14em", marginTop: 2 }}>Step-by-step guide</div>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {topic?.steps.map((step, i) => (
+                      <motion.div key={i} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.07 }}
+                        style={{ display: "flex", gap: 14, alignItems: "flex-start", padding: "14px 16px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: `1px solid ${GOLD}18` }}>
+                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD}33, ${AMBER}22)`, border: `1px solid ${GOLD}55`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12, fontWeight: 900, color: GOLD }}>{i + 1}</div>
+                        <div style={{ fontSize: 16, color: "rgba(240,232,212,0.82)", lineHeight: 1.55, paddingTop: 3 }}>{step}</div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+
+          {activeTab === "faq" && (
+            <motion.div key="faq" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}
+              style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {COACH_FAQS.map((faq, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                  <motion.div whileTap={{ scale: 0.99 }} onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                    style={{ padding: "16px 18px", borderRadius: expandedFaq === i ? "12px 12px 0 0" : 12, background: expandedFaq === i ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${expandedFaq === i ? GOLD + "44" : GOLD + "18"}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: expandedFaq === i ? GOLD : CREAM, letterSpacing: "0.04em" }}>{faq.q}</div>
+                    <motion.div animate={{ rotate: expandedFaq === i ? 180 : 0 }} style={{ flexShrink: 0, fontSize: 14, color: `${GOLD}88` }}>▾</motion.div>
+                  </motion.div>
+                  <AnimatePresence>
+                    {expandedFaq === i && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
+                        style={{ overflow: "hidden", padding: "14px 18px", background: "rgba(212,175,55,0.04)", border: `1px solid ${GOLD}33`, borderTop: "none", borderRadius: "0 0 12px 12px" }}>
+                        <div style={{ fontSize: 15, color: "rgba(240,232,212,0.72)", lineHeight: 1.6 }}>{faq.a}</div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
 const NAV_ITEMS = [
   { id: "crafthub",          label: "CraftHub",       abbr: "HUB", targetPhase: "crafthub" as Phase,          staffOnly: false, isActive: (p: string) => p === "crafthub" },
   { id: "smokecraft",        label: "SmokeCraft",     abbr: "SC",  targetPhase: "s1_demo" as Phase,           staffOnly: false, isActive: (p: string) => SESSION_PHASES.has(p) },
@@ -683,6 +868,7 @@ const NAV_ITEMS = [
   { id: "executive_command", label: "Command Center", abbr: "EXC", targetPhase: "executive_command" as Phase, staffOnly: true,  pinLevel: "management" as PinRole, isActive: (p: string) => p === "executive_command" },
   { id: "lounge",            label: "Lounge",         abbr: "LG",  targetPhase: "lounge_view" as Phase,       staffOnly: true,  isActive: (p: string) => p === "lounge_view" },
   { id: "settings",          label: "Settings",       abbr: "ST",  targetPhase: "settings_view" as Phase,     staffOnly: true,  isActive: (p: string) => p === "settings_view" },
+  { id: "coach_help",        label: "Coach Help",     abbr: "CH",  targetPhase: "coach_help" as Phase,        staffOnly: false, isActive: (p: string) => p === "coach_help" },
 ];
 
 function OsNavBar() {
@@ -999,6 +1185,7 @@ function phaseKey(phase: string): string {
   if (phase === "profile_view")      return "profile_view";
   if (phase === "settings_view")     return "settings_view";
   if (phase === "control-chamber")   return "control-chamber";
+  if (phase === "coach_help")        return "coach_help";
   if (S1_PHASES.has(phase))          return "s1";
   if (S2_PHASES.has(phase))          return "s2";
   if (S3_PHASES.has(phase))          return "s3";
@@ -1027,6 +1214,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange
       {phase === "lounge_view" && <LoungeView />}
       {phase === "profile_view" && <ProfileView />}
       {phase === "settings_view" && <SettingsView />}
+      {phase === "coach_help" && <CoachHelpView />}
       {phase === "control-chamber" && <ControlChamber />}
       {(S1_PHASES.has(phase) || (phase as string) === "s1") && <Comp1 />}
       {(S2_PHASES.has(phase) || (phase as string) === "s2") && <Comp2 />}

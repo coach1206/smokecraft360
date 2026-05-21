@@ -1,0 +1,367 @@
+EXECUTE SOVEREIGN TITAN SPECIFICATION REBUILD
+ULTRA-PREMIUM OBSIDIAN GLASS HOSPITALITY OPERATING SYSTEM
+APPLE × TESLA × ASTON MARTIN × PRIVATE MEMBERS CLUB
+
+THIS BUILD MUST MEET:
+SOVEREIGN TITAN VISUAL + OPERATIONAL STANDARDS
+
+====================================================
+SOVEREIGN TITAN DESIGN PHILOSOPHY
+=================================
+
+The system must feel:
+• elite
+• cinematic
+• emotionally intelligent
+• architecturally refined
+• operationally powerful
+• luxurious
+• tactile
+• immersive
+
+This is NOT software.
+This is:
+Sovereign Infrastructure.
+
+Every screen should feel:
+• intentional
+• layered
+• atmospheric
+• premium
+• alive
+
+The interface must look like:
+• Apple designed the interaction
+• Tesla designed the motion
+• Aston Martin designed the materials
+• A billionaire private club funded the experience
+
+====================================================
+SOVEREIGN TITAN MATERIAL SYSTEM
+===============================
+
+PRIMARY MATERIALS:
+• obsidian glass
+• smoked crystal
+• black titanium
+• satin walnut
+• brushed bronze
+• champagne metallics
+
+SURFACE BEHAVIOR:
+• layered transparency
+• premium reflections
+• ambient edge lighting
+• cinematic shadows
+• subtle environmental glow
+• polished depth transitions
+
+The UI must feel:
+physically tangible.
+
+====================================================
+ABSOLUTE VISUAL RULES
+=====================
+
+REMOVE COMPLETELY:
+• glyph icons
+• emojis
+• cartoon graphics
+• generic gradients
+• flat layouts
+• oversized blocks
+• prototype cards
+• dashboard clutter
+• spreadsheet visuals
+
+NO:
+cheap UI energy.
+
+====================================================
+REAL IMAGE STANDARD
+===================
+
+ONLY USE:
+• realistic cigar photography
+• luxury whiskey photography
+• cinematic lounge imagery
+• realistic hospitality environments
+• editorial-style food imagery
+• realistic AI-generated imagery
+
+ALL IMAGES MUST:
+• maintain aspect ratio
+• use object-fit cover
+• feel cinematic
+• feel editorial
+• feel luxurious
+
+NO:
+• stretched images
+• low-quality placeholders
+• fake icon cards
+• cartoon UI elements
+
+====================================================
+TOUCHSCREEN TITAN STANDARD
+==========================
+
+This system is designed for:
+• luxury kiosks
+• iPad Pro terminals
+• touchscreen lounges
+• executive command stations
+• VIP environments
+
+ALL INTERACTIONS MUST FEEL:
+• smooth
+• responsive
+• premium
+• tactile
+• cinematic
+
+MINIMUM TOUCH TARGET:
+58px
+
+Use:
+• swipe gestures
+• ripple feedback
+• soft press animations
+• smooth inertia scrolling
+
+====================================================
+TYPOGRAPHY TITAN STANDARD
+=========================
+
+Typography must feel:
+• expensive
+• restrained
+• elegant
+• editorial
+• cinematic
+
+DO NOT:
+• overscale fonts
+• stack text
+• overlap navigation
+• overcrowd layouts
+
+NEW TYPE SCALE:
+
+HERO TITLES:
+40–48px max
+
+SECTION HEADERS:
+22–28px
+
+CARD HEADERS:
+18–22px
+
+BODY TEXT:
+15–17px
+
+METRICS:
+14–16px
+
+BUTTONS:
+15–18px
+
+Typography should breathe.
+
+====================================================
+SPATIAL DESIGN SYSTEM
+=====================
+
+The interface currently lacks:
+• rhythm
+• balance
+• breathing room
+• hierarchy
+
+RESTORE:
+• whitespace
+• margin discipline
+• proportional scaling
+• visual pacing
+• luxury spacing
+
+The system must feel:
+calm and intentional.
+
+====================================================
+DEPTH + GLASSMORPHISM ENGINE
+============================
+
+ADD:
+• obsidian layered glass
+• smoked transparency
+• metallic reflections
+• subtle blur
+• environmental reflections
+• z-depth layering
+• ambient lighting edges
+
+Create:
+true cinematic dimensionality.
+
+====================================================
+NAVIGATION TITAN REBUILD
+========================
+
+TOP NAV:
+Rebuild into:
+• low-profile obsidian dock
+• centered spacing
+• subtle amber edge glow
+• balanced typography
+• responsive width logic
+
+BOTTOM NAV:
+Transform into:
+• Tesla-style floating dock
+• smoked glass strip
+• premium tactile interactions
+• luxury motion feedback
+
+NO:
+• clutter
+• overlap
+• oversized nav tabs
+
+====================================================
+PAIRING ENGINE TITAN REBUILD
+============================
+
+Transform Pairing Engine into:
+Luxury AI Sommelier Workspace.
+
+LEFT:
+• hero cigar imagery
+• wrapper macro photography
+• flavor profile
+• strength visualization
+
+CENTER:
+• pairing intelligence
+• tasting narrative
+• AI recommendations
+• atmosphere matching
+
+RIGHT:
+• whiskey pairings
+• cocktail pairings
+• food pairings
+• quick add interactions
+
+The experience should feel:
+like a luxury tasting ritual.
+
+====================================================
+COMMAND CENTER TITAN STANDARD
+=============================
+
+The Command Center should feel:
+• sovereign
+• executive
+• powerful
+• elegant
+
+NOT:
+• corporate analytics software
+• admin dashboards
+• spreadsheet systems
+
+USE:
+• environmental intelligence
+• cinematic telemetry
+• operational heat mapping
+• premium glass control surfaces
+
+====================================================
+ENVIRONMENT CONTROL TITAN STANDARD
+==================================
+
+HVAC + atmosphere controls should feel:
+• architectural
+• luxurious
+• tactile
+• immersive
+
+USE:
+• radial controls
+• ambient sliders
+• smooth transitions
+• cinematic response behavior
+
+====================================================
+SOVEREIGN ACCESS CONTROL
+========================
+
+Different users must feel like:
+they are entering different worlds.
+
+GUESTS:
+luxury immersive experience only
+
+STAFF:
+operational assistance layer
+
+MANAGERS:
+venue intelligence layer
+
+FOUNDERS:
+full sovereign operating system
+
+HIDE:
+all unauthorized systems completely.
+
+====================================================
+ANIMATION TITAN STANDARD
+========================
+
+USE:
+• ambient smoke drift
+• ember particles
+• luxury easing curves
+• cinematic fades
+• soft shimmer
+• layered transitions
+
+DO NOT:
+• overanimate
+• create gimmicks
+• reduce responsiveness
+
+Everything must feel:
+premium and restrained.
+
+====================================================
+FINAL TITAN REQUIREMENTS
+========================
+
+The system must feel:
+• cinematic
+• sovereign
+• luxurious
+• tactile
+• emotionally intelligent
+• premium
+• immersive
+• operationally elite
+
+This must look like:
+the future of luxury hospitality operating systems.
+
+FINAL QUALITY TARGET:
+Fortune 500 luxury product launch quality.
+
+NO:
+• prototype feel
+• dead space
+• stretched content
+• flat interfaces
+• cheap UI patterns
+• generic POS appearance
+
+DELIVER:
+A true Sovereign Titan-grade hospitality operating system.

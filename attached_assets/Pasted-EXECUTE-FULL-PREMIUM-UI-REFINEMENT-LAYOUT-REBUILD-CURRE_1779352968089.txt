@@ -1,0 +1,255 @@
+EXECUTE FULL PREMIUM UI REFINEMENT + LAYOUT REBUILD
+
+CURRENT UI STATUS:
+The interface is structurally broken visually.
+
+Problems:
+• fonts are oversized and inconsistent
+• wording overlaps navigation
+• spacing is collapsing
+• images look bloated/stretchy
+• layout hierarchy is broken
+• the interface no longer feels premium
+• visual balance is lost
+• sections are overcrowded
+• typography scaling is incorrect
+• cards are misaligned
+• no breathing room
+• looks like a prototype instead of luxury software
+
+OBJECTIVE:
+Rebuild the UI into a clean, premium, Apple/Tesla-grade hospitality operating system with proper spacing, typography hierarchy, responsive structure, and cinematic balance.
+
+====================================================
+CRITICAL FIXES
+==============
+
+1. FIX TOP NAVIGATION OVERLAP
+   Current nav text is stacking into each other.
+
+Fix:
+• proper flex spacing
+• max-width constraints
+• responsive nav scaling
+• auto-collapse on smaller widths
+• maintain equal spacing
+• prevent text collision
+
+NAV SHOULD FEEL:
+clean • elegant • minimal • expensive
+
+====================================================
+2. REDUCE FONT SIZES PROPERLY
+=============================
+
+Current fonts are too massive and destroying hierarchy.
+
+NEW TYPOGRAPHY SYSTEM:
+
+MAIN HERO TITLES:
+48px max
+
+SECTION HEADERS:
+22–28px
+
+CARD TITLES:
+18–22px
+
+BODY TEXT:
+15–17px
+
+OPERATIONAL METRICS:
+14–16px
+
+BUTTON LABELS:
+15–18px
+
+Never allow giant oversized typography blocks.
+
+====================================================
+3. FIX IMAGE SCALING
+====================
+
+Current images:
+• stretched
+• oversized
+• blurry
+• bloated
+
+Fix:
+• object-fit: cover
+• fixed aspect ratios
+• premium image masking
+• rounded luxury cards
+• proper padding
+• responsive image containers
+
+Images should feel:
+• curated
+• editorial
+• cinematic
+• high-end
+
+NOT:
+cheap marketplace cards.
+
+====================================================
+4. RESTORE PREMIUM SPACING
+==========================
+
+Add:
+• whitespace
+• breathing room
+• luxury margins
+• consistent card padding
+• visual separation
+
+The UI currently feels cramped and chaotic.
+
+====================================================
+5. REBUILD CARD SYSTEM
+======================
+
+Cards should:
+• align consistently
+• use equal heights
+• use subtle shadows
+• use soft glass blur
+• use elegant borders
+
+REMOVE:
+• bulky blocks
+• oversized panels
+• uneven layouts
+
+====================================================
+6. FIX PAIRING ENGINE LAYOUT
+============================
+
+Current pairing section is broken visually.
+
+Rebuild with:
+LEFT:
+• featured cigar image
+• flavor profile
+• strength meter
+
+CENTER:
+• pairing narrative
+• AI recommendation
+• tasting notes
+
+RIGHT:
+• whiskey pairing cards
+• food pairing cards
+• quick add actions
+
+====================================================
+7. RESTORE LUXURY COLOR BALANCE
+===============================
+
+Current UI is:
+• muddy
+• heavy
+• flat
+
+New palette:
+TOP:
+• walnut espresso gradient
+
+CONTENT:
+• cream smoke-glass
+
+ACCENTS:
+• amber
+• bronze
+• champagne gold
+
+TEXT:
+• ivory
+• soft warm white
+
+====================================================
+8. FIX BOTTOM NAVIGATION
+========================
+
+Bottom nav currently:
+• oversized
+• cluttered
+• uneven
+
+Rebuild:
+• compact luxury dock style
+• centered spacing
+• premium icon alignment
+• subtle glow states
+
+====================================================
+9. REMOVE “PROTOTYPE FEEL”
+==========================
+
+The UI currently feels:
+• unfinished
+• overbuilt
+• unbalanced
+• randomly scaled
+
+Rebuild using:
+• design consistency
+• visual rhythm
+• luxury spacing
+• premium hierarchy
+• calm operational flow
+
+====================================================
+10. PREMIUM UX REFERENCE STYLE
+==============================
+
+TARGET FEEL:
+• Apple Vision Pro UI
+• Aston Martin dashboard
+• Tesla luxury UI
+• High-end hospitality software
+• Private members club interface
+
+NOT:
+• gaming UI
+• cyberpunk dashboard
+• generic admin panel
+• oversized casino interface
+
+====================================================
+11. RESPONSIVE REFINEMENT
+=========================
+
+Optimize for:
+• iPad Pro
+• Surface tablets
+• touchscreen kiosks
+• executive desktops
+
+Ensure:
+• no overlap
+• no clipping
+• no oversized scaling
+• no broken flex layouts
+
+====================================================
+12. FINAL QUALITY STANDARD
+==========================
+
+The system must feel:
+• elegant
+• intentional
+• cinematic
+• premium
+• calm
+• expensive
+• immersive
+• usable
+
+The UI should look like:
+a Fortune 500 luxury hospitality operating system.
+
+NOT:
+a stretched prototype dashboard.

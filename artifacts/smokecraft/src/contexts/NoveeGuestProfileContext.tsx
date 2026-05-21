@@ -29,7 +29,8 @@ export type Phase =
   | "s1_country_select"
   | "s1_soil_calibration"
   | "s1_pilon_game"
-  | "control-chamber";
+  | "control-chamber"
+  | "coach_help";
 
 export type DifficultyTier = "beginner" | "apprentice" | "blender" | "master" | "architect";
 export type SessionType = "live" | "demo" | "investor" | "qa" | "presentation";

@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import { useGuest } from "@/context/GuestProfileContext";
 
 const GOLD   = "#D4AF37";
@@ -237,12 +238,34 @@ interface GoldenBoxPageProps {
   onBack: () => void;
 }
 
+const CHALLENGES = [
+  { id: "c1", title: "The First Draw",       xp: 50,   desc: "Experience your first cigar blend",     diff: "NOVICE",       locked: false },
+  { id: "c2", title: "The Blend Master",     xp: 250,  desc: "Create a custom wrapper + filler combo", diff: "ENTHUSIAST",   locked: false },
+  { id: "c3", title: "Spirit Harmony",       xp: 500,  desc: "Match a cigar with a premium spirit",    diff: "CONNOISSEUR",  locked: false },
+  { id: "c4", title: "Reserve Collection",   xp: 1200, desc: "Sample 3 rare reserve blends",           diff: "CONNOISSEUR",  locked: false },
+  { id: "c5", title: "The Grand Aficionado", xp: 3000, desc: "Complete all VIP experience challenges", diff: "AFICIONADO",   locked: true  },
+  { id: "c6", title: "Founder's Trial",      xp: 5000, desc: "Invitation only — summit-level mastery", diff: "EXCLUSIVE",    locked: true  },
+];
+
+const STAT_COMPARE = [
+  { label: "Blends Tried",    you: 12,  avg: 7,   unit: ""    },
+  { label: "Pairings Saved",  you: 5,   avg: 3,   unit: ""    },
+  { label: "XP Earned",       you: 840, avg: 520, unit: " XP" },
+  { label: "Sessions",        you: 9,   avg: 5,   unit: ""    },
+  { label: "Match Score",     you: 88,  avg: 71,  unit: "%"   },
+  { label: "Rare Blends",     you: 3,   avg: 1,   unit: ""    },
+];
+
 export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
   const { profile } = useGuest();
   const xp          = profile.points ?? 0;
   const tier        = getTier(xp);
   const milestone   = getNextMilestone(xp);
   const tierLabel   = LEVELS.find(l => l.id === tier)?.title ?? "NOVICE";
+
+  const [challengeOpen, setChallengeOpen] = useState(false);
+  const [statsOpen,     setStatsOpen]     = useState(false);
+  const [activeChallenge, setActiveChallenge] = useState<string | null>(null);
 
   const xpPercent = (() => {
     if (tier === "novice")       return Math.round((xp / 1000) * 100);
@@ -295,8 +318,17 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
             Compete. Learn. Ascend.
           </div>
         </div>
-        {/* Spacer */}
-        <div style={{ width: 100 }} />
+        {/* Action buttons */}
+        <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
+          <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setStatsOpen(true)}
+            style={{ padding: "10px 18px", borderRadius: 8, border: `1px solid ${GOLD}55`, background: "rgba(212,175,55,0.08)", color: GOLD, fontSize: 14, fontWeight: 800, cursor: "pointer", letterSpacing: "0.14em", textTransform: "uppercase" as const }}>
+            ◈ COMPARE STATS
+          </motion.button>
+          <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setChallengeOpen(true)}
+            style={{ padding: "10px 18px", borderRadius: 8, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 14, fontWeight: 900, cursor: "pointer", letterSpacing: "0.14em", textTransform: "uppercase" as const, boxShadow: `0 0 18px ${GOLD}44` }}>
+            ⬡ OPEN CHALLENGE
+          </motion.button>
+        </div>
       </div>
 
       {/* ── MAIN BODY ── */}
@@ -474,6 +506,114 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
           📊 VIEW LEADERBOARD
         </motion.button>
       </div>
+
+      {/* ── CHALLENGE MODAL ── */}
+      <AnimatePresence>
+        {challengeOpen && (
+          <motion.div key="challenge-modal"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.82)", backdropFilter: "blur(12px)" }}
+            onClick={() => setChallengeOpen(false)}>
+            <motion.div
+              initial={{ opacity: 0, y: 32, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }}
+              transition={{ duration: 0.45, ease: [0.22,1,0.36,1] }}
+              style={{ width: "min(720px, 95vw)", background: "linear-gradient(160deg, #0E0900 0%, #060400 100%)", borderRadius: 18, border: `1px solid ${GOLD}44`, boxShadow: `0 0 60px ${GOLD}22`, overflow: "hidden" }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ padding: "20px 24px 14px", borderBottom: `1px solid ${GOLD}22`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: 28, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>AVAILABLE CHALLENGES</div>
+                  <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.18em", textTransform: "uppercase", marginTop: 2 }}>Select a challenge to begin your ascent</div>
+                </div>
+                <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={() => setChallengeOpen(false)}
+                  style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.08)", color: GOLD, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</motion.button>
+              </div>
+              <div style={{ padding: "18px 24px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
+                {CHALLENGES.map(ch => {
+                  const isActive = activeChallenge === ch.id;
+                  return (
+                    <motion.div key={ch.id} whileTap={ch.locked ? {} : { scale: 0.98 }}
+                      onClick={() => !ch.locked && setActiveChallenge(isActive ? null : ch.id)}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 16, padding: "14px 18px", borderRadius: 12,
+                        background: isActive ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.03)",
+                        border: `1px solid ${isActive ? GOLD + "66" : ch.locked ? "rgba(255,255,255,0.06)" : GOLD + "22"}`,
+                        cursor: ch.locked ? "not-allowed" : "pointer", opacity: ch.locked ? 0.45 : 1,
+                        boxShadow: isActive ? `0 0 18px ${GOLD}22` : "none",
+                      }}>
+                      <div style={{ width: 48, height: 48, borderRadius: 10, background: ch.locked ? "rgba(255,255,255,0.04)" : `rgba(212,175,55,0.12)`, border: `1px solid ${ch.locked ? "rgba(255,255,255,0.08)" : GOLD + "33"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span style={{ fontSize: 22 }}>{ch.locked ? "🔒" : "⬡"}</span>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 18, fontWeight: 800, color: ch.locked ? "rgba(240,232,212,0.40)" : CREAM, letterSpacing: "0.06em", marginBottom: 3 }}>{ch.title}</div>
+                        <div style={{ fontSize: 13, color: ch.locked ? "rgba(240,232,212,0.25)" : "rgba(240,232,212,0.55)", lineHeight: 1.4 }}>{ch.desc}</div>
+                      </div>
+                      <div style={{ flexShrink: 0, textAlign: "right" }}>
+                        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: ch.locked ? "rgba(212,175,55,0.30)" : `${GOLD}77`, textTransform: "uppercase", marginBottom: 4 }}>{ch.diff}</div>
+                        <div style={{ fontSize: 16, fontWeight: 900, color: ch.locked ? "rgba(212,175,55,0.30)" : GOLD }}>+{ch.xp.toLocaleString()} XP</div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+                {activeChallenge && (
+                  <motion.button type="button" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} whileTap={{ scale: 0.97 }}
+                    onClick={() => { setChallengeOpen(false); setActiveChallenge(null); }}
+                    style={{ marginTop: 8, padding: "16px", borderRadius: 10, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 18, fontWeight: 900, cursor: "pointer", letterSpacing: "0.14em", textTransform: "uppercase", boxShadow: `0 4px 24px ${GOLD}44` }}>
+                    BEGIN CHALLENGE — {CHALLENGES.find(c => c.id === activeChallenge)?.title}
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── STATS COMPARISON MODAL ── */}
+      <AnimatePresence>
+        {statsOpen && (
+          <motion.div key="stats-modal"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.82)", backdropFilter: "blur(12px)" }}
+            onClick={() => setStatsOpen(false)}>
+            <motion.div
+              initial={{ opacity: 0, y: 32, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }}
+              transition={{ duration: 0.45, ease: [0.22,1,0.36,1] }}
+              style={{ width: "min(580px, 95vw)", background: "linear-gradient(160deg, #0E0900 0%, #060400 100%)", borderRadius: 18, border: `1px solid ${GOLD}44`, boxShadow: `0 0 60px ${GOLD}22`, overflow: "hidden" }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ padding: "20px 24px 14px", borderBottom: `1px solid ${GOLD}22`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: 28, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>YOUR STATS</div>
+                  <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.18em", textTransform: "uppercase", marginTop: 2 }}>vs. Average Member — {tierLabel}</div>
+                </div>
+                <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={() => setStatsOpen(false)}
+                  style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.08)", color: GOLD, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</motion.button>
+              </div>
+              <div style={{ padding: "20px 24px 28px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, marginBottom: 14, padding: "8px 12px" }}>
+                  {(["METRIC", "YOU", "AVG"] as const).map(h => (
+                    <div key={h} style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}55`, letterSpacing: "0.22em", textTransform: "uppercase", textAlign: h === "METRIC" ? "left" : "center" }}>{h}</div>
+                  ))}
+                </div>
+                {STAT_COMPARE.map((s, i) => {
+                  const better = s.you >= s.avg;
+                  return (
+                    <motion.div key={s.label}
+                      initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06, duration: 0.35 }}
+                      style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, padding: "12px 12px", borderRadius: 8, marginBottom: 4, background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent", alignItems: "center" }}>
+                      <div style={{ fontSize: 15, color: "rgba(240,232,212,0.72)", letterSpacing: "0.04em" }}>{s.label}</div>
+                      <div style={{ fontSize: 20, fontWeight: 900, color: better ? "#32B45A" : GOLD, textAlign: "center" }}>{s.you}{s.unit}</div>
+                      <div style={{ fontSize: 16, fontWeight: 600, color: "rgba(240,232,212,0.40)", textAlign: "center" }}>{s.avg}{s.unit}</div>
+                    </motion.div>
+                  );
+                })}
+                <div style={{ marginTop: 18, padding: "14px 16px", borderRadius: 10, background: `rgba(50,180,90,0.07)`, border: "1px solid rgba(50,180,90,0.20)" }}>
+                  <div style={{ fontSize: 13, fontWeight: 900, color: "#32B45A", letterSpacing: "0.14em", marginBottom: 5 }}>YOUR STANDING</div>
+                  <div style={{ fontSize: 16, color: "rgba(240,232,212,0.70)", lineHeight: 1.5 }}>You are performing above average in {STAT_COMPARE.filter(s => s.you >= s.avg).length} of {STAT_COMPARE.length} categories. Keep ascending.</div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
