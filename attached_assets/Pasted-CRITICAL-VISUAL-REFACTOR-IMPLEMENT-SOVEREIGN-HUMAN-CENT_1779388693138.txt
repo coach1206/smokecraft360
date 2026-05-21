@@ -1,0 +1,28 @@
+CRITICAL VISUAL REFACTOR: IMPLEMENT SOVEREIGN HUMAN-CENTERED LUXURY MATERIAL SYSTEM AND DESTROY OBJECT STOCK PHOTOS (ZERO STUBS)
+
+1. REASON FOR THIS DIRECTIVE (THE SOULLESS OBJECT FIX)
+The current CraftHub panel imagery is a total failure of luxury immersion. It looks like a generic lifestyle catalog with floating objects and random bottle close-ups. You are ordered to immediately remove all isolated object photography and replace it with cinematic, human-centered luxury visuals that capture PEOPLE, ATMOSPHERE, ENERGY, and ELITE CULTURE.
+
+2. NEW HUMAN-CENTERED CRAFTHUB GRID PATH ROUTING ('/craft-hub')
+Completely eliminate the lazy stock imagery. Every single one of the 4 massive touchscreen card containers must be embedded with an ultra-premium, cinematic image utilizing 'object-fit: cover' and strict aspect-ratio enforcement, following this exact experiential direction:
+
+- TILE 1: SMOKECRAFT 360 (THE CIGAR LOUNGE RITUAL)
+  * Visual Asset Requirement: A cinematic, editorial photograph of a sophisticated cigar lounge scene. Show refined people engaged in conversation, relaxing back into deep leather tufted chairs under warm, low-profile ambient lighting, with soft volumetric smoke catching the glowing gold accent rays. No floating cigars on black backgrounds.
+- TILE 2: POURCRAFT 360 (THE MIXOLOGY ENCLAVE)
+  * Visual Asset Requirement: An elegant nightlife composition centered on an upscale mixology encounter. Show a focused elite bartender crafting a premium spirit cocktail, with well-dressed VIP couples socializing along a glowing, smoked-crystal bar top. 
+- TILE 3: BEERCRAFT 360 (THE SOCIAL ROOFTOP)
+  * Visual Asset Requirement: A lifestyle-driven, high-end social rooftop brewery experience. Show a vibrant, stylish group of friends interacting under twilight string-lighting, catching a premium city skyline horizon backdrop.
+- TILE 4: WINECRAFT 360 (THE SOMMELIER RESERVE)
+  * Visual Asset Requirement: An intimate, refined date-night scene set within an elegant, stone-walled private wine lounge. Show a sommelier pouring a vintage selection for an elegant couple sharing a high-end hospitality moment.
+
+3. VISUAL GRADING & CREAM-ACCENTED GLASSMORPHISM LAYER
+- Luminous Surface Elevation: Wrap all 4 human-centered tile images behind an explicit Obsidian Glass layer. Lighten the panel overlays significantly by introducing rich Cream (#FDFBF7) and liquid metallic Warm Gold gradients on boundaries, card borders, and primary text fields.
+- Anti-Strain Illumination: The cards must pop instantly against the True Obsidian (#010101) base canvas, using backlit edge illumination to ensure readability for 40-60 age cohorts without inducing screen glare eye strain.
+- Typography Balance: Hero titles must lock at 40-48px max, section headers at 22-28px, and touch targets must maintain a strict minimum 58px footprint.
+
+4. RESTORE MISSING RE-ROUTE PATHS & E.A.T CORE POS
+- CraftHub Global Action: Tapping 'CraftHub' on the Left Obsidian Rail must instantly clear the current workspace and pull the system straight back to this 4-Tile Human Selection Matrix.
+- Fix E.A.T Blank View: Immediately resolve the blank black screen on E.A.T Intel. Complete the routing compilation. Ensure the 4-digit Staff PIN pad modal launches with its explosive concentric touch ripple transition to reveal the high-velocity floor POS terminal layout (enlarged text scales, live table maps, and a 144 puros humidor stock countdown) connected to the universal 'POSRouterEngine' for 2x, 3x, and 5x receipt multipliers.
+- Sync Advanced Modals: Ensure the 6-tier Golden Box Challenge overlay and the 6-card un-gated Coach Help tab matrix mirror this identical cream-accented glass style framework.
+
+Execute full workspace tree compilation. Overwrite all legacy product placeholder files with this human-centered private club asset specification immediately. Verify zero TypeScript errors.

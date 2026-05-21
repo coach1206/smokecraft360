@@ -1,0 +1,25 @@
+CRITICAL VISUAL COMPONENT OVERRIDE: INJECT EXPENSIVE CREAM ACCENTS, LUMINOUS GRADIENTS, AND HIGH-ENGAGEMENT VISUAL CARDS (TERMINATE FLAT DARK GRAPHICS)
+
+1. REASON FOR THIS INTERCEPTION (THE INTERFACE IS TOO DARK & UNINSPIRING)
+The current Pairing Engine and Coach Help modules are a critical user experience failure. They are excessively dark, visually flat, and create a severe cognitive challenge for operators to look at. You are ordered to immediately lighten the visual weight by introducing an elite, multi-dimensional color and material layout grading strategy.
+
+2. AMBIENT GRADIENT & EXPENSIVE CREAM ACCENT UPGRADES
+- Panel Luminance Tuning: Completely eliminate flat, mud-colored dark backdrops inside the feature workspace blocks. Wrap all information grids in high-contrast, semi-translucent smoke-tinted glass boxes.
+- Rich Cream & Gold Accents: Interweave striking accents of rich Cream (#FFFDD0 / #FDFBF7) and liquid metallic Warm Gold across the interface. Use these premium tones strictly for main telemetry metrics, button borders, active selection states, and icon outlines to make them pop instantly against the True Obsidian base.
+- Luminous Edge Gradients: Apply subtle, glowing radial gradients that fade from an expensive cream-gold hue into translucent smoke layers behind the primary content frames to eliminate eye strain and maximize readability.
+
+3. ELEVATE COACH HELP ENGAGEMENT (FROM TEXT LIST TO TACTILE DASHBOARD)
+- Re-architect the Hospitality Intelligence view into a highly interactive, responsive grid workspace. 
+- Replace flat rows with 6 massive, tactile topic cards using an elegant typography scale (Headers at 22px-28px, minimum touch targets at 58px). 
+- Every card must feature an explicit, high-end visual element or editorial hospitality graphic background representing the domain (e.g., a luxury lounge interior for Lounge Controls, a cedar chest for Golden Box, crisp apparel for Staff Tools). Tapping a card must execute a fluid slide-left animation into clear, numbered step-by-step instructions.
+
+4. RE-ENGAGE THE IMAGES IN PAIRING INTELLIGENCE
+- Ensure the Pairing workspace is not an empty black frame. Hard-code high-resolution, ultra-premium editorial photographic assets into the panels immediately:
+  * Left Panel: Sharp macro photography of a rich, oily Maduro cigar wrapper leaf showcasing true organic textures.
+  * Right Panel: High-contrast, moody close-ups of a heavy crystal tumbler filled with single-malt amber whiskey, an artisanal cocktail over clear ice, and upscale culinary small plates.
+  * Lower Panel: Touchscreen-responsive horizontal swipe carousel for "Lounge Favorites", "VIP Reserve", and "Staff Picks" using image-first editorial cards.
+
+5. RESTORE ACTIVE E.A.T INTEL POS BLOCK
+- The current blank screen status on E.A.T Intel is unacceptable. Finish the routing compilation immediately. Ensure that entering the 4-digit Staff PIN fires an explosive concentric ripple animation to expose the high-velocity floor POS terminal layout (enlarged text scales, live table maps, and a 144 puros humidor stock countdown) connected to the universal 'POSRouterEngine' for 2x, 3x, and 5x receipt multipliers.
+
+Maintain complete system alignment with the continuous multi-stage brand boot sequence (Profound Innovations -> NOVEE OS -> CraftHub -> E.A.T System) and ensure zero TypeScript build compilation errors.
