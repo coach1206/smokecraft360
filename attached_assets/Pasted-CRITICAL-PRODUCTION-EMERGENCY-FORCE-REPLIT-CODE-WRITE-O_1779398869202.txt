@@ -1,0 +1,74 @@
+CRITICAL PRODUCTION EMERGENCY: FORCE REPLIT CODE-WRITE OVERRIDE — REPAIR BLANK E.A.T. SYSTEM, RESTORE BOOT PIPELINE, UNBRICK BUTTONS, AND INJECT CREAM VISUALS (ABSOLUTE COUPLING • ZERO STUBS)
+
+====================================================
+1. REASON FOR THIS DIRECTIVE (MONETIZATION LAYER OUTAGE)
+====================================================
+The application preview is completely broken. Clicking 'E.A.T System' or 'OPEN COMMAND CENTER >' results in an absolute blank black screen. Your conditional authentication state hooks are failing background compilation, meaning the main revenue-generating engine is totally offline. Furthermore, you are displaying a food/dumpling image on the 'SMOKECRAFT 360' tile, the top and side navigation toolbars are duplicated, 'Reset Blend' is frozen, and the entire interface remains stubbornly dark, uninspiring, and non-responsive. Stop generating loose layout shells. You are ordered to execute a hard, destructive file-level overwrite of the primary router, navigation component, and state files immediately.
+
+====================================================
+2. DE-CLUTTER NAVIGATION: PURGE TOP BAR & ISOLATE LEFT RAIL
+====================================================
+- Clean the Header Clutter: Open the global navigation layout headers across both applications. Completely strip out the redundant text-tag buttons for 'HUB CRAFTHUB', 'SC SMOKECRAFT', 'PR PAIRING', and 'CH COACH HELP' from the top bar layer. 
+- Isolate the Global Navigation Rail: The Left Vertical Obsidian Rail (Hub, SC, PR, CH icons) is now the SOLE system-wide routing mechanism. Ensure its icons maintain a strict, physical 58px touch target. Clicking 'Hub' from ANY sub-view must cleanly unmount the active module view and instantly return the entire canvas layout back to the 4-Tile Experiential Grid.
+
+====================================================
+3. HARD-CODE CONTINUOUS BRAND POWER-UP INITIALIZATION (PATH: '/')
+====================================================
+The multi-stage logo initialization sequence has been dropped from the entry files. Re-install it natively as a non-skippable, core-level timeline on a solid True Obsidian (#010101) base layer before ANY landing or workspace files load:
+- Phase 1 (Corporate Boot): Mount a center-frame smoked chrome vector emblem. Render the text "PROFOUND INNOVATIONS LLC" in an oversized luxury serif typography layout styled with an expensive gold foil texture (3-second hold, 0.35s left-slide fade out).
+- Phase 2 (OS Power-Up): Smoothly fade in the "NOVEE OS" branding layer accompanied by a hardware-pulsating gold ambient loading ring and the "POWERED" subtitle status text.
+- Phase 3 (Ecosystem Activation): Animate the explicit "CraftHub" network launcher logo into view with a smooth ambient smoke dissolve.
+- Phase 4 (Backend Telemetry Bind): Pop up the official "E.A.T. SYSTEM" logo, illuminating an absolute status indicator showing "DATA INTEGRATION CHASSIS ONLINE". Write the "SYSTEM ACTIVE" token directly to localStorage on completion, then transition seamlessly via a camera-blur crossfade into the '/craft-hub' launcher grid.
+
+====================================================
+4. HUMAN-CENTERED 4-TILE CRAFTHUB CAROUSEL MATRIX (PATH: '/craft-hub')
+====================================================
+- Eliminate the dumpling food assets and dead placeholder images. Re-architect the landing interface into a clean, full-screen 1920x1080 tactical layout using 4 massive card containers built with layered Obsidian Glass and brushed titanium outlines.
+- Deploy Automated Background Image Rotation Carousels: For each tile, program a background array that automatically cross-fades gracefully every 6 seconds using 'object-fit: cover' and strict aspect ratios. Every asset must feature cinematic, human-centered luxury social compositions capturing real human experiences, atmosphere, and elite culture:
+  * TILE 1: 'SMOKECRAFT 360' (ACTIVE)
+    - Rotation Image A: A cinematic, editorial photo of a sophisticated lounge scene. Refined people engaged in deep conversation, relaxing in leather tufted chairs under warm amber illumination vectors.
+    - Rotation Image B: Close-up of high-end social interaction—hands holding a premium lit Maduro, soft volumetric smoke catching gold backlit rays.
+    - Click Action: Tapping this tile must be the singular active clickable mechanism that boots straight into the ritual onboarding journey.
+  * TILE 2: 'POURCRAFT 360' (COMING SOON)
+    - Rotation Image A: A focused master mixologist shaking a premium spirit behind a glowing, smoked-crystal bar top.
+    - Rotation Image B: Well-dressed VIP couples laughing and socializing over luxury cocktails in a dimly lit elite bar scene.
+    - Overlay: Affix a permanent small brushed bronze 'COMING SOON' overlay tag.
+  * TILE 3: 'BEERCRAFT 360' (COMING SOON)
+    - Rotation Image A: A stylish group of friends interacting under twilight string-lighting, catching a premium city skyline horizon backdrop.
+    - Overlay: Affix a 'COMING SOON' tag.
+  * TILE 4: 'WINECRAFT 360' (COMING SOON)
+    - Rotation Image A: An intimate, refined date-night scene inside a stone-walled private wine lounge as a sommelier pours a vintage selection.
+    - Overlay: Affix a 'COMING SOON' tag.
+
+====================================================
+5. UNBRICK THE PIN-GATED COMMAND CENTER & STAFF AUTHORITY
+====================================================
+- Fix the Frozen Click States: Re-wire the onClick / touchStart event handlers for the 'E.A.T System' rail node, 'Staff Authority' toggle, and the bottom-corner 'OPEN COMMAND CENTER >' button. Securely highlight its position in the bottom corner of the viewport layout.
+- Mount the 4-Digit Numeric PIN Pad Overlay: Clicking either entry target must instantly launch an oversized, minimal 4-digit numeric Staff PIN pad overlay window directly on top of the screen canvas.
+- Deploy the Concentric Touch Ripple: Upon entering a valid Staff PIN, bypass the broken state-validation loop. Track the touch coordinates and fire a hardware-accelerated concentric ripple animation scaling outward from the precise touch spot using GPU layers, smoothly dissolving the interface directly into the live E.A.T. High-Velocity POS terminal layout instead of hanging on a black screen.
+- Force-Render the POS Dashboard Assets: This view must render with 100% operational fidelity. Hard-code the active touchscreen seating grid maps and the true triple-axis inventory telemetry meters: Kitchen active order line, Bar drink pour level statuses, and the Humidor stock countdown fixed at a strict 145 Puros remaining (driven by the backend 'POSRouterEngine' calculating live 2x, 3x, and 5x receipt spend multipliers).
+- Executive Command Hub Toggles: Gate the root administrative hub behind a unique Management PIN. Give the manager physical toggle switches to globally inject, show, or completely wipe out individual E.A.T elements from client terminals in real-time, backed by a secure WebSocket tunnel for remote root Developer overrides.
+
+====================================================
+6. REPAIR FROZEN RUNTIME TRIPS & INTERACTION FAULTS
+====================================================
+- Fix 'Reset Blend' Core State: Re-code the state context handler for the 'Reset Blend' button. Clicking it must immediately flush the active tobacco blend progress indices, completely wipe the current filler/wrapper cache from the state machine, and cleanly re-initialize the selection state cleanly without freezing or looping.
+- Render the Primary Cigar Object in Signature Studio ('⚗ Your Reserve'): Hard-code an ultra-premium, high-resolution photographic asset path of a hand-rolled Nicaraguan Maduro cigar directly onto the center obsidian glass mat frame. The cigar object must be permanently visible on the screen.
+
+====================================================
+7. CONTRAST ELEVATION: LUMINOUS CREAM ACCENTS & GRADIATED SYSTEMS
+====================================================
+- Break the Muddy Darkness: The current interface is highly unengaging and creates a major challenge to look at. Completely eliminate flat, dim dark gray panels across the entire system chassis (including Pairing Intelligence, the Studio, and the Coach Help matrix).
+- Rich Cream & Gold Accents: Embed rich Cream (#FFFDD0 / #FDFBF7) and liquid metallic Warm Gold across all interface layers. Use these premium cream tones strictly to construct bright container borders, button outlines, active selection bounding frames, and high-visibility typography data text.
+- Back-Lit Gradients: Apply soft, glowing radial ambient gradients behind primary content grids so information and macro imagery instantly pop forward, keeping the app readable and highly engaging for 40-60 age cohorts in dim lounge spaces without generating screen-glare eye strain.
+- Inject Pairing Imagery: Hard-code high-contrast lifestyle photography inside the pairing workspace panels immediately: a macro Maduro tobacco wrapper leaf on the left, and rich single-malt whiskey tumblers/upscale small culinary plates on the right.
+
+====================================================
+8. TOTAL TOUCHSCREEN-READY REFACTOR (HAPTIC TARGETING SUITE)
+====================================================
+To support seamless field operations on kiosk hardware and touchscreen terminals, you must fully optimize the hit-box interactive boundaries:
+- Strict Hit-Box Minimums: Every menu selection item, rail node, close icon, tool list entry, and toggle switch must maintain a massive, physical touch footprint of at least 58px by 58px.
+- Dynamic Keyboard Integration: Ensure tapping any text input field instantly gains focus, triggers an interactive on-screen keyboard component overlay, updates internal React/Zustand state hooks instantly on character input, and handles submission routines smoothly without element layout overlapping.
+- Drag & Swipe Layer Calibration: Convert all sliders, volume bars, and horizontal list wheels (like the 6 pairing categories) into high-velocity touch swipe components utilizing GPU-accelerated drag layers for fluid performance.
+
+Clear your build cache and execute this total file compilation override across the workspace repository tree immediately. Force the application to compile cleanly with 100% path, secure PIN verification, and operational POS button responsiveness. Verify zero TypeScript errors.

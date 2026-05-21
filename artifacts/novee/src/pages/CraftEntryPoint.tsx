@@ -10,10 +10,10 @@ type Stage = "boot" | "grid";
 type BootPhase = 1 | 2 | 3 | 4;
 
 const BOOT_PHASES: { phase: BootPhase; logo: string; label: string; sub: string; hold: number }[] = [
-  { phase: 1, logo: IMG("logo_profound.png"),  label: "PROFOUND INNOVATION", sub: "Software & Systems Development Company", hold: 3200 },
-  { phase: 2, logo: IMG("logo_novee_os.jpg"),  label: "NOVEE OS",            sub: "Intelligence That Elevates",              hold: 2800 },
-  { phase: 3, logo: IMG("logo_craft_hub.jpg"), label: "CRAFT HUB",           sub: "Intro To Smoke Craft",                    hold: 2800 },
-  { phase: 4, logo: IMG("logo_eat.png"),       label: "E.A.T. SYSTEM",       sub: "Environment · Asset · Transactions",      hold: 3000 },
+  { phase: 1, logo: IMG("logo_profound.png"),  label: "PROFOUND INNOVATION", sub: "Software & Systems Development Company", hold: 1000 },
+  { phase: 2, logo: IMG("logo_novee_os.jpg"),  label: "NOVEE OS",            sub: "Intelligence That Elevates",              hold: 900  },
+  { phase: 3, logo: IMG("logo_craft_hub.jpg"), label: "CRAFT HUB",           sub: "Intro To Smoke Craft",                    hold: 800  },
+  { phase: 4, logo: IMG("logo_eat.png"),       label: "E.A.T. SYSTEM",       sub: "Environment · Asset · Transactions",      hold: 800  },
 ];
 
 const TILES = [
@@ -21,7 +21,7 @@ const TILES = [
     id: "smokecraft",
     label: "SMOKECRAFT 360",
     sub: "The Luxury Cigar Ritual",
-    img: `https://images.unsplash.com/photo-1574966740892-f5533faa2e6d?auto=format&fit=crop&w=1400&q=85`,
+    img: `https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=1400&q=85`,
     active: true,
     accent: GOLD,
     tag: "ACTIVE NOW",

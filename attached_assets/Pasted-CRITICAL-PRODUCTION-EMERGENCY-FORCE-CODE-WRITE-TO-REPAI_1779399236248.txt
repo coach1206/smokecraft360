@@ -1,0 +1,72 @@
+CRITICAL PRODUCTION EMERGENCY: FORCE CODE-WRITE TO REPAIR SEVERE ROUTING SHIFT, ACTIVATE E.A.T. MONETIZATION TIERS, PURGE GLYPHS, AND INJECT PREMIUM LIGHTENED VISUALS (ZERO STUBS)
+
+====================================================
+1. REASON FOR THIS DIRECTIVE (THE CORE PIECE IS BRICKED)
+====================================================
+The application architecture is completely broken. Clicking 'CraftHub' incorrectly bypasses the main launcher and routes straight into SmokeCraft, while clicking 'SmokeCraft' does absolutely nothing. The E.A.T. System and Command Center views remain completely blank because your conditional validation hooks are failing compilation. Emojis and cheap glyphs are ruining the premium identity, the 'Reset Blend' engine is frozen, and the Coach Help matrix is completely dead and disconnected from the OpenAI backend. You are ordered to halt all loose, fragmented file operations and perform a hard, file-level overwrite of the primary application router, navigation rails, and API handlers immediately.
+
+====================================================
+2. REPAIR THE GLOBAL ROUTING MACHINE & NAVIGATION RAIL
+====================================================
+- Fix Cross-Wired Links: Open the global navigation state controller. Re-program the Left Vertical Obsidian Navigation Rail (Hub, SC, PR, CH icons) so it acts as the absolute, singular source of routing truth:
+  * Clicking 'Hub' (CraftHub) must instantly unmount any active sub-view and open the true, full-screen 4-Tile Experiential Grid Matrix (Path: '/craft-hub'). It must never auto-route into SmokeCraft.
+  * Clicking 'SC' (SmokeCraft) must cleanly mount and launch the SmokeCraft ritual onboarding sequence path. Unbrick this click trigger immediately.
+- Purge Top Bar Duplication: Completely strip out the redundant text-tag buttons for 'HUB CRAFTHUB', 'SC SMOKECRAFT', 'PR PAIRING', and 'CH COACH HELP' from the top header bar area. They overcrowd the status display and create severe user friction.
+
+====================================================
+3. CONNECT COACH HELP MODULE DIRECTLY TO OPENAI BACKEND
+====================================================
+- Rebuild the Empty Coach Interface: The Coach Help section is currently empty and non-functional. Re-architect the Hospitality Intelligence view into an elite, highly interactive tactile dashboard panel.
+- OpenAI API Integration: Connect the 'CoachHelpModule' component tree natively to your server-side OpenAI API route. Ensure that when an operator or user types an entry string or taps a guide topic, the system dynamically shoots the payload directly to OpenAI and streams back premium, ritual-voiced hospitality responses instantly.
+- Graphic Layout Structure: Replace flat text rows with 6 massive, touchscreen-responsive cards (Titles at 22px-28px, minimum touch targets at 58px) styled with rich Cream (#FFFDD0 / #FDFBF7) borders. Every card must be embedded with an ultra-premium, human-centered luxury hospitality photographic background representing its topic domain. Clicking a card must execute a fluid slide-left transition into clear, numbered instruction sets driven by the live OpenAI response data.
+
+====================================================
+4. UNBRICK THE PIN-GATED E.A.T. SYSTEM & POS COMMAND CENTER
+====================================================
+- Unbrick Blank Click Handlers: Re-wire the touchStart / onClick click handlers for the 'E.A.T System' rail node, 'Staff Authority' toggle, and the bottom-corner 'OPEN COMMAND CENTER >' button. Securely anchor and highlight the command center button position in the bottom right corner of the viewport layout.
+- Mount 4-Digit PIN Interface: Force these entry targets to immediately mount an absolute, oversized 4-digit numeric PIN pad modal overlay window directly on top of the screen canvas.
+- Deploy the Concentric Touch Ripple: Upon entering a valid Staff PIN, bypass the broken state-validation loop. Track the touch coordinates and fire a hardware-accelerated concentric ripple animation scaling outward from the precise touch spot using GPU layers, smoothly dissolving the interface directly into the live E.A.T. High-Velocity POS terminal layout instead of hanging on a black screen.
+- Force-Render POS Dashboard Assets: Hard-code the active touchscreen seating grid maps and the true triple-axis inventory telemetry meters: Kitchen active order line queue, Bar drink pour level statuses, and the Humidor stock countdown fixed at a strict 145 Puros remaining (driven by the backend 'POSRouterEngine' calculating live 2x, 3x, and 5x receipt spend multipliers from external Toast/Clover webhooks).
+- Executive Command Hub Toggles: Gate the root administrative hub behind a unique Management PIN. Give the manager physical toggle switches to globally inject, show, or completely wipe out individual E.A.T elements from client terminals in real-time, backed by a secure WebSocket tunnel for remote root Developer overrides.
+
+====================================================
+5. COMPLETE INTERFACE PURGE OF GLYPHS AND EMOJIS
+====================================================
+- Total Text Enforcement: Scan the entire codebase across all views, modals, cards, and rails. Completely remove and ban all glyphs, emojis, and basic system symbols (such as ⚗, 🚀, 📦, etc.). The typography scale and clean layout borders are the sole visual indicators of this operating system. No cheap text decorations are allowed anywhere.
+
+====================================================
+6. MANDATORY MULTI-STAGE LOGO INITIALIZATION CHAIN (PATH: '/')
+====================================================
+Enforce a non-skippable, continuous initialization timeline on a solid True Obsidian (#010101) base layer before ANY workspace or launcher files load:
+- Phase 1 (Corporate Boot): Mount a center-frame smoked chrome vector emblem. Render the text "PROFOUND INNOVATIONS LLC" in an oversized luxury serif typography layout styled with an expensive gold foil texture (3-second hold, 0.35s left-slide fade out).
+- Phase 2 (OS Power-Up): Smoothly fade in the "NOVEE OS" branding layer accompanied by a hardware-pulsating gold ambient loading ring and the "POWERED" subtitle status text.
+- Phase 3 (Ecosystem Activation): Animate the explicit "CraftHub" network launcher logo into view with a smooth ambient smoke dissolve.
+- Phase 4 (Backend Telemetry Bind): Pop up the official "E.A.T. SYSTEM" logo, illuminating an absolute status indicator showing "DATA INTEGRATION CHASSIS ONLINE". Write the "SYSTEM ACTIVE" token directly to localStorage on completion, then transition seamlessly via a camera-blur crossfade into the '/craft-hub' launcher grid.
+
+====================================================
+7. THE HUMAN-CENTERED 4-TILE CRAFTHUB EXPERIENTIAL LAUNCHER GRID
+====================================================
+- Deploy Automated Background Image Rotation Carousels: Re-architect the dashboard into a full-screen 1920x1080 touchscreen tactical grid using 4 massive card containers built with layered Obsidian Glass and brushed titanium bounds (strict minimum 58px target footprints). Program an image array for each tile that automatically cross-fades gracefully every 6 seconds, using high-end, human-centered luxury social compositions ('object-fit: cover'):
+  * TILE 1: 'SMOKECRAFT 360' (ACTIVE) -> Rotates between a cinematic photo of refined people engaged in deep conversation in leather tufted chairs under warm lighting, and closeups of premium cigar lounge rituals. This tile must boot directly into the ritual onboarding journey on press.
+  * TILE 2: 'POURCRAFT 360' (COMING SOON) -> Rotates between upscale mixologists crafting elite spirits and VIP couples socializing over luxury cocktails along a glowing crystal bar tap. (Affix a brushed bronze 'COMING SOON' overlay tag).
+  * TILE 3: 'BEERCRAFT 360' (COMING SOON) -> High-vibe stylish groups of friends interacting under twilight string-lighting on an upscale rooftop social brewery setting. (Affix a 'COMING SOON' tag).
+  * TILE 4: 'WINECRAFT 360' (COMING SOON) -> Intimate, refined date-night scenes inside a stone-walled private wine lounge as a sommelier pours a vintage selection. (Affix a 'COMING SOON' tag).
+
+====================================================
+8. CONTRAST ELEVATION: LUMINOUS CREAM ACCENTS & GRADIATED SYSTEMS
+====================================================
+- Lighten the Interface: Completely eliminate flat, dim dark gray panels across the entire system chassis (including Pairing Intelligence, the Studio, and the Coach Help matrix).
+- Rich Cream & Gold Accents: Embed rich Cream (#FFFDD0 / #FDFBF7) and liquid metallic Warm Gold across all interface layers. Use these premium cream tones strictly to construct bright container borders, button outlines, active selection bounding frames, and high-visibility typography data text.
+- Back-Lit Gradients: Apply soft, glowing radial ambient gradients behind primary content grids so information and macro imagery instantly pop forward, keeping the app readable and highly engaging for 40-60 age cohorts in dim lounge spaces without generating screen-glare eye strain.
+- Active Atmosphere Simulation: Mount an ambient volumetric smoke canvas layer at the bottom edge that drifts wisps upward along with micro-ember sparks cycling on a continuous 5.4s breathing loop to deliver the required environmental texture.
+- Studio Render: Ensure an ultra-premium, high-resolution photographic asset of a hand-rolled Nicaraguan Maduro cigar is locked permanently in place on the center obsidian glass mat frame in the 'Your Reserve' workspace. Repair the 'Reset Blend' button to cleanly clear the filler/wrapper context strings without locking up the client window state.
+
+====================================================
+9. TOTAL TOUCHSCREEN-READY REFACTOR (HAPTIC TARGETING SUITE)
+====================================================
+Optimize the hit-box interactive boundaries for physical terminal hardware:
+- Strict Hit-Box Minimums: Every menu selection item, rail node, close icon, tool list entry, and toggle switch must maintain a massive, physical touch footprint of at least 58px by 58px.
+- Dynamic Keyboard Integration: Ensure tapping any text input field instantly gains focus, triggers an interactive on-screen keyboard component overlay, updates internal React/Zustand state hooks instantly on character input, and handles submission routines smoothly without element layout overlapping.
+- Drag & Swipe Layer Calibration: Convert all sliders, volume bars, and horizontal list wheels (like the 6 pairing categories) into high-velocity touch swipe components utilizing GPU-accelerated drag layers for fluid performance.
+
+Clear your build cache completely and execute this total file compilation override across the workspace repository tree immediately. Force the application to compile cleanly with 100% path alignment, secure PIN verification, OpenAI connectivity, active atmospheric animation loops, and operational POS button responsiveness. Verify zero TypeScript errors.

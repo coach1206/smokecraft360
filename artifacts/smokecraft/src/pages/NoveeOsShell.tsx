@@ -1168,6 +1168,10 @@ function QuickNavBar() {
 }
 
 function OsNavBar() {
+  const { navigate } = useNoveeNav();
+  const { profile }  = useNoveeGuest();
+  const inSession    = SESSION_PHASES.has(profile.phase);
+
   return (
     <div style={{
       width: "100%", flexShrink: 0, height: 62,
@@ -1180,15 +1184,23 @@ function OsNavBar() {
     }}>
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent 0%, ${GOLD}88 20%, ${GOLD} 50%, ${GOLD}88 80%, transparent 100%)`, boxShadow: `0 0 12px ${GOLD}44` }} />
 
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, paddingRight: 16, borderRight: "1px solid rgba(212,175,55,0.18)", marginRight: 8, flexShrink: 0 }}>
+      <motion.button
+        type="button"
+        onPointerDown={() => navigate("crafthub")}
+        onClick={() => navigate("crafthub")}
+        whileTap={{ scale: 0.95 }}
+        title="Return to Craft Hub"
+        style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, paddingRight: 16, borderRight: "1px solid rgba(212,175,55,0.18)", marginRight: 8, flexShrink: 0, background: "none", border: "none", cursor: "pointer", padding: "0 16px 0 0" }}>
         <div style={{ width: 40, height: 40, borderRadius: 10, background: `linear-gradient(135deg, ${GOLD}55 0%, rgba(0,0,0,0.70) 100%)`, border: `1.5px solid ${GOLD}99`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 18px ${GOLD}44` }}>
           <span style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 22, fontWeight: 700, color: GOLD, lineHeight: 1 }}>N</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
           <span style={{ fontSize: 14, fontWeight: 800, color: GOLD, fontFamily: "'Cormorant Garamond',Georgia,serif", letterSpacing: "0.06em" }}>NOVEE OS</span>
-          <span style={{ fontSize: 9, color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700 }}>Kiosk Edition</span>
+          <span style={{ fontSize: 9, color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700 }}>
+            {inSession ? "◀ Craft Hub" : "Kiosk Edition"}
+          </span>
         </div>
-      </div>
+      </motion.button>
 
       <div style={{ flex: 1 }} />
       <span style={{ fontSize: 9, color: "rgba(212,175,55,0.30)", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>v2.4</span>
@@ -1739,7 +1751,6 @@ function OsShellContent() {
         <QuickNavBar />
 
         <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden", position: "relative" }}>
-          <LeftRail />
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
             <FullBleedBackground />
             <SystemBar />
