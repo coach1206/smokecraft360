@@ -1061,7 +1061,7 @@ export default function App() {
   const venueId  = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_venue_id')  ?? '00000000-0000-0000-0000-000000000000') : '00000000-0000-0000-0000-000000000000';
   const userRole = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_role')       ?? 'venue_owner') : 'venue_owner';
   return (
-    <Router>
+    <Router base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
       <DeviceHeartbeatMount />
       <GestureGateway />
       <BrandPartnerFirewall />
