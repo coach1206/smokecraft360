@@ -32,6 +32,7 @@ export type Phase =
   | "control-chamber"
   | "dev_console"
   | "coach_help"
+  | "sniper_network"
   | "master_blender";
 
 export type DifficultyTier = "beginner" | "apprentice" | "blender" | "master" | "architect";

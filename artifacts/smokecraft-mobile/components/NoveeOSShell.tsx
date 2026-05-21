@@ -45,7 +45,7 @@ const CRAFT_STATUS = [
   { id: "vape", label: "VAPECRAFT", status: "OFFLINE", sessions: 0, color: "#5B8B8B" },
 ];
 
-type OsTab = "dashboard" | "modules" | "device" | "sync";
+type OsTab = "dashboard" | "modules" | "sniper" | "device" | "sync";
 
 interface Props {
   visible: boolean;
@@ -128,16 +128,18 @@ export default function NoveeOSShell({ visible, onClose }: Props) {
 
         {/* Tab nav */}
         <View style={[styles.tabRow, { borderBottomColor: "rgba(212,175,55,0.1)" }]}>
-          {(["dashboard", "modules", "device", "sync"] as OsTab[]).map((t) => {
+          {(["dashboard", "modules", "sniper", "device", "sync"] as OsTab[]).map((t) => {
             const icons: Record<OsTab, keyof typeof Ionicons.glyphMap> = {
               dashboard: "pulse-outline",
               modules: "grid-outline",
+              sniper: "scan-outline",
               device: "hardware-chip-outline",
               sync: "sync-outline",
             };
             const labels: Record<OsTab, string> = {
               dashboard: "DASHBOARD",
               modules: "MODULES",
+              sniper: "SNIPER",
               device: "DEVICE",
               sync: "SYNC",
             };
@@ -206,6 +208,58 @@ export default function NoveeOSShell({ visible, onClose }: Props) {
                 <Text style={styles.heartbeatText}>SEND HEARTBEAT</Text>
                 <Text style={styles.heartbeatCount}>{heartbeatCount}</Text>
               </TouchableOpacity>
+            </View>
+          )}
+
+          {/* ─── SNIPER NETWORK ─── */}
+          {activeTab === "sniper" && (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>AUTONOMOUS SNIPER NETWORK</Text>
+              <Text style={styles.sectionSub}>3 cron agents · autonomous pipeline</Text>
+
+              {/* Online bar */}
+              <View style={[styles.sniperOnlineBar, { borderColor: "rgba(16,185,129,0.25)", backgroundColor: "rgba(16,185,129,0.06)" }]}>
+                <View style={[styles.sniperDot, { backgroundColor: "#10B981", shadowColor: "#10B981" }]} />
+                <Text style={[styles.sniperOnlineText, { color: "#10B981" }]}>AUTOMATION ENGINE ONLINE</Text>
+              </View>
+
+              {[
+                { id: "grant_sniper_360", label: "GRANT SNIPER 360",   sub: "Grant & funding window monitor",    color: "#32B45A", log: "AUTONOMOUS CRON PIPELINE LIVE" },
+                { id: "parts_sniper",     label: "PARTS SNIPER",        sub: "Supply chain frequency tracker",    color: "#D4AF37", log: "TRACKING SUPPLY CHAIN FREQUENCIES" },
+                { id: "tee_time_sniper",  label: "TEE-TIME SNIPER",     sub: "VIP event & reservation targeting", color: "#C87028", log: "WAITING REMOTE TARGET SELECTION" },
+              ].map((agent) => (
+                <View key={agent.id} style={[styles.sniperCard, { borderColor: `${agent.color}28` }]}>
+                  <View style={[styles.sniperCardAccent, { backgroundColor: agent.color }]} />
+                  <View style={styles.sniperCardBody}>
+                    <View style={styles.sniperCardHeader}>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.sniperCardLabel, { color: "#E5D5B3" }]}>{agent.label}</Text>
+                        <Text style={[styles.sniperCardSub, { color: "#8E8A82" }]}>{agent.sub}</Text>
+                      </View>
+                      <View style={[styles.sniperActivePill, { backgroundColor: `${agent.color}14`, borderColor: `${agent.color}44` }]}>
+                        <View style={[styles.sniperActiveDot, { backgroundColor: agent.color }]} />
+                        <Text style={[styles.sniperActiveText, { color: agent.color }]}>ACTIVE</Text>
+                      </View>
+                    </View>
+                    <View style={styles.sniperLog}>
+                      <Text style={[styles.sniperLogText, { color: agent.color }]}>
+                        {">"} {agent.log}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+
+              {/* Financial integration */}
+              <View style={[styles.sniperCard, { borderColor: "rgba(212,175,55,0.18)", marginTop: 8 }]}>
+                <View style={[styles.sniperCardAccent, { backgroundColor: GOLD }]} />
+                <View style={styles.sniperCardBody}>
+                  <Text style={[styles.sniperCardLabel, { color: "#E5D5B3" }]}>FINANCIAL INTEGRATION LAYER</Text>
+                  <View style={styles.sniperLog}>
+                    <Text style={[styles.sniperLogText, { color: GOLD }]}>{">"} TRANSACTION LAYER BRIDGE: TOAST/CLOVER HOOKS ARMED</Text>
+                  </View>
+                </View>
+              </View>
             </View>
           )}
 
@@ -575,4 +629,20 @@ const styles = StyleSheet.create({
   },
   syncActionType: { color: "#E5D5B3", fontSize: 12, fontWeight: "600" },
   syncActionTime: { color: "#8E8A82", fontSize: 10, marginTop: 2 },
+
+  // Sniper Network
+  sniperOnlineBar: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 8, borderWidth: 1, marginBottom: 16 },
+  sniperDot: { width: 8, height: 8, borderRadius: 4, shadowOpacity: 0.8, shadowRadius: 4, shadowOffset: { width: 0, height: 0 } },
+  sniperOnlineText: { fontSize: 10, fontWeight: "800", letterSpacing: 1.5 },
+  sniperCard: { borderRadius: 12, borderWidth: 1, overflow: "hidden", marginBottom: 10, backgroundColor: "rgba(8,6,4,0.70)" },
+  sniperCardAccent: { height: 3 },
+  sniperCardBody: { padding: 14, gap: 10, flexDirection: "column" },
+  sniperCardHeader: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
+  sniperCardLabel: { fontSize: 13, fontWeight: "800", letterSpacing: 1.5 },
+  sniperCardSub: { fontSize: 10, marginTop: 2, letterSpacing: 0.5 },
+  sniperActivePill: { flexDirection: "row", alignItems: "center", gap: 5, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, borderWidth: 1 },
+  sniperActiveDot: { width: 5, height: 5, borderRadius: 3 },
+  sniperActiveText: { fontSize: 8, fontWeight: "800", letterSpacing: 1.5 },
+  sniperLog: { backgroundColor: "rgba(5,7,10,0.80)", padding: 10, borderRadius: 6, borderWidth: 1, borderColor: "rgba(255,255,255,0.04)" },
+  sniperLogText: { fontFamily: Platform.OS === "ios" ? "Courier New" : "monospace", fontSize: 11, lineHeight: 16 },
 });

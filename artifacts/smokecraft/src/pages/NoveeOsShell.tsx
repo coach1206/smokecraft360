@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IntegrationInfraPanel }          from "@/components/IntegrationInfraPanel";
 import { HealthMonitorPanel }             from "@/components/HealthMonitorPanel";
@@ -826,6 +826,131 @@ interface AiCoachResult {
   suggestedFollowUps: string[];
 }
 
+// ── Types shared with backend ─────────────────────────────────────────────────
+type SniperAgentId  = "grant_sniper_360" | "parts_sniper" | "tee_time_sniper";
+type SniperStatus   = "idle" | "scanning" | "target_acquired" | "no_targets" | "error";
+interface SniperAgent { agent_id: SniperAgentId; status: SniperStatus; summary: string; targets_found: number; scanned_at: string | null }
+
+const SNIPER_META: Record<SniperAgentId, { label: string; sub: string; color: string }> = {
+  grant_sniper_360: { label: "GRANT SNIPER 360",  sub: "Autonomous grant & funding window monitor",  color: "#32B45A" },
+  parts_sniper:     { label: "PARTS SNIPER",       sub: "Supply chain & equipment availability radar", color: "#D4AF37" },
+  tee_time_sniper:  { label: "TEE-TIME SNIPER",    sub: "VIP concierge event & reservation targeting", color: "#C87028" },
+};
+
+function SniperNetworkView() {
+  const [agents, setAgents] = useState<Record<SniperAgentId, SniperAgent> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [triggering, setTriggering] = useState<SniperAgentId | null>(null);
+  const token = typeof localStorage !== "undefined" ? localStorage.getItem("axiom_token") : null;
+
+  async function fetchStatus() {
+    try {
+      const res  = await fetch("/api/sniper/status");
+      const data = await res.json() as { ok: boolean; agents: Record<SniperAgentId, SniperAgent> };
+      if (data.ok) setAgents(data.agents);
+    } catch { /* silent */ }
+    setLoading(false);
+  }
+
+  async function triggerAgent(id: SniperAgentId) {
+    if (!token || triggering) return;
+    setTriggering(id);
+    try {
+      await fetch(`/api/sniper/${id}/trigger`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      setTimeout(() => void fetchStatus(), 2000);
+    } catch { /* silent */ }
+    setTriggering(null);
+  }
+
+  useEffect(() => { void fetchStatus(); }, []);
+  useEffect(() => { const t = setInterval(() => void fetchStatus(), 30_000); return () => clearInterval(t); }, []);
+
+  const STATUS_COLORS: Record<SniperStatus, string> = {
+    idle: "#8E8A82", scanning: "#D4AF37", target_acquired: "#10B981", no_targets: "#4A9BC8", error: "#EF4444",
+  };
+
+  return (
+    <div style={{ height: "100%", overflowY: "auto", padding: "24px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: CREAM, letterSpacing: "0.06em", fontFamily: "'Cormorant Garamond',serif" }}>AUTONOMOUS SNIPER NETWORK</div>
+          <div style={{ fontSize: 11, color: `${GOLD}66`, letterSpacing: "0.22em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", marginTop: 4 }}>Cron pipeline · 3 agents active</div>
+        </div>
+        <motion.button whileTap={{ scale: 0.95 }} onClick={() => void fetchStatus()}
+          style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${GOLD}44`, background: `rgba(212,175,55,0.08)`, color: GOLD, fontSize: 10, fontWeight: 800, cursor: "pointer", letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif" }}>
+          REFRESH
+        </motion.button>
+      </div>
+
+      {/* Telemetry bar */}
+      <div style={{ padding: "10px 16px", borderRadius: 10, border: `1px solid rgba(16,185,129,0.22)`, background: "rgba(16,185,129,0.04)", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#10B981", boxShadow: "0 0 6px #10B981" }} />
+        <span style={{ fontSize: 10, fontWeight: 800, color: "#10B981", letterSpacing: "0.22em", fontFamily: "'Inter',sans-serif" }}>AUTOMATION ENGINE ONLINE</span>
+        <span style={{ marginLeft: "auto", fontSize: 9, color: "rgba(16,185,129,0.50)", fontFamily: "monospace" }}>CRON PIPELINE LIVE · TOAST/CLOVER HOOKS ARMED</span>
+      </div>
+
+      {/* Agent cards */}
+      {loading ? (
+        <div style={{ color: `${GOLD}55`, fontSize: 12, letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif", textAlign: "center", padding: 40 }}>SCANNING PIPELINE...</div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {(Object.keys(SNIPER_META) as SniperAgentId[]).map((id, i) => {
+            const meta   = SNIPER_META[id];
+            const agent  = agents?.[id];
+            const status = (agent?.status ?? "idle") as SniperStatus;
+            const color  = STATUS_COLORS[status];
+            return (
+              <motion.div key={id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
+                style={{ borderRadius: 14, border: `1px solid ${meta.color}33`, background: "rgba(8,6,4,0.60)", overflow: "hidden", boxShadow: `0 4px 20px rgba(0,0,0,0.35)` }}>
+                {/* Top accent */}
+                <div style={{ height: 3, background: `linear-gradient(90deg, transparent, ${meta.color}99, transparent)` }} />
+                <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: CREAM, letterSpacing: "0.08em", fontFamily: "'Cormorant Garamond',serif" }}>{meta.label}</div>
+                      <div style={{ fontSize: 11, color: `${CREAM}66`, letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif", marginTop: 3 }}>{meta.sub}</div>
+                    </div>
+                    {/* Status pill */}
+                    <div style={{ padding: "4px 10px", borderRadius: 6, background: `${color}14`, border: `1px solid ${color}44`, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: color, boxShadow: status === "target_acquired" ? `0 0 6px ${color}` : "none" }} />
+                      <span style={{ fontSize: 9, fontWeight: 800, color, letterSpacing: "0.20em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>{status.replace(/_/g, " ")}</span>
+                    </div>
+                  </div>
+
+                  {/* Log line */}
+                  <div style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(5,7,10,0.70)", border: "1px solid rgba(255,255,255,0.04)", fontFamily: "monospace", fontSize: 11, color: color, lineHeight: 1.5 }}>
+                    {agent?.summary ?? "Awaiting first scan..."}
+                  </div>
+
+                  {/* Footer */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 9, color: "rgba(255,255,255,0.22)", fontFamily: "monospace" }}>
+                      {agent?.targets_found != null ? `${agent.targets_found} target(s)` : "—"}
+                      {agent?.scanned_at ? `  ·  ${new Date(agent.scanned_at).toLocaleTimeString()}` : ""}
+                    </span>
+                    {token && (
+                      <motion.button whileTap={{ scale: 0.94 }}
+                        onClick={() => void triggerAgent(id)}
+                        disabled={triggering === id}
+                        style={{ padding: "5px 12px", borderRadius: 6, border: `1px solid ${meta.color}55`, background: `${meta.color}12`, color: meta.color, fontSize: 9, fontWeight: 800, cursor: "pointer", letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif", opacity: triggering === id ? 0.5 : 1 }}>
+                        {triggering === id ? "QUEUING..." : "TRIGGER SCAN"}
+                      </motion.button>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CoachHelpView() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState("server");
@@ -1591,6 +1716,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange
       {phase === "profile_view" && <ProfileView />}
       {phase === "settings_view" && <SettingsView />}
       {phase === "coach_help" && <CoachHelpView />}
+      {phase === "sniper_network" && <SniperNetworkView />}
       {phase === "control-chamber" && <ControlChamber />}
       {(S1_PHASES.has(phase) || (phase as string) === "s1") && <Comp1 />}
       {(S2_PHASES.has(phase) || (phase as string) === "s2") && <Comp2 />}

@@ -206,6 +206,7 @@ import knowledgeRouter             from "./routes/knowledge";
 import complianceRouter            from "./routes/compliance";
 import experienceLayerRouter       from "./routes/experience";
 import coachAiRouter               from "./routes/coachAi";
+import sniperNetworkRouter         from "./routes/sniperNetwork";
 import integrationKernelRouter     from "./routes/integrationKernel";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -606,6 +607,7 @@ app.use("/api/knowledge",  knowledgeRouter);
 app.use("/api/compliance", complianceRouter);
 app.use("/api/experience", experienceLayerRouter);
 app.use("/api/coach-ai",          coachAiRouter);
+app.use("/api/sniper",            sniperNetworkRouter);
 app.use("/api/integration-kernel", integrationKernelRouter);
 
 // ── Platform Maturity Layer ───────────────────────────────────────────────────

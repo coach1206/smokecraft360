@@ -9,6 +9,7 @@ import { refreshTrends, scheduleTrendRefresh } from "./services/trendStore";
 import { loadBrandPartnerStore }               from "./services/brandPartnerStore";
 import { reconcileActiveTournamentScores }     from "./lib/tournamentSync";
 import { startTelemetryDigestWorker }          from "./workers/telemetryDigestWorker";
+import { startSniperNetwork }                  from "./workers/sniperNetworkWorker";
 import { bootKernelProviders }                from "./core/providers/kernelProviderBoot";
 
 // ── Required environment variable guard ───────────────────────────────────────
@@ -1051,4 +1052,5 @@ httpServer.listen(port, (err?: Error) => {
   }
   logger.info({ port }, "Server listening (HTTP + Socket.io)");
   startTelemetryDigestWorker();
+  void startSniperNetwork();
 });
