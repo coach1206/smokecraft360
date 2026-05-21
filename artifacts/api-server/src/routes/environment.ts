@@ -292,6 +292,12 @@ environmentRouter.post(
   requireRole("staff", "manager", "venue_owner", "super_admin"),
   (req: AuthRequest, res: Response) => {
     const { venueId } = req.params as { venueId: string };
+
+    if (req.user?.role !== "super_admin" && req.user?.venueId !== venueId) {
+      res.status(403).json({ error: "forbidden" });
+      return;
+    }
+
     const parsed = presetSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: "Invalid payload", details: parsed.error.flatten() });
@@ -320,6 +326,12 @@ environmentRouter.patch(
   requireRole("staff", "manager", "venue_owner", "super_admin"),
   (req: AuthRequest, res: Response) => {
     const { venueId } = req.params as { venueId: string };
+
+    if (req.user?.role !== "super_admin" && req.user?.venueId !== venueId) {
+      res.status(403).json({ error: "forbidden" });
+      return;
+    }
+
     const parsed = sensorPatchSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: "Invalid payload", details: parsed.error.flatten() });
