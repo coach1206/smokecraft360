@@ -1,0 +1,77 @@
+Act as a Senior Full-Stack Software Architect. I need you to write a clean, optimized function (TypeScript/JavaScript preferred) that manages a user's onboarding flow based on dynamically toggled feature flags.
+
+### 1. SYSTEM SCHEMA CONSTRAINTS
+The function must ingest a user profile object that conforms strictly to the following JSON Schema structure:
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UserProfileAndFeatureFlagSystem",
+  "type": "object",
+  "required": ["userId", "subscription", "featureFlags", "onboardingState"],
+  "properties": {
+    "userId": { "type": "string", "format": "uuid" },
+    "subscription": {
+      "type": "object",
+      "required": ["tier", "status", "currentPeriodEnd"],
+      "properties": {
+        "tier": { "type": "string", "enum": ["CORE", "PROFESSIONAL", "SOVEREIGN"] },
+        "status": { "type": "string", "enum": ["ACTIVE", "PAST_DUE", "CANCELED", "TRIALING"] },
+        "currentPeriodEnd": { "type": "string", "format": "date-time" }
+      }
+    },
+    "featureFlags": {
+      "type": "object",
+      "required": [
+        "coreEnvironmentHub",
+        "standardTransactions",
+        "dynamicAssetTracking",
+        "advancedAnalytics",
+        "bespokeModules",
+        "autonomousScanners",
+        "cinematicInterface"
+      ],
+      "properties": {
+        "coreEnvironmentHub": { "type": "boolean", "default": true },
+        "standardTransactions": { "type": "boolean", "default": true },
+        "dynamicAssetTracking": { "type": "boolean", "default": false },
+        "advancedAnalytics": { "type": "boolean", "default": false },
+        "bespokeModules": { "type": "boolean", "default": false },
+        "autonomousScanners": { "type": "boolean", "default": false },
+        "cinematicInterface": { "type": "boolean", "default": false }
+      }
+    },
+    "onboardingState": {
+      "type": "object",
+      "required": ["isFullOnboardingComplete", "steps"],
+      "properties": {
+        "isFullOnboardingComplete": { "type": "boolean" },
+        "steps": {
+          "type": "object",
+          "required": [
+            "workspaceInitialization",
+            "firstTransactionSetup",
+            "predictiveDataStreamConfig",
+            "experienceChamberTailoring",
+            "aiScannerCalibration"
+          ],
+          "properties": {
+            "workspaceInitialization": { "type": "string", "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED"], "default": "NOT_STARTED", "meta": { "dependentFlag": "coreEnvironmentHub" } },
+            "firstTransactionSetup": { "type": "string", "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED"], "default": "NOT_STARTED", "meta": { "dependentFlag": "standardTransactions" } },
+            "predictiveDataStreamConfig": { "type": "string", "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "SKIPPED"], "default": "NOT_STARTED", "meta": { "dependentFlag": "dynamicAssetTracking" } },
+            "experienceChamberTailoring": { "type": "string", "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "SKIPPED"], "default": "NOT_STARTED", "meta": { "dependentFlag": "bespokeModules" } },
+            "aiScannerCalibration": { "type": "string", "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "SKIPPED"], "default": "NOT_STARTED", "meta": { "dependentFlag": "autonomousScanners" } }
+          }
+        }
+      }
+    }
+  }
+}
+
+### 2. CORE ENGINE & ROUTER LOGIC Rules
+1. **Feature Flag Isolation:** Onboarding steps must NOT be bound strictly to the user's overall subscription tier status. The system must evaluate the individual feature boolean flags inside `featureFlags`.
+2. **Deactivation Logic:** If a feature flag is set to `false`, its corresponding step status in `onboardingState.steps` must automatically resolve to "SKIPPED" or be ignored entirely by the layout router.
+3. **Re-activation Logic:** If a feature flag is updated to `true` but its current onboarding step status is "SKIPPED", reset that specific step to "NOT_STARTED" so the user is dynamically prompted to complete that portion of the workflow.
+4. **Clean Deterministic Output:** Return an ordered array of active, required onboarding steps that the frontend should actually render to the screen. Additionally, return a global boolean flag called `shouldShowOnboardingModal` (which resolves to `true` if any active feature flag has an onboarding step that is not yet marked as "COMPLETED").
+
+### 3. EXPECTED DELIVERABLE
+Provide clean, well-documented production code implementing this logic. Include a functional code example that simulates a user profile changing from a baseline 'CORE' tier profile to a 'PROFESSIONAL' tier profile where a feature is toggled on, clearly demonstrating how the generated onboarding step array updates instantly on state evaluation.
