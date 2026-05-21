@@ -21,6 +21,7 @@ const ControlChamber = lazy(() => import("@/pages/ControlChamber").then((m: any)
 const NoveeStaffPinGate = lazy(() => import("@/components/NoveeStaffPinGate").then(m => ({ default: m.NoveeStaffPinGate })));
 import type { PinRole } from "@/components/NoveeStaffPinGate";
 
+import { CraftGrid } from "@/pages/CraftEntryPoint";
 import { playClick } from "@/hooks/useNoveeAudio";
 import { hapticClick } from "@/hooks/useNoveeHaptic";
 
@@ -1421,6 +1422,11 @@ function phaseKey(phase: string): string {
   return "crafthub";
 }
 
+function NoveeCraftHubWrapper() {
+  const { setPhase } = useNoveeGuest();
+  return <CraftGrid onSmokecraft={() => setPhase("s1_demo")} />;
+}
+
 function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange: (f: any) => void }) {
   const { profile } = useNoveeGuest();
   const { phase }   = profile;
@@ -1435,7 +1441,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange
 
   return (
     <Suspense fallback={null}>
-      {phase === "crafthub" && <NoveeCraftPortalHome />}
+      {phase === "crafthub" && <NoveeCraftHubWrapper />}
       {phase === "eat_dashboard" && <CompEAT eatFlags={eatFlags} />}
       {phase === "executive_command" && <CompExec flags={eatFlags} onFlagsChange={onFlagsChange} />}
       {phase === "pairing_view" && <PairingView />}

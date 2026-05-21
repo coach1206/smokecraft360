@@ -21,33 +21,37 @@ const TILES = [
     id: "smokecraft",
     label: "SMOKECRAFT 360",
     sub: "The Luxury Cigar Ritual",
-    img: `https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=1200&q=80`,
+    img: `https://images.unsplash.com/photo-1574966740892-f5533faa2e6d?auto=format&fit=crop&w=1400&q=85`,
     active: true,
     accent: GOLD,
+    tag: "ACTIVE NOW",
   },
   {
     id: "pourcraft",
     label: "POURCRAFT 360",
     sub: "Master Mixology & Spirits",
-    img: `https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1200&q=80`,
+    img: `https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?auto=format&fit=crop&w=1400&q=85`,
     active: false,
-    accent: "#C08040",
+    accent: "#D4914A",
+    tag: "COMING SOON",
   },
   {
     id: "beercraft",
     label: "BEERCRAFT 360",
     sub: "Artisanal Craft Brewing",
-    img: `https://images.unsplash.com/photo-1436076863939-06870fe779c2?auto=format&fit=crop&w=1200&q=80`,
+    img: `https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1400&q=85`,
     active: false,
-    accent: "#B8860B",
+    accent: "#C8A44A",
+    tag: "COMING SOON",
   },
   {
     id: "winecraft",
     label: "WINECRAFT 360",
     sub: "Fine Wine & Cellar Curation",
-    img: `https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80`,
+    img: `https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85`,
     active: false,
-    accent: "#8B1A2F",
+    accent: "#A03050",
+    tag: "COMING SOON",
   },
 ];
 
@@ -185,7 +189,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
+export function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
   const [hovered, setHovered] = useState<string | null>(null);
 
   return (
@@ -251,13 +255,14 @@ function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
 
               {!tile.active && (
                 <div style={{
-                  position: "absolute", top: 22, right: 18,
-                  background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}44`,
-                  borderRadius: 4, padding: "5px 12px",
+                  position: "absolute", top: 20, right: 18,
+                  background: "rgba(253,251,247,0.06)", border: `1px solid rgba(253,251,247,0.20)`,
+                  backdropFilter: "blur(8px)",
+                  borderRadius: 5, padding: "6px 14px",
                   fontFamily: "'Inter',sans-serif", fontSize: 9, fontWeight: 800,
-                  letterSpacing: "0.28em", color: `${GOLD}88`, textTransform: "uppercase",
+                  letterSpacing: "0.32em", color: "rgba(253,251,247,0.50)", textTransform: "uppercase",
                 }}>
-                  Coming Soon
+                  {tile.tag}
                 </div>
               )}
 
@@ -274,13 +279,13 @@ function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
 
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 28px 32px" }}>
                 <motion.div animate={{ y: isHovered && tile.active ? -6 : 0 }} transition={{ duration: 0.4, ease: EASE }}>
-                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.36em", color: `${tile.accent}88`, textTransform: "uppercase", margin: "0 0 10px" }}>
-                    {tile.active ? "Select Experience →" : "Not Yet Available"}
+                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.38em", color: tile.active ? `${tile.accent}cc` : "rgba(253,251,247,0.30)", textTransform: "uppercase", margin: "0 0 12px" }}>
+                    {tile.active ? "Select Experience  →" : "Not Yet Available"}
                   </p>
-                  <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 32, fontWeight: 600, color: "#F0E8D4", letterSpacing: "0.06em", margin: "0 0 8px", lineHeight: 1.1, textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
+                  <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 44, fontWeight: 700, color: "#FDFBF7", letterSpacing: "0.04em", margin: "0 0 10px", lineHeight: 1.05, textShadow: `0 0 40px rgba(0,0,0,0.90), 0 2px 8px rgba(0,0,0,0.70)` }}>
                     {tile.label}
                   </p>
-                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, letterSpacing: "0.18em", color: "rgba(240,228,196,0.48)", textTransform: "uppercase", margin: 0 }}>
+                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, letterSpacing: "0.18em", color: "rgba(253,251,247,0.55)", textTransform: "uppercase", margin: 0, fontWeight: 500 }}>
                     {tile.sub}
                   </p>
                 </motion.div>
@@ -292,14 +297,17 @@ function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
                     style={{ marginTop: 18 }}
                   >
                     <div style={{
-                      display: "inline-flex", alignItems: "center", gap: 10,
-                      background: `linear-gradient(135deg, ${GOLD}22, ${GOLD}11)`,
-                      border: `1px solid ${GOLD}66`, borderRadius: 6, padding: "12px 24px", minHeight: 58,
+                      display: "inline-flex", alignItems: "center", gap: 12,
+                      background: `linear-gradient(135deg, rgba(253,251,247,0.10), rgba(212,175,55,0.18))`,
+                      border: `1px solid rgba(253,251,247,0.35)`,
+                      backdropFilter: "blur(12px)",
+                      borderRadius: 8, padding: "14px 28px", minHeight: 58,
+                      boxShadow: `0 0 24px rgba(212,175,55,0.18), inset 0 1px 0 rgba(255,255,255,0.10)`,
                     }}>
-                      <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase" }}>
+                      <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 800, letterSpacing: "0.22em", color: "#FDFBF7", textTransform: "uppercase" }}>
                         Enter SmokeCraft 360
                       </span>
-                      <span style={{ color: GOLD, fontSize: 16 }}>→</span>
+                      <span style={{ color: GOLD, fontSize: 18, fontWeight: 300 }}>→</span>
                     </div>
                   </motion.div>
                 )}

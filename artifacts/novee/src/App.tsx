@@ -21,7 +21,7 @@ import { DEFAULT_FLAGS } from "@/pages/ExecutiveCommandCenter";
 import DevConsole from "@/pages/DevConsole";
 import { StaffPinGate } from "@/components/StaffPinGate";
 import type { PinRole } from "@/components/StaffPinGate";
-import CraftEntryPoint from "@/pages/CraftEntryPoint";
+import CraftEntryPoint, { CraftGrid } from "@/pages/CraftEntryPoint";
 import { S1_InitGate } from "@/pages/S1_InitGate";
 import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
 import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
@@ -1525,10 +1525,15 @@ function phaseKey(phase: string): string {
   return "crafthub";
 }
 
+function CraftHubWrapper() {
+  const { setPhase } = useGuest();
+  return <CraftGrid onSmokecraft={() => setPhase("s1_demo")} />;
+}
+
 function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; onFlagsChange: (f: EATModuleFlags) => void }) {
   const { profile } = useGuest();
   const { phase }   = profile;
-  if (phase === "crafthub")          return <CraftPortalHome />;
+  if (phase === "crafthub")          return <CraftHubWrapper />;
   if (phase === "eat_dashboard")     return <EATDashboard eatFlags={eatFlags} />;
   if (phase === "executive_command") return <ExecutiveCommandCenter flags={eatFlags} onFlagsChange={onFlagsChange} />;
   if (phase === "pairing_view")      return <PairingView />;
