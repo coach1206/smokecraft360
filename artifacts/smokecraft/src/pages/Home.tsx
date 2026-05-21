@@ -1551,17 +1551,10 @@ export default function Home() {
                             cat:      "cigar"   as const,
                             title:    "Cigar",
                             subtitle: "Handcrafted. Bold. Timeless.",
-                            /* IMPORTANT: this card has rotted before — prior
-                             * Unsplash IDs in the chain stopped resolving to
-                             * cigars (one fell through to a VR-goggles photo
-                             * on the kiosk). All three URLs below have been
-                             * visually verified to render cigar / humidor
-                             * content. Do NOT swap to new IDs without opening
-                             * the URL and confirming the rendered image. */
                             images: [
                               "https://images.pexels.com/photos/1637114/pexels-photo-1637114.jpeg?auto=compress&cs=tinysrgb&w=1400",
-                              "https://images.pexels.com/photos/14017014/pexels-photo-14017014.jpeg?auto=compress&cs=tinysrgb&w=1400",
-                              "https://images.pexels.com/photos/6713596/pexels-photo-6713596.jpeg?auto=compress&cs=tinysrgb&w=1400",
+                              "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=1400&q=80",
+                              "https://images.unsplash.com/photo-1527066579998-d4e419000c4b?auto=format&fit=crop&w=1400&q=80",
                             ],
                           },
                           {

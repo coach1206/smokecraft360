@@ -27,6 +27,7 @@ import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
 import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
 import { S4_DesignStudio } from "@/pages/S4_DesignStudio";
 import ControlChamber from "@/pages/ControlChamber";
+import MasterBlender from "@/pages/MasterBlender";
 import { AmbientEmberField } from "@/components/AmbientEmberField";
 import { AshParticles } from "@/components/AshParticles";
 import { RevenueOptimizationOverlay } from "@/components/RevenueOptimizationOverlay";
@@ -1503,6 +1504,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; on
   if (phase === "dev_console")       return <DevConsole />;
   if (phase === "upgrade_plan")      return <UpgradePage />;
   if (phase === "upgrade_required")  return <UpgradeRequired />;
+  if (phase === "master_blender")    return <MasterBlender />;
   if (S1_PHASES.has(phase))          return <S1_InitGate />;
   if (S2_PHASES.has(phase))          return <S2_TerroirMatrix />;
   if (S3_PHASES.has(phase))          return <S3_FormulationLab />;

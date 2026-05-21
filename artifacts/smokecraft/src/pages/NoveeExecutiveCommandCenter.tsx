@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { io as _io } from "socket.io-client";
 import { useInventory } from "@/lib/noveeInventoryState";
 import { posRouter, type POSVendor } from "@/lib/noveeposRouter";
+import { useNoveeGuest } from "@/contexts/NoveeGuestProfileContext";
 
 const G    = "#D4AF37";
 const DIM  = "rgba(212,175,55,0.55)";
@@ -25,7 +27,7 @@ export interface EATModuleFlags {
   executive:   boolean;
 }
 
-const DEFAULT_FLAGS: EATModuleFlags = {
+export const DEFAULT_FLAGS: EATModuleFlags = {
   environment: true, asset: true, transaction: true,
   staffHUD: true, pairing: true, lounge: true, executive: true,
 };
@@ -430,6 +432,98 @@ function DevPanel() {
   );
 }
 
+/* ── Panel Visibility Override Matrix ── */
+type PVis = "on" | "muted" | "hidden";
+const PANELS: { key: "environment" | "asset" | "transaction"; label: string; icon: string }[] = [
+  { key: "environment", label: "ENVIRONMENT", icon: "01" },
+  { key: "asset",       label: "ASSET VAULT", icon: "02" },
+  { key: "transaction", label: "TRANSACTION", icon: "03" },
+];
+const PVIS_OPTIONS: { value: PVis; label: string; color: string }[] = [
+  { value: "on",     label: "ON",     color: "#32B45A" },
+  { value: "muted",  label: "MUTED",  color: "#F5A623" },
+  { value: "hidden", label: "HIDDEN", color: "#F07070" },
+];
+
+function PanelOverrideMatrix() {
+  const [vis, setVis] = useState<Record<"environment" | "asset" | "transaction", PVis>>({
+    environment: "on", asset: "on", transaction: "on",
+  });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved]   = useState(false);
+
+  const broadcast = useCallback(async (next: typeof vis) => {
+    setSaving(true);
+    const token = localStorage.getItem("axiom_token") ?? "";
+    try {
+      await fetch("/api/admin/panel-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify(next),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch { /* silent */ }
+    finally { setSaving(false); }
+  }, []);
+
+  const setPanel = (key: "environment" | "asset" | "transaction", value: PVis) => {
+    const next = { ...vis, [key]: value };
+    setVis(next);
+    void broadcast(next);
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {PANELS.map(p => (
+        <div key={p.key} style={{ display: "flex", alignItems: "center", gap: 12, background: PANEL, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 18px" }}>
+          <div style={{ fontSize: 16, fontWeight: 900, color: `${G}55`, letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif", minWidth: 22 }}>{p.icon}</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: CREAM, letterSpacing: "0.10em", fontFamily: "'Inter',sans-serif", flex: 1 }}>{p.label}</div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {PVIS_OPTIONS.map(opt => (
+              <motion.button key={opt.value} type="button" whileTap={{ scale: 0.93 }}
+                onPointerDown={() => setPanel(p.key, opt.value)}
+                style={{
+                  padding: "8px 14px", borderRadius: 7, cursor: "pointer",
+                  fontSize: 16, fontWeight: 700, letterSpacing: "0.12em",
+                  border: `1px solid ${vis[p.key] === opt.value ? opt.color + "88" : BORDER}`,
+                  background: vis[p.key] === opt.value ? opt.color + "1A" : "rgba(255,255,255,0.02)",
+                  color: vis[p.key] === opt.value ? opt.color : DIM,
+                  fontFamily: "'Inter',sans-serif",
+                  transition: "background 0.18s, border-color 0.18s, color 0.18s",
+                }}>
+                {opt.label}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, height: 24 }}>
+        {saving && <span style={{ fontSize: 16, color: DIM, fontFamily: "'Inter',sans-serif" }}>Broadcasting…</span>}
+        {saved  && <span style={{ fontSize: 16, color: EM,  fontFamily: "'Inter',sans-serif", fontWeight: 700 }}>✓ Broadcast sent</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ── Dev Console Launch Button ── */
+function DevConsoleLaunchButton() {
+  const { setPhase } = useNoveeGuest();
+  return (
+    <motion.button type="button" whileTap={{ scale: 0.96 }}
+      onPointerDown={() => setPhase("dev_console")}
+      style={{
+        width: "100%", height: 52,
+        background: "rgba(50,180,90,0.10)", border: "1px solid rgba(50,180,90,0.44)",
+        borderRadius: 10, cursor: "pointer",
+        fontSize: 20, fontWeight: 800, color: EM,
+        fontFamily: "'Inter',sans-serif", letterSpacing: "0.12em",
+      }}>
+      ⟡ OPEN DEVELOPER CONSOLE
+    </motion.button>
+  );
+}
+
 /* ════════════════════════ MAIN COMPONENT ════════════════════════ */
 interface Props {
   flags: EATModuleFlags;
@@ -563,7 +657,26 @@ export default function ExecutiveCommandCenter({ flags, onFlagsChange }: Props) 
           )}
 
           {tab === "developer" && (
-            <motion.div key="developer" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ height: "100%", overflow: "hidden" }}>
+            <motion.div key="developer" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ height: "100%", overflow: "auto", display: "flex", flexDirection: "column", gap: 18 }}>
+              {/* Panel Visibility Override Matrix */}
+              <div>
+                <SectionTitle>E.A.T. Panel Visibility Override</SectionTitle>
+                <div style={{ fontSize: 18, color: DIM, marginBottom: 14, fontFamily: "'Inter',sans-serif" }}>
+                  Broadcast real-time panel state to all connected E.A.T. terminals. Changes take effect immediately on all viewports.
+                </div>
+                <PanelOverrideMatrix />
+              </div>
+
+              {/* Dev Console Launch */}
+              <div style={{ background: PANEL, border: `1px solid ${G}44`, borderRadius: 12, padding: "20px 22px" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: G, marginBottom: 8, fontFamily: "'Inter',sans-serif" }}>Developer Remote Console</div>
+                <div style={{ fontSize: 18, color: DIM, marginBottom: 16, fontFamily: "'Inter',sans-serif" }}>
+                  Full-access developer terminal with socket namespace, session inspector, and diagnostic runner.
+                </div>
+                <DevConsoleLaunchButton />
+              </div>
+
+              {/* Remote Commands */}
               <DevPanel />
             </motion.div>
           )}
@@ -611,4 +724,4 @@ export default function ExecutiveCommandCenter({ flags, onFlagsChange }: Props) 
   );
 }
 
-export { DEFAULT_FLAGS };
+
