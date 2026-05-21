@@ -75,66 +75,257 @@ interface PairingSuggestion {
   affinityScore: number;
 }
 
+const PAIRING_CATEGORIES = [
+  { id: "trending",    label: "Trending",     icon: "⟡" },
+  { id: "vip",         label: "VIP Pairings", icon: "◈" },
+  { id: "rare",        label: "Rare Reserve", icon: "⬡" },
+  { id: "seasonal",    label: "Seasonal",     icon: "◎" },
+  { id: "staff_picks", label: "Staff Picks",  icon: "◆" },
+] as const;
+type PairingCat = (typeof PAIRING_CATEGORIES)[number]["id"];
+
+function getPerfectPairing(category: string) {
+  const map: Record<string, { drink: string; food: string; drinkNote: string; foodNote: string }> = {
+    maduro:      { drink: "Hennessy XO",       food: "Dark Chocolate Truffles", drinkNote: "Rich Cognac, fig & raisin",      foodNote: "73% cacao, gold dusted"       },
+    natural:     { drink: "Casamigos Añejo",   food: "Charcuterie Board",       drinkNote: "Smooth aged tequila, vanilla",  foodNote: "Aged cheeses, prosciutto, fig" },
+    connecticut: { drink: "Glenlivet 18",      food: "Lobster Bisque",          drinkNote: "Speyside single malt, honey",   foodNote: "Hand-caught lobster, cream"   },
+    robusto:     { drink: "Macallan 18",       food: "Wagyu Sliders",           drinkNote: "Sherry-oak single malt",        foodNote: "Prime Wagyu, truffle aioli"   },
+  };
+  const lc = category.toLowerCase();
+  for (const [k, v] of Object.entries(map)) { if (lc.includes(k)) return v; }
+  return { drink: "Macallan 18", food: "Wagyu Sliders", drinkNote: "Sherry-oak aged single malt", foodNote: "Prime Wagyu beef, truffle aioli" };
+}
+
+const MOCK_PAIRING_CARDS_SC = [
+  { id: "m1", name: "Cohiba Siglo VI",        category: "Cuba · Churchill",    costCents: 3200, affinityScore: 94 },
+  { id: "m2", name: "Arturo Fuente OpusX",    category: "D.R. · Figurado",    costCents: 2800, affinityScore: 91 },
+  { id: "m3", name: "Liga Privada No.9",       category: "U.S.A. · Toro",     costCents: 2200, affinityScore: 88 },
+  { id: "m4", name: "Rocky Patel Vintage '90", category: "Honduras · Robusto", costCents: 1800, affinityScore: 84 },
+  { id: "m5", name: "Davidoff Year of Ox",     category: "D.R. · Limited",    costCents: 4200, affinityScore: 97 },
+];
+
 function PairingView() {
-  const [pairings, setPairings] = useState<PairingSuggestion[]>([]);
-  const [pulse, setPulse]       = useState("");
-  const [loading, setLoading]   = useState(true);
+  const [introPhase, setIntroPhase]         = useState<"intro" | "workspace">("intro");
+  const [pairings, setPairings]             = useState<PairingSuggestion[]>([]);
+  const [env, setEnv]                       = useState<EnvState | null>(null);
+  const [pulse, setPulse]                   = useState("");
+  const [activeCategory, setActiveCategory] = useState<PairingCat>("trending");
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setIntroPhase("workspace"), 1800);
+    return () => clearTimeout(t);
+  }, []);
 
   React.useEffect(() => {
     const venueId = localStorage.getItem("smokecraft_venue") ?? FALLBACK_VENUE_ID;
-    fetch(`/api/pairing-engine/suggest?venueId=${venueId}&type=cigar&limit=6`)
+    fetch(`/api/pairing-engine/suggest?venueId=${venueId}&type=cigar&limit=9`)
       .then(r => r.json())
-      .then(d => {
-        if (Array.isArray(d.suggestions)) setPairings(d.suggestions);
-        if (d.pulse) setPulse(d.pulse);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then(d => { if (Array.isArray(d.suggestions)) setPairings(d.suggestions); if (d.pulse) setPulse(d.pulse); })
+      .catch(() => {});
+    fetch(`/api/environment/${venueId}`)
+      .then(r => r.json())
+      .then(d => { if (d.state) setEnv(d.state as EnvState); })
+      .catch(() => {});
   }, []);
 
+  const featured      = pairings[0] ?? null;
+  const perfPair      = getPerfectPairing(featured?.category ?? "");
+  const carouselItems = pairings.length > 1 ? pairings.slice(1) : MOCK_PAIRING_CARDS_SC;
+
   return (
-    <div style={{ width: "100%", height: "100%", overflow: "auto", padding: "24px 28px" }}>
-      <div style={{ marginBottom: 20, borderBottom: `1px solid ${GOLD}22`, paddingBottom: 14 }}>
-        <div style={{ fontSize: 36, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>PAIRING INTELLIGENCE</div>
-        <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 4 }}>AI Sommelier · Flavor-Matched Recommendations</div>
-        {pulse && <div style={{ fontSize: 12, color: "#5BBFFF", marginTop: 8, letterSpacing: "0.10em", fontFamily: "'Inter',sans-serif" }}>{pulse}</div>}
-      </div>
-      {loading ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200 }}>
-          <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.8, repeat: Infinity }}
-            style={{ fontSize: 24, color: GOLD, letterSpacing: "0.20em", fontFamily: "'Cormorant Garamond',serif" }}>
-            READING PALATE…
+    <AnimatePresence mode="wait">
+      {introPhase === "intro" ? (
+        <motion.div key="pr-intro"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -24, filter: "blur(10px)" }}
+          transition={{ duration: 0.55 }}
+          style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: `radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.06) 0%, transparent 65%)` }}>
+          {[1, 2, 3].map(i => (
+            <motion.div key={i}
+              animate={{ opacity: [0.07, 0.20, 0.07], scale: [0.94, 1.04, 0.94] }}
+              transition={{ duration: 2.8 + i * 0.5, repeat: Infinity, delay: i * 0.6 }}
+              style={{ position: "absolute", width: 200 + i * 100, height: 200 + i * 100, borderRadius: "50%", border: `1px solid ${GOLD}${i === 1 ? "33" : "18"}`, pointerEvents: "none" }} />
+          ))}
+          <motion.div animate={{ opacity: [0.4, 1, 0.6, 1] }} transition={{ duration: 1.6 }} style={{ textAlign: "center", zIndex: 1 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.44em", color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", marginBottom: 18 }}>NOVEE OS · E.A.T INTELLIGENCE</div>
+            <div style={{ fontSize: 58, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", lineHeight: 1, textShadow: `0 0 60px ${GOLD}44` }}>PAIRING ENGINE</div>
+            <motion.div animate={{ opacity: [0.4, 0.9, 0.4] }} transition={{ duration: 2.2, repeat: Infinity }}
+              style={{ marginTop: 16, fontSize: 14, letterSpacing: "0.30em", color: `${GOLD}70`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>
+              AI SOMMELIER · FLAVOR INTELLIGENCE
+            </motion.div>
           </motion.div>
-        </div>
+          <motion.div animate={{ opacity: [0.3, 0.65, 0.3] }} transition={{ duration: 2.5, repeat: Infinity }}
+            style={{ position: "absolute", bottom: 52, fontSize: 11, color: `${GOLD}44`, letterSpacing: "0.26em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>
+            calibrating palate…
+          </motion.div>
+        </motion.div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-          {pairings.map((p, i) => (
-            <motion.div key={p.id}
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.10, duration: 0.55 }}
-              style={{ background: "rgba(5,3,1,0.82)", backdropFilter: "blur(18px)", borderRadius: 12, border: `1px solid ${GOLD}33`, padding: 18, position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(212,175,55,0.05) 0%, transparent 60%)", pointerEvents: "none" }} />
-              <div style={{ fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 6, fontFamily: "'Inter',sans-serif" }}>{p.category}</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: "rgba(240,232,212,0.95)", marginBottom: 10, fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{p.name}</div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ fontSize: 16, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>${(p.costCents / 100).toFixed(0)}</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 60, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${p.affinityScore}%`, background: `linear-gradient(90deg, ${GOLD}88, ${GOLD})`, borderRadius: 2 }} />
+        <motion.div key="pr-workspace"
+          initial={{ opacity: 0, y: 18, filter: "blur(12px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+          style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+
+          <div style={{ flexShrink: 0, padding: "14px 24px 10px", borderBottom: `1px solid ${GOLD}20`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ fontSize: 36, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", lineHeight: 1 }}>PAIRING INTELLIGENCE</div>
+              <div style={{ fontSize: 12, color: `${GOLD}60`, letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 3 }}>
+                AI Sommelier · Flavor-Matched Recommendations{pulse ? ` · ${pulse}` : ""}
+              </div>
+            </div>
+            <motion.button type="button" whileTap={{ scale: 0.94 }} onPointerDown={() => setIntroPhase("intro")}
+              style={{ padding: "9px 20px", border: `1px solid ${GOLD}44`, borderRadius: 8, background: "rgba(212,175,55,0.07)", color: `${GOLD}88`, fontSize: 11, letterSpacing: "0.16em", cursor: "pointer", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>
+              ↺ RECALIBRATE
+            </motion.button>
+          </div>
+
+          <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <div style={{ flex: 1, overflow: "auto", padding: "16px 20px 0" }}>
+                {featured ? (
+                  <div style={{ background: "rgba(5,3,1,0.82)", backdropFilter: "blur(20px)", borderRadius: 16, border: `1px solid ${GOLD}33`, padding: 20, position: "relative", overflow: "hidden" }}>
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${GOLD}88, transparent)`, pointerEvents: "none" }} />
+                    <div style={{ fontSize: 9, letterSpacing: "0.32em", color: `${GOLD}55`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginBottom: 14 }}>TONIGHT'S FEATURED PAIRING</div>
+                    <div style={{ display: "flex", gap: 12, marginBottom: 18, alignItems: "stretch" }}>
+                      <div style={{ flex: 1, background: "rgba(212,175,55,0.06)", borderRadius: 10, border: `1px solid ${GOLD}22`, padding: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: `${GOLD}60`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>CIGAR</div>
+                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, background: `linear-gradient(135deg, rgba(212,175,55,0.10), rgba(100,50,10,0.18))`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38 }}>🍬</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "rgba(240,232,212,0.95)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{featured.name}</div>
+                        <div style={{ fontSize: 11, color: `${GOLD}70`, fontFamily: "'Inter',sans-serif" }}>{featured.category}</div>
+                        <div style={{ fontSize: 14, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif", marginTop: "auto" }}>${(featured.costCents / 100).toFixed(0)}</div>
+                      </div>
+                      <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, padding: "0 8px" }}>
+                        <motion.div
+                          animate={{ scale: [1, 1.07, 1], boxShadow: [`0 0 18px ${GOLD}33`, `0 0 32px ${GOLD}55`, `0 0 18px ${GOLD}33`] }}
+                          transition={{ duration: 2.8, repeat: Infinity }}
+                          style={{ width: 64, height: 64, borderRadius: "50%", border: `2px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", background: `radial-gradient(circle, rgba(212,175,55,0.16) 0%, transparent 70%)` }}>
+                          <span style={{ fontSize: 19, fontWeight: 900, color: GOLD, fontFamily: "'Inter',sans-serif" }}>{featured.affinityScore}%</span>
+                        </motion.div>
+                        <span style={{ fontSize: 9, color: `${GOLD}60`, letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>MATCH</span>
+                        <div style={{ width: 1, height: 22, background: `${GOLD}28` }} />
+                        <span style={{ fontSize: 8, color: `${GOLD}44`, letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif", textAlign: "center", lineHeight: 1.4 }}>FLAVOR<br/>BRIDGE</span>
+                      </div>
+                      <div style={{ flex: 1, background: "rgba(150,80,20,0.08)", borderRadius: 10, border: "1px solid rgba(150,80,20,0.25)", padding: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(196,97,10,0.80)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>SPIRIT</div>
+                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, background: "linear-gradient(135deg, rgba(150,80,10,0.14), rgba(80,40,5,0.18))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38 }}>🥃</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "rgba(240,232,212,0.95)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{perfPair.drink}</div>
+                        <div style={{ fontSize: 11, color: "rgba(196,97,10,0.70)", fontFamily: "'Inter',sans-serif" }}>{perfPair.drinkNote}</div>
+                      </div>
+                      <div style={{ flex: 1, background: "rgba(60,100,30,0.08)", borderRadius: 10, border: "1px solid rgba(60,100,30,0.22)", padding: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(80,140,60,0.80)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>CUISINE</div>
+                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, background: "linear-gradient(135deg, rgba(60,100,30,0.10), rgba(30,60,15,0.18))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38 }}>🍽️</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "rgba(240,232,212,0.95)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{perfPair.food}</div>
+                        <div style={{ fontSize: 11, color: "rgba(80,140,60,0.70)", fontFamily: "'Inter',sans-serif" }}>{perfPair.foodNote}</div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 16, marginBottom: 18 }}>
+                      {([["Body", 74, GOLD], ["Strength", 58, "#C87028"], ["Flavor", featured.affinityScore, "#32B45A"]] as [string,number,string][]).map(([label, val, color]) => (
+                        <div key={label} style={{ flex: 1 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                            <span style={{ fontSize: 11, color: `${GOLD}70`, letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>{label}</span>
+                            <span style={{ fontSize: 12, color, fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>{val}</span>
+                          </div>
+                          <div style={{ height: 5, background: "rgba(255,255,255,0.07)", borderRadius: 3, overflow: "hidden" }}>
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${val}%` }} transition={{ duration: 1.4, ease: "easeOut", delay: 0.4 }}
+                              style={{ height: "100%", background: `linear-gradient(90deg, ${color}66, ${color})`, borderRadius: 3 }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {[
+                        { label: "Add Full Experience", primary: true  },
+                        { label: "Save Pairing",        primary: false },
+                        { label: "Compare Pairings",    primary: false },
+                        { label: "AI Recommendation",   primary: false },
+                        { label: "Add To Tab",          primary: false },
+                      ].map(btn => (
+                        <motion.button key={btn.label} type="button" whileTap={{ scale: 0.94 }}
+                          style={{
+                            padding: btn.primary ? "14px 26px" : "11px 18px", borderRadius: 10, cursor: "pointer", fontFamily: "'Inter',sans-serif",
+                            fontSize: btn.primary ? 14 : 12, fontWeight: btn.primary ? 800 : 600, letterSpacing: "0.10em", textTransform: "uppercase",
+                            background: btn.primary ? `linear-gradient(135deg, ${GOLD} 0%, #C87028 100%)` : "rgba(255,255,255,0.04)",
+                            color: btn.primary ? "#0A0700" : `${GOLD}AA`,
+                            border: `1px solid ${btn.primary ? GOLD : GOLD + "44"}`,
+                            boxShadow: btn.primary ? `0 4px 22px ${GOLD}44` : "none",
+                          }}>
+                          {btn.label}
+                        </motion.button>
+                      ))}
+                    </div>
                   </div>
-                  <span style={{ fontSize: 11, color: `${GOLD}99`, fontFamily: "'Inter',sans-serif" }}>{p.affinityScore}%</span>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200 }}>
+                    <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.8, repeat: Infinity }}
+                      style={{ fontSize: 24, color: GOLD, letterSpacing: "0.20em", fontFamily: "'Cormorant Garamond',serif" }}>
+                      CALIBRATING PALATE…
+                    </motion.div>
+                  </div>
+                )}
+              </div>
+              <div style={{ flexShrink: 0, padding: "12px 20px 16px" }}>
+                <div style={{ display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 }}>
+                  {PAIRING_CATEGORIES.map(cat => (
+                    <motion.button key={cat.id} type="button" onPointerDown={() => setActiveCategory(cat.id)} whileTap={{ scale: 0.94 }}
+                      style={{
+                        padding: "7px 16px", borderRadius: 7, fontFamily: "'Inter',sans-serif", fontSize: 11, fontWeight: 700,
+                        letterSpacing: "0.12em", cursor: "pointer", textTransform: "uppercase", flexShrink: 0, whiteSpace: "nowrap",
+                        background: activeCategory === cat.id ? `rgba(212,175,55,0.18)` : "rgba(255,255,255,0.04)",
+                        color: activeCategory === cat.id ? GOLD : "rgba(240,232,212,0.45)",
+                        border: `1px solid ${activeCategory === cat.id ? GOLD + "66" : "rgba(255,255,255,0.08)"}`,
+                      }}>
+                      {cat.icon} {cat.label}
+                    </motion.button>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 4 }}>
+                  {carouselItems.map((p, i) => (
+                    <motion.div key={p.id} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.07, duration: 0.38 }}
+                      style={{ flexShrink: 0, width: 178, background: "rgba(5,3,1,0.80)", backdropFilter: "blur(14px)", borderRadius: 10, border: `1px solid ${GOLD}22`, padding: 12, cursor: "pointer" }}>
+                      <div style={{ width: "100%", height: 76, borderRadius: 6, background: `linear-gradient(135deg, rgba(212,175,55,0.08), rgba(100,50,10,0.14))`, marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🍬</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(240,232,212,0.90)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2, marginBottom: 5 }}>{p.name}</div>
+                      <div style={{ fontSize: 10, color: `${GOLD}60`, fontFamily: "'Inter',sans-serif", marginBottom: 7 }}>{p.category}</div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: 12, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>${(p.costCents / 100).toFixed(0)}</span>
+                        <span style={{ fontSize: 10, color: `${GOLD}80`, fontFamily: "'Inter',sans-serif" }}>{p.affinityScore}% ✦</span>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-            </motion.div>
-          ))}
-          {!loading && pairings.length === 0 && (
-            <div style={{ gridColumn: "1 / -1", textAlign: "center", color: `${GOLD}40`, fontSize: 20, padding: 48, fontFamily: "'Cormorant Garamond',serif" }}>
-              Begin a session to unlock AI pairing recommendations.
             </div>
-          )}
-        </div>
+            <div style={{ width: 246, flexShrink: 0, borderLeft: `1px solid ${GOLD}15`, background: "rgba(3,2,0,0.62)", backdropFilter: "blur(18px)", padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
+              <div style={{ fontSize: 10, letterSpacing: "0.28em", color: `${GOLD}55`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", borderBottom: `1px solid ${GOLD}15`, paddingBottom: 9 }}>VENUE INTELLIGENCE</div>
+              <div style={{ background: "rgba(212,175,55,0.09)", borderRadius: 9, padding: 13, border: `1px solid ${GOLD}22` }}>
+                <div style={{ fontSize: 9, letterSpacing: "0.20em", color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", marginBottom: 7, textTransform: "uppercase" }}>LOUNGE MODE</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", lineHeight: 1.2 }}>
+                  {env ? env.energyState.replace(/_/g, " ").toUpperCase() : "SOCIAL WARMTH"}
+                </div>
+              </div>
+              {([
+                { label: "Lighting",   value: "Evening Reserve",                                                                                                                      icon: "◐" },
+                { label: "Music",      value: "Jazz Quartet",                                                                                                                         icon: "♪" },
+                { label: "Humidity",   value: env ? `${env.warmthOverride ?? 68}%` : "68%",                                                                                          icon: "◌" },
+                { label: "Atmosphere", value: env ? (env.eventAtmosphere === "none" ? "Reserve" : env.eventAtmosphere.replace(/_/g, " ")) : "Reserve",                               icon: "◎" },
+                { label: "Seating",    value: "Humidor Lounge",                                                                                                                       icon: "▣" },
+              ] as { label: string; value: string; icon: string }[]).map(item => (
+                <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: `1px solid rgba(255,255,255,0.05)` }}>
+                  <span style={{ fontSize: 15, color: `${GOLD}60`, width: 18, flexShrink: 0 }}>{item.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 9, color: `${GOLD}45`, letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>{item.label}</div>
+                    <div style={{ fontSize: 13, color: "rgba(240,232,212,0.82)", fontFamily: "'Inter',sans-serif", fontWeight: 600 }}>{item.value}</div>
+                  </div>
+                </div>
+              ))}
+              <div style={{ background: "rgba(50,180,90,0.07)", borderRadius: 8, padding: 12, border: "1px solid rgba(50,180,90,0.18)", marginTop: "auto" }}>
+                <div style={{ fontSize: 9, letterSpacing: "0.18em", color: "rgba(50,180,90,0.70)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", marginBottom: 5 }}>AI RECOMMENDATION</div>
+                <div style={{ fontSize: 12, color: "rgba(240,232,212,0.72)", fontFamily: "'Inter',sans-serif", lineHeight: 1.55 }}>
+                  Current lounge energy pairs beautifully with full-bodied blends. Suggest the Humidor Room for an elevated experience.
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       )}
-    </div>
+    </AnimatePresence>
   );
 }
 
@@ -147,9 +338,25 @@ interface EnvState {
 }
 const ENERGY_STATES = ["quiet_reserve","social_warmth","elevated_lounge","peak_energy","vip_session","late_night_reserve","event_atmosphere","mentor_session"] as const;
 
+const MOOD_PRESETS_SC = [
+  { id: "social_warmth",       label: "Jazz Mode",    icon: "🎷", desc: "Warm, soulful atmosphere"   },
+  { id: "peak_energy",         label: "Sports Mode",  icon: "🏈", desc: "High energy, lively crowd"  },
+  { id: "vip_session",         label: "VIP Mode",     icon: "✨", desc: "Private reserve experience" },
+  { id: "event_atmosphere",    label: "Event Mode",   icon: "🎉", desc: "Special occasion setting"   },
+  { id: "late_night_reserve",  label: "After Hours",  icon: "🌙", desc: "Deep night, intimate glow"  },
+  { id: "quiet_reserve",       label: "Opening",      icon: "🌅", desc: "Soft morning atmosphere"    },
+] as const;
+
+const SCENT_PRESETS_SC  = ["Tobacco", "Cedar", "Bergamot", "Vanilla", "Sandalwood", "Leather"];
+const LIGHT_PRESETS_SC  = ["Candlelight", "Dim", "Evening", "Reserve", "Spotlight", "Bright"];
+const MUSIC_PRESETS_SC  = ["Jazz Quartet", "Acoustic", "Blues", "Classical", "Ambient", "None"];
+
 function LoungeView() {
-  const [env, setEnv]       = useState<EnvState | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [env, setEnv]         = useState<EnvState | null>(null);
+  const [saving, setSaving]   = useState(false);
+  const [scent, setScent]     = useState("Tobacco");
+  const [lights, setLights]   = useState("Evening");
+  const [music, setMusic]     = useState("Jazz Quartet");
   const venueId = localStorage.getItem("smokecraft_venue") ?? FALLBACK_VENUE_ID;
 
   React.useEffect(() => {
@@ -173,23 +380,79 @@ function LoungeView() {
       .finally(() => setSaving(false));
   }
 
+  function QuickRowSC({ label, items, active, onSelect }: { label: string; items: string[]; active: string; onSelect: (v: string) => void }) {
+    return (
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 8, fontFamily: "'Inter',sans-serif" }}>{label}</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {items.map(item => (
+            <motion.button key={item} type="button" onPointerDown={() => onSelect(item)} whileTap={{ scale: 0.94 }}
+              style={{
+                padding: "8px 14px", borderRadius: 7, fontFamily: "'Inter',sans-serif", fontSize: 11, fontWeight: 600,
+                letterSpacing: "0.10em", cursor: "pointer", textTransform: "uppercase",
+                background: active === item ? `rgba(212,175,55,0.18)` : "rgba(255,255,255,0.04)",
+                color: active === item ? GOLD : "rgba(240,232,212,0.50)",
+                border: `1px solid ${active === item ? GOLD + "66" : "rgba(255,255,255,0.07)"}`,
+              }}>{item}</motion.button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ width: "100%", height: "100%", overflow: "auto", padding: "24px 28px" }}>
       <div style={{ marginBottom: 20, borderBottom: `1px solid ${GOLD}22`, paddingBottom: 14 }}>
         <div style={{ fontSize: 36, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>LOUNGE CONTROL</div>
         <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 4 }}>Environmental Reaction Engine · Live Venue Atmosphere</div>
       </div>
+
+      {/* Mood Presets */}
+      <div style={{ marginBottom: 22 }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 12, fontFamily: "'Inter',sans-serif" }}>MOOD PRESETS</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {MOOD_PRESETS_SC.map(mood => {
+            const active = env?.energyState === mood.id;
+            return (
+              <motion.button key={mood.id} type="button" onPointerDown={() => applyPreset(mood.id)} whileTap={{ scale: 0.92 }} disabled={saving}
+                style={{
+                  width: 160, minHeight: 80, borderRadius: 12, padding: "14px 16px",
+                  background: active ? `rgba(212,175,55,0.18)` : "rgba(5,3,1,0.72)",
+                  backdropFilter: "blur(14px)",
+                  border: `1.5px solid ${active ? GOLD + "77" : "rgba(255,255,255,0.07)"}`,
+                  boxShadow: active ? `0 0 22px ${GOLD}33` : "none",
+                  cursor: saving ? "not-allowed" : "pointer",
+                  display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 5,
+                  position: "relative", overflow: "hidden",
+                }}>
+                <span style={{ fontSize: 24, lineHeight: 1 }}>{mood.icon}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: active ? GOLD : "rgba(240,232,212,0.85)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.08em", textTransform: "uppercase" }}>{mood.label}</span>
+                <span style={{ fontSize: 10, color: active ? `${GOLD}88` : "rgba(240,232,212,0.35)", fontFamily: "'Inter',sans-serif" }}>{mood.desc}</span>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Quick controls */}
+      <div style={{ background: "rgba(5,3,1,0.72)", backdropFilter: "blur(14px)", borderRadius: 14, border: `1px solid ${GOLD}22`, padding: 20, marginBottom: 18 }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 16, fontFamily: "'Inter',sans-serif" }}>QUICK CONTROLS</div>
+        <QuickRowSC label="Scent Atmosphere" items={SCENT_PRESETS_SC} active={scent}  onSelect={setScent}  />
+        <QuickRowSC label="Lighting Preset"  items={LIGHT_PRESETS_SC} active={lights} onSelect={setLights} />
+        <QuickRowSC label="Music Selection"  items={MUSIC_PRESETS_SC} active={music}  onSelect={setMusic}  />
+      </div>
+
       {!env ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 120 }}>
           <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.8, repeat: Infinity }}
-            style={{ fontSize: 24, color: GOLD, letterSpacing: "0.20em", fontFamily: "'Cormorant Garamond',serif" }}>
+            style={{ fontSize: 20, color: GOLD, letterSpacing: "0.20em", fontFamily: "'Cormorant Garamond',serif" }}>
             READING ENVIRONMENT…
           </motion.div>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <div style={{ background: "rgba(5,3,1,0.82)", backdropFilter: "blur(18px)", borderRadius: 12, border: `1px solid ${GOLD}33`, padding: 20 }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 12, fontFamily: "'Inter',sans-serif" }}>CURRENT STATE</div>
+            <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 12, fontFamily: "'Inter',sans-serif" }}>LIVE STATE</div>
             <div style={{ fontSize: 26, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", marginBottom: 8, lineHeight: 1.2 }}>
               {env.energyState.replace(/_/g, " ").toUpperCase()}
             </div>
@@ -217,7 +480,7 @@ function LoungeView() {
             ))}
           </div>
           <div style={{ gridColumn: "1 / -1", background: "rgba(5,3,1,0.82)", backdropFilter: "blur(18px)", borderRadius: 12, border: `1px solid ${GOLD}33`, padding: 20 }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 14, fontFamily: "'Inter',sans-serif" }}>ENERGY STATE PRESETS</div>
+            <div style={{ fontSize: 10, letterSpacing: "0.26em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 14, fontFamily: "'Inter',sans-serif" }}>ALL ENERGY STATES</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {ENERGY_STATES.map(s => {
                 const active = env.energyState === s;
@@ -258,51 +521,153 @@ function ProfileView() {
   );
 }
 
+function useStaffModeSC(): boolean {
+  const [isStaff, setIsStaff] = useState(() => !!localStorage.getItem("novee_staff_pin"));
+  React.useEffect(() => {
+    function onStorage() { setIsStaff(!!localStorage.getItem("novee_staff_pin")); }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+  return isStaff;
+}
+
 function SettingsView() {
   const deviceId = (() => { try { return localStorage.getItem("novee_device_id") ?? "KIOSK-001"; } catch { return "KIOSK-001"; } })();
-  const SETTINGS = [
-    { group: "SESSION", items: [
-      { label: "Auto-reset timer",  value: "15 minutes" },
-      { label: "Guest greeting",    value: "Enabled"    },
-      { label: "Boot sequence",     value: "Enabled"    },
-    ]},
-    { group: "AUDIO", items: [
-      { label: "Ambient audio",     value: "Active"     },
-      { label: "Haptic feedback",   value: "Enabled"    },
-    ]},
-    { group: "SYSTEM", items: [
-      { label: "Device ID",         value: deviceId          },
-      { label: "Platform version",  value: "NOVEE OS v2.4"   },
-      { label: "Kernel mode",       value: "Sovereign"       },
-      { label: "Heartbeat",         value: "Active · Live"   },
-    ]},
+  const [activeSection, setActiveSection] = useState("session");
+  const isStaff = useStaffModeSC();
+
+  const SECTIONS = [
+    { id: "session",  label: "Session",        icon: "◈" },
+    { id: "audio",    label: "Audio & Media",  icon: "♪" },
+    { id: "device",   label: "Device Manager", icon: "⊞" },
+    { id: "api",      label: "API Config",     icon: "⟡" },
+    { id: "theme",    label: "Theme",          icon: "◐" },
+    { id: "roles",    label: "User Roles",     icon: "◆" },
+    { id: "system",   label: "System",         icon: "⊹" },
   ];
+
+  function SettingsRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
+    return (
+      <div style={{ background: "rgba(5,3,1,0.72)", backdropFilter: "blur(12px)", borderRadius: 8, border: `1px solid ${GOLD}22`, padding: "13px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+        <span style={{ fontSize: 15, color: "rgba(240,232,212,0.75)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }}>{label}</span>
+        <span style={{ fontSize: 13, color: GOLD, fontWeight: 700, fontFamily: mono ? "'Courier New',monospace" : "'Inter',sans-serif", letterSpacing: mono ? "0.05em" : "0.08em", textAlign: "right" }}>{value}</span>
+      </div>
+    );
+  }
+
+  function SectionContent() {
+    if (activeSection === "session") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <SettingsRow label="Auto-reset timer"  value="15 minutes" />
+        <SettingsRow label="Guest greeting"    value="Enabled"    />
+        <SettingsRow label="Boot sequence"     value="Enabled"    />
+        <SettingsRow label="Session timeout"   value="30 minutes" />
+        <SettingsRow label="Kiosk mode"        value="Sovereign"  />
+        <SettingsRow label="Inactivity guard"  value="Active"     />
+      </div>
+    );
+    if (activeSection === "audio") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <SettingsRow label="Ambient audio"       value="Active"         />
+        <SettingsRow label="Haptic feedback"     value="Enabled"        />
+        <SettingsRow label="ElevenLabs TTS"      value="Connected"      />
+        <SettingsRow label="Voice ID"            value="Mentor Classic" />
+        <SettingsRow label="Volume level"        value="72%"            />
+        <SettingsRow label="Audio on transition" value="Yes"            />
+      </div>
+    );
+    if (activeSection === "device") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <SettingsRow label="Device ID"         value={deviceId}                          mono />
+        <SettingsRow label="Hardware tier"     value="Kiosk Pro"                         />
+        <SettingsRow label="Screen resolution" value="1920 × 1080"                       />
+        <SettingsRow label="Touch panel"       value="Calibrated ✓"                      />
+        <SettingsRow label="Heartbeat"         value="Active · Live"                     />
+        <SettingsRow label="Last ping"         value={new Date().toLocaleTimeString()}   />
+        <SettingsRow label="Uptime"            value="14h 32m"                           />
+        <SettingsRow label="Memory"            value="3.2 GB / 8 GB"                    />
+      </div>
+    );
+    if (activeSection === "api") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <SettingsRow label="API endpoint"  value="/api"             mono />
+        <SettingsRow label="Auth mode"     value="JWT HS256"        />
+        <SettingsRow label="Sync interval" value="30 seconds"       />
+        <SettingsRow label="Cloudinary"    value="Connected ✓"      />
+        <SettingsRow label="Stripe"        value="Live Mode"        />
+        <SettingsRow label="Socket.IO"     value="Connected"        />
+        <SettingsRow label="ElevenLabs"    value="Streaming Active" />
+      </div>
+    );
+    if (activeSection === "theme") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <SettingsRow label="Active theme"   value="Obsidian Gold"        />
+        <SettingsRow label="Accent color"   value="#D4AF37 (Gold)"       mono />
+        <SettingsRow label="Background"     value="#000000 (Obsidian)"   mono />
+        <SettingsRow label="Typography"     value="Cormorant + Inter"    />
+        <SettingsRow label="Animation"      value="Framer Motion"        />
+        <SettingsRow label="Glassmorphism"  value="Active"               />
+      </div>
+    );
+    if (activeSection === "roles") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <SettingsRow label="Current role"    value={isStaff ? (localStorage.getItem("novee_staff_pin") ?? "Staff") : "Guest"} />
+        <SettingsRow label="Guest access"    value="CraftHub, SmokeCraft, Pairing, Profile" />
+        <SettingsRow label="Staff access"    value="+ E.A.T Intel, Lounge, Command" />
+        <SettingsRow label="Manager access"  value="+ All Analytics, Inventory" />
+        <SettingsRow label="Founder access"  value="Full system access" />
+        {isStaff && (
+          <motion.button type="button" whileTap={{ scale: 0.95 }}
+            onPointerDown={() => { localStorage.removeItem("novee_staff_pin"); window.dispatchEvent(new Event("storage")); }}
+            style={{ padding: "12px 20px", borderRadius: 8, border: "1px solid rgba(240,112,112,0.40)", background: "rgba(240,112,112,0.08)", color: "#F07070", fontSize: 13, fontWeight: 700, letterSpacing: "0.12em", cursor: "pointer", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 8 }}>
+            SIGN OUT OF STAFF MODE
+          </motion.button>
+        )}
+      </div>
+    );
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <SettingsRow label="Platform version"  value="NOVEE OS v2.4"     />
+        <SettingsRow label="Kernel mode"       value="Sovereign"         />
+        <SettingsRow label="Database"          value="PostgreSQL · Live" />
+        <SettingsRow label="Node runtime"      value="v24"               />
+        <SettingsRow label="Build"             value="Vite + esbuild"    />
+        <SettingsRow label="Schema version"    value="Drizzle ORM"       />
+      </div>
+    );
+  }
+
   return (
     <div style={{ width: "100%", height: "100%", overflow: "auto", padding: "24px 28px" }}>
       <div style={{ marginBottom: 20, borderBottom: `1px solid ${GOLD}22`, paddingBottom: 14 }}>
         <div style={{ fontSize: 36, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>SYSTEM CONFIGURATION</div>
-        <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 4 }}>Kiosk Edition · Table Terminal Settings</div>
+        <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginTop: 4 }}>NOVEE OS Kiosk Edition · Device &amp; Platform Settings</div>
       </div>
-      {SETTINGS.map(section => (
-        <div key={section.group} style={{ marginBottom: 22 }}>
-          <div style={{ fontSize: 10, letterSpacing: "0.30em", color: `${GOLD}55`, textTransform: "uppercase", marginBottom: 10, fontFamily: "'Inter',sans-serif", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: 6 }}>
-            {section.group}
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {section.items.map(item => (
-              <div key={item.label} style={{ background: "rgba(5,3,1,0.72)", backdropFilter: "blur(12px)", borderRadius: 8, border: `1px solid ${GOLD}22`, padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 15, color: "rgba(240,232,212,0.75)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }}>{item.label}</span>
-                <span style={{ fontSize: 14, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif", letterSpacing: "0.08em" }}>{item.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-      <div style={{ marginTop: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 20 }}>
+        {SECTIONS.map(s => (
+          <motion.button key={s.id} type="button" onPointerDown={() => setActiveSection(s.id)} whileTap={{ scale: 0.94 }}
+            style={{
+              padding: "9px 16px", borderRadius: 8, fontFamily: "'Inter',sans-serif", fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.12em", cursor: "pointer", textTransform: "uppercase",
+              background: activeSection === s.id ? `rgba(212,175,55,0.18)` : "rgba(255,255,255,0.04)",
+              color: activeSection === s.id ? GOLD : "rgba(240,232,212,0.50)",
+              border: `1px solid ${activeSection === s.id ? GOLD + "66" : "rgba(255,255,255,0.07)"}`,
+            }}>
+            {s.icon} {s.label}
+          </motion.button>
+        ))}
+      </div>
+      <SectionContent />
+      <div style={{ marginTop: 24, display: "flex", gap: 10 }}>
         <motion.button type="button" whileTap={{ scale: 0.96 }}
           onPointerDown={() => { try { sessionStorage.removeItem("novee_boot_done"); } catch { /* */ } window.location.reload(); }}
-          style={{ padding: "15px 30px", borderRadius: 10, border: "1px solid rgba(240,112,112,0.35)", background: "rgba(240,112,112,0.08)", color: "#F07070", fontSize: 14, fontWeight: 700, letterSpacing: "0.14em", cursor: "pointer", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
+          style={{ padding: "14px 28px", borderRadius: 10, border: "1px solid rgba(240,112,112,0.35)", background: "rgba(240,112,112,0.08)", color: "#F07070", fontSize: 13, fontWeight: 700, letterSpacing: "0.14em", cursor: "pointer", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
           RESTART KIOSK
+        </motion.button>
+        <motion.button type="button" whileTap={{ scale: 0.96 }}
+          onPointerDown={() => { try { localStorage.clear(); sessionStorage.clear(); } catch { /* */ } window.location.reload(); }}
+          style={{ padding: "14px 28px", borderRadius: 10, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.06)", color: `${GOLD}88`, fontSize: 13, fontWeight: 700, letterSpacing: "0.14em", cursor: "pointer", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
+          CLEAR CACHE
         </motion.button>
       </div>
     </div>
@@ -310,20 +675,22 @@ function SettingsView() {
 }
 
 const NAV_ITEMS = [
-  { id: "crafthub",          label: "CraftHub",             abbr: "HUB", targetPhase: "crafthub" as Phase,          isActive: (p: string) => p === "crafthub" },
-  { id: "smokecraft",        label: "SmokeCraft",           abbr: "SC",  targetPhase: "s1_demo" as Phase,           isActive: (p: string) => SESSION_PHASES.has(p) },
-  { id: "eat",               label: "E.A.T Intel",          abbr: "EAT", targetPhase: "eat_dashboard" as Phase,     pinLevel: "staff" as PinRole,      isActive: (p: string) => p === "eat_dashboard" },
-  { id: "executive_command", label: "Command Center",       abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, isActive: (p: string) => p === "executive_command" },
-  { id: "pairing",           label: "Pairing",              abbr: "PR",  targetPhase: "pairing_view" as Phase,      isActive: (p: string) => p === "pairing_view" },
-  { id: "lounge",            label: "Lounge",               abbr: "LG",  targetPhase: "lounge_view" as Phase,       isActive: (p: string) => p === "lounge_view" },
-  { id: "profile",           label: "My Profile",           abbr: "ME",  targetPhase: "profile_view" as Phase,      isActive: (p: string) => p === "profile_view" },
-  { id: "settings",          label: "Settings",             abbr: "ST",  targetPhase: "settings_view" as Phase,     isActive: (p: string) => p === "settings_view" },
+  { id: "crafthub",          label: "CraftHub",       abbr: "HUB", targetPhase: "crafthub" as Phase,          staffOnly: false, isActive: (p: string) => p === "crafthub" },
+  { id: "smokecraft",        label: "SmokeCraft",     abbr: "SC",  targetPhase: "s1_demo" as Phase,           staffOnly: false, isActive: (p: string) => SESSION_PHASES.has(p) },
+  { id: "pairing",           label: "Pairing",        abbr: "PR",  targetPhase: "pairing_view" as Phase,      staffOnly: false, isActive: (p: string) => p === "pairing_view" },
+  { id: "profile",           label: "My Profile",     abbr: "ME",  targetPhase: "profile_view" as Phase,      staffOnly: false, isActive: (p: string) => p === "profile_view" },
+  { id: "eat",               label: "E.A.T Intel",    abbr: "EAT", targetPhase: "eat_dashboard" as Phase,     staffOnly: true,  pinLevel: "staff" as PinRole,      isActive: (p: string) => p === "eat_dashboard" },
+  { id: "executive_command", label: "Command Center", abbr: "EXC", targetPhase: "executive_command" as Phase, staffOnly: true,  pinLevel: "management" as PinRole, isActive: (p: string) => p === "executive_command" },
+  { id: "lounge",            label: "Lounge",         abbr: "LG",  targetPhase: "lounge_view" as Phase,       staffOnly: true,  isActive: (p: string) => p === "lounge_view" },
+  { id: "settings",          label: "Settings",       abbr: "ST",  targetPhase: "settings_view" as Phase,     staffOnly: true,  isActive: (p: string) => p === "settings_view" },
 ];
 
 function OsNavBar() {
   const { profile }  = useNoveeGuest();
   const { navigate } = useNoveeNav();
   const { phase }    = profile;
+  const isStaff      = useStaffModeSC();
+  const visibleNav   = NAV_ITEMS.filter(item => !item.staffOnly || isStaff);
 
   return (
     <div style={{
@@ -347,21 +714,20 @@ function OsNavBar() {
         </div>
       </div>
 
-      {NAV_ITEMS.map((item) => {
+      {visibleNav.map((item) => {
         const active  = item.isActive(phase);
-        const enabled = item.targetPhase !== null;
         return (
           <motion.button key={item.id} type="button"
-            onPointerDown={() => { if (enabled && item.targetPhase) navigate(item.targetPhase, item.pinLevel); }}
-            whileTap={enabled ? { scale: 0.93 } : {}}
+            onPointerDown={() => { if (item.targetPhase) navigate(item.targetPhase, item.pinLevel); }}
+            whileTap={{ scale: 0.93 }}
             animate={{ background: active ? `rgba(212,175,55,0.16)` : "transparent" }}
             transition={{ duration: 0.18 }}
             style={{
               border: `1.5px solid ${active ? GOLD + "66" : "rgba(255,255,255,0.09)"}`,
-              borderRadius: 10, cursor: enabled ? "pointer" : "default",
+              borderRadius: 10, cursor: "pointer",
               padding: "7px 14px",
               display: "flex", flexDirection: "row", alignItems: "center", gap: 8,
-              fontFamily: "'Inter',sans-serif", opacity: enabled ? 1 : 0.38,
+              fontFamily: "'Inter',sans-serif",
               position: "relative", flexShrink: 0,
               boxShadow: active ? `0 0 14px ${GOLD}33, inset 0 1px 0 ${GOLD}22` : "none",
               transition: "border-color 0.18s, box-shadow 0.18s",
@@ -395,18 +761,19 @@ function OsNavBar() {
 }
 
 const RAIL_ITEMS = [
-  { id: "crafthub",          label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub" as Phase,          pinLevel: undefined,                    icon: "⊹", isActive: (p: string) => p === "crafthub" },
-  { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,                    icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
-  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "staff" as PinRole,           icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
-  { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole,      icon: "⟡", isActive: (p: string) => p === "executive_command" },
-  { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,                    icon: "◆", isActive: (p: string) => p === "pairing_view" },
-  { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,                    icon: "◯", isActive: (p: string) => p === "lounge_view" },
+  { id: "crafthub",          label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub" as Phase,          pinLevel: undefined,               staffOnly: false, icon: "⊹", isActive: (p: string) => p === "crafthub" },
+  { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
+  { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,               staffOnly: false, icon: "◆", isActive: (p: string) => p === "pairing_view" },
+  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "staff" as PinRole,      staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
+  { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, staffOnly: true,  icon: "⟡", isActive: (p: string) => p === "executive_command" },
+  { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,               staffOnly: true,  icon: "◯", isActive: (p: string) => p === "lounge_view" },
 ];
 
 function LeftRail() {
   const { profile }  = useNoveeGuest();
   const { navigate } = useNoveeNav();
   const { phase }    = profile;
+  const isStaff      = useStaffModeSC();
 
   return (
     <div style={{
@@ -421,7 +788,7 @@ function LeftRail() {
       <div style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 1, background: `linear-gradient(180deg, transparent 0%, ${GOLD}55 20%, ${GOLD}99 50%, ${GOLD}55 80%, transparent 100%)` }} />
       <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(180deg, transparent 0px, rgba(255,255,255,0.012) 1px, transparent 2px, transparent 12px)`, pointerEvents: "none" }} />
 
-      {RAIL_ITEMS.map((item) => {
+      {RAIL_ITEMS.filter(item => !item.staffOnly || isStaff).map((item) => {
         const active  = item.isActive(phase);
         return (
           <motion.button key={item.id} type="button"
@@ -756,7 +1123,8 @@ function OsShellContent() {
   }
 
   function onPinSuccess(role: PinRole, targetPhase: Phase) {
-    void role;
+    localStorage.setItem("novee_staff_pin", role);
+    window.dispatchEvent(new Event("storage"));
     setPinGate(null);
     setPhase(targetPhase);
   }
