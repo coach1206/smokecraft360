@@ -50,6 +50,16 @@ export default function SettingsModule() {
   const [sovereignReadinessLoading, setSovereignReadinessLoading] = useState(false);
   const [sovereignReadinessError, setSovereignReadinessError] = useState(false);
 
+  function handleGoToAISetup() {
+    setPendingKernelMode(null);
+    setActiveOrderCount(null);
+    setSovereignReadiness(null);
+    setSovereignReadinessError(false);
+    setTimeout(() => {
+      document.getElementById("intelligence-systems")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+  }
+
   useEffect(() => {
     setOwnedVenueName(null);
     if (isKernelAdmin || authUser?.role !== "venue_owner" || !authUser.venueId) return;
@@ -817,7 +827,7 @@ export default function SettingsModule() {
         </div>
 
         {/* ── Intelligence Systems (Sovereign-gated) ── */}
-        <div style={{
+        <div id="intelligence-systems" style={{
           padding: "16px", borderRadius: 14,
           background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.14)",
           marginBottom: 16,
@@ -1022,6 +1032,16 @@ export default function SettingsModule() {
               : pendingKernelMode === "sovereign" && sovereignReadiness != null && !sovereignReadiness.ready
                 ? "AI personalization is unavailable — configure a provider first. Sovereign features requiring AI will silently fail until a provider is set up."
                 : undefined
+        }
+        actionLabel={
+          pendingKernelMode === "sovereign" && (sovereignReadinessError || (sovereignReadiness != null && !sovereignReadiness.ready))
+            ? "Set up AI provider"
+            : undefined
+        }
+        onAction={
+          pendingKernelMode === "sovereign" && (sovereignReadinessError || (sovereignReadiness != null && !sovereignReadiness.ready))
+            ? handleGoToAISetup
+            : undefined
         }
         danger={pendingKernelMode === "essential"}
         confirmDisabled={

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ExternalLink } from "lucide-react";
 
 interface ConfirmModalProps {
   open: boolean;
   title: string;
   message: string;
   warning?: string;
+  actionLabel?: string;
+  onAction?: () => void;
   confirmLabel?: string;
   cancelLabel?: string;
   danger?: boolean;
@@ -18,6 +20,7 @@ interface ConfirmModalProps {
 
 export default function ConfirmModal({
   open, title, message, warning,
+  actionLabel, onAction,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   danger = false,
@@ -77,7 +80,25 @@ export default function ConfirmModal({
                 textAlign: "left",
               }}>
                 <AlertTriangle size={15} color="#ef4444" style={{ flexShrink: 0, marginTop: 1 }} />
-                <span style={{ fontSize: 12, color: "#ef4444", lineHeight: 1.5, fontWeight: 500 }}>{warning}</span>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 12, color: "#ef4444", lineHeight: 1.5, fontWeight: 500 }}>{warning}</span>
+                  {actionLabel && onAction && (
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={onAction}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 4,
+                        marginTop: 8, background: "none", border: "none",
+                        padding: 0, cursor: "pointer",
+                        fontSize: 12, fontWeight: 700, color: "#D48B00",
+                        textDecoration: "underline", textUnderlineOffset: 3,
+                      }}
+                    >
+                      {actionLabel}
+                      <ExternalLink size={11} color="#D48B00" />
+                    </motion.button>
+                  )}
+                </div>
               </div>
             )}
 
