@@ -1,13 +1,14 @@
 /**
  * ElevenLabs API key resolver.
  *
- * Two paths, in order:
- *   1. Replit Connectors v2 — fetched fresh each call (tokens expire). This
- *      is the production path: user authorizes via the Replit ElevenLabs
- *      connector and we never see the raw key.
- *   2. ELEVENLABS_API_KEY env var — fallback for local/dev or manual setup.
+ * Three paths, in order:
+ *   1. Integration Kernel credential vault — encrypted DB record seeded by
+ *      kernelProviderBoot (preferred for production; survives connector outages).
+ *   2. Replit Connectors v2 — fetched fresh each call (tokens expire). This
+ *      is the original production path via the Replit ElevenLabs connector.
+ *   3. ELEVENLABS_API_KEY env var — fallback for local/dev or manual setup.
  *
- * Returns null when neither is available, so callers can return a clean 503
+ * Returns null when none is available, so callers can return a clean 503
  * without crashing the server.
  *
  * NEVER cache the resolved key across requests — connector tokens rotate.
@@ -17,6 +18,22 @@ interface ConnectorPayload {
   items?: Array<{
     settings?: Record<string, unknown>;
   }>;
+}
+
+async function fromKernelVault(): Promise<string | null> {
+  const venueId = process.env["SYSTEM_VENUE_ID"] ?? "00000000-0000-0000-0000-000000000001";
+  try {
+    const { listProviders, readCredentials } = await import("../core/integrationKernel/credentialVault");
+    const providers = await listProviders(venueId, "voice");
+    const el = providers.find(p => p.providerName === "elevenlabs" && p.isActive);
+    if (el) {
+      const creds = await readCredentials(el.id, venueId);
+      if (creds.apiKey && creds.apiKey.length > 0) return creds.apiKey;
+    }
+  } catch {
+    /* vault not ready — fall through */
+  }
+  return null;
 }
 
 async function fromReplitConnector(): Promise<string | null> {
@@ -58,6 +75,9 @@ async function fromReplitConnector(): Promise<string | null> {
 }
 
 export async function resolveElevenLabsKey(): Promise<string | null> {
+  const fromVault = await fromKernelVault();
+  if (fromVault) return fromVault;
+
   const fromConnector = await fromReplitConnector();
   if (fromConnector) return fromConnector;
 

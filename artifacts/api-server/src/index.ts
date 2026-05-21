@@ -9,6 +9,7 @@ import { refreshTrends, scheduleTrendRefresh } from "./services/trendStore";
 import { loadBrandPartnerStore }               from "./services/brandPartnerStore";
 import { reconcileActiveTournamentScores }     from "./lib/tournamentSync";
 import { startTelemetryDigestWorker }          from "./workers/telemetryDigestWorker";
+import { bootKernelProviders }                from "./core/providers/kernelProviderBoot";
 
 // ── Required environment variable guard ───────────────────────────────────────
 // Fail fast at startup rather than crashing mid-request or silently misbehaving.
@@ -165,6 +166,16 @@ try {
   logger.info("Kernel bootstrap complete (tables + seed)");
 } catch (err) {
   logger.warn({ err }, "Kernel bootstrap failed — /api/kernel may be unavailable");
+}
+
+// ── Integration Kernel provider boot — seeds OpenAI, Stripe, ElevenLabs ──────
+// Non-fatal: missing env vars are silently skipped; missing DATA_ENCRYPTION_KEY
+// registers providers without encrypted credentials (runtime key resolution
+// falls back to env vars so existing routes continue to work).
+try {
+  await bootKernelProviders();
+} catch (err) {
+  logger.warn({ err }, "kernelProviderBoot: failed — live provider routing degraded to env vars");
 }
 
 // ── Universal POS Integration Layer — provision tables if missing ─────────────

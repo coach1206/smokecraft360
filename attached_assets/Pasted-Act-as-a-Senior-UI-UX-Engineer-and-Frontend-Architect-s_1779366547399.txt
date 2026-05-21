@@ -1,0 +1,18 @@
+Act as a Senior UI/UX Engineer and Frontend Architect specializing in immersive, high-end interfaces. I need you to fix a critical styling and asset alignment mismatch between our core system framework (NOVEE OS) and a newly built component module (SmokeCraft). 
+
+Currently, SmokeCraft is not mirroring the cinematic look, feel, or asset state of the primary platform.
+
+### 1. THE PROBLEM
+SmokeCraft needs to perfectly mimic NOVEE OS, but it is currently rendering standard UI components. It is missing the specific depth, containers, and assets established in the parent system. We need absolute visual parity between what happens in NOVEE and how it displays in the SmokeCraft platform.
+
+### 2. CORE VISUAL & ARCHITECTURAL REQUIREMENTS TO FIX
+Please refactor the SmokeCraft UI code and design system tokens to strictly implement the following design rules from NOVEE OS:
+
+*   **The Golden Box & Framing:** Replicate the exact geometric proportions, border radii, and gold accent tracking used for primary feature containers in NOVEE. SmokeCraft elements must be housed inside these identical premium frames.
+*   **Cinematic Depth & Materials:** Implement the deep, layered look of NOVEE OS. Use the exact same material layering tokens: 'obsidian glass' backdrops, 'smoked chrome' boundaries, and smooth, weighted motion physics for transitions.
+*   **Asset & Image Synchronicity:** Ensure that any images, background states, or environmental assets active in the NOVEE core system are dynamically pulled and mirrored inside the SmokeCraft platform state. If an environmental asset changes in NOVEE, SmokeCraft must update instantly to reflect that exact asset.
+
+### 3. EXPECTED DELIVERABLE
+1. Provide a structural review identifying where the styling/asset pipeline breaks between the parent system and the sub-module.
+2. Write the corrected frontend code (CSS/Tailwind/Component structure) that enforces the premium obsidian, chrome, and gold framework.
+3. Provide a data propagation template (or state sync hook) ensuring that whatever asset or visual configuration is active in NOVEE is completely and identically rendered within the SmokeCraft platform layout.

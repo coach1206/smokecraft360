@@ -8,12 +8,13 @@
  *  - Usage metering hooks (budget check before, increment after)
  */
 
-import { logger }          from "../../lib/logger";
-import { routeAI }         from "../../services/ai/AIRouter";
-import type { ChatMessage } from "../../services/ai/AIRouter";
-import { CircuitBreaker }  from "../integrationKernel/sdk";
-import { withRetry }       from "../integrationKernel/sdk";
-import { kernelBus }       from "../integrationKernel/eventBus";
+import { logger }                   from "../../lib/logger";
+import { routeAI }                  from "../../services/ai/AIRouter";
+import type { ChatMessage }         from "../../services/ai/AIRouter";
+import { CircuitBreaker, withRetry } from "../integrationKernel/sdk";
+import { kernelBus }                from "../integrationKernel/eventBus";
+import { listProviders, recordUsage } from "../integrationKernel/credentialVault";
+import { SYSTEM_VENUE_ID }          from "./kernelProviderBoot";
 
 export interface GenerateOptions {
   venueId:      string;
@@ -88,8 +89,20 @@ export const AIOrchestrator = {
         });
       }, { maxAttempts: 2, baseDelayMs: 300, maxDelayMs: 2_000, jitter: true });
 
-      const latencyMs = Date.now() - startedAt;
+      const latencyMs  = Date.now() - startedAt;
+      const totalTokens = result.promptTokens + result.completionTokens;
       breaker.recordSuccess();
+
+      // Record usage against the kernel vault provider record (best-effort)
+      void (async () => {
+        try {
+          const lookupId = opts.venueId === SYSTEM_VENUE_ID ? SYSTEM_VENUE_ID : opts.venueId;
+          const providers = await listProviders(lookupId, "ai");
+          const p = providers.find(x => x.providerName === result.provider && x.isActive)
+                 ?? providers.find(x => x.providerName === "openai" && x.isActive);
+          if (p) await recordUsage(lookupId, p.id, totalTokens, 0);
+        } catch { /* non-fatal */ }
+      })();
 
       kernelBus.emit("provider.request_completed", {
         venueId:      opts.venueId,
