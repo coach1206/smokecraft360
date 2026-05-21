@@ -1,0 +1,239 @@
+/**
+ * NOVEE OS v1.0.3 - Premium Cinematic Frontend & Core Wiring (Isolated Build)
+ * Design Language: Obsidian Glass, Smoked Chrome, Fluid Micro-Transitions
+ * Protocol: E.A.T. (Environment, Asset, Transaction)
+ * Focus: WineCraft & Autonomous Sniper Network Only [SmokeCraft Stripped]
+ * Author: John / Coach / JC (SaaS Monetization Architect)
+ */
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, Dimensions, StatusBar } from 'react-native';
+
+const { width } = Dimensions.get('window');
+
+// ==========================================
+// CENTRAL SYSTEM STATE & AMBI INTERACTION
+// ==========================================
+const AmbiContext = createContext(null);
+
+export const AmbiProvider = ({ children }) => {
+  const [currentAtmosphere, setCurrentAtmosphere] = useState({
+    lightingLux: 100,
+    lightingColorTemp: '4000K',
+    audioSoundscape: 'Standard Ambient Floor',
+    aromaSaturation: 0,
+    activeZoneId: 'VIP_Lounge_Main'
+  });
+
+  const triggerAmbiScene = (moduleName, variantName) => {
+    console.log(`[TACTILE SENSORY] Micro-haptic triggered for ${moduleName}`);
+    let targetProfile = {};
+    
+    if (moduleName === 'WineCraft') {
+      targetProfile = {
+        lightingLux: 30,
+        lightingColorTemp: '2400K (Velvet Burgundy Amber)',
+        audioSoundscape: 'Boutique Sommelier Jazz Dispersion Floor',
+        aromaSaturation: 50,
+      };
+    }
+
+    setCurrentAtmosphere(prev => ({ ...prev, ...targetProfile }));
+  };
+
+  return (
+    <AmbiContext.Provider value={{ currentAtmosphere, triggerAmbiScene }}>
+      {children}
+    </AmbiContext.Provider>
+  );
+};
+
+// ==========================================
+// HIGH SECURITY VAULT COMPONENT (PIN: 3600)
+// ==========================================
+export const SovereignVaultGate = ({ children }) => {
+  const [pin, setPin] = useState('');
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  const handlePress = (digit) => {
+    const newPin = pin + digit;
+    if (newPin.length <= 4) setPin(newPin);
+    if (newPin.length === 4) {
+      if (newPin === '3600') {
+        setIsUnlocked(true);
+        setPin('');
+      } else {
+        Alert.alert("SECURITY ERROR", "Clearance PIN Rejected.");
+        setPin('');
+      }
+    }
+  };
+
+  if (isUnlocked) {
+    return (
+      <View style={styles.vaultContainer}>
+        <View style={styles.vaultHeader}>
+          <Text style={styles.vaultTitle}>⚡ SOVEREIGN SECURE TERMINAL ACTIVE</Text>
+          <TouchableOpacity style={styles.lockBtn} onPress={() => setIsUnlocked(false)}>
+            <Text style={styles.lockBtnText}>LOCK</Text>
+          </TouchableOpacity>
+        </View>
+        {children}
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.gateContainer}>
+      <Text style={styles.gateLabel}>SOVEREIGN SECURITY CLEARANCE</Text>
+      <Text style={styles.pinIndicator}>{"* ".repeat(pin.length) + "_ ".repeat(4 - pin.length)}</Text>
+      <View style={styles.keypad}>
+        {['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map((d) => (
+          <TouchableOpacity key={d} style={styles.key} onPress={() => handlePress(d)}>
+            <Text style={styles.keyText}>{d}</Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity style={styles.clearKey} onPress={() => setPin('')}>
+          <Text style={styles.keyText}>RESET</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+// ==========================================
+// CINEMATIC FRONTEND APP LAYOUT
+// ==========================================
+function NoveeMasterUI() {
+  const { currentAtmosphere, triggerAmbiScene } = useContext(AmbiContext);
+
+  return (
+    <View style={styles.appShell}>
+      <StatusBar barStyle="light-content" />
+      
+      {/* Premium Top Navigation HUD */}
+      <View style={styles.hudHeader}>
+        <View>
+          <Text style={styles.brandTitle}>NOVEE OS</Text>
+          <Text style={styles.brandSubtitle}>HOSPITALITY NODE // AT-042</Text>
+        </View>
+        <View style={styles.telemetryPill}>
+          <View style={styles.pulseDot} />
+          <Text style={styles.telemetryStatusText}>AUTOMATION ENGINE ONLINE</Text>
+        </View>
+      </View>
+
+      {/* Main Module Content Canvas */}
+      <ScrollView contentContainerStyle={styles.mainCanvas} showsVerticalScrollIndicator={false}>
+        
+        {/* Isolated Core Experience Module: WineCraft */}
+        <View style={styles.glassPanel}>
+          <Text style={styles.panelTitle}>DIGITAL SOMMELIER MATRIX</Text>
+          <Text style={styles.panelSubtitle}>WINECRAFT ENGINE</Text>
+          <Text style={styles.panelDesc}>Access rare vintage collections, pull global supplier data parameters, and dynamically deploy flavor profiles directly to venue zones.</Text>
+          
+          <TouchableOpacity 
+            style={styles.actionHeroBtn} 
+            onPress={() => triggerAmbiScene('WineCraft', 'Sommelier Selection')}
+          >
+            <Text style={styles.actionHeroBtnText}>ENGAGE LUXURY SELECTION MATRIX</Text>
+          </TouchableOpacity>
+
+          <View style={styles.featureRow}>
+            <View style={styles.miniBadge}><Text style={styles.badgeText}>VINTAGE RADAR</Text></View>
+            <View style={styles.miniBadge}><Text style={styles.badgeText}>CELLAR DISPERSION</Text></View>
+            <View style={styles.miniBadge}><Text style={styles.badgeText}>E.A.T. VERIFIED</Text></View>
+          </View>
+        </View>
+
+        {/* Real-time AMBI Environmental Monitoring Node */}
+        <View style={styles.environMetricsPanel}>
+          <Text style={styles.environTitle}>LIVE REACTIVE TELEMETRY</Text>
+          <View style={styles.metricGrid}>
+            <View style={styles.metricItem}>
+              <Text style={styles.metricLabel}>LIGHT SPECTRUM</Text>
+              <Text style={styles.metricValue}>{currentAtmosphere.lightingColorTemp}</Text>
+            </View>
+            <View style={styles.metricItem}>
+              <Text style={styles.metricLabel}>ZONE AUDIO VOLUME</Text>
+              <Text style={styles.metricValue}>{currentAtmosphere.lightingLux === 100 ? '45dB (Standard Floor)' : '32dB (Isolated Spatial)'}</Text>
+            </View>
+          </View>
+          <Text style={styles.hardwareLog}>[HARDWARE MATRIX STATUS] AMBI loops ready for local deployment.</Text>
+        </View>
+
+        {/* Deep Infrastructure Access Point */}
+        <SovereignVaultGate>
+          <View style={styles.secureLogSection}>
+            <Text style={styles.logLineTitle}>TACTILE SNIPER NETWORK LOGS</Text>
+            <Text style={styles.logLine}>▶ GRANT SNIPER 360 : AUTONOMOUS CRON PIPELINE LIVE</Text>
+            <Text style={styles.logLine}>▶ PARTS SNIPER      : TRACKING SUPPLY CHAIN FREQUENCIES</Text>
+            <Text style={styles.logLine}>▶ TEE-TIME SNIPER    : WAITING REMOTE TARGET SELECTION</Text>
+            <View style={styles.logDivider} />
+            <Text style={styles.logLineTitle}>FINANCIAL INTEGRATION LAYER</Text>
+            <Text style={styles.logLine}>▶ TRANSACTION LAYER BRIDGE: TOAST/CLOVER HOOKS ARMED</Text>
+          </View>
+        </SovereignVaultGate>
+
+      </ScrollView>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <AmbiProvider>
+      <NoveeMasterUI />
+    </AmbiProvider>
+  );
+}
+
+// ==========================================
+// LUXURY BRANDING HIGH-END STYLING (THE VIBE)
+// ==========================================
+const styles = StyleSheet.create({
+  appShell: { flex: 1, backgroundColor: '#060709', paddingHorizontal: 20 },
+  hudHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 50, paddingBottom: 15, borderBottomWidth: 1, borderColor: '#151922' },
+  brandTitle: { color: '#FFFFFF', fontSize: 20, fontWeight: '800', letterSpacing: 3 },
+  brandSubtitle: { color: '#4F5A6B', fontSize: 9, fontWeight: 'bold', letterSpacing: 1.5, marginTop: 2 },
+  telemetryPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#0D111A', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#1E2538' },
+  pulseDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#D4AF37', marginRight: 8 },
+  telemetryStatusText: { color: '#8F9CAE', fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
+  
+  mainCanvas: { paddingVertical: 20, paddingBottom: 60 },
+  glassPanel: { backgroundColor: '#0E121A', borderRadius: 16, padding: 24, borderWidth: 1, borderColor: '#1C2333', shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.5, shadowRadius: 20, marginBottom: 24 },
+  panelTitle: { color: '#FFFFFF', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
+  panelSubtitle: { color: '#D4AF37', fontSize: 10, fontWeight: '700', letterSpacing: 1, marginBottom: 10, marginTop: 2 },
+  panelDesc: { color: '#6A788C', fontSize: 12, lineHeight: 18, marginBottom: 20 },
+  actionHeroBtn: { backgroundColor: '#121824', paddingVertical: 16, borderRadius: 8, alignItems: 'center', borderWidth: 1, borderColor: '#D4AF37' },
+  actionHeroBtnText: { color: '#FFFFFF', fontWeight: '700', fontSize: 12, letterSpacing: 1.5 },
+  featureRow: { flexDirection: 'row', marginTop: 16 },
+  miniBadge: { backgroundColor: '#090B10', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 4, marginRight: 8, borderWidth: 1, borderColor: '#151C28' },
+  badgeText: { color: '#4F5A6B', fontSize: 9, fontWeight: 'bold', letterSpacing: 0.5 },
+
+  environMetricsPanel: { backgroundColor: '#090B10', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#141A26', marginBottom: 24 },
+  environTitle: { color: '#4F5A6B', fontSize: 10, fontWeight: '800', letterSpacing: 1.5, marginBottom: 12 },
+  metricGrid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  metricItem: { flex: 0.48, backgroundColor: '#0F131D', padding: 12, borderRadius: 6, borderWidth: 1, borderColor: '#161E2E' },
+  metricLabel: { color: '#4F5A6B', fontSize: 8, fontWeight: 'bold', marginBottom: 4 },
+  metricValue: { color: '#D4AF37', fontSize: 11, fontFamily: 'monospace', fontWeight: '600' },
+  hardwareLog: { color: '#3A4454', fontSize: 9, fontFamily: 'monospace', marginTop: 4 },
+
+  gateContainer: { backgroundColor: '#090B10', padding: 20, borderRadius: 16, borderWidth: 1, borderColor: '#231B0D', alignItems: 'center' },
+  gateLabel: { color: '#4F5A6B', fontSize: 10, fontWeight: 'bold', letterSpacing: 2, marginBottom: 12 },
+  pinIndicator: { color: '#D4AF37', fontSize: 20, fontWeight: 'bold', letterSpacing: 8, marginBottom: 16 },
+  keypad: { flexDirection: 'row', flexWrap: 'wrap', width: 220, justifyContent: 'center' },
+  key: { width: 55, height: 42, backgroundColor: '#0D111A', margin: 4, borderRadius: 6, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#1B2336' },
+  clearKey: { width: 118, height: 42, backgroundColor: '#1A0F11', margin: 4, borderRadius: 6, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#381B1F' },
+  keyText: { color: '#FFFFFF', fontSize: 14, fontWeight: 'bold' },
+
+  vaultContainer: { backgroundColor: '#0B1119', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#10B981' },
+  vaultHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  vaultTitle: { color: '#10B981', fontSize: 11, fontWeight: 'bold', letterSpacing: 1 },
+  lockBtn: { backgroundColor: '#201113', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 4, borderWidth: 1, borderColor: '#EF4444' },
+  lockBtnText: { color: '#EF4444', fontSize: 9, fontWeight: 'bold' },
+  secureLogSection: { backgroundColor: '#05070A', padding: 14, borderRadius: 8, borderWidth: 1, borderColor: '#111622' },
+  logLineTitle: { color: '#FFFFFF', fontSize: 10, fontWeight: '700', letterSpacing: 1, marginBottom: 8 },
+  logLine: { color: '#10B981', fontFamily: 'monospace', fontSize: 11, marginBottom: 6 },
+  logDivider: { height: 1, backgroundColor: '#111622', marginVertical: 10 }
+});
