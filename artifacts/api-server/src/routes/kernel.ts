@@ -4,7 +4,8 @@
  * GET  /api/kernel/modules                              — list registered modules
  * POST /api/kernel/modules                              — register a module (admin/super_admin)
  * GET  /api/kernel/mode/:venueId                        — get Sovereign/Essential mode for a venue
- * PATCH /api/kernel/mode/:venueId                       — set mode (admin/super_admin only)
+ * POST /api/kernel/mode/:venueId/prepare                — step 1: issue a single-use confirmation token (5 min TTL)
+ * PATCH /api/kernel/mode/:venueId                       — step 2: apply mode change (requires confirmToken from /prepare)
  * POST /api/kernel/telemetry                            — ingest a telemetry event
  * GET  /api/kernel/telemetry/summary                    — aggregated telemetry summary
  * GET  /api/kernel/telemetry/products/trends/batch      — batch daily add/skip trends (up to 50 cardIds)
@@ -40,9 +41,36 @@ const RegisterModuleSchema = z.object({
   launchUrl:   z.string().optional(),
 });
 
+// ── Kernel mode confirmation token store ──────────────────────────────────────
+// Tokens are single-use and expire after 5 minutes.  No external storage
+// required — kernel mode changes are low-frequency admin operations.
+interface ModeConfirmToken {
+  venueId:    string;
+  actorId:    string;
+  targetMode: "sovereign" | "essential";
+  expiresAt:  number; // epoch ms
+}
+const modeConfirmTokens = new Map<string, ModeConfirmToken>();
+
+function pruneModeTokens() {
+  const now = Date.now();
+  for (const [k, v] of modeConfirmTokens) {
+    if (v.expiresAt <= now) modeConfirmTokens.delete(k);
+  }
+}
+
+function generateModeToken(): string {
+  return crypto.randomUUID();
+}
+
+const PrepareSetModeSchema = z.object({
+  mode: z.enum(["sovereign", "essential"]),
+});
+
 const SetModeSchema = z.object({
-  mode:   z.enum(["sovereign", "essential"]),
-  reason: z.string().trim().min(1).max(500).optional(),
+  mode:         z.enum(["sovereign", "essential"]),
+  confirmToken: z.string().uuid("confirmToken must be a valid UUID issued by POST …/prepare"),
+  reason:       z.string().trim().min(1).max(500).optional(),
 });
 
 const TelemetryIngestSchema = z.object({
@@ -507,7 +535,45 @@ router.get("/mode/:venueId", async (req: Request, res: Response) => {
   }
 });
 
+// ── POST /api/kernel/mode/:venueId/prepare ────────────────────────────────────
+// Step 1 of 2 for changing kernel mode.
+// Issues a single-use confirmation token (TTL 5 min) bound to the requesting
+// actor, venue, and intended target mode.  The token must be presented to
+// PATCH /api/kernel/mode/:venueId within its TTL to apply the change.
+// Access: super_admin or venue_owner (scoped as per PATCH).
+
+router.post("/mode/:venueId/prepare", requireAuth, async (req: AuthRequest, res: Response) => {
+  const { role, venueId: userVenueId, id: actorId } = (req as AuthRequest).user ?? {};
+  if (role !== "super_admin" && role !== "venue_owner") {
+    return res.status(403).json({ error: "super_admin or venue_owner only" });
+  }
+
+  const { venueId } = req.params as { venueId: string };
+  if (!UUID_RE.test(venueId)) return res.status(400).json({ error: "venueId must be a valid UUID" });
+
+  if (role === "venue_owner" && userVenueId !== venueId) {
+    return res.status(403).json({ error: "venue_owner may only prepare changes for their own venue" });
+  }
+
+  const parsed = PrepareSetModeSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.format() });
+
+  pruneModeTokens();
+
+  const token = generateModeToken();
+  const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+  modeConfirmTokens.set(token, { venueId, actorId: actorId ?? "", targetMode: parsed.data.mode, expiresAt });
+
+  return res.status(200).json({
+    confirmToken: token,
+    expiresAt:    new Date(expiresAt).toISOString(),
+    message:      `Present confirmToken to PATCH /api/kernel/mode/${venueId} within 5 minutes to apply the change.`,
+  });
+});
+
 // ── PATCH /api/kernel/mode/:venueId ──────────────────────────────────────────
+// Step 2 of 2.  Requires a valid confirmToken issued by POST …/prepare,
+// bound to the same actor, venue, and target mode.  Token is consumed on use.
 // super_admin: can update any venue.
 // venue_owner: can only update the venue they own (req.user.venueId must match).
 
@@ -530,6 +596,24 @@ router.patch("/mode/:venueId", requireAuth, async (req: AuthRequest, res: Respon
   }
 
   const authUser = (req as AuthRequest).user;
+
+  // ── Confirmation token validation ─────────────────────────────────────────
+  pruneModeTokens();
+  const tokenEntry = modeConfirmTokens.get(parsed.data.confirmToken);
+  if (!tokenEntry) {
+    return res.status(409).json({ error: "confirmToken is invalid or has expired. Call POST …/prepare to obtain a new token." });
+  }
+  if (tokenEntry.venueId !== venueId) {
+    return res.status(409).json({ error: "confirmToken was issued for a different venue." });
+  }
+  if (tokenEntry.actorId !== (authUser?.id ?? "")) {
+    return res.status(409).json({ error: "confirmToken was issued for a different user." });
+  }
+  if (tokenEntry.targetMode !== parsed.data.mode) {
+    return res.status(409).json({ error: `confirmToken was issued for mode "${tokenEntry.targetMode}", not "${parsed.data.mode}".` });
+  }
+  // Consume token — single-use
+  modeConfirmTokens.delete(parsed.data.confirmToken);
 
   try {
     const cfg = await db.transaction(async (tx) => {
