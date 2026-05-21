@@ -1,11 +1,7 @@
 /**
- * Integration Kernel Routes — Phases 3 + 5
- * Venue API Management Center + Custom Provider Registration
- *
- * RBAC:
- *   GET  catalogue          — any authenticated user
- *   GET  venue providers    — staff+
- *   POST/PATCH/DELETE       — venue_owner / manager / admin / super_admin
+ * Integration Kernel Routes — Phases 3–16
+ * All kernel operations are routed here. Multi-tenant safe, RBAC enforced,
+ * rate-limited per venue via tenantGuard middleware.
  */
 
 import { Router, type Request, type Response, type NextFunction } from "express";
@@ -14,48 +10,37 @@ import { requireAuth }   from "../middleware/auth";
 import { requireRole }   from "../middleware/roles";
 import { logger }        from "../lib/logger";
 import {
-  getAllProviders,
-  getProvider,
-  getProvidersByCategory,
-  getCategories,
-  registerCustomProvider,
-  ensureVaultSchema,
-  upsertProvider,
-  listProviders,
-  getProviderById,
-  deleteProvider,
-  setPrimary,
-  getUsage,
-  markTested,
-  checkProviderHealth,
-  updateHealthStatus,
+  getAllProviders, getProvider, getProvidersByCategory, getCategories,
+  registerCustomProvider, ensureVaultSchema,
+  upsertProvider, listProviders, getProviderById, deleteProvider,
+  setPrimary, getUsage, markTested, checkProviderHealth, updateHealthStatus,
+  getProviderMetrics, getHourlyTrend, wireMetricsToEventBus,
+  checkBudget, getUsageSummary, UsageLimitError,
+  registerDevice, listDevices, getDeviceById, updateDevice, deleteDevice, recordHeartbeat,
+  receiveWebhook, listInboundEvents, queueDelivery, processDelivery, listDeliveries,
+  auditKernelAction, getAuditLog, verifyAuditChain,
+  getTenantConfig, setTenantConfig,
+  rateLimitTenant, enforceTenantIsolation,
 } from "../core/integrationKernel";
-import type { ProviderCategory, AuthType, UsageLimits } from "../core/integrationKernel";
+import type { ProviderCategory, AuthType, UsageLimits, DeviceType } from "../core/integrationKernel";
+import { AIOrchestrator } from "../core/providers/AIOrchestrator";
 
 const router = Router();
 
-// Ensure DB schema exists on first request
-router.use((_req: Request, _res: Response, next: NextFunction) => {
-  ensureVaultSchema().then(() => next()).catch(next);
+// Bootstrap on first request
+let booted = false;
+router.use(async (_req: Request, _res: Response, next: NextFunction) => {
+  if (!booted) {
+    await ensureVaultSchema();
+    wireMetricsToEventBus();
+    booted = true;
+  }
+  next();
 });
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   PROVIDER REGISTRY — read-only catalogue
-───────────────────────────────────────────────────────────────────────────── */
-
-router.get("/catalogue", requireAuth, (req: Request, res: Response) => {
-  const category = String(req.query["category"] ?? "");
-  const providers = category
-    ? getProvidersByCategory(category as ProviderCategory)
-    : getAllProviders();
-  res.json({ providers, categories: getCategories() });
-});
-
-router.get("/catalogue/:id", requireAuth, (req: Request, res: Response) => {
-  const def = getProvider(String(req.params.id ?? ""));
-  if (!def) { res.status(404).json({ error: "Provider not in registry" }); return; }
-  res.json({ provider: def });
-});
+// Global kernel rate limit: 600 req/min per venue
+router.use("/venues/:venueId", rateLimitTenant(600, 60, "kernel"));
+router.use("/venues/:venueId", enforceTenantIsolation());
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Zod schemas
@@ -113,30 +98,61 @@ const customProviderSchema = z.object({
   supportsHealthCheck: z.boolean().default(false),
 });
 
+const deviceSchema = z.object({
+  deviceName:         z.string().min(1).max(100),
+  deviceType:         z.enum(["kiosk","pos_terminal","tablet","display","sensor","gateway","other"]),
+  assignedProviderId: z.string().uuid().nullable().optional(),
+  ipAddress:          z.string().nullable().optional(),
+  firmwareVersion:    z.string().max(40).nullable().optional(),
+  metadata:           z.record(z.unknown()).optional(),
+});
+
+const tenantConfigSchema = z.object({
+  rateLimitOverride:     z.number().int().positive().optional(),
+  windowSecondsOverride: z.number().int().positive().optional(),
+  allowedProviders:      z.array(z.string()).optional(),
+  blockedProviders:      z.array(z.string()).optional(),
+  features:              z.record(z.boolean()).optional(),
+});
+
 /* ─────────────────────────────────────────────────────────────────────────────
-   VENUE PROVIDER MANAGEMENT
+   PROVIDER REGISTRY — catalogue (public read)
 ───────────────────────────────────────────────────────────────────────────── */
 
-/** GET /api/integration-kernel/venues/:venueId/providers */
+router.get("/catalogue", requireAuth, (req: Request, res: Response) => {
+  const cat = req.query["category"] ? String(req.query["category"]) : "";
+  const providers = cat ? getProvidersByCategory(cat as ProviderCategory) : getAllProviders();
+  res.json({ providers, categories: getCategories() });
+});
+
+router.get("/catalogue/:id", requireAuth, (req: Request, res: Response) => {
+  const def = getProvider(String(req.params.id ?? ""));
+  if (!def) { res.status(404).json({ error: "Provider not in registry" }); return; }
+  res.json({ provider: def });
+});
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VENUE PROVIDER MANAGEMENT — Phase 3
+───────────────────────────────────────────────────────────────────────────── */
+
 router.get(
   "/venues/:venueId/providers",
   requireAuth,
-  requireRole("staff", "venue_owner", "manager", "admin", "super_admin"),
+  requireRole("staff","venue_owner","manager","admin","super_admin"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const venueId  = String(req.params.venueId ?? "");
-      const category = req.query["category"] ? String(req.query["category"]) : undefined;
-      const providers = await listProviders(venueId, category as ProviderCategory | undefined);
+      const category = req.query["category"] ? String(req.query["category"]) as ProviderCategory : undefined;
+      const providers = await listProviders(venueId, category);
       res.json({ providers });
     } catch (err) { next(err); }
   },
 );
 
-/** POST /api/integration-kernel/venues/:venueId/providers */
 router.post(
   "/venues/:venueId/providers",
   requireAuth,
-  requireRole("venue_owner", "manager", "admin", "super_admin"),
+  requireRole("venue_owner","manager","admin","super_admin"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const venueId = String(req.params.venueId ?? "");
@@ -144,44 +160,33 @@ router.post(
       const user    = (req as Request & { user?: { id?: string } }).user;
 
       const usageLimits: UsageLimits | null = body.usageLimits
-        ? {
-            dailyRequests:   body.usageLimits.dailyRequests ?? null,
-            monthlyRequests: body.usageLimits.monthlyRequests ?? null,
-            monthlyTokens:   body.usageLimits.monthlyTokens ?? null,
-            alertThreshold:  body.usageLimits.alertThreshold,
-          }
+        ? { dailyRequests: body.usageLimits.dailyRequests ?? null, monthlyRequests: body.usageLimits.monthlyRequests ?? null, monthlyTokens: body.usageLimits.monthlyTokens ?? null, alertThreshold: body.usageLimits.alertThreshold }
         : null;
 
       const provider = await upsertProvider({
-        venueId,
-        providerName:       body.providerName,
-        providerType:       body.providerType as ProviderCategory,
-        displayName:        body.displayName,
-        credentials:        body.credentials,
-        endpointUrl:        body.endpointUrl ?? null,
-        region:             body.region ?? null,
-        webhookConfig:      body.webhookConfig ?? null,
-        usageLimits,
+        venueId, providerName: body.providerName, providerType: body.providerType as ProviderCategory,
+        displayName: body.displayName, credentials: body.credentials,
+        endpointUrl: body.endpointUrl ?? null, region: body.region ?? null,
+        webhookConfig: body.webhookConfig ?? null, usageLimits,
         failoverProviderId: body.failoverProviderId ?? null,
-        isPrimary:          body.isPrimary,
-        isActive:           body.isActive,
-        createdBy:          user?.id ?? null,
+        isPrimary: body.isPrimary, isActive: body.isActive, createdBy: user?.id ?? null,
       });
+
+      await auditKernelAction({ venueId, actorId: user?.id, action: "provider.created", resourceType: "provider", resourceId: provider.id, payload: { providerName: body.providerName } });
       res.status(201).json({ provider });
     } catch (err) { next(err); }
   },
 );
 
-/** PATCH /api/integration-kernel/venues/:venueId/providers/:id */
 router.patch(
   "/venues/:venueId/providers/:id",
   requireAuth,
-  requireRole("venue_owner", "manager", "admin", "super_admin"),
+  requireRole("venue_owner","manager","admin","super_admin"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const venueId = String(req.params.venueId ?? "");
       const id      = String(req.params.id ?? "");
-
+      const user    = (req as Request & { user?: { id?: string } }).user;
       const existing = await getProviderById(id, venueId);
       if (!existing) { res.status(404).json({ error: "Provider not found" }); return; }
 
@@ -190,59 +195,52 @@ router.patch(
       const usageLimits: UsageLimits | null =
         body.usageLimits !== undefined
           ? body.usageLimits
-            ? {
-                dailyRequests:   body.usageLimits.dailyRequests ?? null,
-                monthlyRequests: body.usageLimits.monthlyRequests ?? null,
-                monthlyTokens:   body.usageLimits.monthlyTokens ?? null,
-                alertThreshold:  body.usageLimits.alertThreshold ?? 0.8,
-              }
+            ? { dailyRequests: body.usageLimits.dailyRequests ?? null, monthlyRequests: body.usageLimits.monthlyRequests ?? null, monthlyTokens: body.usageLimits.monthlyTokens ?? null, alertThreshold: body.usageLimits.alertThreshold ?? 0.8 }
             : null
           : existing.usageLimits;
 
       const provider = await upsertProvider({
-        venueId:            existing.venueId,
-        providerName:       existing.providerName,
-        providerType:       (body.providerType as ProviderCategory | undefined) ?? existing.providerType,
-        displayName:        body.displayName ?? existing.displayName,
-        credentials:        body.credentials,
-        endpointUrl:        "endpointUrl" in body ? (body.endpointUrl ?? null) : existing.endpointUrl,
-        region:             "region"      in body ? (body.region      ?? null) : existing.region,
-        webhookConfig:      "webhookConfig" in body ? (body.webhookConfig ?? null) : existing.webhookConfig,
+        venueId: existing.venueId, providerName: existing.providerName,
+        providerType: (body.providerType as ProviderCategory | undefined) ?? existing.providerType,
+        displayName: body.displayName ?? existing.displayName, credentials: body.credentials,
+        endpointUrl: "endpointUrl" in body ? (body.endpointUrl ?? null) : existing.endpointUrl,
+        region: "region" in body ? (body.region ?? null) : existing.region,
+        webhookConfig: "webhookConfig" in body ? (body.webhookConfig ?? null) : existing.webhookConfig,
         usageLimits,
         failoverProviderId: "failoverProviderId" in body ? (body.failoverProviderId ?? null) : existing.failoverProviderId,
-        isPrimary:          body.isPrimary ?? existing.isPrimary,
-        isActive:           body.isActive  ?? existing.isActive,
+        isPrimary: body.isPrimary ?? existing.isPrimary, isActive: body.isActive ?? existing.isActive,
       });
+
+      await auditKernelAction({ venueId, actorId: user?.id, action: "provider.updated", resourceType: "provider", resourceId: id });
       res.json({ provider });
     } catch (err) { next(err); }
   },
 );
 
-/** DELETE /api/integration-kernel/venues/:venueId/providers/:id */
 router.delete(
   "/venues/:venueId/providers/:id",
   requireAuth,
-  requireRole("venue_owner", "admin", "super_admin"),
+  requireRole("venue_owner","admin","super_admin"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const ok = await deleteProvider(String(req.params.id ?? ""), String(req.params.venueId ?? ""));
+      const venueId = String(req.params.venueId ?? "");
+      const id      = String(req.params.id ?? "");
+      const user    = (req as Request & { user?: { id?: string } }).user;
+      const ok = await deleteProvider(id, venueId);
       if (!ok) { res.status(404).json({ error: "Provider not found" }); return; }
+      await auditKernelAction({ venueId, actorId: user?.id, action: "provider.deleted", resourceType: "provider", resourceId: id });
       res.json({ success: true });
     } catch (err) { next(err); }
   },
 );
 
-/** POST /api/integration-kernel/venues/:venueId/providers/:id/set-primary */
 router.post(
   "/venues/:venueId/providers/:id/set-primary",
   requireAuth,
-  requireRole("venue_owner", "manager", "admin", "super_admin"),
+  requireRole("venue_owner","manager","admin","super_admin"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const provider = await getProviderById(
-        String(req.params.id ?? ""),
-        String(req.params.venueId ?? ""),
-      );
+      const provider = await getProviderById(String(req.params.id ?? ""), String(req.params.venueId ?? ""));
       if (!provider) { res.status(404).json({ error: "Provider not found" }); return; }
       await setPrimary(provider.id, provider.venueId, provider.providerType);
       res.json({ success: true });
@@ -250,38 +248,26 @@ router.post(
   },
 );
 
-/** POST /api/integration-kernel/venues/:venueId/providers/:id/test */
 router.post(
   "/venues/:venueId/providers/:id/test",
   requireAuth,
-  requireRole("venue_owner", "manager", "admin", "super_admin"),
+  requireRole("venue_owner","manager","admin","super_admin"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const provider = await getProviderById(
-        String(req.params.id ?? ""),
-        String(req.params.venueId ?? ""),
-      );
+      const provider = await getProviderById(String(req.params.id ?? ""), String(req.params.venueId ?? ""));
       if (!provider) { res.status(404).json({ error: "Provider not found" }); return; }
-
       const result = await checkProviderHealth(provider);
       await updateHealthStatus(provider.id, provider.venueId, result.status, result.error);
       await markTested(provider.id, provider.venueId);
-
-      res.json({
-        status:    result.status,
-        latencyMs: result.latencyMs,
-        error:     result.error,
-        testedAt:  new Date().toISOString(),
-      });
+      res.json({ status: result.status, latencyMs: result.latencyMs, error: result.error, testedAt: new Date().toISOString() });
     } catch (err) { next(err); }
   },
 );
 
-/** GET /api/integration-kernel/venues/:venueId/usage */
 router.get(
   "/venues/:venueId/usage",
   requireAuth,
-  requireRole("venue_owner", "manager", "admin", "super_admin"),
+  requireRole("venue_owner","manager","admin","super_admin"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const days  = Math.min(parseInt(String(req.query["days"] ?? "30"), 10), 90);
@@ -292,40 +278,330 @@ router.get(
 );
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   OBSERVABILITY — Phase 7
+───────────────────────────────────────────────────────────────────────────── */
+
+router.get(
+  "/venues/:venueId/metrics",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const hours   = Math.min(parseInt(String(req.query["hours"] ?? "24"), 10), 720);
+      const metrics = await getProviderMetrics(venueId, hours);
+      res.json({ metrics, hours });
+    } catch (err) { next(err); }
+  },
+);
+
+router.get(
+  "/venues/:venueId/providers/:id/trend",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const id      = String(req.params.id ?? "");
+      const hours   = Math.min(parseInt(String(req.query["hours"] ?? "48"), 10), 720);
+      const trend   = await getHourlyTrend(venueId, id, hours);
+      res.json({ trend, hours });
+    } catch (err) { next(err); }
+  },
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   USAGE METERING — Phase 9
+───────────────────────────────────────────────────────────────────────────── */
+
+router.get(
+  "/venues/:venueId/usage-summary",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const usage = await getUsageSummary(String(req.params.venueId ?? ""));
+      res.json({ usage });
+    } catch (err) { next(err); }
+  },
+);
+
+router.post(
+  "/venues/:venueId/providers/:id/check-budget",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const id      = String(req.params.id ?? "");
+      await checkBudget(venueId, id);
+      res.json({ allowed: true });
+    } catch (err) {
+      if (err instanceof UsageLimitError) {
+        res.status(429).json({ allowed: false, error: err.message, metric: err.metric, current: err.current, limit: err.limit });
+        return;
+      }
+      next(err);
+    }
+  },
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DEVICE ORCHESTRATION — Phase 11
+───────────────────────────────────────────────────────────────────────────── */
+
+router.get(
+  "/venues/:venueId/devices",
+  requireAuth,
+  requireRole("staff","venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const type    = req.query["type"] ? String(req.query["type"]) as DeviceType : undefined;
+      const devices = await listDevices(String(req.params.venueId ?? ""), type);
+      res.json({ devices });
+    } catch (err) { next(err); }
+  },
+);
+
+router.post(
+  "/venues/:venueId/devices",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const user    = (req as Request & { user?: { id?: string } }).user;
+      const body    = deviceSchema.parse(req.body);
+      const device  = await registerDevice({ venueId, ...body });
+      await auditKernelAction({ venueId, actorId: user?.id, action: "device.registered", resourceType: "device", resourceId: device.id, payload: { deviceName: body.deviceName } });
+      res.status(201).json({ device });
+    } catch (err) { next(err); }
+  },
+);
+
+router.patch(
+  "/venues/:venueId/devices/:id",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const id      = String(req.params.id ?? "");
+      const body    = deviceSchema.partial().parse(req.body);
+      const device  = await updateDevice(id, venueId, body);
+      if (!device) { res.status(404).json({ error: "Device not found" }); return; }
+      res.json({ device });
+    } catch (err) { next(err); }
+  },
+);
+
+router.delete(
+  "/venues/:venueId/devices/:id",
+  requireAuth,
+  requireRole("venue_owner","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const ok = await deleteDevice(String(req.params.id ?? ""), String(req.params.venueId ?? ""));
+      if (!ok) { res.status(404).json({ error: "Device not found" }); return; }
+      res.json({ success: true });
+    } catch (err) { next(err); }
+  },
+);
+
+router.post(
+  "/venues/:venueId/devices/:id/heartbeat",
+  requireAuth,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const id      = String(req.params.id ?? "");
+      const status  = (req.body as { status?: string }).status as "online" | "offline" | "degraded" | "maintenance" | undefined ?? "online";
+      const device  = await recordHeartbeat(id, venueId, status);
+      if (!device) { res.status(404).json({ error: "Device not found" }); return; }
+      res.json({ device });
+    } catch (err) { next(err); }
+  },
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   WEBHOOK INFRASTRUCTURE — Phase 12
+───────────────────────────────────────────────────────────────────────────── */
+
+router.post(
+  "/venues/:venueId/webhooks/inbound/:providerName",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId      = String(req.params.venueId ?? "");
+      const providerName = String(req.params.providerName ?? "");
+      const signature    = String(req.headers["x-webhook-signature"] ?? req.headers["x-hub-signature-256"] ?? "");
+      const eventType    = String(req.headers["x-event-type"] ?? req.body?.type ?? "unknown");
+      const event = await receiveWebhook({
+        venueId, providerName, eventType,
+        payload:    req.body as unknown,
+        rawHeaders: req.headers as Record<string, string>,
+        signature:  signature || undefined,
+      });
+      logger.info({ venueId, providerName, eventId: event.id, signatureOk: event.signatureOk }, "integrationKernel: inbound webhook");
+      res.json({ received: true, eventId: event.id, signatureOk: event.signatureOk });
+    } catch (err) { next(err); }
+  },
+);
+
+router.get(
+  "/venues/:venueId/webhooks/inbound",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const limit  = Math.min(parseInt(String(req.query["limit"]  ?? "50"), 10), 200);
+      const offset = parseInt(String(req.query["offset"] ?? "0"),  10);
+      const result = await listInboundEvents(String(req.params.venueId ?? ""), limit, offset);
+      res.json(result);
+    } catch (err) { next(err); }
+  },
+);
+
+router.post(
+  "/venues/:venueId/webhooks/outbound",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const body    = z.object({
+        providerName: z.string().min(1),
+        targetUrl:    z.string().url(),
+        eventType:    z.string().min(1),
+        payload:      z.unknown().optional(),
+        maxAttempts:  z.number().int().min(1).max(10).default(3),
+      }).parse(req.body);
+      const delivery = await queueDelivery({ venueId, ...body });
+      res.status(201).json({ delivery });
+    } catch (err) { next(err); }
+  },
+);
+
+router.get(
+  "/venues/:venueId/webhooks/outbound",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const status    = req.query["status"] ? String(req.query["status"]) : undefined;
+      const deliveries = await listDeliveries(String(req.params.venueId ?? ""), status);
+      res.json({ deliveries });
+    } catch (err) { next(err); }
+  },
+);
+
+router.post(
+  "/venues/:venueId/webhooks/outbound/:id/send",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const delivery = await processDelivery(String(req.params.id ?? ""), String(req.params.venueId ?? ""));
+      res.json({ delivery });
+    } catch (err) { next(err); }
+  },
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   AUDIT TRAIL — Phase 16
+───────────────────────────────────────────────────────────────────────────── */
+
+router.get(
+  "/venues/:venueId/audit",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId      = String(req.params.venueId ?? "");
+      const limit        = Math.min(parseInt(String(req.query["limit"]  ?? "50"), 10), 200);
+      const offset       = parseInt(String(req.query["offset"] ?? "0"),  10);
+      const resourceType = req.query["resourceType"] ? String(req.query["resourceType"]) : undefined;
+      const resourceId   = req.query["resourceId"]   ? String(req.query["resourceId"])   : undefined;
+      const action       = req.query["action"]       ? String(req.query["action"])       : undefined;
+      const result = await getAuditLog(venueId, limit, offset, { resourceType, resourceId, action });
+      res.json(result);
+    } catch (err) { next(err); }
+  },
+);
+
+router.get(
+  "/venues/:venueId/audit/verify",
+  requireAuth,
+  requireRole("admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await verifyAuditChain(String(req.params.venueId ?? ""));
+      res.json(result);
+    } catch (err) { next(err); }
+  },
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TENANT CONFIG — Phase 14
+───────────────────────────────────────────────────────────────────────────── */
+
+router.get(
+  "/venues/:venueId/tenant-config",
+  requireAuth,
+  requireRole("venue_owner","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const config = await getTenantConfig(String(req.params.venueId ?? ""));
+      res.json({ config });
+    } catch (err) { next(err); }
+  },
+);
+
+router.patch(
+  "/venues/:venueId/tenant-config",
+  requireAuth,
+  requireRole("venue_owner","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const user    = (req as Request & { user?: { id?: string } }).user;
+      const body    = tenantConfigSchema.parse(req.body);
+      await setTenantConfig(venueId, body);
+      await auditKernelAction({ venueId, actorId: user?.id, action: "tenant_config.updated", resourceType: "tenant_config", payload: body });
+      res.json({ success: true });
+    } catch (err) { next(err); }
+  },
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CIRCUIT BREAKER STATUS — Phase 8
+───────────────────────────────────────────────────────────────────────────── */
+
+router.get(
+  "/circuit-breakers",
+  requireAuth,
+  requireRole("admin","super_admin"),
+  (_req: Request, res: Response) => {
+    res.json({ breakers: AIOrchestrator.circuitBreakerStatus() });
+  },
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
    CUSTOM PROVIDER REGISTRATION — Phase 5
 ───────────────────────────────────────────────────────────────────────────── */
 
-/**
- * POST /api/integration-kernel/custom-providers
- * Registers a new provider definition into the global registry (in-memory).
- * After registration, callers may POST to /venues/:venueId/providers to configure it.
- */
 router.post(
   "/custom-providers",
   requireAuth,
-  requireRole("venue_owner", "admin", "super_admin"),
+  requireRole("venue_owner","admin","super_admin"),
   (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = customProviderSchema.parse(req.body);
-
-      if (getProvider(body.id)) {
-        res.status(409).json({ error: "Provider ID already registered" });
-        return;
-      }
-
+      if (getProvider(body.id)) { res.status(409).json({ error: "Provider ID already registered" }); return; }
       registerCustomProvider({
-        id:                  body.id,
-        name:                body.name,
-        category:            body.category,
-        description:         body.description,
-        authType:            body.authType as AuthType,
-        baseUrl:             body.baseUrl,
-        docsUrl:             body.docsUrl,
-        isCustom:            true,
-        supportsWebhook:     body.supportsWebhook,
-        supportsHealthCheck: body.supportsHealthCheck,
+        id: body.id, name: body.name, category: body.category, description: body.description,
+        authType: body.authType as AuthType, baseUrl: body.baseUrl, docsUrl: body.docsUrl,
+        isCustom: true, supportsWebhook: body.supportsWebhook, supportsHealthCheck: body.supportsHealthCheck,
       });
-
       logger.info({ providerId: body.id, name: body.name }, "integrationKernel: custom provider registered");
       res.status(201).json({ provider: getProvider(body.id) });
     } catch (err) { next(err); }
