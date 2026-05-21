@@ -281,18 +281,18 @@ export default function CraftPortalHome() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 460 }}>
             {checkpoint && (
               <motion.button type="button" onPointerDown={handleRestore} whileTap={{ scale: 0.97 }}
-                style={{ width: "100%", padding: "16px 28px", background: `linear-gradient(135deg, #4A90E2 0%, #357ABD 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 16, fontWeight: 800, color: "#FFFFFF", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(74,144,226,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
+                style={{ width: "100%", padding: "18px 28px", background: `linear-gradient(135deg, #4A90E2 0%, #357ABD 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 22, fontWeight: 800, color: "#FFFFFF", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(74,144,226,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
                 <span>RESTORE SESSION</span>
-                <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>↺</div>
+                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>↺</div>
               </motion.button>
             )}
             <motion.button type="button" onPointerDown={beginNew} whileTap={{ scale: 0.97 }}
-              style={{ width: "100%", padding: "18px 28px", background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 17, fontWeight: 800, color: "#090600", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
+              style={{ width: "100%", padding: "18px 28px", background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 22, fontWeight: 800, color: "#090600", letterSpacing: "0.20em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset` }}>
               <span>BEGIN NEW SESSION</span>
-              <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(0,0,0,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>→</div>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(0,0,0,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>→</div>
             </motion.button>
             <motion.button type="button" onPointerDown={resumeSession} whileTap={{ scale: 0.97 }}
-              style={{ width: "100%", padding: "15px 28px", background: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)", border: `1px solid rgba(212,175,55,0.42)`, borderRadius: 6, cursor: "pointer", fontSize: 15, fontWeight: 700, color: "rgba(240,232,212,0.70)", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", textAlign: "center" }}>
+              style={{ width: "100%", padding: "15px 28px", background: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)", border: `1px solid rgba(212,175,55,0.42)`, borderRadius: 6, cursor: "pointer", fontSize: 20, fontWeight: 700, color: "rgba(240,232,212,0.70)", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", textAlign: "center" }}>
               RESUME SESSION
             </motion.button>
           </div>
@@ -523,8 +523,8 @@ export default function CraftPortalHome() {
                     width: "100%", padding: "22px 32px",
                     background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`,
                     border: "none", borderRadius: 8, cursor: "pointer",
-                    fontSize: 14, fontWeight: 900, color: "#0A0700",
-                    letterSpacing: "0.32em", textTransform: "uppercase",
+                    fontSize: 22, fontWeight: 900, color: "#0A0700",
+                    letterSpacing: "0.24em", textTransform: "uppercase",
                     fontFamily: "'Inter',sans-serif",
                     boxShadow: `0 6px 36px rgba(212,175,55,0.40), 0 2px 0 rgba(255,255,255,0.14) inset`,
                   }}
@@ -679,8 +679,8 @@ export default function CraftPortalHome() {
                     padding: "18px 52px",
                     background: `linear-gradient(135deg, ${GOLD} 0%, #C8960A 100%)`,
                     border: "none", borderRadius: 8, cursor: "pointer",
-                    fontSize: 13, fontWeight: 900, color: "#0A0700",
-                    letterSpacing: "0.32em", textTransform: "uppercase",
+                    fontSize: 22, fontWeight: 900, color: "#0A0700",
+                    letterSpacing: "0.22em", textTransform: "uppercase",
                     fontFamily: "'Inter',sans-serif",
                     boxShadow: `0 4px 28px rgba(212,175,55,0.38)`,
                   }}
@@ -715,7 +715,7 @@ export default function CraftPortalHome() {
                   style={{ width: "100%", padding: "18px 20px", background: "rgba(255,255,255,0.05)", border: `1px solid rgba(212,175,55,0.22)`, borderRadius: 6, color: "#F0E8D4", fontSize: 20, outline: "none", boxSizing: "border-box", marginBottom: 14, fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }} />
               ))}
               <button type="button" onClick={() => { setShowReturn(false); setPhase("s1_demo"); }}
-                style={{ width: "100%", padding: "20px", background: "rgba(212,175,55,0.16)", border: `1.5px solid ${GOLD}55`, borderRadius: 6, color: GOLD, fontSize: 17, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
+                style={{ width: "100%", padding: "20px", background: "rgba(212,175,55,0.16)", border: `1.5px solid ${GOLD}55`, borderRadius: 6, color: GOLD, fontSize: 22, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
                 Find My Session →
               </button>
             </motion.div>

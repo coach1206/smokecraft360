@@ -1,0 +1,16 @@
+CRITICAL EXPLICIT OVERRIDE: FORCE HARD COPIES OF NOVEE OS IMAGE PATHS, GOLDEN BOX COMPONENTS, AND DESIGN TOKENS INTO SMOKECRAFT (ZERO COMPROMISE)
+
+1. REASON FOR THIS DIRECTIVE (THE DRIFT MUST END):
+You are failing to execute the synchronization mandate. SmokeCraft is still rendering legacy visual prototype files, broken components, and outdated text strings. You are trapping all high-fidelity images, Golden Box features, and layout definitions inside NOVEE OS. Stop using dynamic inheritances that fail at runtime. You are ordered to execute a direct, structural, file-level code duplication and injection.
+
+2. FORCED VISUAL AND COMPONENT INJECTION INTO SMOKECRAFT:
+- Exact Image Path Mirroring: Locate every single luxury image file path, background asset, macro tobacco leaf graphic, and high-fidelity cigar ritual photographic asset currently rendering in the NOVEE OS view. Copy those exact asset paths and force-bind them into the SmokeCraft layout code. If an asset renders perfectly in NOVEE OS, it must render identically in SmokeCraft.
+- The Golden Box Progression Engine: Do not reference a broken placeholder module. Copy the exact operational code for the 6-tier Challenge Modal Overlay ('OPEN CHALLENGE') and the 6-metric competitive performance analytics panel ('COMPARE STATS' with green win highlights) out of the NOVEE OS repository folder and paste it directly into the SmokeCraft progression canvas files. 
+- Component Synchronization: Port the upgraded Pairing Engine (featuring the 6th 'Lounge Favorites' category and the 'PAIR WITH MY PROFILE' AI button) and the 6-card un-gated Global Coach Help interface straight into the SmokeCraft navigation structure. 
+
+3. HARDWARE SPECIFICATION COMPLIANCE:
+- Design Tokens: Enforce the True Obsidian (#010101) base contrast layer, the illuminated translucent smoke-glass containers, and the warm gold/amber structural back-lighting across all sub-views.
+- Typography Scales: Fix the font sizing instantly to match the layout rule: Titles at 40-48px, Headers at 22-28px, Buttons at 22px/20px, and physical touch target boxes at a strict minimum footprint of 58px.
+- Secure System Isolation: Ensure the 4-digit Staff PIN pad modal launches with the explosive concentric touch ripple animation and completely gates the cutting-edge E.A.T POS system, keeping the inventory modules (Humidor at 144 puros, Bar, Kitchen) and the Management-controlled Executive Command Center locked away from public guest views.
+
+Execute a brutal, file-by-file hard-code overwrite across the workspace tree. Do not stop compilation until SmokeCraft looks, feels, and operates as an identical twin to the NOVEE OS design layout. Verify zero TypeScript errors.
