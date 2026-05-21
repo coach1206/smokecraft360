@@ -16,9 +16,9 @@
  * kiosk boots instantly with zero network dependency after the first load.
  */
 
-const SHELL_CACHE  = "novee-shell-v2";
-const ASSETS_CACHE = "novee-assets-v2";
-const API_CACHE    = "novee-api-v2";
+const SHELL_CACHE  = "smokecraft-shell-v3";
+const ASSETS_CACHE = "smokecraft-assets-v3";
+const API_CACHE    = "smokecraft-api-v3";
 const ALL_CACHES   = [SHELL_CACHE, ASSETS_CACHE, API_CACHE];
 
 // ── Install-time precache ──────────────────────────────────────────────────────
@@ -110,8 +110,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // App shell — stale-while-revalidate
-  event.respondWith(staleWhileRevalidate(request, SHELL_CACHE));
+  // App shell — network-first so updates are always served immediately
+  event.respondWith(networkFirstWithTimeout(request, 5000, SHELL_CACHE));
 });
 
 // ── Strategy implementations ──────────────────────────────────────────────────
