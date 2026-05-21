@@ -991,9 +991,9 @@ function OsNavBar() {
               />
             )}
             <div style={{ width: 30, height: 30, borderRadius: 7, background: active ? `rgba(212,175,55,0.28)` : "rgba(255,255,255,0.07)", border: `1px solid ${active ? GOLD + "77" : "rgba(255,255,255,0.12)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: "0.04em", color: active ? GOLD : "rgba(240,232,212,0.80)", fontFamily: "'Inter',sans-serif" }}>{item.abbr}</span>
+              <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: "0.04em", color: active ? GOLD : "rgba(240,232,212,0.80)", fontFamily: "'Inter',sans-serif" }}>{item.abbr}</span>
             </div>
-            <span style={{ fontSize: 12, letterSpacing: "0.08em", color: active ? GOLD : "rgba(240,232,212,0.70)", textTransform: "uppercase", fontWeight: active ? 800 : 600, whiteSpace: "nowrap" }}>{item.label}</span>
+            <span style={{ fontSize: 14, letterSpacing: "0.08em", color: active ? GOLD : "rgba(240,232,212,0.70)", textTransform: "uppercase", fontWeight: active ? 800 : 600, whiteSpace: "nowrap" }}>{item.label}</span>
             {item.pinLevel && (
               <span style={{ fontSize: 8, color: item.pinLevel === "management" ? "#C87028" : `${GOLD}88`, letterSpacing: "0.08em" }}>
                 {item.pinLevel === "management" ? "🔒" : "🔑"}
@@ -1022,6 +1022,7 @@ const RAIL_ITEMS = [
   { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "staff" as PinRole,      staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
   { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, staffOnly: true,  icon: "⟡", isActive: (p: string) => p === "executive_command" },
   { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,               staffOnly: true,  icon: "◯", isActive: (p: string) => p === "lounge_view" },
+  { id: "coach_help",        label: "Coach Help",  abbr: "CH",  targetPhase: "coach_help" as Phase,       pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => p === "coach_help" },
 ];
 
 function LeftRail() {
@@ -1057,7 +1058,7 @@ function LeftRail() {
               <div style={{ position: "absolute", left: -1, top: "25%", bottom: "25%", width: 2, background: GOLD, borderRadius: "0 2px 2px 0", boxShadow: `0 0 8px ${GOLD}` }} />
             )}
             <span style={{ fontSize: 16, color: active ? GOLD : "rgba(212,175,55,0.45)", lineHeight: 1, filter: active ? `drop-shadow(0 0 6px ${GOLD}88)` : "none" }}>{item.icon}</span>
-            <span style={{ fontSize: 7.5, fontWeight: 900, letterSpacing: "0.14em", color: active ? GOLD : "rgba(212,175,55,0.35)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", textAlign: "center", lineHeight: 1.2, maxWidth: 38 }}>{item.abbr}</span>
+            <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.12em", color: active ? GOLD : "rgba(212,175,55,0.45)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", textAlign: "center", lineHeight: 1.2, maxWidth: 38 }}>{item.abbr}</span>
             {item.pinLevel && (
               <div style={{ position: "absolute", top: 2, right: 2, width: 4, height: 4, borderRadius: "50%", background: item.pinLevel === "management" ? "#C87028" : GOLD, opacity: 0.7 }} />
             )}
@@ -1091,7 +1092,7 @@ function SystemBar() {
   }
 
   return (
-    <div style={{ position: "absolute", top: 3, left: 0, right: 0, height: 38, background: "rgba(0,0,0,0.78)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", zIndex: 50 }}>
+    <div style={{ position: "absolute", top: 3, left: 0, right: 0, height: 38, background: "rgba(1,1,1,0.82)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", zIndex: 50 }}>
 
       {/* Left: location + biometric */}
       <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 100 }}>

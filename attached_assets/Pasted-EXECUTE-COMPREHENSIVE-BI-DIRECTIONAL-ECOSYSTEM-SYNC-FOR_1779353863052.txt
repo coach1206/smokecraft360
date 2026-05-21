@@ -1,0 +1,32 @@
+EXECUTE COMPREHENSIVE BI-DIRECTIONAL ECOSYSTEM SYNC: FORCE SMOKECRAFT TO PERFECTLY MIMIC NOVEE OS DESIGN, TYPOGRAPHY, AND STRUCTURAL ENGINE (ZERO STUBS)
+
+1. SYSTEM IDENTITY & LAYOUT SYNCHRONIZATION (THE UNIFICATION MANDATE)
+- Complete Visual Alignment: SmokeCraft 360 and NOVEE OS have fundamentally drifted. You must refactored them to look, feel, and operate identically. Wipe out all legacy, flat, or standalone prototype views inside SmokeCraft and rebuild them using the exact layout container chassis of NOVEE OS.
+- Cross-Porting Assets: Backport the high-fidelity SmokeCraft custom assets, raw tobacco leaf macro photography matrices, and the foundational E.A.T. (Environment, Asset, Transaction) state core directly into the global NOVEE OS master layout tree. Both modules must share the exact same UI components, structural spacing, and loading behaviors across all 4 system sessions.
+
+2. INTEGRATE THE MISSING NOVEE OS FEATURES INTO SMOKECRAFT
+Refactor the SmokeCraft sub-modules to immediately integrate these 4 critical operational features currently missing from its workspace:
+- THE UPGRADED PAIRING ENGINE:
+  * Add the 6th layout category carousel labeled "Lounge Favorites", driven by active transaction logs.
+  * Embed the primary gold-bordered button "PAIR WITH MY PROFILE" to run live algorithmic affinity match scores against the active user's flavor profile.
+  * Ensure all action text targets match the hardware touch spec: 22px primary text, 20px secondary text, and an absolute minimum physical touch target box footprint of 58px.
+- THE GOLDEN BOX CHALLENGE OVERLAY:
+  * Wire the "OPEN CHALLENGE" button to launch a full-screen, translucent obsidian glass modal overlay with a soft amber edge-glow displaying 6 tiered luxury milestone challenges (Novice to Exclusive), explicit locked/unlocked states, and an active "BEGIN CHALLENGE" CTA.
+- THE COMPETITIVE STATS PANEL:
+  * Wire the "COMPARE STATS" button to mount a 6-metric competitive performance grid (Active User vs. Lounge Member Average) utilizing high-contrast green highlighting indicators for user wins, a standing summary text card, and staggered 0.35s weighted entries.
+- THE UN-GATED GLOBAL COACH HELP MODULE:
+  * Inject the `CoachHelpModule` directly into the persistent Left Obsidian Navigation Rail. It must remain fully visible across all security clearance states and require zero PIN authentication entries.
+  * Build a clean two-tab interface: a GUIDES TAB containing 6 topic cards (Getting Started, Pairing Guide, XP & Levels, Lounge Controls, Golden Box, Staff Tools) that drill into itemized step-by-step instructions with back navigation, and an FAQ TAB containing 6 smooth, animated expand/collapse accordion question nodes.
+
+3. SECURITY GATES: MULTI-TIER PIN MATRIX & TACTILE POS PLATFORM
+- Staff Handoff Access: Secure the cutting-edge E.A.T. Intelligence terminal dashboard against standard guest viewports. TAPPING 'E.A.T Intelligence' anywhere on the UI must trigger a modal input requesting a 4-digit Staff PIN. A validated PIN must instantly fire an explosive, hardware-accelerated concentric ripple animation expanding outward from the touch point to reveal the high-velocity floor POS.
+- Triple-Axis Operational Inventory: Run all venue operational nodes—the Kitchen management tickets, Bar level pour metrics, and Humidor asset volumes (144 puros remaining)—directly through the state-driven E.A.T architecture.
+- Executive Command Center: Protect the root administrative layout behind an independent Management PIN, giving managers global permission switches to instantly show, hide, or completely erase individual operational panels across live customer-facing terminal screens in real-time.
+- Remote Developer Interface: Maintain a dedicated 'Developer' credential role framework using active WebRTC or secure WebSocket tunnels, granting developers remote root tunnel access to push remote code overrides, clear stuck runtime views, and audit active local storage state caches from any off-site location.
+
+4. VISUAL VISIBILITY, LUMINANCE TUNING, & CLEANUP
+- Ambient Luminance Tuning (Lighten Screen): To eliminate intense eye strain on physical touch screens operating in dimly lit lounge spaces, elevate the background container contrast. Do not use flat pitch black (#000000). Use a deep True Obsidian (#010101) base layer, but brighten foreground elements using semi-translucent, smoke-tinted glass panels backed by rich, glowing amber/gold ambient accent lighting vectors.
+- Restrained, Large-Scale Fonts: Enlarge typography globally across the layout tree to target age 40-60 user cohorts. Primary section titles must scale to a minimum of 28px, control buttons to 22px, and core parameter counts to 18px-20px. 
+- Structural De-Cluttering: Sweep the entire view tree. Strip out any duplicate text blocks, stacked headers, or overlapping navigation layers. Every feature must map directly into the persistent Left Navigation Rail router ('CraftHub', 'SmokeCraft', 'Pairing Engine', 'Lounge Mode', 'My Profile', 'Settings').
+
+Execute a comprehensive file-by-file compile block across the workspace tree. Ensure zero duplicate modules, zero TypeScript build errors, and 100% active operational code.
