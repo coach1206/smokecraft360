@@ -13,7 +13,58 @@ import { requireRole }                  from "../middleware/roles.js";
 
 export const environmentRouter = Router();
 
-// ── In-memory state ───────────────────────────────────────────────────────────
+// ── In-memory sensor state (temperature, humidity, HVAC, AQ) ─────────────────
+
+interface SensorState {
+  temperature:     number;
+  humidity:        number;
+  humidorTemp:     number;
+  humidorHumidity: number;
+  airQuality:      "Good" | "Fair" | "Poor";
+  co2Ppm:          number;
+  lighting:        number;   // 0–100
+  scent:           number;   // 0–100
+  musicMode:       string;
+  scentMode:       string;
+  lastUpdated:     string;
+}
+
+const DEFAULT_SENSOR: SensorState = {
+  temperature:     70,
+  humidity:        52,
+  humidorTemp:     68,
+  humidorHumidity: 70,
+  airQuality:      "Good",
+  co2Ppm:          420,
+  lighting:        65,
+  scent:           40,
+  musicMode:       "Smooth Jazz",
+  scentMode:       "Leather & Oak",
+  lastUpdated:     new Date().toISOString(),
+};
+
+const PRESET_MAP: Record<string, Partial<SensorState>> = {
+  "Warm Lounge":      { lighting: 60, scent: 40, musicMode: "Smooth Jazz",    temperature: 70 },
+  "VIP Experience":   { lighting: 45, scent: 65, musicMode: "Neo-Soul",        temperature: 69 },
+  "Ceremony Mode":    { lighting: 80, scent: 30, musicMode: "Classical",       temperature: 71 },
+  "Late Night":       { lighting: 35, scent: 55, musicMode: "Ambient Lounge",  temperature: 68 },
+  "Service Mode":     { lighting: 90, scent: 20, musicMode: "Upbeat Jazz",     temperature: 72 },
+};
+
+const sensorStore: Map<string, SensorState> = new Map();
+
+function getSensor(venueId: string): SensorState {
+  return sensorStore.get(venueId) ?? { ...DEFAULT_SENSOR };
+}
+
+function setSensor(venueId: string, patch: Partial<SensorState>): SensorState {
+  const current = getSensor(venueId);
+  const updated  = { ...current, ...patch, lastUpdated: new Date().toISOString() };
+  sensorStore.set(venueId, updated);
+  return updated;
+}
+
+// ── In-memory override state ───────────────────────────────────────────────────
 
 type EnergyState =
   | "quiet_reserve" | "social_warmth" | "elevated_lounge" | "peak_energy"
@@ -156,7 +207,7 @@ environmentRouter.post(
   },
 );
 
-// GET /api/environment/analytics
+// GET /api/environment/analytics — static must stay BEFORE /:venueId
 environmentRouter.get(
   "/analytics",
   requireAuth,
@@ -193,5 +244,88 @@ environmentRouter.get(
       vipArrivalResponses: 14,
       automationUptime:    "98.2%",
     });
+  },
+);
+
+// ── Venue-scoped sensor routes ────────────────────────────────────────────────
+// All static-prefix routes (/state, /vip-arrival, /reset, /analytics) are
+// registered above; these parameterised routes come last so Express matches
+// static segments first.
+
+const sensorPatchSchema = z.object({
+  lighting:  z.number().min(0).max(100).optional(),
+  scent:     z.number().min(0).max(100).optional(),
+  musicMode: z.string().max(80).optional(),
+  scentMode: z.string().max(80).optional(),
+  temperature:     z.number().optional(),
+  humidity:        z.number().optional(),
+  humidorTemp:     z.number().optional(),
+  humidorHumidity: z.number().optional(),
+  co2Ppm:          z.number().optional(),
+  airQuality:      z.enum(["Good", "Fair", "Poor"]).optional(),
+});
+
+const presetSchema = z.object({
+  preset: z.string().min(1).max(80),
+});
+
+// GET /api/environment/:venueId/history — 24-h sparkline (before /:venueId)
+environmentRouter.get(
+  "/:venueId/history",
+  (req: AuthRequest, res: Response) => {
+    const { venueId } = req.params as { venueId: string };
+    const base = getSensor(venueId).temperature;
+    const now  = Date.now();
+    const history = Array.from({ length: 7 }, (_, i) => ({
+      timestamp:   new Date(now - (6 - i) * 4 * 60 * 60 * 1000).toISOString(),
+      temperature: Math.round((base + (Math.random() * 4 - 2)) * 10) / 10,
+      humidity:    Math.round((getSensor(venueId).humidity + (Math.random() * 6 - 3)) * 10) / 10,
+    }));
+    res.json({ history, venueId });
+  },
+);
+
+// POST /api/environment/:venueId/preset — apply a lounge preset
+environmentRouter.post(
+  "/:venueId/preset",
+  requireAuth,
+  requireRole("staff", "manager", "venue_owner", "super_admin"),
+  (req: AuthRequest, res: Response) => {
+    const { venueId } = req.params as { venueId: string };
+    const parsed = presetSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid payload", details: parsed.error.flatten() });
+      return;
+    }
+    const presetData = PRESET_MAP[parsed.data.preset] ?? {};
+    const updated = setSensor(venueId, presetData);
+    res.json({ ...updated, venueId, preset: parsed.data.preset });
+  },
+);
+
+// GET /api/environment/:venueId — current sensor state (no auth; read-only)
+environmentRouter.get(
+  "/:venueId",
+  (req: AuthRequest, res: Response) => {
+    const { venueId } = req.params as { venueId: string };
+    const sensor = getSensor(venueId);
+    res.json({ ...sensor, venueId });
+  },
+);
+
+// PATCH /api/environment/:venueId — update lighting / scent / music controls
+environmentRouter.patch(
+  "/:venueId",
+  requireAuth,
+  requireRole("staff", "manager", "venue_owner", "super_admin"),
+  (req: AuthRequest, res: Response) => {
+    const { venueId } = req.params as { venueId: string };
+    const parsed = sensorPatchSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid payload", details: parsed.error.flatten() });
+      return;
+    }
+    const updated = setSensor(venueId, parsed.data);
+    res.json({ ...updated, venueId });
   },
 );

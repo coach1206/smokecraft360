@@ -85,4 +85,34 @@ router.post(
   },
 );
 
+// ── GET /api/events/venue/:venueId — scheduled venue events ───────────────────
+// In-memory per-venue event schedule. Falls back to a curated default set so
+// the E.A.T. terminal always has events to display even before staff add their own.
+
+interface VenueEvent {
+  id:       string;
+  name:     string;
+  schedule: string;
+  desc:     string;
+}
+
+const DEFAULT_VENUE_EVENTS: VenueEvent[] = [
+  { id: "e1", name: "Smooth Jazz Night",  schedule: "Every Friday 8PM – 12AM",  desc: "Live jazz, crafted cocktails and premium pairings." },
+  { id: "e2", name: "Cigar & Bourbon",    schedule: "Saturdays 7PM",            desc: "Reserve single malts paired with hand-rolled selections." },
+  { id: "e3", name: "Wine Down",          schedule: "Wednesdays 6PM",           desc: "Curated sommelier flights and small plates." },
+  { id: "e4", name: "Latin Night",        schedule: "Thursdays 9PM",            desc: "Live salsa, signature cocktails, vibrant atmosphere." },
+  { id: "e5", name: "Poker Night",        schedule: "Tuesdays 8PM",             desc: "High-stakes tables, premium cigars on the house." },
+];
+
+const venueEventStore: Map<string, VenueEvent[]> = new Map();
+
+router.get(
+  "/venue/:venueId",
+  async (req: Request, res: Response) => {
+    const { venueId } = req.params as { venueId: string };
+    const events = venueEventStore.get(venueId) ?? DEFAULT_VENUE_EVENTS;
+    res.json({ events, venueId, count: events.length });
+  },
+);
+
 export default router;

@@ -314,38 +314,47 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
       })
       .catch(()=>{});
 
-    fetch(`/api/tabs/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        if(!d) return;
-        const rows: unknown[] = (d as {tabs?:unknown[]}).tabs ?? (Array.isArray(d)?d:[]);
-        if (rows.length > 0) {
-          setActiveTabs(rows.slice(0,6).map((t:unknown, i:number) => {
-            const tab = t as Record<string,unknown>;
-            return {
-              id:          String(tab.id ?? `tab_${i}`),
-              name:        String(tab.guestName ?? tab.name ?? `Table ${i+1}`),
-              server:      String(tab.serverName ?? tab.server ?? "Staff"),
-              tableNumber: String(tab.tableNumber ?? String(i+1)),
-              guests:      Number(tab.guestCount ?? tab.guests ?? 1),
-              items:       Array.isArray(tab.items) ? tab.items.map((it:unknown) => {
-                const item = it as Record<string,unknown>;
-                return { name:String(item.name??"Item"), qty:Number(item.qty??1), price:Number(item.price??0) };
-              }) : [],
-              total:       Number(tab.total ?? 0),
-              tax:         Number(tab.tax ?? 0),
-            };
-          }));
-          setSelTabId(String((rows[0] as Record<string,unknown>).id ?? "tab_0"));
-        }
-      })
-      .catch(()=>{});
+    // Active tabs — venue-scoped, 60 s polling
+    const fetchTabs = () => {
+      fetch(`/api/tabs/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) })
+        .then(r=>r.ok?r.json():null)
+        .then(d=>{
+          if(!d) return;
+          const rows: unknown[] = (d as {tabs?:unknown[]}).tabs ?? (Array.isArray(d)?d:[]);
+          if (rows.length > 0) {
+            setActiveTabs(rows.slice(0,6).map((t:unknown, i:number) => {
+              const tab = t as Record<string,unknown>;
+              return {
+                id:          String(tab.id ?? `tab_${i}`),
+                name:        String(tab.guestName ?? tab.name ?? `Table ${i+1}`),
+                server:      String(tab.serverName ?? tab.server ?? "Staff"),
+                tableNumber: String(tab.tableNumber ?? String(i+1)),
+                guests:      Number(tab.guestCount ?? tab.guests ?? 1),
+                items:       Array.isArray(tab.items) ? tab.items.map((it:unknown) => {
+                  const item = it as Record<string,unknown>;
+                  return { name:String(item.name??"Item"), qty:Number(item.qty??1), price:Number(item.price??0) };
+                }) : [],
+                total:       Number(tab.total ?? 0),
+                tax:         Number(tab.tax ?? 0),
+              };
+            }));
+            setSelTabId(String((rows[0] as Record<string,unknown>).id ?? "tab_0"));
+          }
+        })
+        .catch(()=>{});
+    };
+    fetchTabs();
+    const tabPoll = setInterval(fetchTabs, 60_000);
 
-    // Environment current state
-    fetch(`/api/environment/${encodeURIComponent(vId)}`, { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{ if(d && typeof d === "object") { setEnvState(prev => ({ ...prev, ...d })); } })
-      .catch(()=>{});
+    // Environment current state — 30 s polling
+    const fetchEnv = () => {
+      fetch(`/api/environment/${encodeURIComponent(vId)}`, { headers:hdr(token) })
+        .then(r=>r.ok?r.json():null)
+        .then(d=>{ if(d && typeof d === "object") { setEnvState(prev => ({ ...prev, ...d })); } })
+        .catch(()=>{});
+    };
+    fetchEnv();
+    const envPoll = setInterval(fetchEnv, 30_000);
 
     // Environment 24h history for sparkline
     fetch(`/api/environment/${encodeURIComponent(vId)}/history`, { headers:hdr(token) })
@@ -405,6 +414,8 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
       eatEngine.stop();
       unsubInv(); unsubEnv();
       clearInterval(devicePoll);
+      clearInterval(tabPoll);
+      clearInterval(envPoll);
       socket.off("connect",          onConn);
       socket.off("disconnect",       onDisconn);
       socket.off("panel_visibility", onPV);

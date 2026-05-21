@@ -77,6 +77,32 @@ router.get(
   },
 );
 
+// ── GET /api/devices/venue/:venueId — venue-scoped list by path param ─────────
+// Allows super_admin to poll any venue's device list without relying on the
+// token's venueId field (which is absent for cross-venue super_admin queries).
+
+router.get(
+  "/venue/:venueId",
+  requireAuth,
+  requireRole("manager", "venue_owner", "super_admin"),
+  async (req: AuthRequest, res: Response) => {
+    const { venueId } = req.params as { venueId: string };
+
+    if (req.user?.role !== "super_admin" && req.user?.venueId !== venueId) {
+      res.status(403).json({ error: "forbidden" });
+      return;
+    }
+
+    const rows = await db
+      .select()
+      .from(devicesTable)
+      .where(eq(devicesTable.venueId, venueId))
+      .orderBy(desc(devicesTable.createdAt));
+
+    res.json(rows);
+  },
+);
+
 // ── POST /api/devices ──────────────────────────────────────────────────────────
 
 router.post(
