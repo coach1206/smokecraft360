@@ -1,7 +1,8 @@
 import { useState, createContext, useContext, useEffect } from "react";
-import { IntegrationInfraPanel }     from "@/components/IntegrationInfraPanel";
-import { HealthMonitorPanel }         from "@/components/HealthMonitorPanel";
-import { IntegrationAnalyticsPanel }  from "@/components/IntegrationAnalyticsPanel";
+import { IntegrationInfraPanel }          from "@/components/IntegrationInfraPanel";
+import { HealthMonitorPanel }             from "@/components/HealthMonitorPanel";
+import { IntegrationAnalyticsPanel }      from "@/components/IntegrationAnalyticsPanel";
+import { GlobalProviderControlCenter }    from "@/components/GlobalProviderControlCenter";
 import { useVisualSync } from "@/hooks/useVisualSync";
 import { startHeartbeat, getOrCreateDeviceId } from "@/lib/deviceTelemetry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -584,9 +585,10 @@ function SettingsView() {
     { id: "theme",    label: "Theme",          icon: "◐" },
     { id: "roles",      label: "User Roles",        icon: "◆" },
     { id: "knowledge",     label: "Knowledge Center",  icon: "◎" },
-    { id: "integrations",  label: "Integrations",      icon: "⟡" },
-    { id: "health",        label: "Health Monitor",    icon: "◎" },
-    { id: "int_analytics", label: "Int. Analytics",    icon: "▦" },
+    { id: "integrations",   label: "Integrations",      icon: "⟡" },
+    { id: "health",         label: "Health Monitor",   icon: "◎" },
+    { id: "int_analytics",  label: "Int. Analytics",   icon: "▦" },
+    { id: "global_controls",label: "API Controls",     icon: "⊛" },
     { id: "system",        label: "System",            icon: "⊹" },
   ];
 
@@ -709,6 +711,9 @@ function SettingsView() {
     );
     if (activeSection === "int_analytics") return (
       <IntegrationAnalyticsPanel venueId="demo-venue" GOLD={GOLD} CREAM={CREAM} />
+    );
+    if (activeSection === "global_controls") return (
+      <GlobalProviderControlCenter GOLD={GOLD} CREAM={CREAM} />
     );
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>

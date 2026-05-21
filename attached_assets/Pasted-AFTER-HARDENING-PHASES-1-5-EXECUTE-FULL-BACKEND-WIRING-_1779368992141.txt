@@ -1,0 +1,238 @@
+AFTER HARDENING PHASES 1–5, EXECUTE FULL BACKEND WIRING AND VALIDATION.
+
+DO NOT LEAVE PARTIAL CONNECTIONS.
+DO NOT LEAVE DEAD SERVICES.
+DO NOT LEAVE UNUSED ROUTES.
+DO NOT LEAVE MOCK DATA.
+DO NOT CREATE ISOLATED MODULES.
+
+FULLY WIRE ALL BACKEND SYSTEMS TOGETHER.
+
+BACKEND WIRING REQUIREMENTS
+
+CREATE AND FULLY CONNECT:
+
+server/core/integrationKernel/
+server/core/eventBus/
+server/core/orchestrators/
+server/providers/
+server/security/
+server/webhooks/
+server/queues/
+server/monitoring/
+server/sdk/
+server/cache/
+server/audit/
+
+FULLY WIRE:
+
+• provider adapters
+• orchestrators
+• webhook handlers
+• retry queues
+• audit logging
+• RBAC middleware
+• tenant isolation middleware
+• encrypted credential vault
+• provider health checks
+• event dispatchers
+• usage metering
+• fallback providers
+• offline cache systems
+• SDK registration
+• integration monitoring
+• API throttling
+• device orchestration hooks
+
+BACKEND ORCHESTRATION RULES
+
+ALL FRONTEND REQUESTS MUST FLOW THROUGH:
+
+Frontend
+→ API Gateway
+→ Orchestrator Layer
+→ Provider Adapter
+→ External Provider
+
+NEVER:
+Frontend
+→ External API directly
+
+ALL BUSINESS LOGIC MUST FLOW THROUGH ORCHESTRATORS.
+
+EXAMPLES:
+
+AI:
+AIOrchestrator.generateResponse()
+
+POS:
+POSOrchestrator.createOrder()
+
+PAYMENTS:
+PaymentOrchestrator.processTransaction()
+
+LIGHTING:
+LightingOrchestrator.changeScene()
+
+MUSIC:
+MusicOrchestrator.syncPlaylist()
+
+VOICE:
+VoiceOrchestrator.playNarration()
+
+BOOKING:
+BookingOrchestrator.createReservation()
+
+ALL ORCHESTRATORS MUST SUPPORT:
+• provider swapping
+• failover
+• retries
+• audit logging
+• tenant isolation
+• throttling
+• metrics
+• fallback routing
+
+DATABASE WIRING REQUIREMENTS
+
+FULLY WIRE DATABASE TABLES:
+
+integration_providers
+integration_logs
+provider_health_logs
+provider_usage_stats
+webhook_events
+retry_queue
+dead_letter_queue
+tenant_integrations
+sdk_registrations
+provider_failovers
+api_usage_limits
+device_heartbeats
+integration_audit_logs
+
+ENSURE:
+• proper indexes
+• tenant scoping
+• cascade protections
+• encrypted fields
+• optimistic locking
+• migration safety
+
+EVENT BUS WIRING
+
+FULLY WIRE:
+server/core/eventBus/
+
+ENABLE EVENTS LIKE:
+
+GUEST_ENTERED_VIP_ROOM
+PAIRING_STARTED
+AI_PROVIDER_FAILED
+WEBHOOK_RECEIVED
+DEVICE_OFFLINE
+INVENTORY_LOW
+BOOKING_CREATED
+VOICE_SESSION_STARTED
+
+ALL MODULES MUST COMMUNICATE THROUGH EVENTS.
+
+QUEUE INFRASTRUCTURE
+
+FULLY WIRE:
+• retry queues
+• dead-letter queues
+• async processing
+• webhook retries
+• AI fallback retries
+• provider timeout handling
+
+SECURITY WIRING
+
+ENSURE:
+• middleware active globally
+• route protection enforced
+• audit logs generated
+• API abuse detection active
+• token validation active
+• encrypted provider access active
+• session/device validation active
+
+SDK WIRING
+
+FULLY WIRE:
+server/sdk/
+
+ENABLE:
+• provider registration
+• plugin loading
+• deployment manifests
+• venue bootstrap configs
+• future extension support
+
+CREATE:
+provider interface contracts.
+
+NO HARDCODED PROVIDERS.
+
+HEALTH MONITORING WIRING
+
+FULLY CONNECT:
+• provider health checks
+• latency monitoring
+• queue monitoring
+• webhook monitoring
+• usage dashboards
+• fallback state monitoring
+• device heartbeat monitoring
+
+COMMAND HUB WIRING
+
+FULLY CONNECT:
+Command Hub → Integration Infrastructure
+
+WITH:
+• live provider status
+• enable/disable controls
+• venue isolation
+• API quotas
+• token budgets
+• remote revocation
+• fallback provider controls
+• emergency shutdown controls
+
+FINAL VALIDATION REQUIREMENTS
+
+RUN:
+• full typecheck
+• route verification
+• provider simulation testing
+• webhook replay testing
+• queue failure testing
+• tenant isolation testing
+• credential encryption verification
+• fallback provider testing
+• offline-mode testing
+• SDK registration testing
+
+OUTPUT:
+• system validation report
+• failed dependency report
+• orphan route report
+• dead service report
+• unresolved imports report
+• security audit report
+• provider wiring report
+
+DO NOT MARK COMPLETE UNTIL:
+• all orchestrators are wired
+• all providers route correctly
+• all middleware is active
+• all queues process correctly
+• all tenant protections work
+• all encryption is verified
+• all dashboards function
+• all integrations are operational
+• no dead routes exist
+• no placeholder logic exists
+• deployment infrastructure is venue-ready.

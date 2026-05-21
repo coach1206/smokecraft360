@@ -1,0 +1,182 @@
+Execute ONLY Phases 1–5 first, but HARDEN EVERYTHING as production-grade enterprise infrastructure from the beginning.
+
+DO NOT scaffold placeholders.
+DO NOT create fake implementations.
+DO NOT overwrite or break existing NOVEE OS, SmokeCraft 360, CraftHub, E.A.T. System, or Command Hub functionality.
+
+This build must be architected for:
+• enterprise venue deployment
+• multi-tenant scaling
+• SDK distribution
+• demo deployments
+• controlled API access
+• future licensing
+• white-label expansion
+• production security hardening
+
+FOCUS ON BUILDING THESE FOUNDATIONAL SYSTEMS CORRECTLY:
+
+1. Universal Integration Kernel
+2. Provider Abstraction Layer
+3. Venue API Management Center
+4. Encrypted Credential Vault
+5. Custom Provider Configuration Framework
+
+SECURITY HARDENING REQUIREMENTS
+
+• AES-256-GCM encrypted credential storage
+• secrets never exposed to frontend
+• zero plaintext API storage
+• RBAC enforcement on all integration routes
+• tenant isolation everywhere
+• signed webhook validation
+• replay attack protection
+• rate limiting
+• IP/device session validation
+• audit logging on all provider actions
+• encrypted environment handling
+• secure provider token refresh logic
+• dead-letter queue handling
+• retry protection
+• CSRF/XSS protection
+• SQL injection protection
+• strict validation schemas
+• request sanitization
+• API abuse throttling
+• emergency kill switch controls
+• integration-level permissions
+• security-first middleware architecture
+
+DEMO / VENUE API CONTROL REQUIREMENTS
+
+I MUST be able to:
+
+• globally disable my APIs
+• selectively enable APIs per venue
+• control demo-mode access
+• restrict token usage
+• remotely revoke provider access
+• remotely disable AI access
+• remotely disable integrations
+• control feature access by venue package
+• monitor usage across all establishments
+• isolate demo environments from production
+• enforce API quotas
+• set expiration windows for demos
+• remotely lock compromised venues/devices
+
+BUILD:
+Command Hub → Integration Infrastructure → Global Provider Control Center
+
+ADD:
+• master API enable/disable toggles
+• venue-level provider permissions
+• package-based API controls
+• usage caps
+• token budgeting
+• remote revocation controls
+• fallback provider controls
+• emergency shutdown controls
+
+SDK + DEPLOYMENT HARDENING REQUIREMENTS
+
+Prepare architecture for:
+• venue deployment kits
+• white-label distribution
+• enterprise installers
+• external developers
+• future plugin ecosystem
+
+BUILD:
+NOVEE Integration SDK foundation.
+
+REQUIREMENTS:
+• modular provider adapters
+• documented adapter interfaces
+• plugin-safe architecture
+• deployment-safe configs
+• environment-safe variable injection
+• tenant-aware initialization
+• provider registration system
+• deployment manifests
+• venue bootstrap installer support
+
+ALL PROVIDERS MUST ROUTE THROUGH ORCHESTRATORS.
+
+NO DIRECT FRONTEND API CALLS.
+NO HARDCODED PROVIDERS.
+NO STATIC CREDENTIALS.
+
+ARCHITECTURE MUST SUPPORT:
+
+AI:
+• OpenAI
+• Gemini
+• Anthropic later
+• local AI later
+
+POS:
+• Toast
+• Square
+• Clover
+• Lightspeed
+
+PAYMENTS:
+• Stripe
+• PayPal
+
+MUSIC:
+• Spotify
+• Sonos
+
+LIGHTING:
+• Philips Hue
+• Lutron
+• DMX
+
+COMMUNICATION:
+• SendGrid
+• Twilio
+
+VOICE:
+• ElevenLabs
+
+BOOKING:
+• OpenTable
+• Resy
+
+OBSERVABILITY + MONITORING
+
+Add:
+• provider health dashboard
+• webhook monitoring
+• token usage analytics
+• integration latency monitoring
+• queue monitoring
+• failure tracking
+• audit trails
+• fallback status indicators
+
+OFFLINE RESILIENCE
+
+Ensure:
+Coach Help, SOPs, training docs, pairing intelligence, and emergency guidance still function if APIs fail or internet goes offline.
+
+CACHE:
+• SOP knowledge
+• training manuals
+• pairing guides
+• venue operational rules
+• emergency procedures
+
+DO NOT proceed into later orchestration phases until Phases 1–5 are:
+• stable
+• hardened
+• production-safe
+• multi-tenant secure
+• deployment-ready
+• SDK-ready
+• venue-ready
+• enterprise-audited
+• fully typechecked
+• tested with no dead routes or placeholder logic.

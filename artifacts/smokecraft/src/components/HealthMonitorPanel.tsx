@@ -50,7 +50,7 @@ export function HealthMonitorPanel({ venueId, GOLD, CREAM }: Props) {
   const [loading,   setLoading]     = useState(true);
   const intervalRef                 = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const authHeader = { Authorization: `Bearer ${localStorage.getItem("novee_staff_pin") ?? ""}` };
+  const authHeader = { Authorization: `Bearer ${localStorage.getItem("axiom_token") ?? ""}` };
 
   const loadAll = useCallback(async () => {
     try {

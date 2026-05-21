@@ -53,7 +53,7 @@ export function IntegrationAnalyticsPanel({ venueId, GOLD, CREAM }: Props) {
   const [loading, setLoading] = useState(true);
   const [tab,     setTab]     = useState<"performance" | "budget">("performance");
 
-  const authHeader = { Authorization: `Bearer ${localStorage.getItem("novee_staff_pin") ?? ""}` };
+  const authHeader = { Authorization: `Bearer ${localStorage.getItem("axiom_token") ?? ""}` };
 
   const load = useCallback(async () => {
     setLoading(true);

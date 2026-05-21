@@ -21,6 +21,19 @@ import {
   auditKernelAction, getAuditLog, verifyAuditChain,
   getTenantConfig, setTenantConfig,
   rateLimitTenant, enforceTenantIsolation,
+  ensureGlobalControlsSchema,
+  getAllGlobalControls,
+  setGlobalControl,
+  emergencyShutdown,
+  restoreFromShutdown,
+  isEmergencyShutdownActive,
+  listVenueAccess,
+  getVenueAccess,
+  setVenueAccess,
+  revokeVenueAccess,
+  restoreVenueAccess,
+  buildOfflineBundle,
+  PROVIDER_CATEGORIES,
 } from "../core/integrationKernel";
 import type { ProviderCategory, AuthType, UsageLimits, DeviceType } from "../core/integrationKernel";
 import { AIOrchestrator } from "../core/providers/AIOrchestrator";
@@ -32,6 +45,7 @@ let booted = false;
 router.use(async (_req: Request, _res: Response, next: NextFunction) => {
   if (!booted) {
     await ensureVaultSchema();
+    await ensureGlobalControlsSchema();
     wireMetricsToEventBus();
     booted = true;
   }
@@ -605,6 +619,209 @@ router.post(
       logger.info({ providerId: body.id, name: body.name }, "integrationKernel: custom provider registered");
       res.status(201).json({ provider: getProvider(body.id) });
     } catch (err) { next(err); }
+  },
+);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLOBAL PROVIDER CONTROL CENTER — master API controls (super_admin only)
+───────────────────────────────────────────────────────────────────────────── */
+
+const globalControlSchema = z.object({
+  isEnabled: z.boolean(),
+  reason:    z.string().max(200).optional(),
+});
+
+const venueAccessSchema = z.object({
+  isEnabled:         z.boolean().optional(),
+  isDemoMode:        z.boolean().optional(),
+  demoExpiresAt:     z.string().datetime().nullable().optional(),
+  isLocked:          z.boolean().optional(),
+  lockedReason:      z.string().max(200).nullable().optional(),
+  allowedCategories: z.array(z.enum(PROVIDER_CATEGORIES as unknown as [string, ...string[]])).nullable().optional(),
+});
+
+/* GET  /admin/global-controls  — list all category flags + emergency state */
+router.get(
+  "/admin/global-controls",
+  requireAuth,
+  requireRole("admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const controls    = await getAllGlobalControls();
+      const shutdown    = await isEmergencyShutdownActive();
+      const categories  = PROVIDER_CATEGORIES.map(cat => ({
+        key:       `category:${cat}`,
+        category:  cat,
+        isEnabled: controls.find(c => c.controlKey === `category:${cat}`)?.isEnabled ?? true,
+        updatedAt: controls.find(c => c.controlKey === `category:${cat}`)?.updatedAt ?? null,
+        updatedBy: controls.find(c => c.controlKey === `category:${cat}`)?.updatedBy ?? null,
+        reason:    controls.find(c => c.controlKey === `category:${cat}`)?.reason    ?? null,
+      }));
+      res.json({ controls, categories, emergencyShutdownActive: shutdown });
+    } catch (err) { next(err); }
+  },
+);
+
+/* PUT  /admin/global-controls/:key  — enable/disable a category or any key */
+router.put(
+  "/admin/global-controls/:key",
+  requireAuth,
+  requireRole("super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const key    = String(req.params.key ?? "");
+      const user   = (req as Request & { user?: { id?: string } }).user;
+      const body   = globalControlSchema.parse(req.body);
+      const result = await setGlobalControl(key, body.isEnabled, user?.id, body.reason);
+      await auditKernelAction({
+        venueId: "global", actorId: user?.id,
+        action: body.isEnabled ? "global_control.enabled" : "global_control.disabled",
+        resourceType: "global_control", resourceId: key,
+        payload: { reason: body.reason },
+      });
+      res.json({ control: result });
+    } catch (err) { next(err); }
+  },
+);
+
+/* POST /admin/emergency-shutdown  — disable ALL categories globally */
+router.post(
+  "/admin/emergency-shutdown",
+  requireAuth,
+  requireRole("super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user   = (req as Request & { user?: { id?: string } }).user;
+      const reason = (req.body as { reason?: string }).reason ?? "Emergency shutdown";
+      await emergencyShutdown(user?.id, reason);
+      await auditKernelAction({
+        venueId: "global", actorId: user?.id,
+        action: "emergency_shutdown.activated", resourceType: "global_control",
+        payload: { reason },
+      });
+      logger.warn({ actorId: user?.id, reason }, "integrationKernel: emergency shutdown via API");
+      res.json({ success: true, message: "Emergency shutdown activated — all provider categories disabled" });
+    } catch (err) { next(err); }
+  },
+);
+
+/* POST /admin/restore-operations  — re-enable all categories after shutdown */
+router.post(
+  "/admin/restore-operations",
+  requireAuth,
+  requireRole("super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = (req as Request & { user?: { id?: string } }).user;
+      await restoreFromShutdown(user?.id);
+      await auditKernelAction({
+        venueId: "global", actorId: user?.id,
+        action: "emergency_shutdown.cleared", resourceType: "global_control",
+      });
+      res.json({ success: true, message: "Operations restored — all provider categories re-enabled" });
+    } catch (err) { next(err); }
+  },
+);
+
+/* ─── Venue Access Controls ────────────────────────────────────────────────── */
+
+/* GET  /admin/venue-access  — list all venue access records */
+router.get(
+  "/admin/venue-access",
+  requireAuth,
+  requireRole("admin","super_admin"),
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const rows = await listVenueAccess();
+      res.json({ venueAccess: rows });
+    } catch (err) { next(err); }
+  },
+);
+
+/* GET  /admin/venue-access/:venueId  — get a single venue's access record */
+router.get(
+  "/admin/venue-access/:venueId",
+  requireAuth,
+  requireRole("venue_owner","manager","admin","super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const access = await getVenueAccess(String(req.params.venueId ?? ""));
+      res.json({ access });
+    } catch (err) { next(err); }
+  },
+);
+
+/* PUT  /admin/venue-access/:venueId  — update a venue's access record */
+router.put(
+  "/admin/venue-access/:venueId",
+  requireAuth,
+  requireRole("super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const user    = (req as Request & { user?: { id?: string } }).user;
+      const body    = venueAccessSchema.parse(req.body);
+      const access  = await setVenueAccess(venueId, { ...body, updatedBy: user?.id });
+      await auditKernelAction({
+        venueId, actorId: user?.id,
+        action: "venue_access.updated", resourceType: "venue_access", resourceId: venueId,
+        payload: body,
+      });
+      res.json({ access });
+    } catch (err) { next(err); }
+  },
+);
+
+/* POST /admin/venue-access/:venueId/revoke  — lock and disable a venue */
+router.post(
+  "/admin/venue-access/:venueId/revoke",
+  requireAuth,
+  requireRole("super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const user    = (req as Request & { user?: { id?: string } }).user;
+      const reason  = (req.body as { reason?: string }).reason ?? "Access revoked";
+      await revokeVenueAccess(venueId, user?.id, reason);
+      await auditKernelAction({
+        venueId, actorId: user?.id,
+        action: "venue_access.revoked", resourceType: "venue_access", resourceId: venueId,
+        payload: { reason },
+      });
+      res.json({ success: true });
+    } catch (err) { next(err); }
+  },
+);
+
+/* POST /admin/venue-access/:venueId/restore  — unlock and re-enable a venue */
+router.post(
+  "/admin/venue-access/:venueId/restore",
+  requireAuth,
+  requireRole("super_admin"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const venueId = String(req.params.venueId ?? "");
+      const user    = (req as Request & { user?: { id?: string } }).user;
+      await restoreVenueAccess(venueId, user?.id);
+      await auditKernelAction({
+        venueId, actorId: user?.id,
+        action: "venue_access.restored", resourceType: "venue_access", resourceId: venueId,
+      });
+      res.json({ success: true });
+    } catch (err) { next(err); }
+  },
+);
+
+/* ─── Offline Resilience Bundle ────────────────────────────────────────────── */
+
+/* GET /offline-bundle  — full training + SOPs + pairing guides + emergency docs */
+router.get(
+  "/offline-bundle",
+  requireAuth,
+  (_req: Request, res: Response) => {
+    const bundle = buildOfflineBundle();
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.json(bundle);
   },
 );
 

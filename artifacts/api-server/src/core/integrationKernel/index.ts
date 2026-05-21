@@ -114,3 +114,35 @@ export {
   verifyAuditChain,
 } from "./auditTrail";
 export type { AuditEntry, TamperCheckResult } from "./auditTrail";
+
+// Global Provider Control Center + Venue Access Controls
+export {
+  ensureGlobalControlsSchema,
+  getAllGlobalControls,
+  getGlobalControl,
+  setGlobalControl,
+  emergencyShutdown,
+  restoreFromShutdown,
+  isEmergencyShutdownActive,
+  getVenueAccess,
+  listVenueAccess,
+  setVenueAccess,
+  revokeVenueAccess,
+  restoreVenueAccess,
+  checkGlobalAccess,
+  PROVIDER_CATEGORIES,
+} from "./globalControls";
+export type {
+  GlobalControlRow,
+  VenueAccessRow,
+  ManagedCategory,
+} from "./globalControls";
+
+// Offline Resilience Bundle
+export { buildOfflineBundle } from "./offlineBundle";
+export type {
+  OfflineBundle,
+  SopEntry,
+  PairingGuide,
+  EmergencyDoc,
+} from "./offlineBundle";

@@ -88,7 +88,7 @@ export function IntegrationInfraPanel({ venueId, GOLD, CREAM }: Props) {
     setLoading(true);
     try {
       const res = await fetch(`/api/integration-kernel/venues/${venueId}/providers`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("novee_staff_pin") ?? ""}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("axiom_token") ?? ""}` },
       });
       if (res.ok) {
         const data = await res.json() as { providers: Provider[] };
@@ -116,7 +116,7 @@ export function IntegrationInfraPanel({ venueId, GOLD, CREAM }: Props) {
     try {
       const res = await fetch(`/api/integration-kernel/venues/${venueId}/providers/${providerId}/test`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${localStorage.getItem("novee_staff_pin") ?? ""}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("axiom_token") ?? ""}` },
       });
       if (res.ok) {
         const data = await res.json() as { status: string; latencyMs: number | null; error: string | null };
@@ -144,7 +144,7 @@ export function IntegrationInfraPanel({ venueId, GOLD, CREAM }: Props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("novee_staff_pin") ?? ""}`,
+          Authorization: `Bearer ${localStorage.getItem("axiom_token") ?? ""}`,
         },
         body: JSON.stringify(body),
       });
@@ -163,7 +163,7 @@ export function IntegrationInfraPanel({ venueId, GOLD, CREAM }: Props) {
   async function handleDelete(id: string) {
     await fetch(`/api/integration-kernel/venues/${venueId}/providers/${id}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${localStorage.getItem("novee_staff_pin") ?? ""}` },
+      headers: { Authorization: `Bearer ${localStorage.getItem("axiom_token") ?? ""}` },
     });
     void loadProviders();
   }
@@ -171,7 +171,7 @@ export function IntegrationInfraPanel({ venueId, GOLD, CREAM }: Props) {
   async function handleSetPrimary(id: string) {
     await fetch(`/api/integration-kernel/venues/${venueId}/providers/${id}/set-primary`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${localStorage.getItem("novee_staff_pin") ?? ""}` },
+      headers: { Authorization: `Bearer ${localStorage.getItem("axiom_token") ?? ""}` },
     });
     void loadProviders();
   }
