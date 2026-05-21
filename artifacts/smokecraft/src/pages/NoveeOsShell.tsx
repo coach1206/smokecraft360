@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IntegrationInfraPanel }          from "@/components/IntegrationInfraPanel";
 import { HealthMonitorPanel }             from "@/components/HealthMonitorPanel";
@@ -147,7 +147,7 @@ function PairingView() {
         <motion.div key="pr-intro"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -24, filter: "blur(10px)" }}
           transition={{ duration: 0.55 }}
-          style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: `radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.06) 0%, transparent 65%)` }}>
+          style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: `radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.08) 0%, transparent 65%), radial-gradient(ellipse at 50% 65%, rgba(253,251,247,0.025) 0%, transparent 50%)` }}>
           {[1, 2, 3].map(i => (
             <motion.div key={i}
               animate={{ opacity: [0.07, 0.20, 0.07], scale: [0.94, 1.04, 0.94] }}
@@ -156,7 +156,7 @@ function PairingView() {
           ))}
           <motion.div animate={{ opacity: [0.4, 1, 0.6, 1] }} transition={{ duration: 1.6 }} style={{ textAlign: "center", zIndex: 1 }}>
             <div style={{ fontSize: 11, letterSpacing: "0.44em", color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", marginBottom: 18 }}>NOVEE OS · E.A.T INTELLIGENCE</div>
-            <div style={{ fontSize: 58, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", lineHeight: 1, textShadow: `0 0 60px ${GOLD}44` }}>PAIRING ENGINE</div>
+            <div style={{ fontSize: 58, fontWeight: 900, color: "#FFFDD0", fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", lineHeight: 1, textShadow: `0 0 60px ${GOLD}66, 0 0 120px rgba(253,251,247,0.10)` }}>PAIRING ENGINE</div>
             <motion.div animate={{ opacity: [0.4, 0.9, 0.4] }} transition={{ duration: 2.2, repeat: Infinity }}
               style={{ marginTop: 16, fontSize: 14, letterSpacing: "0.30em", color: `${GOLD}70`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>
               AI SOMMELIER · FLAVOR INTELLIGENCE
@@ -879,7 +879,7 @@ function CoachHelpView() {
 
   return (
     <div style={{ position: "relative", inset: 0, flex: 1, minHeight: 0, display: "flex", flexDirection: "column", background: "linear-gradient(160deg,#0A0600 0%,#060400 100%)", overflow: "hidden" }}>
-      <div style={{ position: "absolute", top: -80, left: "30%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${GOLD}08 0%, transparent 70%)`, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: -80, left: "30%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, rgba(253,251,247,0.04) 0%, ${GOLD}08 40%, transparent 70%)`, pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: -60, right: "10%", width: 300, height: 300, borderRadius: "50%", background: `radial-gradient(circle, #C8702818 0%, transparent 70%)`, pointerEvents: "none" }} />
 
       <div style={{ padding: "20px 24px 0", flexShrink: 0 }}>
@@ -1100,12 +1100,6 @@ const NAV_ITEMS = [
 ];
 
 function OsNavBar() {
-  const { profile }  = useNoveeGuest();
-  const { navigate } = useNoveeNav();
-  const { phase }    = profile;
-  const isStaff      = useStaffModeSC();
-  const visibleNav   = NAV_ITEMS.filter(item => !item.staffOnly || isStaff);
-
   return (
     <div style={{
       width: "100%", flexShrink: 0, height: 62,
@@ -1127,46 +1121,6 @@ function OsNavBar() {
           <span style={{ fontSize: 9, color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700 }}>Kiosk Edition</span>
         </div>
       </div>
-
-      {visibleNav.map((item) => {
-        const active  = item.isActive(phase);
-        return (
-          <motion.button key={item.id} type="button"
-            onPointerDown={() => { if (item.targetPhase) navigate(item.targetPhase, item.pinLevel); }}
-            whileTap={{ scale: 0.93 }}
-            animate={{ background: active ? `rgba(212,175,55,0.16)` : "transparent" }}
-            transition={{ duration: 0.18 }}
-            style={{
-              border: `1.5px solid ${active ? GOLD + "66" : "rgba(255,255,255,0.09)"}`,
-              borderRadius: 10, cursor: "pointer",
-              padding: "7px 14px",
-              display: "flex", flexDirection: "row", alignItems: "center", gap: 8,
-              fontFamily: "'Inter',sans-serif",
-              position: "relative", flexShrink: 0,
-              boxShadow: active ? `0 0 14px ${GOLD}33, inset 0 1px 0 ${GOLD}22` : "none",
-              transition: "border-color 0.18s, box-shadow 0.18s",
-            }}>
-            {active && (
-              <motion.div layoutId="nav-active-glow"
-                style={{ position: "absolute", inset: 0, borderRadius: 10, background: `radial-gradient(ellipse at 50% 50%, ${GOLD}18 0%, transparent 70%)`, pointerEvents: "none" }}
-                transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              />
-            )}
-            <div style={{ width: 30, height: 30, borderRadius: 7, background: active ? `rgba(212,175,55,0.28)` : "rgba(255,255,255,0.07)", border: `1px solid ${active ? GOLD + "77" : "rgba(255,255,255,0.12)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: "0.04em", color: active ? GOLD : "rgba(240,232,212,0.80)", fontFamily: "'Inter',sans-serif" }}>{item.abbr}</span>
-            </div>
-            <span style={{ fontSize: 14, letterSpacing: "0.08em", color: active ? GOLD : "rgba(240,232,212,0.70)", textTransform: "uppercase", fontWeight: active ? 800 : 600, whiteSpace: "nowrap" }}>{item.label}</span>
-            {item.pinLevel && (
-              <span style={{ fontSize: 8, color: item.pinLevel === "management" ? "#C87028" : `${GOLD}88`, letterSpacing: "0.08em" }}>
-                {item.pinLevel === "management" ? "🔒" : "🔑"}
-              </span>
-            )}
-            {active && (
-              <div style={{ position: "absolute", bottom: -1, left: "20%", right: "20%", height: 2, background: GOLD, borderRadius: 2, boxShadow: `0 0 8px ${GOLD}` }} />
-            )}
-          </motion.button>
-        );
-      })}
 
       <div style={{ flex: 1 }} />
       <span style={{ fontSize: 9, color: "rgba(212,175,55,0.30)", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>v2.4</span>
@@ -1422,6 +1376,89 @@ function phaseKey(phase: string): string {
   return "crafthub";
 }
 
+function POSCommandHub() {
+  const CREW = "#FDFBF7";
+  const [humidor] = useState(145);
+  const [kitchen, setKitchen] = useState(12);
+  const [barPours, setBarPours] = useState(37);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setKitchen(k => Math.min(20, Math.max(6, k + (Math.random() > 0.85 ? (Math.random() > 0.5 ? 1 : -1) : 0))));
+      setBarPours(b => Math.max(30, b + (Math.random() > 0.82 ? 1 : 0)));
+    }, 4800);
+    return () => clearInterval(id);
+  }, []);
+  const STATUS_COLORS = { occupied: "#32B45A", available: `${GOLD}50`, reserved: "#5BBFFF" } as const;
+  const TABLES: { n: number; status: "occupied" | "available" | "reserved"; guests: number; items: number }[] = [
+    { n: 1, status: "occupied",  guests: 4, items: 3 },
+    { n: 2, status: "occupied",  guests: 2, items: 1 },
+    { n: 3, status: "available", guests: 0, items: 0 },
+    { n: 4, status: "occupied",  guests: 6, items: 5 },
+    { n: 5, status: "reserved",  guests: 0, items: 0 },
+    { n: 6, status: "occupied",  guests: 3, items: 2 },
+    { n: 7, status: "available", guests: 0, items: 0 },
+    { n: 8, status: "occupied",  guests: 5, items: 4 },
+  ];
+  const metrics = [
+    { label: "Kitchen Orders", value: String(kitchen),  unit: "ACTIVE",          icon: "⊹", color: "#F4A240" },
+    { label: "Bar Pour Level", value: String(barPours), unit: "POURS TONIGHT",   icon: "◆", color: "#5BBFFF" },
+    { label: "Humidor Stock",  value: String(humidor),  unit: "PUROS REMAINING", icon: "◈", color: GOLD      },
+  ];
+  return (
+    <div style={{ position: "absolute", inset: 0, background: "#060402", display: "flex", flexDirection: "column", fontFamily: "'Inter',sans-serif", overflow: "hidden" }}>
+      <div style={{ position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)", width: 900, height: 400, background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.09) 0%, transparent 60%)", pointerEvents: "none" }} />
+      <div style={{ flexShrink: 0, padding: "18px 32px 16px", borderBottom: "1px solid rgba(212,175,55,0.18)", display: "flex", alignItems: "center", gap: 20, background: "rgba(4,2,0,0.94)", backdropFilter: "blur(20px)" }}>
+        <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(212,175,55,0.16)", border: "1.5px solid rgba(212,175,55,0.55)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 16px rgba(212,175,55,0.20)" }}>
+          <span style={{ fontSize: 20, color: GOLD }}>⊞</span>
+        </div>
+        <div>
+          <div style={{ fontSize: 30, fontWeight: 900, color: CREW, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em", lineHeight: 1 }}>E.A.T. COMMAND HUB</div>
+          <div style={{ fontSize: 12, color: "rgba(253,251,247,0.35)", letterSpacing: "0.26em", textTransform: "uppercase", marginTop: 3 }}>Management Clearance · Live Floor</div>
+        </div>
+        <div style={{ flex: 1 }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", background: "rgba(50,180,90,0.10)", border: "1px solid rgba(50,180,90,0.30)", borderRadius: 8 }}>
+          <motion.div animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 1.8, repeat: Infinity }} style={{ width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#32B45A", letterSpacing: "0.12em" }}>FLOOR ACTIVE</span>
+        </div>
+      </div>
+      <div style={{ flexShrink: 0, display: "grid", gridTemplateColumns: "repeat(3,1fr)", borderBottom: "1px solid rgba(212,175,55,0.16)" }}>
+        {metrics.map((m, i) => (
+          <div key={m.label} style={{ padding: "16px 28px", borderLeft: i > 0 ? "1px solid rgba(212,175,55,0.14)" : "none", position: "relative", overflow: "hidden" }}>
+            {i === 2 && <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.07) 0%, transparent 60%)", pointerEvents: "none" }} />}
+            <div style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(253,251,247,0.30)", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>{m.icon} {m.label}</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+              <motion.span key={m.value} initial={{ opacity: 0.7, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} style={{ fontSize: 44, fontWeight: 900, color: m.color, fontFamily: "'Inter',sans-serif", lineHeight: 1, textShadow: `0 0 24px ${m.color}44` }}>{m.value}</motion.span>
+              <span style={{ fontSize: 10, letterSpacing: "0.22em", color: `${m.color}66`, fontWeight: 800, textTransform: "uppercase" }}>{m.unit}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ flexShrink: 0, padding: "12px 28px 8px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 2, height: 16, background: GOLD, borderRadius: 2 }} />
+        <span style={{ fontSize: 10, letterSpacing: "0.34em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>ACTIVE FLOOR LAYOUT</span>
+        <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(212,175,55,0.22), transparent)" }} />
+        <span style={{ fontSize: 10, letterSpacing: "0.18em", color: "rgba(253,251,247,0.22)", textTransform: "uppercase" }}>{TABLES.filter(t => t.status === "occupied").length}/{TABLES.length} OCCUPIED</span>
+      </div>
+      <div style={{ flex: 1, padding: "0 20px 20px", display: "grid", gridTemplateColumns: "repeat(4,1fr)", gridTemplateRows: "repeat(2,1fr)", gap: 14, overflow: "hidden" }}>
+        {TABLES.map(table => (
+          <motion.div key={table.n} whileTap={{ scale: 0.96 }}
+            style={{ background: table.status === "occupied" ? "rgba(50,180,90,0.07)" : table.status === "reserved" ? "rgba(91,191,255,0.05)" : "rgba(253,251,247,0.03)", border: `1.5px solid ${table.status === "occupied" ? "rgba(50,180,90,0.28)" : table.status === "reserved" ? "rgba(91,191,255,0.22)" : "rgba(212,175,55,0.14)"}`, borderRadius: 14, padding: "16px 18px", cursor: "pointer", display: "flex", flexDirection: "column", gap: 6, backdropFilter: "blur(8px)", position: "relative" }}>
+            {table.status === "occupied" && (
+              <motion.div animate={{ opacity: [1, 0.35, 1] }} transition={{ duration: 1.6, repeat: Infinity }}
+                style={{ position: "absolute", top: 10, right: 10, width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
+            )}
+            <div style={{ fontSize: 11, letterSpacing: "0.26em", color: "rgba(253,251,247,0.28)", textTransform: "uppercase", fontWeight: 700 }}>TABLE</div>
+            <div style={{ fontSize: 44, fontWeight: 900, color: CREW, fontFamily: "'Cormorant Garamond',serif", lineHeight: 1 }}>{String(table.n).padStart(2, "0")}</div>
+            <div style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: STATUS_COLORS[table.status], fontWeight: 700 }}>
+              {table.status === "occupied" ? `${table.guests} GUESTS · ${table.items} ITEMS` : table.status === "reserved" ? "RESERVED" : "AVAILABLE"}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function NoveeCraftHubWrapper() {
   const { setPhase } = useNoveeGuest();
   return <CraftGrid onSmokecraft={() => setPhase("s1_demo")} />;
@@ -1443,7 +1480,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange
     <Suspense fallback={null}>
       {phase === "crafthub" && <NoveeCraftHubWrapper />}
       {phase === "eat_dashboard" && <CompEAT eatFlags={eatFlags} />}
-      {phase === "executive_command" && <CompExec flags={eatFlags} onFlagsChange={onFlagsChange} />}
+      {phase === "executive_command" && <POSCommandHub />}
       {phase === "pairing_view" && <PairingView />}
       {phase === "lounge_view" && <LoungeView />}
       {phase === "profile_view" && <ProfileView />}
