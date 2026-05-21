@@ -1,0 +1,24 @@
+ATTN AGENT: THIS IS A NEW DIRECTIVE FOR MISSING STRUCTURAL COMPONENTS. DO NOT BYPASS.
+
+I am not resubmitting old code. I am explicitly instructing you to build the entry path layers that are completely missing from the current repository state. Right now, the application incorrectly defaults straight into the SmokeCraft hero panel under the path `/craft-hub` and renders the other crafts as minimal header text elements. 
+
+You must structurally modify the entry route mapping to enforce the following multi-stage layout:
+
+1. COMPONENT MOUNT: INITIAL BOOT SEQUENCE (PATH: '/')
+- Force the app root directory to mount a non-skippable, sequential activation screen using a True Obsidian (#010101) layout block.
+- Render Phase 1: A center-aligned, premium geometric emblem built from smoked chrome vector paths. Beneath it, render "PROFOUND INNOVATIONS LLC" in a large luxury serif font with a gold foil material overlay. Fade out over 0.35s after a 3-second hold.
+- Render Phase 2: Fade in "NOVEE OS" in a True White system typeface accompanied by an active, gold-glowing loading ring. Render "POWERED" beneath it. Write the "SYSTEM ACTIVE" token directly to localStorage on completion, then transition.
+
+2. COMPONENT MOUNT: THE TRUE 4-TILE CRAFTHUB MATRIX (PATH: '/craft-hub')
+- Completely eliminate the text sub-tabs for the different crafts at the top of the viewport.
+- Re-architect the `/craft-hub` view into a clean, full-screen 1920x1080 tactical grid layout using 4 massive, touchscreen-optimized card containers constructed out of layered Obsidian Glass and brushed titanium outlines. Maintain a strict 58px minimum touch footprint.
+- Map the precise visual assets to the 4 tiles:
+  * TILE 1: 'SMOKECRAFT 360' -> Bind your high-resolution photograph of a hand-rolled Maduro cigar resting on volcanic soil. Clicking this tile must be the singular state mechanism that launches the onboarding process.
+  * TILE 2: 'POURCRAFT 360' -> Luxury spirits/crystal tumbler photography (Affix a small brushed bronze 'COMING SOON' overlay banner).
+  * TILE 3: 'BEERCRAFT 360' -> Artisanal micro-brewery visual asset (Affix a 'COMING SOON' tag).
+  * TILE 4: 'WINECRAFT 360' -> Premium reserve wine cellar visualization (Affix a 'COMING SOON' tag).
+
+3. ROUTER & PERSISTENT RAIL SYNC
+- Ensure that clicking the 'CraftHub' node on the persistent Left Navigation Rail instantly unmounts the active sub-module view and returns the entire canvas back to this 4-Tile Selection Chassis.
+
+Execute full workspace tree compilation. Verify that all components render with zero styling stubs or TypeScript compilation drops.
