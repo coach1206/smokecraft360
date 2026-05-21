@@ -80,10 +80,11 @@ export default function ConfirmModal({
                 textAlign: "left",
               }}>
                 <AlertTriangle size={15} color="#ef4444" style={{ flexShrink: 0, marginTop: 1 }} />
-                <div style={{ flex: 1 }}>
+                <p style={{ flex: 1, margin: 0 }}>
                   <span style={{ fontSize: 12, color: "#ef4444", lineHeight: 1.5, fontWeight: 500 }}>{warning}</span>
                   {actionLabel && onAction && (
                     <motion.button
+                      type="button"
                       whileTap={{ scale: 0.96 }}
                       onClick={onAction}
                       style={{
@@ -98,7 +99,7 @@ export default function ConfirmModal({
                       <ExternalLink size={11} color="#D48B00" />
                     </motion.button>
                   )}
-                </div>
+                </p>
               </div>
             )}
 
