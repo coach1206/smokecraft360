@@ -10,6 +10,7 @@ export const kernelModeAuditLogTable = pgTable("kernel_mode_audit_log", {
   newMode:    kernelModeEnum("new_mode").notNull(),
   changedBy:  uuid("changed_by"),
   changedByName: text("changed_by_name"),
+  reason:     text("reason"),
   changedAt:  timestamp("changed_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

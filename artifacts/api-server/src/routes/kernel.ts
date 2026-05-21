@@ -41,7 +41,8 @@ const RegisterModuleSchema = z.object({
 });
 
 const SetModeSchema = z.object({
-  mode: z.enum(["sovereign", "essential"]),
+  mode:   z.enum(["sovereign", "essential"]),
+  reason: z.string().trim().max(500).optional(),
 });
 
 const TelemetryIngestSchema = z.object({
@@ -565,6 +566,7 @@ router.patch("/mode/:venueId", requireAuth, async (req: AuthRequest, res: Respon
           newMode:       parsed.data.mode,
           changedBy:     authUser?.id,
           changedByName: authUser?.name ?? authUser?.email ?? undefined,
+          reason:        parsed.data.reason ?? undefined,
         });
       }
 
