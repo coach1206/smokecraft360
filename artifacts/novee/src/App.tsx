@@ -8,6 +8,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
 import type { Phase } from "@/context/GuestProfileContext";
+import { LicenseProvider } from "@/contexts/LicenseContext";
+import UpgradePage from "@/pages/UpgradePage";
+import UpgradeRequired from "@/pages/UpgradeRequired";
 import GoldenBoxPage from "@/pages/GoldenBoxPage";
 import CraftPortalHome from "@/pages/CraftPortalHome";
 import EATDashboard from "@/pages/EATDashboard";
@@ -1471,6 +1474,8 @@ function phaseKey(phase: string): string {
   if (phase === "coach_help")        return "coach_help";
   if (phase === "control-chamber")   return "control-chamber";
   if (phase === "dev_console")       return "dev_console";
+  if (phase === "upgrade_plan")      return "upgrade_plan";
+  if (phase === "upgrade_required")  return "upgrade_required";
   if (S1_PHASES.has(phase))          return "s1";
   if (S2_PHASES.has(phase))          return "s2";
   if (S3_PHASES.has(phase))          return "s3";
@@ -1491,6 +1496,8 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; on
   if (phase === "coach_help")        return <CoachHelpView />;
   if (phase === "control-chamber")   return <ControlChamber />;
   if (phase === "dev_console")       return <DevConsole />;
+  if (phase === "upgrade_plan")      return <UpgradePage />;
+  if (phase === "upgrade_required")  return <UpgradeRequired />;
   if (S1_PHASES.has(phase))          return <S1_InitGate />;
   if (S2_PHASES.has(phase))          return <S2_TerroirMatrix />;
   if (S3_PHASES.has(phase))          return <S3_FormulationLab />;
@@ -1685,6 +1692,7 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <LicenseProvider>
       <GuestProfileProvider>
         <AnimatePresence mode="wait">
           {!bootDone ? (
@@ -1704,6 +1712,7 @@ export default function App() {
           )}
         </AnimatePresence>
       </GuestProfileProvider>
+      </LicenseProvider>
     </QueryClientProvider>
   );
 }

@@ -31,7 +31,9 @@ export type Phase =
   | "s1_pilon_game"
   | "control-chamber"
   | "dev_console"
-  | "coach_help";
+  | "coach_help"
+  | "upgrade_plan"
+  | "upgrade_required";
 
 export type DifficultyTier = "beginner" | "apprentice" | "blender" | "master" | "architect";
 export type SessionType = "live" | "demo" | "investor" | "qa" | "presentation";
