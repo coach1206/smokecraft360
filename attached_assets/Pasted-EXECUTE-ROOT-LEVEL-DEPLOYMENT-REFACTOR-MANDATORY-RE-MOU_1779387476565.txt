@@ -1,0 +1,25 @@
+EXECUTE ROOT LEVEL DEPLOYMENT REFACTOR: MANDATORY RE-MOUNT OF BOOT ANIMATIONS AND FULL REBUILD OF THE 4-CRAFT SELECTION CHASSIS (ZERO STUBS)
+
+1. REASON FOR THIS DIRECTIVE (THE MISSING INITIAL CHASSIS)
+The compilation is incomplete. You have bypassed the initialization screens and completely erased the true master CraftHub launcher landing workspace. You are lazily rendering PourCraft, BeerCraft, and WineCraft as dead text sub-tabs at the top of a pre-matured SmokeCraft view. Stop. You are ordered to re-architect the entry layout files so the system boots dynamically and handles the true 4-craft selection matrix.
+
+2. FORCE INITIAL POWER-UP SEQUENCE (PHASE-BY-PHASE RENDER)
+Before the user can access any interface or session, the root component tree must execute and enforce the non-skippable boot timeline:
+- Stage 1.1: System Init (0.0s - 1.5s): Solid True Obsidian (#010101) layout backdrop. Trigger a single, premium mechanical 3400Hz synthetic oscillator tone on mount.
+- Stage 1.2: Profound Innovations LLC (1.5s - 4.5s): Center-frame, render a crisp, premium geometric emblem built from smoked chrome and black titanium vector layers. Directly below, animate the text "PROFOUND INNOVATIONS LLC" in an oversized luxury serif font with a warm gold foil texture. Slide left and dissolve out over 0.35s.
+- Stage 1.3: NOVEE OS Powered (4.5s - 7.5s): Dissolve in "NOVEE OS" in a clean True White system typeface paired with a pulsating gold edge-glow active loading ring. Render "POWERED" underneath. Lock the "SYSTEM ACTIVE" local storage token state.
+
+3. REBUILD THE TRUE CRAFTHUB ECOSYSTEM LAUNCHER
+Once the boot sequence resolves, route the system directly to a clean, full-screen /craft-hub landing domain. Completely destroy the current text-tag header arrangement and replace it with the premium full-screen grid:
+- Grid Layout: Divide the workspace into 4 massive, touchscreen-optimized tile containers engineered out of layered Obsidian Glass panels, brushed titanium trims, and subtle gold accent shadows. All touch targets must strictly maintain a 58px footprint with an elegant typography scale.
+- Explicit Asset Requirements:
+  1. TILE 1: SMOKECRAFT 360 - Embedded with your high-fidelity, editorial-grade photograph of the hand-rolled Maduro cigar on textured soil and raw tobacco leaves. Tapping this tile must be the ONLY action that launches the SmokeCraft ritual onboarding flow.
+  2. TILE 2: POURCRAFT 360 - Embedded with a premium, high-contrast photograph of a luxury crystal tumbler with high-end spirits. (Marked with an elegant, small brushed bronze 'COMING SOON' overlay tag).
+  3. TILE 3: BEERCRAFT 360 - Embedded with an editorial artisanal micro-brewery asset. (Marked with a 'COMING SOON' overlay tag).
+  4. TILE 4: WINECRAFT 360 - Embedded with a luxury fine reserve wine cellar visualization. (Marked with a 'COMING SOON' overlay tag).
+
+4. SYSTEM NAVIGATION AND BOUNDARY SECURITY
+- Left Navigation Rail: Ensure the persistent Left Rail remains anchored to the screen with large, scannable icons for 'CraftHub', 'SmokeCraft', 'Pairing Engine', 'Lounge Mode', 'My Profile', and 'Settings'. Clicking 'CraftHub' from ANY sub-view must cleanly unmount the current module and return the viewport directly to the 4-Craft Selection Chassis.
+- E.A.T Security Matrix: Ensure all asset tracking parameters, floor maps, and transaction analytics modules are component-hidden behind the 4-digit Staff PIN pad, firing the hardware-accelerated concentric touch ripple animation on verification to expose the high-velocity floor POS (Humidor tracking down to the exact 144 puros count).
+
+Execute a comprehensive file overwrite across the workspace tree. Force the initialization and launcher screens to load with 100% operational fidelity and zero TypeScript compilation errors.
