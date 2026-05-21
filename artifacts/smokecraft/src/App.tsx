@@ -1154,7 +1154,7 @@ export default function App() {
             <SubPageProviders><IntelligenceManifest /></SubPageProviders>
           </Route>
           <Route path="/craft-hub">
-            <SubPageProviders><CraftHub /></SubPageProviders>
+            <NoveeOsShell />
           </Route>
           <Route path="/pos">
             <SubPageProviders><PosMode /></SubPageProviders>

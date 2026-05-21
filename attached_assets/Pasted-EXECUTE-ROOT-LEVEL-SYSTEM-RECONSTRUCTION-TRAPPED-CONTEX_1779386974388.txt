@@ -1,0 +1,82 @@
+EXECUTE ROOT LEVEL SYSTEM RECONSTRUCTION: TRAPPED CONTEXT CONVERGENCE, BI-DIRECTIONAL FILE EXTRACTION, AND FULL INTERACTION LAYER ACTIVATION (ABSOLUTE PRODUCTION MANDATE • ZERO STUBS)
+
+====================================================
+1. STRUCTURAL ARCHITECTURE & STATE MATRIX
+====================================================
+- Complete View State Isolation: You are ordered to wipe out all legacy, flat, or standalone prototype layout files inside the SmokeCraft folder. Rebuild them so they explicitly run on the identical UI chassis, spacing, and styling rules of NOVEE OS. Both systems must be wrapped in the same global navigation context provider.
+- Core Session Model Implementation: Hard-code an un-wipable string union type handling the unified routing layout matrix across exactly 4 persistent local storage checkpoint slots:
+  type ActiveView = 'crafthub' | 'smokecraft' | 'pairing' | 'lounge' | 'profile' | 'settings' | 'eat_intelligence' | 'executive_command';
+- Session Data Preservation: Moving between these views must NEVER wipe or destroy:
+  * Chosen Mastery Guide tracking metrics (Session 1)
+  * Earned guest XP balances and active Milestone Badges (Session 1)
+  * Chosen tobacco wrapper, filler, and blend progress profiles (Session 1)
+  * Selected pairing cards and checkout totals (Session 2)
+
+====================================================
+2. POWER-UP & THE BOOT SEQUENCE PHASES
+====================================================
+- Phase 1.1: System Init (0.0s – 1.5s):
+  * Initial State: Black viewport dissolves to a high-contrast True Obsidian (#010101) solid base layout layer.
+  * Audio Node: Mount a native Web Audio API synthetic oscillator configured to a sustained 3400Hz frequency layer. Trigger a single, clean mechanical chime tone on pointerDown activation.
+- Phase 1.2: Corporate Anchor (1.5s – 4.5s):
+  * Graphic Asset: Mount a center-frame, hyper-detailed vector illustration of an interwoven geometric emblem built out of polished smoked chrome and black titanium textures. 
+  * Typography: Render "PROFOUND INNOVATIONS LLC" directly underneath in a premium, oversized serif font with a warm gold foil material texture.
+  * Motion Settle: Apply an engineered, weighted animation curve that anchors the brand assets before executing a smooth slide-left dissolve (opacity 1->0, X: -50px).
+- Phase 1.3: OS Authorization (4.5s – 7.5s):
+  * Graphic Asset: Transition cleanly to "NOVEE OS" in a True White system typeface paired with a functional, pulsating gold edge-glow loading ring. Render "POWERED" beneath it.
+  * Top-Left Toolbar Status: Illuminate an absolute status node showing a minimal biometric icon and a live text label reading "SYSTEM ACTIVE". Save this handshake to localStorage.
+
+====================================================
+3. CRAFTHUB ECOSYSTEM LAUNCHER OVERHAUL
+====================================================
+- Launch Architecture: Rebuild CraftHub into the absolute ecosystem root directory launcher.
+- Tactile Grid Configuration: Split the 1920x1080 canvas into 4 massive, touchscreen-optimized tile blocks built with layered Obsidian Glass and black titanium borders. Minimum touch targets must be a strict 58px footprint.
+- Asset Mapping: 
+  1. Tile 1: SMOKECRAFT 360 – Must map a realistic, editorial-grade photograph of a flawless Nicaraguan Maduro cigar resting on textured volcanic soil and raw tobacco leaves.
+  2. Tile 2: POURCRAFT 360 – Premium crystal tumbler with luxury spirits photography.
+  3. Tile 3: BEERCRAFT 360 – High-end artisanal brewery visual asset.
+  4. Tile 4: WINECRAFT 360 – Fine reserve cellar wine bottle visualization.
+- Rail Integration: Mount the persistent Left Obsidian Navigation Rail, mapping active navigation targets directly to your global view router: 'CraftHub', 'SmokeCraft', 'Pairing Engine', 'Lounge Mode', 'My Profile', 'Settings'.
+
+====================================================
+4. SMOKECRAFT RITUAL JOURNEY RESTORATION
+====================================================
+- Phase 3.1: Onboarding Chamber Rebrand: Completely remove the phrase "The Initiation Chamber" and all legacy 175-line developer setting panels. Replace with a clean layout reading "Your Ritual Begins". The primary action button must read "Enter the Lounge" in a massive 22px text target.
+- Phase 3.2: Your Guide Portfolio: Build a clean grid of profile selection cards. Each item must display a real, premium photograph of a master tobacco blender framed by their corresponding country-flag graphics (e.g., "DOÑA ROSA: WRAPPER ARTISTRY MENTOR"). Tapping a card locks that Guide ID directly to Session 1 context.
+- Language Overhaul: Enforce editorial, ritual-voiced sub-copy globally. Update strings across all views:
+  * "The Levels" -> "Your Mastery Path"
+  * "The Mentors" -> "Your Guide"
+  * "Signature Studio" -> "⚗ Your Reserve"
+- Phase 3.3: ⚗ Your Reserve Workspace: Gate this canvas strictly behind (completedRitual && badgesEarned >= 3). Render a flawless, hand-rolled Maduro cigar on an obsidian glass prep mat framed by raw leaf graphics. Strip away all cluttering cards, widgets, and enterprise graphs.
+
+====================================================
+5. ADVANCED MODULE INTEGRATION
+====================================================
+- Upgraded Pairing Engine (AI Sommelier): Eliminate the static intro splash loop. Program a smooth, 4-second cinematic blur transition that moves from the onboarding screen into the full operational workspace layout:
+  * Left Column: Macro cigar wrapper photography, active flavor graphs, and a heavy strength index.
+  * Center Column: An interactive AI sommelier narrative card with deep tasting stories.
+  * Right Column: Active whiskey, wine, and food pairing elements featuring a primary gold-lined button reading "PAIR WITH MY PROFILE" (AI match calculation) and a secondary action reading "Add To Tab".
+  * Lower Section: A touch-screen swipe carousel displaying a brand new 6th pairing index: "Lounge Favorites", driven by actual venue metrics.
+- The Golden Box Progression: Wire two primary command nodes:
+  * "OPEN CHALLENGE": Triggers a full-screen, translucent obsidian glass overlay with a soft amber edge-glow showing 6 tiered challenges (Novice to Exclusive), explicit locked/unlocked state visuals, and a "BEGIN CHALLENGE" button.
+  * "COMPARE STATS": Mounts a 6-metric comparison table (User vs. Venue Average). Program a conditional style rule to flag all user metrics exceeding the venue benchmark with a high-contrast soft green highlight. Animate the grid entries using a 0.35s weighted spring-mass curve.
+- Global Coach Help Framework: Permanently mount this module in the Left Rail as a completely un-gated, zero-PIN component visible to all roles. Rebuild its viewport into a two-tab container:
+  * Guides Tab: Displays 6 large topic cards (Getting Started, Pairing Guide, XP & Levels, Lounge Controls, Golden Box, Staff Tools) that drill down into numbered instruction sheets with back-navigation selectors.
+  * FAQ Tab: Displays 6 smooth, hardware-accelerated accordion list items that handle expand/collapse animations gracefully.
+
+====================================================
+6. SECURITY PIN MATRIX & HIGH-VELOCITY POS
+====================================================
+- Staff Authentication Gate: GUEST role profiles must have zero access to system metrics. Tapping 'E.A.T Intelligence', 'Lounge Controls', or 'Settings' must immediately trigger an oversized 4-digit PIN pad overlay model.
+- The Handoff Ripple Animation: On successful entry of a valid Staff PIN, track the exact touch coordinates and fire an explosive, hardware-accelerated concentric ripple animation that scales outward from the pointer down spot across the full 1920x1080 viewport using GPU layers, smoothly dissolving the current screen layout directly into the live E.A.T. system.
+- E.A.T. High-Velocity POS Terminal: Format the operational interface for rapid muscle-memory navigation. Set action headers to a crisp 28px and numbers to a massive 18px-20px. Wire live reactive states to display active seating grid nodes and triple-axis backend inventory balances across the Kitchen, Bar, and Humidor (down to the exact item count, e.g., 144 puros remaining).
+- Universal POS Integration Router: Build an internal API endpoint (`POSRouterEngine`) that intercepts and normalizes ticket payloads from external setups (Clover, Toast, Lightspeed, Square). Automatically pipe incoming transactional data to calculate open guest tabs, update item stocks, and activate live 2x, 3x, and 5x receipt score multipliers.
+- Executive Command Center: Gate this layout behind an independent Management PIN. Provide the lounge manager with physical toggle switches that globally inject, show, hide, or completely erase individual E.A.T. blocks from client terminals in real-time. Integrate an active WebSocket client layer to grant the 'Developer' role a persistent remote reverse-tunnel to push code overrides and clean lingering process memory stacks off-site.
+
+====================================================
+7. SCREEN LUMINANCE & TOUCH TUNING
+====================================================
+- Contrast Calibration: Eliminate flat pitch black (#000000) inside container panels. Elevate the visibility threshold by wrapping inner grids in lighter, semi-translucent smoke-tinted glass boxes backed by soft gold ambient illumination vectors. Text must stand out cleanly in dim environments without generating screen-glare eye strain.
+- Animation Controls: Mount an ambient volumetric smoke canvas layer at the bottom edge that drifts wisps upward along with micro-ember sparks cycling on a 5.4s breathing loop. 
+
+Sweep the entire component repository. Eliminate all layout duplications, empty typescript interfaces, and broken file imports. Execute full compilation immediately.

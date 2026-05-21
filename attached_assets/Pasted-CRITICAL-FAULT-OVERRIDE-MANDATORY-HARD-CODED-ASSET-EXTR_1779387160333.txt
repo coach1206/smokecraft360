@@ -1,0 +1,27 @@
+CRITICAL FAULT OVERRIDE: MANDATORY HARD-CODED ASSET EXTRACTION AND SOVEREIGN MATERIAL SPECIFICATION FOR SMOKECRAFT (ZERO STUBS • COMPLETE VISUAL MIRRORING)
+
+1. THE ROOT IMAGE FAILURE (THE DRIFT MUST END NOW):
+You are failing to carry over the exact luxury asset paths from NOVEE OS into SmokeCraft. When switching modules, SmokeCraft reverts to generic imagery, broken placeholders, or flat layouts that violate the Sovereign protocol. Stop using dynamic references that resolve incorrectly at runtime. You are ordered to execute a direct, structural, file-level asset injection so both environments match with 100% precision.
+
+2. MANDATORY ASSET AND IMAGE PATH LOCKDOWN:
+- Exact Image Component Mirroring: Open the NOVEE OS view files, copy the exact luxury asset URLs, high-resolution Maduro cigar photographic paths, macro tobacco leaf background layers, and elite hospitality image strings. Paste and hard-code these exact paths into the corresponding SmokeCraft components. If an image renders perfectly in NOVEE OS, it must render identically in SmokeCraft.
+- Element Aspect Ratio Enforcement: Every single image component across both modules must be hard-coded with 'object-fit: cover' and strict aspect-ratio enforcement. Stretched, compressed, or pixelated assets are a critical system failure.
+
+3. FORCED SOVEREIGN MATERIAL SYSTEM COERCION:
+Re-skin the entire SmokeCraft workspace container to perfectly mimic the premium, multi-dimensional material tokens of NOVEE OS:
+- Surfaces & Containers: Apply a strict True Obsidian (#010101) solid base layer. Foreground interactive panels and layout cards must be converted to semi-translucent smoke-tinted glass boxes backed by a warm gold/amber ambient edge glow.
+- Eye-Comfort Illumination: Eliminate harsh, un-lit pitch-black sectors. Every control quadrant must feature back-lit haptic vectors to keep elements readable for 40-60 age cohorts in dimly lit lounge spaces without causing eye strain.
+- Clean Typography Scale: Enforce the explicit editorial type spec across all unified views: Hero Titles at 40px–48px max, Section Headers at 22px–28px, Card text at 18px–22px, and primary tactile target buttons at 22px/20px text with a strict minimum physical footprint of 58px.
+
+4. COMPLETE ADVANCED MODULE INTEGRATION:
+Ensure the following missing NOVEE OS structural components are hard-coded directly into the SmokeCraft layout code blocks:
+- Upgraded Pairing Engine: Must include the 6th 'Lounge Favorites' swipe carousel and the primary gold-bordered 'PAIR WITH MY PROFILE' AI recommendation button.
+- Golden Box Challenge Overlay: Full-screen obsidian glass modal overlay detailing the 6 tiered milestone challenges (Novice to Exclusive) and the active 'BEGIN CHALLENGE' CTA.
+- Competitive Stats Panel: The 6-metric comparison layout (User vs. Member Average) with high-contrast green highlighting for user wins.
+- Global Coach Help Framework: The persistent, un-gated, zero-PIN rail module containing the 6 drilling instruction cards and the 6 animated FAQ accordion nodes.
+
+5. SECURITY PIN MATRIX & HIGH-VELOCITY POS:
+- Lock all E.A.T Intelligence, Lounge Controls, and Settings elements behind the 4-digit Staff PIN pad modal. Validating a verified sequence must fire the hardware-accelerated concentric touch ripple animation to reveal the high-velocity floor POS, running the Kitchen, Bar, and Humidor (144 puros remaining) telemetry through the unified data tree. 
+- Gate the Executive Command Center behind the unique Management PIN, providing real-time visibility toggles and a remote WebSocket tunnel for off-site Developer overrides.
+
+Execute an absolute, file-by-file compile block across the workspace repository tree. Force SmokeCraft to become the identical twin of NOVEE OS with zero layout drift, zero duplicate modules, and zero TypeScript compilation errors.
