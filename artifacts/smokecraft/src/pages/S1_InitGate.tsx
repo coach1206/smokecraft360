@@ -303,7 +303,7 @@ export function S1_InitGate() {
     if (!country1 || !country2) return;
     updateProfile({ blendCountry1: country1, blendCountry2: country2, mentor: country1 });
     setMentor(country1);
-    go("mentor");
+    go("soil_calibration");
   }
 
   function startPilon() {
@@ -348,7 +348,7 @@ export function S1_InitGate() {
     setPhase("s2_terroir");
   }
 
-  const STEPS: Step[] = ["demo", "rules", "country_select", "mentor", "soil_calibration", "pilon_game", "quiz", "posgate"];
+  const STEPS: Step[] = ["demo", "rules", "country_select", "soil_calibration", "pilon_game", "quiz", "posgate"];
 
   return (
     <div style={{ position: "absolute", inset: 0, fontFamily: "'Inter', sans-serif", overflow: "hidden" }}>
@@ -961,7 +961,7 @@ export function S1_InitGate() {
                     Reserved for top-ranking competitors. Inside: rare blends, exclusive gear, and experiences that can't be bought.
                   </div>
                 </div>
-                <motion.button type="button" onPointerDown={() => go("mentor")}
+                <motion.button type="button" onPointerDown={() => go("country_select")}
                   whileTap={{ scale: 0.97 }}
                   style={{
                     flexShrink: 0, padding: "10px 16px",
@@ -1019,7 +1019,7 @@ export function S1_InitGate() {
                 </div>
                 {/* Spacer + CTA */}
                 <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 24px" }}>
-                  <GoldBtn onClick={() => go("mentor")} style={{ padding: "14px 28px", fontSize: 16 }}>
+                  <GoldBtn onClick={() => go("country_select")} style={{ padding: "14px 28px", fontSize: 16 }}>
                     SELECT MENTOR →
                   </GoldBtn>
                 </div>
@@ -1133,149 +1133,6 @@ export function S1_InitGate() {
         )}
 
         {/* ══════════════ MENTOR ══════════════ */}
-        {step === "mentor" && (
-          <motion.div key="mentor" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
-            style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-
-            {/* Mentor header strip */}
-            <div style={{
-              flexShrink: 0, padding: "28px 48px 20px",
-              background: "rgba(0,0,0,0.40)", backdropFilter: "blur(16px)",
-              borderBottom: "1px solid rgba(212,175,55,0.12)",
-            }}>
-              <Eyebrow>Step 1.4 · Master Blender Selection</Eyebrow>
-              <SectionTitle style={{ margin: 0 }}>Choose Your Guide</SectionTitle>
-            </div>
-
-            {/* 3-column mentor cards — full bleed */}
-            <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", overflow: "hidden" }}>
-              {MENTORS.map(m => {
-                const active = mentor === m.id;
-                return (
-                  <motion.button key={m.id} type="button"
-                    onPointerDown={() => { setMentor(m.id); updateProfile({ mentor: m.id }); }}
-                    whileTap={{ scale: 0.985 }}
-                    style={{
-                      position:   "relative",
-                      display:    "flex",
-                      flexDirection: "column",
-                      border:     "none",
-                      borderRight: "1px solid rgba(255,255,255,0.05)",
-                      cursor:     "pointer",
-                      textAlign:  "left",
-                      padding:    0,
-                      overflow:   "hidden",
-                      fontFamily: "'Inter', sans-serif",
-                      background: "transparent",
-                      transition: "all 0.28s",
-                      outline:    "none",
-                    }}
-                  >
-                    {/* ── Real portrait photo — full bleed top ── */}
-                    <div style={{ flex: "0 0 58%", position: "relative", overflow: "hidden" }}>
-                      <img
-                        src={IMG(m.photo)}
-                        alt={m.name}
-                        style={{
-                          position: "absolute", inset: 0,
-                          width: "100%", height: "100%",
-                          objectFit: "cover", objectPosition: "center top",
-                          transition: "transform 0.45s ease",
-                          transform: active ? "scale(1.04)" : "scale(1.00)",
-                        }}
-                        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                      />
-                      {/* Gradient overlay — darkens bottom for text readability */}
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        background: active
-                          ? `linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.55) 100%)`
-                          : `linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.72) 100%)`,
-                        transition: "background 0.30s",
-                      }} />
-                      {/* Active gold rim */}
-                      {active && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                          style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${GOLD}55, ${GOLD}, ${GOLD}55)`, boxShadow: `0 0 22px ${GOLD}99` }} />
-                      )}
-                      {/* Flag badge — bottom left of photo */}
-                      <div style={{
-                        position: "absolute", bottom: 16, left: 20,
-                        display: "flex", alignItems: "center", gap: 10,
-                      }}>
-                        <span style={{ fontSize: 36, lineHeight: 1 }}>{m.flag}</span>
-                        <div>
-                          <div style={{ fontSize: 10, letterSpacing: "0.35em", textTransform: "uppercase", color: active ? GOLD : "rgba(255,255,255,0.55)", fontWeight: 800, fontFamily: "'Inter',sans-serif", transition: "color 0.28s" }}>{m.country}</div>
-                          <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(255,255,255,0.35)", fontFamily: "'Inter',sans-serif" }}>{m.valley}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Info panel */}
-                    <div style={{
-                      flex: 1,
-                      padding: "24px 26px 26px",
-                      background: active ? "rgba(212,175,55,0.08)" : "rgba(6,4,2,0.82)",
-                      backdropFilter: "blur(20px)",
-                      borderTop: `1px solid ${active ? GOLD + "44" : "rgba(255,255,255,0.07)"}`,
-                      transition: "all 0.30s",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 12,
-                    }}>
-                      <div style={{ fontSize: 24, fontWeight: 800, color: active ? GOLD : "#F0E8D4", transition: "color 0.28s", letterSpacing: "0.01em", lineHeight: 1.2 }}>
-                        {m.name}
-                      </div>
-                      <p style={{ fontSize: 16, color: "rgba(240,232,212,0.55)", lineHeight: 1.58, margin: 0 }}>
-                        {m.bio}
-                      </p>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: "auto" }}>
-                        {m.tags.map(t => (
-                          <span key={t} style={{
-                            background: active ? "rgba(212,175,55,0.14)" : "rgba(255,255,255,0.05)",
-                            border: `1px solid ${active ? GOLD + "55" : "rgba(255,255,255,0.10)"}`,
-                            borderRadius: 4, padding: "6px 14px",
-                            fontSize: 11, fontWeight: 700, color: active ? GOLD : "rgba(240,232,212,0.38)",
-                            letterSpacing: "0.15em", textTransform: "uppercase", transition: "all 0.28s",
-                          }}>{t}</span>
-                        ))}
-                      </div>
-                      {active && (
-                        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                          style={{ fontSize: 13, letterSpacing: "0.28em", textTransform: "uppercase", color: GOLD, fontWeight: 800, fontFamily: "'Inter',sans-serif" }}>
-                          ✓ SELECTED
-                        </motion.div>
-                      )}
-                    </div>
-
-                    {/* Active selection border */}
-                    {active && (
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        border: `2px solid ${GOLD}`,
-                        borderRadius: 0,
-                        pointerEvents: "none",
-                        boxShadow: `inset 0 0 40px rgba(212,175,55,0.10)`,
-                      }} />
-                    )}
-                  </motion.button>
-                );
-              })}
-            </div>
-
-            {/* Footer CTA */}
-            <div style={{
-              flexShrink: 0, padding: "20px 48px",
-              background: "rgba(0,0,0,0.55)", backdropFilter: "blur(20px)",
-              borderTop: "1px solid rgba(212,175,55,0.12)",
-            }}>
-              <GoldBtn disabled={!mentor} onClick={() => mentor && go("seed_canvas")} fullWidth>
-                PROCEED TO SEED TEXTURE ANALYSIS →
-              </GoldBtn>
-            </div>
-          </motion.div>
-        )}
-
         {/* ══════════════ SEED CANVAS ══════════════ */}
         {step === "seed_canvas" && (() => {
           type Drink = { icon: string; label: string; category: string; desc: string; score: number };

@@ -165,11 +165,7 @@ export default function CraftPortalHome() {
 
   function beginNew() {
     playTactile(); hapticMilestone();
-    if (!goldenBoxSeen) {
-      setShowGoldenBox(true);
-    } else {
-      setPhase("s1_demo");
-    }
+    setShowMentorPort(true);
   }
   function resumeSession() { setShowReturn(true); }
 
