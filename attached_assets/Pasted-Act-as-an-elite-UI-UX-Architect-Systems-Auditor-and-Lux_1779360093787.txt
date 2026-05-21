@@ -1,0 +1,35 @@
+Act as an elite UI/UX Architect, Systems Auditor, and Luxury Hospitality Platforms Engineer. I need a comprehensive, turn-by-turn system blueprint for SmokeCraft 360. 
+
+CRITICAL DIRECTIVE: You must ensure that SmokeCraft 360 and NOVEE OS are perfectly unified. They must utilize the exact same design language, system mechanics, and component structures. If any elements are missing from the SmokeCraft platform that exist in NOVEE OS—specifically regarding asset layout mechanics, the implementation of the "Golden Box" visual framing, or sensory-reactive UI behaviors—you must explicitly call out what is missing and provide the precise engineering specs to add them back in and merge them seamlessly.
+
+The layout, visual design, and interactive components must strictly mimic the NOVEE OS design language: a high-end, cinematic, and disruptive interface featuring an obsidian glass dark mode aesthetic, smoked chrome hardware integration, gold accent framing, weighted tactile motion physics, and sensory-reactive UI elements.
+
+Structure the response to detail the following architectural layers:
+
+1. PARITY AUDIT & SYSTEM ALIGNMENT (NOVEE OS vs. SMOKECRAFT 360)
+- Perform a direct comparison between the core NOVEE OS framework and SmokeCraft 360.
+- Audit the visual assets (including the "Golden Box" and background image rendering) to ensure exact visual parity.
+- Explicitly list any missing modules, UI behaviors, or layout rules, and detail the technical merge requirements to bring SmokeCraft into absolute compliance with the primary OS.
+
+2. THE PHASES OF THE RITUAL
+- Break down the exact number of phases in the multi-stage cigar ritual and education experience (starting from the Orientation Chamber through to final execution).
+- For each phase, define the core user objective and the tactile/autonomous environmental feedback (how the UI reacts to ambient room data, climate control, or human behavior).
+
+3. PAGE COUNT & SCREEN ARCHITECTURE
+- Provide a literal, exact page-by-page inventory required to build and execute this module within the ecosystem.
+- List each screen by name, its exact functional purpose, and the layout strategy for how the "Golden Box" framing elements and core assets are rendered on-screen.
+
+4. MENTOR INTERACTIONS & PROTOCOLS
+- Map out the precise number of touchpoints and interactions with the digital Mentors throughout a single session.
+- Detail the exact communication protocols for the Mentors: Do they use ambient HUD overlays, weighted audio-visual cues, or responsive guidance vectors? Define the exact trigger rules for when a Mentor intervenes.
+
+5. ECOSYSTEM PAIRING OPPORTUNITIES & TRANSACTION LOGIC
+- Detail the exact pairing mechanics available during a live session (e.g., premium spirits, vintage wine/coffee, or complementary luxury assets).
+- Quantify the exact number of pairing opportunities presented to a user per session.
+- Address the financial layer: Define the cost-matching matrix. Do these pairings pull from real-time venue inventory or external asset databases? How are dynamic pricing, up-sells, and transactional validation handled to align with revenue-focused goals?
+
+6. GAMIFICATION, QUIZZES, & RITUAL COMPLETION
+- Define the exact quiz and assessment mechanics used to verify user education and mastery. How many quizzes/questions are integrated into the session flow?
+- Detail the completion reward structure: Is a high-fidelity digital achievement badge or physical credential unlocked upon finishing the ritual? Describe its visual aesthetic (e.g., an engraved gold emblem floating behind dimensional obsidian glass) and how it is written to the user's permanent profile.
+
+Present this system architecture with absolute technical precision. Use structured sections, precise counts, and clean Markdown data tables for the page inventories and pairing matrices. Avoid vague generalizations; provide concrete, actionable system rules and layout definitions.
