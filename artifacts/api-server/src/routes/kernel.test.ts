@@ -261,9 +261,18 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
     makeInsertMock({ venueId: VENUE_A, mode: "essential", updatedAt: new Date().toISOString() });
 
     const app = buildApp();
+
+    // Step 1 — obtain a confirmation token for this actor+venue+mode
+    const prepareRes = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
+      .send({ mode: "essential" });
+    expect(prepareRes.status).toBe(200);
+    const { confirmToken } = prepareRes.body as { confirmToken: string };
+
+    // Step 2 — apply the mode change using the token
     const res = await request(app)
       .patch(`/api/kernel/mode/${VENUE_A}`)
-      .send({ mode: "essential" });
+      .send({ mode: "essential", confirmToken });
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("mode", "essential");
@@ -275,9 +284,18 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
     makeInsertMock({ venueId: VENUE_A, mode: "sovereign", updatedAt: new Date().toISOString() });
 
     const app = buildApp();
+
+    // Step 1 — obtain confirmation token
+    const prepareRes = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
+      .send({ mode: "sovereign" });
+    expect(prepareRes.status).toBe(200);
+    const { confirmToken } = prepareRes.body as { confirmToken: string };
+
+    // Step 2 — apply mode change
     const res = await request(app)
       .patch(`/api/kernel/mode/${VENUE_A}`)
-      .send({ mode: "sovereign" });
+      .send({ mode: "sovereign", confirmToken });
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("mode", "sovereign");
@@ -289,9 +307,18 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
     makeInsertMock({ venueId: VENUE_A, mode: "essential", updatedAt: new Date().toISOString() });
 
     const app = buildApp();
+
+    // Step 1 — obtain confirmation token
+    const prepareRes = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
+      .send({ mode: "essential" });
+    expect(prepareRes.status).toBe(200);
+    const { confirmToken } = prepareRes.body as { confirmToken: string };
+
+    // Step 2 — apply mode change
     const res = await request(app)
       .patch(`/api/kernel/mode/${VENUE_A}`)
-      .send({ mode: "essential" });
+      .send({ mode: "essential", confirmToken });
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("mode", "essential");
@@ -339,6 +366,143 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
     const app = buildApp();
     const res = await request(app)
       .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "premium" });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 400 when confirmToken is missing", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "essential" }); // no confirmToken
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 409 when confirmToken is a valid UUID but was never issued", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "essential", confirmToken: "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa" });
+
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 409 when confirmToken was issued for a different mode", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+
+    const app = buildApp();
+
+    // Prepare for "sovereign" but attempt "essential"
+    const prepareRes = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
+      .send({ mode: "sovereign" });
+    expect(prepareRes.status).toBe(200);
+    const { confirmToken } = prepareRes.body as { confirmToken: string };
+
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "essential", confirmToken });
+
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 409 when confirmToken is consumed on second use (single-use)", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+    makeTransactionMock();
+    makeInsertMock({ venueId: VENUE_A, mode: "essential", updatedAt: new Date().toISOString() });
+
+    const app = buildApp();
+
+    const prepareRes = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
+      .send({ mode: "essential" });
+    const { confirmToken } = prepareRes.body as { confirmToken: string };
+
+    // First use — should succeed
+    const first = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "essential", confirmToken });
+    expect(first.status).toBe(200);
+
+    // Second use of same token — should be rejected
+    const second = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "essential", confirmToken });
+    expect(second.status).toBe(409);
+  });
+});
+
+describe("POST /api/kernel/mode/:venueId/prepare — confirmation token issuance", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns 200 with a confirmToken for super_admin", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
+      .send({ mode: "essential" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("confirmToken");
+    expect(res.body).toHaveProperty("expiresAt");
+    expect(typeof res.body.confirmToken).toBe("string");
+  });
+
+  it("returns 200 with a confirmToken for venue_owner on their own venue", async () => {
+    mockUser = { id: "vo-uuid", email: "vo@test.com", role: "venue_owner", name: "Owner", venueId: VENUE_A };
+
+    const app = buildApp();
+    const res = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
+      .send({ mode: "sovereign" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("confirmToken");
+  });
+
+  it("returns 403 for venue_owner targeting a different venue", async () => {
+    mockUser = { id: "vo-uuid", email: "vo@test.com", role: "venue_owner", name: "Owner", venueId: VENUE_A };
+
+    const app = buildApp();
+    const res = await request(app)
+      .post(`/api/kernel/mode/${VENUE_B}/prepare`)
+      .send({ mode: "essential" });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 403 for manager role", async () => {
+    mockUser = { id: "mgr-uuid", email: "mgr@test.com", role: "manager", name: "Manager", venueId: VENUE_A };
+
+    const app = buildApp();
+    const res = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
+      .send({ mode: "essential" });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 400 for an invalid mode value", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app)
+      .post(`/api/kernel/mode/${VENUE_A}/prepare`)
       .send({ mode: "premium" });
 
     expect(res.status).toBe(400);
