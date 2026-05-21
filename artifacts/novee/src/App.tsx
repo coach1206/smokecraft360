@@ -216,11 +216,14 @@ function PairingView() {
 
                     {/* Three-column: cigar | badge | spirit | food */}
                     <div style={{ display: "flex", gap: 12, marginBottom: 18, alignItems: "stretch" }}>
-                      <div style={{ flex: 1, background: "rgba(212,175,55,0.06)", borderRadius: 10, border: `1px solid ${GOLD}22`, padding: 14, display: "flex", flexDirection: "column", gap: 6 }}>
-                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: `${GOLD}60`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>CIGAR</div>
-                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, background: `linear-gradient(135deg, rgba(212,175,55,0.10), rgba(100,50,10,0.18))`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38 }}>🍬</div>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "rgba(240,232,212,0.95)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{featured.name}</div>
-                        <div style={{ fontSize: 11, color: `${GOLD}70`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.08em" }}>{featured.category}</div>
+                      <div style={{ flex: 1, background: "rgba(212,175,55,0.06)", borderRadius: 10, border: `1px solid ${GOLD}33`, padding: 14, display: "flex", flexDirection: "column", gap: 6, backdropFilter: "blur(12px)" }}>
+                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: `${GOLD}88`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>CIGAR</div>
+                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, overflow: "hidden", position: "relative" }}>
+                          <img src="https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=600&q=80" alt="Maduro cigar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 40%, rgba(5,3,1,0.75) 100%)" }} />
+                        </div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#FFFDD0", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{featured.name}</div>
+                        <div style={{ fontSize: 11, color: `${GOLD}88`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.08em" }}>{featured.category}</div>
                         <div style={{ fontSize: 14, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif", marginTop: "auto" }}>${(featured.costCents / 100).toFixed(0)}</div>
                       </div>
 
@@ -236,18 +239,24 @@ function PairingView() {
                         <span style={{ fontSize: 8, color: `${GOLD}44`, letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif", textAlign: "center", lineHeight: 1.4 }}>FLAVOR<br/>BRIDGE</span>
                       </div>
 
-                      <div style={{ flex: 1, background: "rgba(150,80,20,0.08)", borderRadius: 10, border: "1px solid rgba(150,80,20,0.25)", padding: 14, display: "flex", flexDirection: "column", gap: 6 }}>
-                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(196,97,10,0.80)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>SPIRIT</div>
-                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, background: "linear-gradient(135deg, rgba(150,80,10,0.14), rgba(80,40,5,0.18))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38 }}>🥃</div>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "rgba(240,232,212,0.95)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{perfPair.drink}</div>
-                        <div style={{ fontSize: 11, color: "rgba(196,97,10,0.70)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }}>{perfPair.drinkNote}</div>
+                      <div style={{ flex: 1, background: "rgba(150,80,20,0.10)", borderRadius: 10, border: "1px solid rgba(196,120,40,0.35)", padding: 14, display: "flex", flexDirection: "column", gap: 6, backdropFilter: "blur(12px)" }}>
+                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(255,190,80,0.90)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>SPIRIT</div>
+                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, overflow: "hidden", position: "relative" }}>
+                          <img src="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=600&q=80" alt="Crystal tumbler whiskey" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 40%, rgba(5,2,0,0.75) 100%)" }} />
+                        </div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#FFFDD0", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{perfPair.drink}</div>
+                        <div style={{ fontSize: 11, color: "rgba(255,190,80,0.75)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }}>{perfPair.drinkNote}</div>
                       </div>
 
-                      <div style={{ flex: 1, background: "rgba(60,100,30,0.08)", borderRadius: 10, border: "1px solid rgba(60,100,30,0.22)", padding: 14, display: "flex", flexDirection: "column", gap: 6 }}>
-                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(80,140,60,0.80)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>CUISINE</div>
-                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, background: "linear-gradient(135deg, rgba(60,100,30,0.10), rgba(30,60,15,0.18))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38 }}>🍽️</div>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: "rgba(240,232,212,0.95)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{perfPair.food}</div>
-                        <div style={{ fontSize: 11, color: "rgba(80,140,60,0.70)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }}>{perfPair.foodNote}</div>
+                      <div style={{ flex: 1, background: "rgba(60,100,30,0.09)", borderRadius: 10, border: "1px solid rgba(80,160,60,0.28)", padding: 14, display: "flex", flexDirection: "column", gap: 6, backdropFilter: "blur(12px)" }}>
+                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(120,200,90,0.85)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>CUISINE</div>
+                        <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, overflow: "hidden", position: "relative" }}>
+                          <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80" alt="Upscale culinary plate" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 40%, rgba(2,5,1,0.75) 100%)" }} />
+                        </div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#FFFDD0", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{perfPair.food}</div>
+                        <div style={{ fontSize: 11, color: "rgba(120,200,90,0.70)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }}>{perfPair.foodNote}</div>
                       </div>
                     </div>
 
@@ -326,13 +335,18 @@ function PairingView() {
                     <motion.div key={p.id}
                       initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.07, duration: 0.38 }}
-                      style={{ flexShrink: 0, width: 178, background: "rgba(5,3,1,0.80)", backdropFilter: "blur(14px)", borderRadius: 10, border: `1px solid ${GOLD}22`, padding: 12, cursor: "pointer", overflow: "hidden" }}>
-                      <div style={{ width: "100%", height: 76, borderRadius: 6, background: `linear-gradient(135deg, rgba(212,175,55,0.08), rgba(100,50,10,0.14))`, marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🍬</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(240,232,212,0.90)", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2, marginBottom: 5 }}>{p.name}</div>
-                      <div style={{ fontSize: 10, color: `${GOLD}60`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em", marginBottom: 7 }}>{p.category}</div>
+                      whileTap={{ scale: 0.97 }}
+                      style={{ flexShrink: 0, width: 178, background: "rgba(5,3,1,0.80)", backdropFilter: "blur(14px)", borderRadius: 10, border: `1px solid ${GOLD}28`, padding: 12, cursor: "pointer", overflow: "hidden" }}>
+                      <div style={{ width: "100%", height: 76, borderRadius: 6, overflow: "hidden", marginBottom: 8, position: "relative" }}>
+                        <img src="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=400&q=80" alt="Cigar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 30%, rgba(5,3,1,0.80) 100%)" }} />
+                        <div style={{ position: "absolute", bottom: 5, right: 7, fontSize: 9, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>{p.affinityScore}% ✦</div>
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#FFFDD0", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2, marginBottom: 5 }}>{p.name}</div>
+                      <div style={{ fontSize: 10, color: `${GOLD}77`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em", marginBottom: 7 }}>{p.category}</div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <span style={{ fontSize: 12, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>${(p.costCents / 100).toFixed(0)}</span>
-                        <span style={{ fontSize: 10, color: `${GOLD}80`, fontFamily: "'Inter',sans-serif" }}>{p.affinityScore}% ✦</span>
+                        <span style={{ fontSize: 9, color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.08em", textTransform: "uppercase" }}>Reserve</span>
                       </div>
                     </motion.div>
                   ))}
@@ -930,17 +944,39 @@ function CoachHelpView() {
 
           {!activeSection && (
             <motion.div key="grid" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 9, marginBottom: 16 }}>
-                {INTEL_SECTIONS.map((s, i) => (
-                  <motion.div key={s.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                    whileTap={{ scale: 0.97 }} onClick={() => setActiveSection(s.id)}
-                    style={{ padding: "16px 14px", borderRadius: 12, border: `1px solid ${s.color}33`, background: "rgba(255,255,255,0.025)", cursor: "pointer", position: "relative", overflow: "hidden" }}>
-                    <div style={{ position: "absolute", top: -15, right: -15, width: 60, height: 60, borderRadius: "50%", background: `radial-gradient(circle, ${s.color}18 0%, transparent 70%)` }} />
-                    <div style={{ fontSize: 20, color: s.color, marginBottom: 7, fontFamily: "'Inter',sans-serif" }}>{s.icon}</div>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, letterSpacing: "0.04em", marginBottom: 4, fontFamily: "'Inter',sans-serif" }}>{s.label}</div>
-                    <div style={{ fontSize: 10, color: `${CREAM}50`, lineHeight: 1.4, fontFamily: "'Inter',sans-serif" }}>{s.summary}</div>
-                  </motion.div>
-                ))}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 16 }}>
+                {INTEL_SECTIONS.map((s, i) => {
+                  const CARD_IMGS: Record<string,string> = {
+                    guest_guidance:     "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?auto=format&fit=crop&w=600&q=75",
+                    pairing_intelligence:"https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=600&q=75",
+                    revenue_coaching:   "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=600&q=75",
+                    recovery_guidance:  "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=600&q=75",
+                    flavor_education:   "https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=600&q=75",
+                    vip_coaching:       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=75",
+                    quick_answers:      "https://images.unsplash.com/photo-1521791055366-0d553872952f?auto=format&fit=crop&w=600&q=75",
+                    live_ai:            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=75",
+                  };
+                  return (
+                    <motion.div key={s.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                      whileTap={{ scale: 0.97 }} onClick={() => setActiveSection(s.id)}
+                      style={{ minHeight: 120, borderRadius: 14, border: `1px solid ${s.color}44`, cursor: "pointer", position: "relative", overflow: "hidden" }}>
+                      <img src={CARD_IMGS[s.id]} alt={s.label} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(160deg, rgba(5,3,1,0.55) 0%, rgba(5,3,1,0.88) 100%)` }} />
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.color}88, transparent)` }} />
+                      <div style={{ position: "relative", padding: "16px 14px", display: "flex", flexDirection: "column", gap: 5, minHeight: 120 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 18, color: s.color, lineHeight: 1 }}>{s.icon}</span>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: "#FFFDD0", letterSpacing: "0.04em", fontFamily: "'Inter',sans-serif" }}>{s.label}</div>
+                        </div>
+                        <div style={{ fontSize: 11, color: "rgba(255,253,208,0.62)", lineHeight: 1.45, fontFamily: "'Inter',sans-serif" }}>{s.summary}</div>
+                        <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 5 }}>
+                          <div style={{ width: 4, height: 4, borderRadius: "50%", background: s.color }} />
+                          <span style={{ fontSize: 9, color: `${s.color}88`, letterSpacing: "0.22em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>Tap to explore</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
               <div style={{ padding: "14px 16px", borderRadius: 12, border: `1px solid ${GOLD}22`, background: "rgba(255,255,255,0.02)" }}>
                 <div style={{ fontSize: 11, color: `${GOLD}77`, letterSpacing: "0.20em", fontWeight: 700, marginBottom: 9, fontFamily: "'Inter',sans-serif" }}>SEARCH KNOWLEDGE BASE</div>
