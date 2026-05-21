@@ -1,0 +1,57 @@
+EXECUTE REPLIT OVERRIDE: INJECT CRITICAL SYSTEM FIXES, TOUCHSCREEN OPTIMIZATION SUITE, AND TOTAL DESIGN CONVERGENCE (DESTRUCTION OF ALL STUBS)
+
+====================================================
+1. REASON FOR THIS DIRECTIVE (THE CONTEXT RECOVERY)
+====================================================
+The system is severely fragmented due to overlapping, unfinished background compilations. The top toolbar is cluttered with redundant text links, the panels are illegibly dark, 'Reset Blend' is completely dead, and clicking 'OPEN COMMAND CENTER >' results in a catastrophic blank black screen. You must halt all independent, loose page files and execute this unified, touchscreen-ready production chassis across the entire repository immediately.
+
+====================================================
+2. TOTAL STRIP OF NAVBAR CLUTTER & NAVIGATION ROUTER LOCK
+====================================================
+- Clean the Header Shell: Open the global navigation layout files. Completely remove the text-tag buttons for 'HUB CRAFTHUB', 'SC SMOKECRAFT', 'PR PAIRING', and 'CH COACH HELP' from the top bar view. They are redundant, crowd the system status nodes, and create user experience friction.
+- Isolate the Global Rail: The Left Vertical Obsidian Rail (Hub, SC, PR, CH icons) is now the SOLE system-wide routing mechanism. Ensure clicking 'Hub' immediately unmounts the active module and drops the entire canvas back to the 4-Tile Launcher Grid.
+
+====================================================
+3. MANDATORY MULTI-STAGE BOOT TIMELINE (PATH: '/')
+====================================================
+Enforce a non-skippable, continuous initialization sequence on a solid True Obsidian (#010101) substrate before any landing page can mount:
+- Phase 1 (Corporate Initialization): Animate the center-frame smoked chrome vector emblem. Render the text "PROFOUND INNOVATIONS LLC" in an oversized luxury serif font with a premium gold foil material texture (3-second hold, 0.35s left-slide fade out).
+- Phase 2 (OS Power-Up): Smoothly fade in the "NOVEE OS" branding layer accompanied by a pulsating gold ambient loading ring and the "POWERED" subtitle text.
+- Phase 3 (Ecosystem Activation): Animate the explicit "CraftHub" network launcher logo into view with a smooth ambient smoke dissolve.
+- Phase 4 (Backend Telemetry Bind): Pop up the official "E.A.T. SYSTEM" logo, illuminating an absolute status indicator showing "DATA INTEGRATION CHASSIS ONLINE". Write the "SYSTEM ACTIVE" token directly to localStorage on completion, then transition seamlessly via a camera-blur dissolve into the 4-tile grid.
+
+====================================================
+4. THE HUMAN-CENTERED 4-TILE CRAFTHUB MATRIX (PATH: '/craft-hub')
+====================================================
+Re-architect the '/craft-hub' view into a full-screen, touchscreen-optimized 1920x1080 grid layout using 4 massive card containers built with layered Obsidian Glass and brushed titanium outlines:
+- TILE 1: 'SMOKECRAFT 360' (ACTIVE) -> Cinematic, editorial photo of a sophisticated cigar lounge scene showing refined people engaged in deep conversation, relaxing in leather tufted chairs under warm, low-profile ambient lighting. This tile must be the singular active clickable mechanism that launches the ritual onboarding journey.
+- TILE 2: 'POURCRAFT 360' (COMING SOON) -> Elegant nightlife composition centered on an upscale mixology encounter with well-dressed VIP couples socializing along a glowing, smoked-crystal bar top. (Affix a small brushed bronze 'COMING SOON' overlay tag).
+- TILE 3: 'BEERCRAFT 360' (COMING SOON) -> A vibrant, stylish group of friends interacting under twilight string-lighting, catching a premium city skyline horizon backdrop. (Affix a 'COMING SOON' tag).
+- TILE 4: 'WINECRAFT 360' (COMING SOON) -> An intimate, refined date-night scene set within an elegant, stone-walled private wine lounge. Show a sommelier pouring a vintage selection for an elegant couple. (Affix a 'COMING SOON' tag).
+
+====================================================
+5. TOTAL TOUCHSCREEN-READY REFACTOR (HAPTIC TARGETING)
+====================================================
+To support deployment on physical iPad Pro terminals, executive desktops, and kiosk hardware, you must completely upgrade the hit-box interactive boundaries:
+- Strict Minimum Touch Targets: Every menu selection item, rail node, close icon, list entry, and toggle switch must maintain a massive, physical hit-box footprint of at least 58px by 58px.
+- Physical Form & Input Activation: All form inputs must scale gracefully to prevent element overlapping. Ensure tapping any field instantly gains focus, activates an interactive on-screen keyboard hook, updates internal state hooks on character entry, and handles submission routines smoothly.
+- Slider & Carousel Calibration: Convert all sliders, volume bars, and horizontal list wheels (like the 6 pairing categories) into high-velocity touch swipe components utilizing GPU-accelerated drag layers for fluid performance.
+
+====================================================
+6. REPAIR ACTIVE COMPONENT INTERACTIONS & THE BLANK VIEWS
+====================================================
+- Fix 'Reset Blend' Core: Re-code the state context handler for the 'Reset Blend' button. Clicking it must immediately flush the active tobacco blend progress indices, wipe the current filler/wrapper cache from the state machine, and cleanly re-initialize the component views without freezing, looping, or crashing.
+- Eradicate the Blank E.A.T. View: Locate the click event handler on the bottom right button labeled 'OPEN COMMAND CENTER >' and anchor its position securely in the highlighted bottom corner of the viewport layout. 
+- PIN Gateway Activation: Clicking this button must launch an oversized, minimal 4-digit numeric Staff PIN pad overlay window. 
+- Staff Handoff Ripple Animation: Entering a valid Staff PIN must trigger an explosive, hardware-accelerated concentric ripple animation that scales outward from the exact touch coordinates across the 1920x1080 canvas using GPU layers, smoothly dissolving the modal to expose the live E.A.T. High-Velocity POS terminal layout (enlarged text scales, live table maps, and a 145 puros humidor stock countdown) connected to the universal 'POSRouterEngine' for 2x, 3x, and 5x receipt multipliers.
+- Executive Command Hub: Protect the root administrative hub behind a unique Management PIN. Give the manager physical toggle switches to globally inject, show, or completely wipe out individual E.A.T elements from client terminals in real-time, backed by a secure WebSocket tunnel for remote Developer overrides.
+
+====================================================
+7. VISUAL CONTRAST LUMINANCE & CREAM GRADIENT OVERLAYS
+====================================================
+- Brighten the Workspace Substrates: Eliminate the oppressive, muddy dark gray tones inside the inner panels. Wrap all content, data metrics, and descriptions inside lighter, semi-translucent smoke-tinted glass boxes.
+- Rich Cream & Gold Accents: Introduce rich Cream (#FFFDD0 / #FDFBF7) and liquid metallic Warm Gold across all sub-modules (including Pairing Intelligence and the Coach Help matrix). Use these premium cream tones strictly to highlight active layout selection boxes, button borders, operational labels, and typography data outputs. 
+- Luminous Gradients: Apply soft, glowing radial ambient gradients behind text blocks inside the panels so that information pops forward beautifully in dim lounge environments, completely eliminating screen-glare eye strain.
+- Strict Typography Scale: Erase all duplicate text headers or overlapping layers. Titles must lock at 40-48px max, section headers at 22-28px, card text at 18-22px, and touch buttons at 22px primary / 20px secondary.
+
+Execute a comprehensive file-by-file compile block across the workspace repository tree. Merge all state contexts natively and verify 100% path and PIN state uptime with zero TypeScript compile drops.
