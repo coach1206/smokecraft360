@@ -1,0 +1,503 @@
+FINAL
+
+MISSING / REQUIRED
+
+• Ritual terminology normalization layer is missing across SmokeCraft 360, NOVEE OS, CraftHub, Coach Help, onboarding flows, mentor flows, Golden Box flows, overlays, and guided experiences.
+• Context-aware terminology engine is missing and wording is still partially hardcoded.
+• Coach Help operational intelligence system is incomplete and partially cinematic-only.
+• OpenAI/Gemini orchestration layer for hospitality intelligence is missing.
+• Role-aware coaching logic is incomplete.
+• AI retrieval grounding against internal manuals is missing.
+• Master Document Structure is not globally integrated into Settings or Command Hub.
+• Searchable enterprise knowledge infrastructure is incomplete.
+• SOP indexing and semantic retrieval system is missing.
+• Staff certification/training tracking is incomplete.
+• Offline documentation cache and degraded-mode AI recovery are missing.
+• AI hallucination protection and confidence scoring are incomplete.
+• Dynamic pairing education engine is incomplete.
+• Operational recovery guidance system is incomplete.
+• Versioned document publishing workflow is missing.
+• Manual viewer and touchscreen documentation UX are incomplete.
+• AI-powered live guest guidance system is incomplete.
+
+IMPACT OF MISSING ITEMS
+
+Without these systems:
+• SmokeCraft risks feeling theatrical instead of enterprise hospitality-grade.
+• Staff onboarding remains inconsistent.
+• Venue operators will not fully understand operational value.
+• Coach Help becomes decorative instead of revenue-generating.
+• AI may produce weak or inaccurate guidance.
+• Enterprise scaling becomes difficult.
+• Training consistency breaks across venues.
+• Investors may perceive style without operational infrastructure.
+• Managers cannot standardize service or knowledge delivery.
+• NOVEE OS loses part of its “operating system” positioning.
+
+FAILURE PREVENTION CHECKLIST
+
+✔ Remove excessive “ritual” terminology
+✔ Replace wording contextually, not blindly
+✔ Preserve cinematic luxury atmosphere
+✔ Build enterprise-grade AI Coach Help intelligence system
+✔ Connect OpenAI + Gemini with failover routing
+✔ Add semantic document indexing and retrieval
+✔ Add grounded AI responses using internal manuals
+✔ Add confidence scoring and hallucination protection
+✔ Add searchable Master Document Structure
+✔ Wire manuals into Settings + Command Hub
+✔ Add staff certification and learning progression
+✔ Add offline cache + degraded mode recovery
+✔ Add touchscreen-optimized knowledge center
+✔ Preserve all existing flows and transitions
+✔ Maintain Apple/Tesla luxury aesthetic
+✔ Maintain obsidian glass premium UI
+✔ Ensure Replit compatibility
+✔ Prevent dead routes or placeholder systems
+✔ Keep all systems fully wired with no stubs
+
+MASTER EXECUTION PROMPT
+
+EXECUTE COMPLETE TERMINOLOGY NORMALIZATION + AI COACH HELP INTELLIGENCE + MASTER DOCUMENT STRUCTURE INTEGRATION FOR NOVEE OS / SMOKECRAFT 360 / CRAFTHUB / E.A.T. SYSTEM / COMMAND HUB
+
+OBJECTIVE
+
+Transform SmokeCraft 360 and NOVEE OS from a cinematic hospitality interface into a fully operational luxury hospitality intelligence operating system with:
+
+• Context-aware premium terminology
+• AI-powered Coach Help intelligence
+• Searchable enterprise documentation infrastructure
+• Staff training and certification systems
+• Grounded AI operational guidance
+• Touchscreen-ready operational learning ecosystem
+• Enterprise-grade knowledge retrieval architecture
+
+THIS IS NOT A BASIC HELP PAGE.
+THIS IS NOT A STATIC FAQ SYSTEM.
+THIS IS A FULL ENTERPRISE KNOWLEDGE + HOSPITALITY INTELLIGENCE PLATFORM.
+
+DO NOT CREATE STUBS.
+DO NOT REMOVE EXISTING IMAGERY.
+DO NOT BREAK EXISTING FLOWS.
+DO NOT REMOVE PREMIUM TRANSITIONS.
+EVERYTHING MUST BE FUNCTIONAL, WIRED, SEARCHABLE, TOUCHSCREEN READY, AND AI CONNECTED.
+
+────────────────────────────
+
+PHASE 1 — TERMINOLOGY NORMALIZATION ENGINE
+
+CREATE:
+client/src/config/experienceTerminology.ts
+
+Build centralized terminology orchestration layer.
+
+REMOVE EXCESSIVE USAGE OF:
+• ritual
+• sacred ritual
+• ceremonial flow
+• ceremonial pairing
+• ritual initiated
+• enter the ritual
+• sacred blend
+
+REPLACE CONTEXTUALLY WITH:
+
+PRIMARY TERMS:
+• Experience
+• Signature Experience
+• Guided Blend
+• Tasting Flow
+• Craft Sequence
+• Flavor Path
+• Smoke Session
+• Guided Pairing
+
+CONTEXT RULES
+
+ONBOARDING:
+• Begin Experience
+• Start Smoke Session
+• Guided Pairing Begins
+
+PAIRING FLOW:
+• Flavor Path
+• Guided Blend
+• Tasting Flow
+
+VIP AREAS:
+• Signature Experience
+• Reserve Experience
+
+TRAINING:
+• Craft Sequence
+• Guided Coaching
+
+MAINTAIN:
+premium hospitality tone without sounding mystical or cult-like.
+
+────────────────────────────
+
+PHASE 2 — GLOBAL UI TERMINOLOGY PATCH
+
+SCAN AND PATCH:
+
+• SmokeCraftGateway.tsx
+• CraftPortalHome.tsx
+• CraftHub.tsx
+• GoldenBoxPage.tsx
+• MentorOverlay.tsx
+• PairingEngine.tsx
+• CoachHelp.tsx
+• FlavorMatrix.tsx
+• IntroOverlay.tsx
+• SessionIntro.tsx
+• ExperienceCenter.tsx
+• TouchscreenFlow.tsx
+
+REMOVE:
+• occult-like language
+• overly mystical copy
+• theatrical overuse
+
+REPLACE WITH:
+premium luxury hospitality wording.
+
+────────────────────────────
+
+PHASE 3 — AI COACH HELP INTELLIGENCE SYSTEM
+
+CREATE:
+server/services/coachHelpAIService.ts
+
+SUPPORT:
+• OpenAI GPT integration
+• Gemini integration
+• multi-provider failover
+• response validation
+• confidence scoring
+• cached local guidance
+• offline fallback mode
+• audit logging
+• retry handling
+
+ENV VARIABLES:
+OPENAI_API_KEY=
+GEMINI_API_KEY=
+
+────────────────────────────
+
+PHASE 4 — STRUCTURED HOSPITALITY KNOWLEDGE ENGINE
+
+CREATE:
+server/services/coachKnowledgeBase.ts
+
+ADD KNOWLEDGE DOMAINS:
+
+1. CIGAR EDUCATION
+    wrappers
+    fillers
+    binders
+    tobacco regions
+    cigar strength
+    humidity science
+    cutting methods
+    relighting etiquette
+2. SPIRITS EDUCATION
+    bourbon pairing
+    whiskey science
+    proof education
+    barrel aging
+    tasting notes
+    premium bottle recommendations
+3. WINE EDUCATION
+    wine regions
+    pairing science
+    preservation
+    tasting methods
+    varietal education
+4. BEER EDUCATION
+    beer styles
+    brewing science
+    temperature guidance
+    pairing logic
+5. GUEST PSYCHOLOGY
+    VIP handling
+    emotional pacing
+    first-time smoker coaching
+    non-pushy upselling
+6. HOSPITALITY SALES
+    attachment selling
+    second-round timing
+    dessert upsells
+    premium conversion methods
+7. OPERATIONS
+    humidor management
+    inventory recovery
+    table pacing
+    shift preparation
+8. CONFLICT RECOVERY
+    intoxication handling
+    complaint recovery
+    de-escalation
+    VIP recovery handling
+
+────────────────────────────
+
+PHASE 5 — ROLE-AWARE AI COACHING
+
+CREATE:
+coachRoleProfiles.ts
+
+SUPPORTED ROLES:
+• bartender
+• tobacconist
+• server
+• manager
+• concierge
+• VIP host
+• brand ambassador
+
+AI RESPONSES MUST CHANGE BASED ON ROLE CONTEXT.
+
+EXAMPLE:
+Bartender:
+“Recommend an oak-forward bourbon that complements the earthy Maduro profile.”
+
+Manager:
+“Guest conversion probability increased after premium pairing recommendations.”
+
+────────────────────────────
+
+PHASE 6 — LIVE CONTEXTUAL AI GUIDANCE
+
+WHEN STAFF SELECT:
+• cigar
+• whiskey
+• wine
+• beer
+• flavor profile
+• guest mood
+• budget tier
+
+AI MUST GENERATE:
+• talking points
+• pairing explanations
+• upsell opportunities
+• suggested next actions
+• hospitality guidance
+• recovery suggestions
+
+EXAMPLE:
+“This guest prefers creamy Connecticut cigars. Recommend a wheated bourbon with caramel notes to avoid overpowering the flavor profile.”
+
+────────────────────────────
+
+PHASE 7 — MASTER DOCUMENT STRUCTURE
+
+CREATE COMPLETE ENTERPRISE MANUAL SYSTEM.
+
+CREATE THE FOLLOWING COMPLETE MANUALS:
+
+1. NOVEE OS MASTER OPERATIONS MANUAL
+2. SMOKECRAFT 360 EXPERIENCE MANUAL
+3. POURCRAFT 360 MANUAL
+4. WINECRAFT 360 MANUAL
+5. BREWCRAFT 360 MANUAL
+6. E.A.T. SYSTEM OPERATIONS MANUAL
+7. COMMAND HUB ADMINISTRATOR MANUAL
+8. STAFF TRAINING & CERTIFICATION MANUAL
+9. AI COACH HELP KNOWLEDGE MANUAL
+10. ENTERPRISE INSTALLATION & HARDWARE MANUAL
+
+EACH MANUAL MUST INCLUDE:
+• workflows
+• SOPs
+• troubleshooting
+• diagrams
+• operational guidance
+• hospitality intelligence
+• AI usage guidance
+• certification material
+• recovery procedures
+• upselling education
+• guest psychology
+• environment intelligence
+• device operations
+• role-specific guidance
+
+────────────────────────────
+
+PHASE 8 — SETTINGS SECTION INTEGRATION
+
+ADD NEW SETTINGS CATEGORY:
+“Knowledge Center”
+
+SECTIONS:
+• Operations Manuals
+• Staff Training
+• SOP Library
+• Troubleshooting
+• Certifications
+• AI Coach Learning
+• Venue Setup
+• Emergency Procedures
+
+ADD:
+• search bar
+• bookmarked manuals
+• recent documents
+• progress tracking
+• AI-assisted search
+
+────────────────────────────
+
+PHASE 9 — COMMAND HUB DOCUMENT CONTROL CENTER
+
+CREATE:
+“MASTER DOCUMENT CONTROL CENTER”
+
+FEATURES:
+• searchable manual library
+• AI-assisted retrieval
+• SOP viewer
+• PDF export
+• role-based filtering
+• training progress
+• version tracking
+• admin publishing tools
+• compliance acknowledgments
+• update notifications
+
+────────────────────────────
+
+PHASE 10 — AI DOCUMENT SEARCH + RETRIEVAL
+
+CONNECT:
+OpenAI + Gemini
+
+ALLOW USERS TO ASK:
+• “How do I upsell allocated bourbon?”
+• “How do I relight a cigar properly?”
+• “Show humidor troubleshooting.”
+• “How do I recover an upset VIP guest?”
+
+AI MUST:
+• search indexed manuals
+• cite relevant sections
+• provide grounded answers
+• avoid hallucinations
+• provide confidence scores
+
+────────────────────────────
+
+PHASE 11 — DOCUMENT INDEXING ENGINE
+
+CREATE:
+server/services/documentIndexService.ts
+
+SUPPORT:
+• semantic indexing
+• markdown manuals
+• PDF ingestion
+• searchable categories
+• vector retrieval
+• offline caching
+
+────────────────────────────
+
+PHASE 12 — STAFF TRAINING + CERTIFICATION
+
+CREATE:
+• certification progression
+• quizzes
+• training modules
+• completion tracking
+• manager review system
+• onboarding sequences
+• AI-assisted learning
+
+────────────────────────────
+
+PHASE 13 — TOUCHSCREEN COACH HELP REDESIGN
+
+REDESIGN AS:
+premium obsidian-glass hospitality intelligence console.
+
+STYLE:
+• warm amber highlights
+• cinematic smoke ambience
+• realistic imagery
+• layered depth
+• floating glass panels
+• Apple/Tesla luxury aesthetic
+
+NO:
+• emojis
+• glyph icons
+• flat UI
+• generic admin styling
+
+SECTIONS:
+• Guest Guidance
+• Pairing Intelligence
+• Revenue Coaching
+• Recovery Guidance
+• Flavor Education
+• VIP Coaching
+• Live AI Suggestions
+• Quick Answers
+
+────────────────────────────
+
+PHASE 14 — AI SAFETY + VALIDATION
+
+PREVENT:
+• hallucinated inventory
+• unsafe alcohol guidance
+• duplicate responses
+• fake products
+• inaccurate hospitality guidance
+
+ADD:
+• confidence scoring
+• validation rules
+• provider failover
+• retry logic
+• audit logs
+• local fallback knowledge
+
+────────────────────────────
+
+PHASE 15 — PERFORMANCE + KIOSK HARDENING
+
+ENSURE:
+• cached AI responses
+• fast touchscreen rendering
+• offline graceful degradation
+• low-latency interaction
+• no UI freezing
+• kiosk-safe operation
+
+TARGET HARDWARE:
+1920x1080 luxury touchscreen kiosk environment.
+
+────────────────────────────
+
+FINAL SYSTEM RESULT
+
+NOVEE OS becomes:
+• hospitality operating system
+• AI intelligence layer
+• staff university
+• operational command ecosystem
+• luxury venue intelligence platform
+
+Coach Help becomes:
+• AI hospitality mentor
+• revenue coach
+• pairing expert
+• guest psychology assistant
+• operational intelligence system
+
+Command Hub becomes:
+the central knowledge, training, AI operations, and enterprise intelligence core for the entire ecosystem.
