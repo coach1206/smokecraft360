@@ -23,7 +23,10 @@ const TILES = [
     id: "smokecraft",
     label: "SMOKECRAFT 360",
     sub: "The Luxury Cigar Ritual",
-    img: `https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=1400&q=85`,
+    imgs: [
+      `https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=1400&q=85`,
+      `https://images.unsplash.com/photo-1574966740892-f5533faa2e6d?auto=format&fit=crop&w=1400&q=85`,
+    ],
     active: true,
     accent: GOLD,
     tag: "ACTIVE NOW",
@@ -32,7 +35,10 @@ const TILES = [
     id: "pourcraft",
     label: "POURCRAFT 360",
     sub: "Master Mixology & Spirits",
-    img: `https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?auto=format&fit=crop&w=1400&q=85`,
+    imgs: [
+      `https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?auto=format&fit=crop&w=1400&q=85`,
+      `https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=1400&q=85`,
+    ],
     active: false,
     accent: "#D4914A",
     tag: "COMING SOON",
@@ -41,7 +47,10 @@ const TILES = [
     id: "beercraft",
     label: "BEERCRAFT 360",
     sub: "Artisanal Craft Brewing",
-    img: `https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1400&q=85`,
+    imgs: [
+      `https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1400&q=85`,
+      `https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1400&q=85`,
+    ],
     active: false,
     accent: "#C8A44A",
     tag: "COMING SOON",
@@ -50,7 +59,10 @@ const TILES = [
     id: "winecraft",
     label: "WINECRAFT 360",
     sub: "Fine Wine & Cellar Curation",
-    img: `https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85`,
+    imgs: [
+      `https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85`,
+      `https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?auto=format&fit=crop&w=1400&q=85`,
+    ],
     active: false,
     accent: "#A03050",
     tag: "COMING SOON",
@@ -215,9 +227,41 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
 
 export function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [imgIndices, setImgIndices] = useState<Record<string, number>>(() =>
+    Object.fromEntries(TILES.map(t => [t.id, 0]))
+  );
+
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setImgIndices(prev =>
+        Object.fromEntries(TILES.map(t => [t.id, (prev[t.id] + 1) % t.imgs.length]))
+      );
+    }, 6000);
+    return () => clearInterval(iv);
+  }, []);
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#010101", display: "flex", flexDirection: "column" }}>
+      {/* Ambient back-lit radial gradient */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, background: "radial-gradient(ellipse 70% 60% at 50% 80%, rgba(212,175,55,0.07) 0%, transparent 70%)" }} />
+
+      {/* Smoke wisps + ember sparks */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 2, overflow: "hidden" }}>
+        {[0,1,2,3,4,5].map(i => (
+          <motion.div key={`sw${i}`}
+            style={{ position: "absolute", bottom: -20, left: `${8 + i * 15}%`, width: 70 + i * 28, height: 120 + i * 30, borderRadius: "50%", background: `radial-gradient(ellipse at center, rgba(${i % 2 === 0 ? "212,175,55" : "255,253,208"},0.025) 0%, transparent 70%)`, filter: "blur(28px)" }}
+            animate={{ y: [0, -(180 + i * 40)], opacity: [0, 0.55, 0], scale: [0.8, 1.5 + i * 0.08] }}
+            transition={{ duration: 5.4 + i * 0.5, repeat: Infinity, delay: i * 0.9, ease: "easeOut" }}
+          />
+        ))}
+        {[0,1,2,3,4].map(i => (
+          <motion.div key={`em${i}`}
+            style={{ position: "absolute", bottom: 50 + i * 18, left: `${12 + i * 19}%`, width: 3, height: 3, borderRadius: "50%", background: GOLD, boxShadow: `0 0 5px ${GOLD}` }}
+            animate={{ y: [0, -(55 + i * 18)], opacity: [0, 0.85, 0], x: [0, i % 2 === 0 ? 10 : -8] }}
+            transition={{ duration: 3.2 + i * 0.4, repeat: Infinity, delay: i * 1.08, ease: "easeOut" }}
+          />
+        ))}
+      </div>
       {/* Header */}
       <div style={{
         flexShrink: 0, padding: "24px 48px 20px",
@@ -258,14 +302,19 @@ export function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
                 borderRight: "1px solid rgba(255,255,255,0.04)",
               }}
             >
-              {/* Background image */}
-              <motion.img
-                src={tile.img}
-                alt={tile.label}
-                animate={{ scale: isHovered && tile.active ? 1.06 : 1 }}
-                transition={{ duration: 0.6, ease: EASE }}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-              />
+              {/* Background image carousel */}
+              <AnimatePresence mode="sync">
+                <motion.img
+                  key={imgIndices[tile.id]}
+                  src={tile.imgs[imgIndices[tile.id]]}
+                  alt={tile.label}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, scale: isHovered && tile.active ? 1.06 : 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ opacity: { duration: 1.4 }, scale: { duration: 0.6, ease: EASE } }}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </AnimatePresence>
 
               {/* Dark overlay */}
               <motion.div

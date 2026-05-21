@@ -365,12 +365,12 @@ interface EnvState {
 const ENERGY_STATES = ["quiet_reserve","social_warmth","elevated_lounge","peak_energy","vip_session","late_night_reserve","event_atmosphere","mentor_session"] as const;
 
 const MOOD_PRESETS_SC = [
-  { id: "social_warmth",       label: "Jazz Mode",    icon: "🎷", desc: "Warm, soulful atmosphere"   },
-  { id: "peak_energy",         label: "Sports Mode",  icon: "🏈", desc: "High energy, lively crowd"  },
-  { id: "vip_session",         label: "VIP Mode",     icon: "✨", desc: "Private reserve experience" },
-  { id: "event_atmosphere",    label: "Event Mode",   icon: "🎉", desc: "Special occasion setting"   },
-  { id: "late_night_reserve",  label: "After Hours",  icon: "🌙", desc: "Deep night, intimate glow"  },
-  { id: "quiet_reserve",       label: "Opening",      icon: "🌅", desc: "Soft morning atmosphere"    },
+  { id: "social_warmth",       label: "Jazz Mode",    icon: "", desc: "Warm, soulful atmosphere"   },
+  { id: "peak_energy",         label: "Sports Mode",  icon: "", desc: "High energy, lively crowd"  },
+  { id: "vip_session",         label: "VIP Mode",     icon: "", desc: "Private reserve experience" },
+  { id: "event_atmosphere",    label: "Event Mode",   icon: "", desc: "Special occasion setting"   },
+  { id: "late_night_reserve",  label: "After Hours",  icon: "", desc: "Deep night, intimate glow"  },
+  { id: "quiet_reserve",       label: "Opening",      icon: "", desc: "Soft morning atmosphere"    },
 ] as const;
 
 const SCENT_PRESETS_SC  = ["Tobacco", "Cedar", "Bergamot", "Vanilla", "Sandalwood", "Leather"];
@@ -909,34 +909,32 @@ function CoachHelpView() {
 
           {!activeSection && (
             <motion.div key="grid" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 16 }}>
                 {INTEL_SECTIONS.map((s, i) => {
                   const CARD_IMGS: Record<string,string> = {
-                    guest_guidance:     "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?auto=format&fit=crop&w=600&q=75",
-                    pairing_intelligence:"https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=600&q=75",
-                    revenue_coaching:   "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=600&q=75",
-                    recovery_guidance:  "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=600&q=75",
-                    flavor_education:   "https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=600&q=75",
-                    vip_coaching:       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=75",
-                    quick_answers:      "https://images.unsplash.com/photo-1521791055366-0d553872952f?auto=format&fit=crop&w=600&q=75",
-                    live_ai:            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=75",
+                    guest_guidance:      "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?auto=format&fit=crop&w=700&q=80",
+                    pairing_intelligence:"https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=700&q=80",
+                    revenue_coaching:    "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=700&q=80",
+                    recovery_guidance:   "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=700&q=80",
+                    flavor_education:    "https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=700&q=80",
+                    vip_coaching:        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=700&q=80",
+                    quick_answers:       "https://images.unsplash.com/photo-1521791055366-0d553872952f?auto=format&fit=crop&w=700&q=80",
+                    live_ai:             "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=700&q=80",
                   };
                   return (
-                    <motion.div key={s.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                    <motion.div key={s.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                       whileTap={{ scale: 0.97 }} onClick={() => setActiveSection(s.id)}
-                      style={{ minHeight: 120, borderRadius: 14, border: `1px solid ${s.color}44`, cursor: "pointer", position: "relative", overflow: "hidden" }}>
+                      style={{ minHeight: 180, borderRadius: 16, border: `1px solid ${s.color}55`, cursor: "pointer", position: "relative", overflow: "hidden", boxShadow: `0 4px 24px rgba(0,0,0,0.40)` }}>
                       <img src={CARD_IMGS[s.id]} alt={s.label} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(160deg, rgba(5,3,1,0.55) 0%, rgba(5,3,1,0.88) 100%)` }} />
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.color}88, transparent)` }} />
-                      <div style={{ position: "relative", padding: "16px 14px", display: "flex", flexDirection: "column", gap: 5, minHeight: 120 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 18, color: s.color, lineHeight: 1 }}>{s.icon}</span>
-                          <div style={{ fontSize: 14, fontWeight: 800, color: "#FFFDD0", letterSpacing: "0.04em", fontFamily: "'Inter',sans-serif" }}>{s.label}</div>
-                        </div>
-                        <div style={{ fontSize: 11, color: "rgba(255,253,208,0.62)", lineHeight: 1.45, fontFamily: "'Inter',sans-serif" }}>{s.summary}</div>
-                        <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 5 }}>
-                          <div style={{ width: 4, height: 4, borderRadius: "50%", background: s.color }} />
-                          <span style={{ fontSize: 9, color: `${s.color}88`, letterSpacing: "0.22em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>Tap to explore</span>
+                      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(170deg, rgba(5,3,1,0.45) 0%, rgba(5,3,1,0.82) 100%)` }} />
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${s.color}99, transparent)` }} />
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${s.color}44, transparent)` }} />
+                      <div style={{ position: "relative", padding: "20px 18px", display: "flex", flexDirection: "column", gap: 8, minHeight: 180 }}>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: "#FFFDD0", letterSpacing: "0.03em", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2, textShadow: "0 1px 8px rgba(0,0,0,0.60)" }}>{s.label}</div>
+                        <div style={{ fontSize: 13, color: "rgba(255,253,208,0.68)", lineHeight: 1.5, fontFamily: "'Inter',sans-serif" }}>{s.summary}</div>
+                        <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+                          <div style={{ height: 2, width: 20, background: `linear-gradient(90deg, ${s.color}, transparent)`, borderRadius: 1 }} />
+                          <span style={{ fontSize: 10, color: `${s.color}99`, letterSpacing: "0.28em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", fontWeight: 700 }}>Tap to explore</span>
                         </div>
                       </div>
                     </motion.div>
@@ -1088,17 +1086,6 @@ function CoachHelpView() {
 }
 
 
-const NAV_ITEMS = [
-  { id: "crafthub",          label: "CraftHub",       abbr: "HUB", targetPhase: "crafthub" as Phase,          staffOnly: false, isActive: (p: string) => p === "crafthub" },
-  { id: "smokecraft",        label: "SmokeCraft",     abbr: "SC",  targetPhase: "s1_demo" as Phase,           staffOnly: false, isActive: (p: string) => SESSION_PHASES.has(p) },
-  { id: "pairing",           label: "Pairing",        abbr: "PR",  targetPhase: "pairing_view" as Phase,      staffOnly: false, isActive: (p: string) => p === "pairing_view" },
-  { id: "profile",           label: "My Profile",     abbr: "ME",  targetPhase: "profile_view" as Phase,      staffOnly: false, isActive: (p: string) => p === "profile_view" },
-  { id: "eat",               label: "E.A.T Intel",    abbr: "EAT", targetPhase: "eat_dashboard" as Phase,     staffOnly: true,  pinLevel: "staff" as PinRole,      isActive: (p: string) => p === "eat_dashboard" },
-  { id: "executive_command", label: "Command Center", abbr: "EXC", targetPhase: "executive_command" as Phase, staffOnly: true,  pinLevel: "management" as PinRole, isActive: (p: string) => p === "executive_command" },
-  { id: "lounge",            label: "Lounge",         abbr: "LG",  targetPhase: "lounge_view" as Phase,       staffOnly: true,  isActive: (p: string) => p === "lounge_view" },
-  { id: "settings",          label: "Settings",       abbr: "ST",  targetPhase: "settings_view" as Phase,     staffOnly: true,  isActive: (p: string) => p === "settings_view" },
-  { id: "coach_help",        label: "Coach Help",     abbr: "CH",  targetPhase: "coach_help" as Phase,        staffOnly: false, isActive: (p: string) => p === "coach_help" },
-];
 
 // ── Quick Nav Bar — staff-only EAT Engine + Exec Command tab shortcuts ──────────
 const EAT_QN_TABS = [
@@ -1139,7 +1126,7 @@ function QuickNavBar() {
       paddingLeft: 12, paddingRight: 12, gap: 5,
       zIndex: 190, overflowX: "auto",
     }}>
-      <span style={{ fontSize: 8, fontWeight: 800, letterSpacing: "0.26em", color: `${GOLD}44`, fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap", paddingRight: 8, borderRight: `1px solid ${GOLD}18`, marginRight: 4, flexShrink: 0 }}>⬡ E.A.T.</span>
+      <span style={{ fontSize: 8, fontWeight: 800, letterSpacing: "0.26em", color: `${GOLD}44`, fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap", paddingRight: 8, borderRight: `1px solid ${GOLD}18`, marginRight: 4, flexShrink: 0 }}>E.A.T.</span>
       {EAT_QN_TABS.map(({ label, slug }) => (
         <motion.button key={slug}
           onPointerDown={() => goToEATTab(slug)}
@@ -1367,7 +1354,7 @@ function EATTelemetryBar() {
 
       <div style={{ flexShrink: 0, padding: "0 16px", borderRight: `1px solid rgba(212,175,55,0.22)`, display: "flex", flexDirection: "row", alignItems: "center", gap: 8, height: "100%", background: "rgba(212,175,55,0.05)" }}>
         <div style={{ width: 22, height: 22, borderRadius: 5, background: `rgba(212,175,55,0.20)`, border: `1px solid ${GOLD}66`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 8px ${GOLD}33` }}>
-          <span style={{ fontSize: 10, fontWeight: 900, color: GOLD, fontFamily: "'Inter',sans-serif" }}>⊞</span>
+          <span style={{ fontSize: 8, fontWeight: 900, color: GOLD, fontFamily: "'Inter',sans-serif", letterSpacing: "0.12em" }}>EAT</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
           <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.22em", color: GOLD, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>E.A.T INTELLIGENCE</span>
