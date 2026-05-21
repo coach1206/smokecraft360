@@ -404,10 +404,36 @@ export function S4_DesignStudio() {
                   </div>
                 </div>
 
+                {/* Preview column — cigar photo + cedar box preview */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, flexShrink: 0, width: 260 }}>
+                {/* ── Nicaraguan Maduro Cigar — obsidian glass mat ── */}
+                <div style={{
+                  width: "100%", borderRadius: 16,
+                  background: "linear-gradient(160deg, rgba(10,6,2,0.92) 0%, rgba(6,3,1,0.98) 100%)",
+                  border: "1px solid rgba(212,139,0,0.30)",
+                  boxShadow: "0 0 40px rgba(212,139,0,0.08), inset 0 1px 0 rgba(212,139,0,0.12)",
+                  position: "relative", overflow: "hidden",
+                  padding: "5px 5px 0",
+                }}>
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.7), transparent)", pointerEvents: "none" }} />
+                  <div style={{ width: "100%", aspectRatio: "16/7", borderRadius: 12, overflow: "hidden", position: "relative" }}>
+                    <img
+                      src="https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=600&q=85"
+                      alt="Nicaraguan Maduro hand-rolled cigar"
+                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%", display: "block" }}
+                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                    />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(4,2,0,0.08) 0%, transparent 40%, rgba(4,2,0,0.72) 100%)", pointerEvents: "none" }} />
+                    <div style={{ position: "absolute", bottom: 8, left: 12, display: "flex", flexDirection: "column", gap: 1 }}>
+                      <span style={{ fontSize: 7, letterSpacing: "0.30em", color: "rgba(212,139,0,0.65)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", fontWeight: 700 }}>YOUR RESERVE · SIGNATURE BLEND</span>
+                      <span style={{ fontSize: 12, fontWeight: 300, color: "rgba(230,210,175,0.92)", fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.10em" }}>Nicaraguan Maduro · Hand-Rolled</span>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Live box preview — cedar box photo */}
                 <div style={{
-                  width: 260,
-                  flexShrink: 0,
+                  width: "100%",
                   position: "relative",
                   border: `1.5px solid ${goldFoil ? GOLD + "88" : GOLD + "33"}`,
                   borderRadius: 16,
@@ -518,6 +544,7 @@ export function S4_DesignStudio() {
                   )}
                 </div>
               </div>
+              </div>{/* end preview column */}
 
               <motion.button
                 type="button"

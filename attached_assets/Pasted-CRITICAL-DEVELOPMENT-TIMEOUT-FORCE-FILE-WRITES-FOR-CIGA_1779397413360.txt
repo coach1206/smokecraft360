@@ -1,0 +1,26 @@
+CRITICAL DEVELOPMENT TIMEOUT: FORCE FILE WRITES FOR CIGAR ASSETS, COMMAND CENTER SECURITY STATE, AND NAV DE-CLUTTER (ZERO COMPROMISE)
+
+1. REASON FOR THIS DIRECTIVE (THE PREVIEW IS STILL BRICKED)
+Look at the live terminal preview states up to 5:00 PM. Your chat logs claim you are updating things, but the underlying application files have not changed. The cigar asset is completely missing from the studio, the pairing engine is uncomfortably dark with zero images, navigation controls are still messy and duplicated, and the 'OPEN COMMAND CENTER' and 'Staff Authority' buttons are totally frozen. Stop generating loose UI templates. You are ordered to execute direct code-level modifications to the workspace tree immediately.
+
+2. RENDER THE PRIMARY CIGAR OBJECT IN SIGNATURE STUDIO ('⚗ Your Reserve')
+- Locate the main workspace view file for the signature blending step.
+- Hard-code an ultra-premium, high-resolution photographic asset path of a hand-rolled Nicaraguan Maduro cigar directly onto the center obsidian glass mat frame. 
+- Ensure it utilizes 'object-fit: cover' and strict aspect ratio bounding boxes. The cigar must be permanently present on the screen layout.
+
+3. STRIP DUPLICATE TOOLBARS & ISOLATE GLOBAL NAV ROUTER
+- Clean up the Header: Completely rip out the text-tag buttons for 'HUB CRAFTHUB', 'SC SMOKECRAFT', 'PR PAIRING', and 'CH COACH HELP' from the top bar layer. It is cluttered and redundant.
+- Lock Navigation to Left Rail: The Left Vertical Obsidian Rail is the absolute, singular navigation engine. Ensure its icons have a strict 58px physical touch target. Clicking the 'Hub' icon must immediately unmount any active sub-view and return the canvas straight to the 4-Tile Experiential Carousel Grid.
+
+4. UNBRICK THE PIN-GATED COMMAND CENTER & STAFF AUTHORITY
+- Fix the Frozen Click States: Re-wire the onClick / touchStart event handlers for 'OPEN COMMAND CENTER >' and 'Staff Authority' buttons at the bottom right/corners.
+- Mount the 4-Digit Numeric PIN Pad Overlay: Clicking either tool must instantly launch an oversized, high-contrast numeric PIN pad modal layer over the screen.
+- Deploy the Concentric Touch Ripple: Upon entering a valid Staff PIN, track the touch coordinates and fire a hardware-accelerated concentric ripple animation to smoothly dissolve the interface into the active E.A.T. High-Velocity POS terminal layout instead of hanging on a black screen.
+- Operational Data Readout: This view must render the live seating grids and the triple-axis backend inventory balances (Kitchen orders, Bar pour metrics, and the Humidor stock countdown fixed at 145 Puros remaining) driven by the 'POSRouterEngine'.
+
+5. INJECT EXPENSIVE CREAM ACCENTS & LIFESTYLE CARDS IN PAIRING
+- Lighten the Contrast: Throw out the flat, muddy dark gray tones in the Pairing views. Wrap panels in lighter, semi-translucent smoke-tinted glass blocks.
+- Cream and Gold Overlays: Apply bright Cream (#FDFBF7) and liquid Warm Gold gradients exclusively on borders, action buttons, active tags, and selection indicators so they pop immediately in dim lounge environments.
+- Inject Pairing Imagery: Hard-code high-contrast lifestyle photography inside the workspace panels immediately: a macro Maduro tobacco wrapper leaf on the left, and rich single-malt whiskey tumblers/upscale small culinary plates on the right.
+
+Perform an absolute file compilation scan. Overwrite all unresponsive placeholder components with these functional touchscreen-ready logic structures. Ensure zero TypeScript compile dropouts.

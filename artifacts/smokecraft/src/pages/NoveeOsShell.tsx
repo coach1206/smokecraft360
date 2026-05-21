@@ -191,7 +191,7 @@ function PairingView() {
             <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
               <div style={{ flex: 1, overflow: "auto", padding: "16px 20px 0" }}>
                 {featured ? (
-                  <div style={{ background: "rgba(5,3,1,0.82)", backdropFilter: "blur(20px)", borderRadius: 16, border: `1px solid ${GOLD}33`, padding: 20, position: "relative", overflow: "hidden" }}>
+                  <div style={{ background: "rgba(18,10,4,0.68)", backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)", borderRadius: 16, border: `1px solid ${GOLD}55`, boxShadow: `0 0 60px rgba(212,175,55,0.06), inset 0 1px 0 rgba(212,175,55,0.14)`, padding: 20, position: "relative", overflow: "hidden" }}>
                     <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${GOLD}88, transparent)`, pointerEvents: "none" }} />
                     <div style={{ fontSize: 9, letterSpacing: "0.32em", color: `${GOLD}55`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginBottom: 14 }}>TONIGHT'S FEATURED PAIRING</div>
                     <div style={{ display: "flex", gap: 12, marginBottom: 18, alignItems: "stretch" }}>
@@ -262,10 +262,10 @@ function PairingView() {
                           style={{
                             padding: btn.primary ? "16px 28px" : "14px 20px", borderRadius: 10, cursor: "pointer", fontFamily: "'Inter',sans-serif",
                             fontSize: btn.primary ? 22 : 20, fontWeight: btn.primary ? 800 : 600, letterSpacing: "0.08em", textTransform: "uppercase",
-                            background: btn.primary ? `linear-gradient(135deg, ${GOLD} 0%, #C87028 100%)` : "rgba(255,255,255,0.04)",
-                            color: btn.primary ? "#0A0700" : `${GOLD}AA`,
-                            border: `1px solid ${btn.primary ? GOLD : GOLD + "44"}`,
-                            boxShadow: btn.primary ? `0 4px 22px ${GOLD}44` : "none",
+                            background: btn.primary ? `linear-gradient(135deg, ${GOLD} 0%, #C87028 100%)` : "rgba(253,251,247,0.055)",
+                            color: btn.primary ? "#0A0700" : `rgba(240,228,200,0.88)`,
+                            border: `1px solid ${btn.primary ? GOLD : "rgba(212,175,55,0.32)"}`,
+                            boxShadow: btn.primary ? `0 4px 22px ${GOLD}44` : "inset 0 1px 0 rgba(212,175,55,0.10)",
                             minHeight: 58,
                           }}>
                           {btn.label}
@@ -1281,12 +1281,18 @@ function SystemBar() {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <motion.button type="button" onPointerDown={() => { if (inSession) resetBlend(); else navigate("crafthub"); }} whileTap={{ scale: 0.95 }}
+        <motion.button type="button"
+          onPointerDown={() => { if (inSession) resetBlend(); else navigate("crafthub"); }}
+          onClick={() => { if (inSession) resetBlend(); else navigate("crafthub"); }}
+          whileTap={{ scale: 0.95 }}
           style={{ border: `1px solid rgba(212,175,55,${inSession ? "0.55" : "0.25"})`, borderRadius: 6, padding: "5px 14px", background: `rgba(212,175,55,${inSession ? "0.14" : "0.05"})`, cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.22em", color: inSession ? GOLD : `${GOLD}55`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: inSession ? `0 0 10px rgba(212,175,55,0.22)` : "none", transition: "all 0.2s" }}>
           RESET BLEND
         </motion.button>
 
-        <motion.button type="button" onPointerDown={() => navigate("eat_dashboard", "staff")} whileTap={{ scale: 0.95 }}
+        <motion.button type="button"
+          onPointerDown={() => navigate("eat_dashboard", "staff")}
+          onClick={() => navigate("eat_dashboard", "staff")}
+          whileTap={{ scale: 0.95 }}
           style={{ border: `1px solid ${GOLD}66`, borderRadius: 6, padding: "5px 14px", background: `rgba(212,175,55,0.14)`, cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: `0 0 10px ${GOLD}22` }}>
           COACH HELP
         </motion.button>
@@ -1295,7 +1301,10 @@ function SystemBar() {
           @keyframes staffAuthPulse { 0%   { box-shadow: 0 0 8px rgba(212,175,55,0.55), 0 0 2px rgba(212,175,55,0.80); border-color: rgba(212,175,55,0.55); } 50%  { box-shadow: 0 0 22px rgba(212,175,55,0.90), 0 0 8px rgba(212,175,55,1.0), inset 0 0 6px rgba(212,175,55,0.18); border-color: rgba(212,175,55,1.0); } 100% { box-shadow: 0 0 8px rgba(212,175,55,0.55), 0 0 2px rgba(212,175,55,0.80); border-color: rgba(212,175,55,0.55); } }
           @keyframes staffAuthDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.72); } }
         `}</style>
-        <motion.button type="button" onPointerDown={onStaffAuth} whileTap={{ scale: 0.93 }}
+        <motion.button type="button"
+          onPointerDown={onStaffAuth}
+          onClick={onStaffAuth}
+          whileTap={{ scale: 0.93 }}
           style={{ border: `1px solid ${GOLD}`, borderRadius: 6, padding: "5px 14px", background: staffAuthActive ? `rgba(212,175,55,0.32)` : `rgba(212,175,55,0.10)`, cursor: "pointer", fontSize: 9, fontWeight: 900, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 6, animation: staffAuthPulsing ? "staffAuthPulse 2.0s ease-in-out infinite" : "none", transition: "background 0.25s" }}>
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD, animation: staffAuthPulsing ? "staffAuthDot 2.0s ease-in-out infinite" : "none", boxShadow: `0 0 6px ${GOLD}`, flexShrink: 0 }} />
           STAFF AUTH
@@ -1368,12 +1377,15 @@ function EATTelemetryBar() {
         ))}
       </div>
 
-      <div
+      <motion.button
+        type="button"
         onPointerDown={(e) => { e.stopPropagation(); navigate("executive_command", "management"); }}
-        style={{ flexShrink: 0, padding: "0 18px", height: "100%", display: "flex", alignItems: "center", gap: 8, borderLeft: `1px solid rgba(212,175,55,0.22)`, cursor: "pointer", background: "rgba(212,175,55,0.03)", transition: "background 0.18s" }}>
+        onClick={(e) => { e.stopPropagation(); navigate("executive_command", "management"); }}
+        whileTap={{ scale: 0.97, background: `rgba(212,175,55,0.14)` }}
+        style={{ flexShrink: 0, padding: "0 18px", height: "100%", display: "flex", alignItems: "center", gap: 8, borderLeft: `1px solid rgba(212,175,55,0.22)`, cursor: "pointer", background: "rgba(212,175,55,0.03)", border: "none", outline: "none", transition: "background 0.18s" }}>
         <span style={{ fontSize: 8.5, letterSpacing: "0.22em", color: `${GOLD}80`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>OPEN COMMAND CENTER</span>
         <span style={{ fontSize: 14, color: GOLD }}>›</span>
-      </div>
+      </motion.button>
     </motion.div>
   );
 }

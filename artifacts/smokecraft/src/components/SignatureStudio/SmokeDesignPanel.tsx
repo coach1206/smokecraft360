@@ -103,6 +103,32 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
   if (tab === "preview") {
     return (
       <div className="flex flex-col items-center gap-6 py-4">
+        {/* ── Nicaraguan Maduro Cigar — obsidian glass mat ── */}
+        <div style={{
+          width: "100%", borderRadius: 16,
+          background: "linear-gradient(160deg, rgba(10,6,2,0.92) 0%, rgba(6,3,1,0.98) 100%)",
+          border: "1px solid rgba(212,139,0,0.30)",
+          boxShadow: "0 0 40px rgba(212,139,0,0.08), inset 0 1px 0 rgba(212,139,0,0.12)",
+          position: "relative", overflow: "hidden",
+          padding: "6px 6px 0",
+        }}>
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.7), transparent)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.4), transparent)", pointerEvents: "none" }} />
+          <div style={{ width: "100%", aspectRatio: "16/7", borderRadius: 12, overflow: "hidden", position: "relative" }}>
+            <img
+              src="https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=800&q=85"
+              alt="Nicaraguan Maduro hand-rolled cigar"
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%", display: "block" }}
+              onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(4,2,0,0.08) 0%, transparent 40%, rgba(4,2,0,0.72) 100%)", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", bottom: 10, left: 14, display: "flex", flexDirection: "column", gap: 1 }}>
+              <span style={{ fontSize: 8, letterSpacing: "0.32em", color: "rgba(212,139,0,0.65)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", fontWeight: 700 }}>YOUR RESERVE · SIGNATURE BLEND</span>
+              <span style={{ fontSize: 13, fontWeight: 300, color: "rgba(230,210,175,0.92)", fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.12em" }}>Nicaraguan Maduro · Hand-Rolled</span>
+            </div>
+          </div>
+        </div>
+
         {/* Band preview with draggable label overlay */}
         <div className="flex flex-col items-center gap-2 p-6 rounded-2xl w-full"
           style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)" }}>
