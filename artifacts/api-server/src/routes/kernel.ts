@@ -42,7 +42,7 @@ const RegisterModuleSchema = z.object({
 
 const SetModeSchema = z.object({
   mode:   z.enum(["sovereign", "essential"]),
-  reason: z.string().trim().max(500).optional(),
+  reason: z.string().trim().min(1, "A reason is required when changing kernel mode").max(500),
 });
 
 const TelemetryIngestSchema = z.object({
