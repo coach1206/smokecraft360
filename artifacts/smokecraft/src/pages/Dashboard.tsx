@@ -6,8 +6,9 @@ import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle, FileLock, Download,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus, Share2,
   Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity, LifeBuoy,
-  Server, ChevronRight, ExternalLink,
+  Server, ChevronRight, ExternalLink, Lock,
 } from "lucide-react";
+import { useKernelMode } from "@/contexts/KernelModeContext";
 import { useLocation } from "wouter";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }               from "@/components/Dashboard/BrandsTab";
@@ -47,6 +48,44 @@ import { LoginModal }                from "@/components/Auth/LoginModal";
 import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
+const SOVEREIGN_FEATURES: {
+  path: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    path:        "/governance",
+    name:        "Enterprise Governance",
+    description: "Policy enforcement, audit trails, and multi-venue compliance controls.",
+    icon:        <Shield size={18} />,
+  },
+  {
+    path:        "/operations",
+    name:        "Master Operations",
+    description: "Full POS orchestration, staff roles, and real-time venue operations.",
+    icon:        <Server size={18} />,
+  },
+  {
+    path:        "/designer",
+    name:        "Experience Designer",
+    description: "Build cinematic guest journeys and custom swipe experiences.",
+    icon:        <Sparkles size={18} />,
+  },
+  {
+    path:        "/enterprise-intelligence",
+    name:        "Enterprise Intelligence",
+    description: "Cross-venue revenue analytics, demand forecasting, and AI insights.",
+    icon:        <Brain size={18} />,
+  },
+  {
+    path:        "/central-command",
+    name:        "Central Command",
+    description: "Remote device control, live sessions, and system-wide kill switches.",
+    icon:        <Monitor size={18} />,
+  },
+];
+
 type CategoryFilter = "all" | "cigar" | "alcohol";
 type DashTab = "overview" | "products" | "card-manager" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os" | "help" | "entitlements" | "data-intel" | "sales-tiers" | "revenue-attribution";
 
@@ -84,6 +123,7 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
   const { user, loading: authLoading, logout } = useAuth();
+  const { mode: kernelMode } = useKernelMode();
 
   const [activeTab,   setActiveTab]   = useState<DashTab>("overview");
   const [inventory,   setInventory]   = useState<InventoryItem[]>([]);
@@ -422,6 +462,97 @@ export default function Dashboard() {
                             <div className="text-xs font-bold" style={{ color: item.color }}>{item.value}</div>
                           </div>
                         ))}
+                      </div>
+                    </motion.div>
+
+                    {/* ── Sovereign Features Panel ───────────────────────── */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, delay: 0.15 }}>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <Crown size={13} style={{ color: "rgba(212,139,0,0.7)" }} />
+                          <span className="text-[11px] uppercase tracking-[0.22em]"
+                            style={{ color: "rgba(212,139,0,0.62)" }}>
+                            Sovereign Features
+                          </span>
+                        </div>
+                        {kernelMode === "essential" && (
+                          <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-full"
+                            style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.20)", color: "rgba(239,68,68,0.65)" }}>
+                            <Lock size={9} />Essential Mode
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3" data-testid="sovereign-features-grid">
+                        {SOVEREIGN_FEATURES.map((feature) => {
+                          const locked = kernelMode === "essential";
+                          const dest   = locked
+                            ? `/upgrade-required?feature=${encodeURIComponent(feature.name)}`
+                            : feature.path;
+                          return (
+                            <motion.button
+                              key={feature.path}
+                              data-testid={`sovereign-tile-${feature.path.replace("/", "")}`}
+                              onClick={() => navigate(dest)}
+                              className="text-left rounded-xl p-4 w-full transition-all"
+                              style={{
+                                background: locked
+                                  ? "rgba(26,26,27,0.04)"
+                                  : "linear-gradient(135deg, rgba(212,139,0,0.07), rgba(212,139,0,0.03))",
+                                border: locked
+                                  ? "1px solid rgba(26,26,27,0.10)"
+                                  : "1px solid rgba(212,139,0,0.20)",
+                                cursor: "pointer",
+                                opacity: locked ? 0.72 : 1,
+                              }}
+                              whileHover={{ scale: 1.01, opacity: 1 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="flex items-start gap-3 flex-1 min-w-0">
+                                  <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                                    style={{
+                                      background: locked
+                                        ? "rgba(26,26,27,0.07)"
+                                        : "rgba(212,139,0,0.12)",
+                                      border: locked
+                                        ? "1px solid rgba(26,26,27,0.12)"
+                                        : "1px solid rgba(212,139,0,0.24)",
+                                    }}>
+                                    <span style={{ color: locked ? "rgba(107,94,78,0.50)" : "rgba(212,139,0,0.85)" }}>
+                                      {feature.icon}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-semibold text-sm leading-tight"
+                                      style={{ color: locked ? "rgba(107,94,78,0.60)" : "rgba(230,210,175,0.90)" }}>
+                                      {feature.name}
+                                    </div>
+                                    <div className="text-[11px] mt-1 leading-snug"
+                                      style={{ color: "rgba(107,94,78,0.45)" }}>
+                                      {feature.description}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex-shrink-0 mt-0.5">
+                                  {locked ? (
+                                    <div className="w-7 h-7 rounded-full flex items-center justify-center"
+                                      style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.18)" }}>
+                                      <Lock size={12} style={{ color: "rgba(239,68,68,0.55)" }} />
+                                    </div>
+                                  ) : (
+                                    <div className="w-7 h-7 rounded-full flex items-center justify-center"
+                                      style={{ background: "rgba(212,139,0,0.10)", border: "1px solid rgba(212,139,0,0.22)" }}>
+                                      <ChevronRight size={13} style={{ color: "rgba(212,139,0,0.65)" }} />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </motion.button>
+                          );
+                        })}
                       </div>
                     </motion.div>
 
