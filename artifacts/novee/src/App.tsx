@@ -64,6 +64,7 @@ interface NoveeNavCtx {
   eatFlags:        EATModuleFlags;
   onFlagsChange:   (f: EATModuleFlags) => void;
   resetGuest:      () => void;
+  resetBlend:      () => void;
 }
 
 const NoveeNavContext = createContext<NoveeNavCtx | null>(null);
@@ -1256,7 +1257,7 @@ function LeftRail() {
 ───────────────────────────────────────────── */
 function SystemBar() {
   const { profile }              = useGuest();
-  const { navigate, resetGuest } = useNoveeNav();
+  const { navigate, resetGuest, resetBlend } = useNoveeNav();
   const { phase }                = profile;
   const inSession = SESSION_PHASES.has(phase);
   const [staffAuthPulsing, setStaffAuthPulsing] = useState(true);
@@ -1285,8 +1286,8 @@ function SystemBar() {
 
       {/* Center: action buttons */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <motion.button type="button" onPointerDown={() => navigate("crafthub")} whileTap={{ scale: 0.95 }}
-          style={{ border: "1px solid rgba(212,175,55,0.35)", borderRadius: 6, padding: "5px 14px", background: "rgba(212,175,55,0.08)", cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", opacity: inSession ? 1 : 0.35 }}>
+        <motion.button type="button" onPointerDown={() => { if (inSession) resetBlend(); else navigate("crafthub"); }} whileTap={{ scale: 0.95 }}
+          style={{ border: `1px solid rgba(212,175,55,${inSession ? "0.55" : "0.25"})`, borderRadius: 6, padding: "5px 14px", background: `rgba(212,175,55,${inSession ? "0.14" : "0.05"})`, cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.22em", color: inSession ? GOLD : `${GOLD}55`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: inSession ? `0 0 10px rgba(212,175,55,0.22)` : "none", transition: "all 0.2s" }}>
           RESET BLEND
         </motion.button>
 
@@ -1690,11 +1691,22 @@ function OsShell() {
     } catch { /* */ }
   }
 
+  function resetBlend() {
+    try {
+      [
+        "novee_session_restore", "novee_craft_quiz", "novee_craft_build",
+        "craft_build_data", "novee_blend_session", "novee_golden_box_seen",
+      ].forEach(k => { try { sessionStorage.removeItem(k); } catch { /* */ } });
+    } catch { /* */ }
+    setPhase("s1_demo");
+  }
+
   const navCtx: NoveeNavCtx = {
     navigate,
     eatFlags,
     onFlagsChange: setEatFlags,
     resetGuest,
+    resetBlend,
   };
 
   return (
