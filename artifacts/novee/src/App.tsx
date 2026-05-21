@@ -575,8 +575,9 @@ function SettingsView() {
     { id: "device",   label: "Device Manager", icon: "⊞" },
     { id: "api",      label: "API Config",     icon: "⟡" },
     { id: "theme",    label: "Theme",          icon: "◐" },
-    { id: "roles",    label: "User Roles",     icon: "◆" },
-    { id: "system",   label: "System",         icon: "⊹" },
+    { id: "roles",      label: "User Roles",        icon: "◆" },
+    { id: "knowledge",  label: "Knowledge Center", icon: "◎" },
+    { id: "system",     label: "System",            icon: "⊹" },
   ];
 
   function SettingsRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
@@ -658,6 +659,38 @@ function SettingsView() {
         )}
       </div>
     );
+    if (activeSection === "knowledge") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+        <div style={{ padding: "10px 13px", borderRadius: 8, background: "rgba(212,175,55,0.06)", border: `1px solid ${GOLD}22` }}>
+          <div style={{ fontSize: 10, color: `${GOLD}66`, letterSpacing: "0.20em", fontFamily: "'Inter',sans-serif", marginBottom: 3 }}>MASTER MANUALS — 10 DOCUMENTS INDEXED</div>
+          <div style={{ fontSize: 11, color: "rgba(240,232,212,0.50)", fontFamily: "'Inter',sans-serif", lineHeight: 1.5 }}>All training docs are AI-searchable. Use AI Coach for live queries across all domains.</div>
+        </div>
+        {[
+          "Hospitality Fundamentals Manual",
+          "Cigar Knowledge & Terroir Guide",
+          "Spirit Pairing & Mixology Bible",
+          "VIP Service Protocol Handbook",
+          "Revenue Optimization Playbook",
+          "Guest Recovery & De-escalation Guide",
+          "Flavor Education & Sensory Training",
+          "Humidor Management & Care Manual",
+          "Staff Development & Progression Guide",
+          "Emergency Operations & Safety SOPs",
+        ].map((manual, i) => (
+          <div key={i} style={{ padding: "10px 13px", borderRadius: 7, background: "rgba(255,255,255,0.025)", border: `1px solid ${GOLD}16`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: CREAM, fontFamily: "'Inter',sans-serif", letterSpacing: "0.02em" }}>{manual}</div>
+              <div style={{ fontSize: 9, color: `${GOLD}50`, fontFamily: "'Inter',sans-serif", marginTop: 2, letterSpacing: "0.12em" }}>INDEXED · AI SEARCHABLE</div>
+            </div>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 4px #32B45A", flexShrink: 0 }} />
+          </div>
+        ))}
+        <div style={{ padding: "9px 13px", borderRadius: 7, background: "rgba(212,175,55,0.08)", border: `1px solid ${GOLD}30`, marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: GOLD, fontWeight: 700, letterSpacing: "0.16em", fontFamily: "'Inter',sans-serif" }}>8 KNOWLEDGE DOMAINS ACTIVE</div>
+          <div style={{ fontSize: 9, color: `${GOLD}60`, marginTop: 2, fontFamily: "'Inter',sans-serif", lineHeight: 1.5 }}>Guest Guidance · Pairing Intelligence · Revenue Coaching · Recovery · Flavor Education · VIP Coaching · Quick Answers · Live AI</div>
+        </div>
+      </div>
+    );
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <SettingsRow label="Platform version"   value="NOVEE OS v2.4"     />
@@ -715,187 +748,319 @@ function SettingsView() {
 /* ─────────────────────────────────────────────
    Coach Help View
 ───────────────────────────────────────────── */
-const COACH_TOPICS = [
-  {
-    id: "getting_started", icon: "◈", label: "Getting Started",
-    color: "#D4AF37",
-    steps: [
-      "Tap the CraftHub to begin a new session.",
-      "Complete your palate profile — it takes under 2 minutes.",
-      "Your mentor is assigned automatically based on your taste profile.",
-      "Use the SmokeCraft tab to start your guided experience.",
-    ],
-  },
-  {
-    id: "pairing", icon: "◆", label: "Pairing Guide",
-    color: "#C87028",
-    steps: [
-      "Navigate to the Pairing tab from the main nav bar.",
-      "Select a category: Classics, Vintage, etc.",
-      "Tap any pairing card to see full flavor notes and XP reward.",
-      "Use 'Pair With My Profile' to get AI-matched pairings.",
-    ],
-  },
-  {
-    id: "xp_levels", icon: "⬡", label: "XP & Levels",
-    color: "#32B45A",
-    steps: [
-      "Earn XP by completing sessions, pairings, and challenges.",
-      "Levels: Novice (0) → Enthusiast (1K) → Connoisseur (5K) → Aficionado (15K).",
-      "Higher tiers unlock exclusive blends and challenges.",
-      "View your current standing in the My Profile tab.",
-    ],
-  },
-  {
-    id: "lounge", icon: "◉", label: "Lounge Controls",
-    color: "#7B5EA7",
-    steps: [
-      "Staff can access the Lounge tab from the nav bar.",
-      "Select a mood preset: Jazz Mode, VIP Mode, After Hours, etc.",
-      "Adjust lighting, music, and scent intensity independently.",
-      "Presets apply instantly across all connected venue systems.",
-    ],
-  },
-  {
-    id: "golden_box", icon: "⌘", label: "Golden Box",
-    color: "#D4AF37",
-    steps: [
-      "Your Golden Box is a living record of your mastery.",
-      "Open Challenges to earn XP-gated rewards.",
-      "Compare your stats against the member average.",
-      "Rare blends and exclusive access unlock at higher tiers.",
-    ],
-  },
-  {
-    id: "staff_tools", icon: "⊹", label: "Staff Tools",
-    color: "#C87028",
-    steps: [
-      "Staff PIN unlocks the E.A.T Intel and Command Center tabs.",
-      "E.A.T Intel shows real-time sales intelligence and forecasts.",
-      "Command Center controls lounge environment and device status.",
-      "Management PIN required for billing and role management.",
-    ],
-  },
+const INTEL_SECTIONS = [
+  { id: "guest_guidance", label: "Guest Guidance", icon: "⊹", color: "#D4AF37",
+    summary: "First-timer coaching, VIP handling, guest psychology, and service protocols.",
+    items: [
+      { title: "First-Time Smoker Protocol", body: "Recommend Connecticut or Dominican. Warn of nicotine on empty stomach. Pace at 1–2 draws/min. Frame it as a terroir experience — they're tasting the land of Nicaragua." },
+      { title: "VIP Recognition Rules", body: "Use guest name within 30s. Anticipate preferences before they ask. The 3-minute engagement rule: no more than 3 minutes between seating and first engagement." },
+      { title: "Emotional Pacing", body: "Celebratory guests: fast-paced enthusiasm. Contemplative guests: slow, deliberate guidance. Read the room — never rush either. Pacing drives repeat visits." },
+    ] },
+  { id: "pairing_intelligence", label: "Pairing Intelligence", icon: "◆", color: "#C87028",
+    summary: "Spirit, wine, and cuisine pairings by cigar profile with flavor bridge notes.",
+    items: [
+      { title: "Connecticut + Wheated Bourbon", body: "Caramel and vanilla mirror the mild creaminess. Pappy Van Winkle or W.L. Weller. The intensity bridge: match the strength of the spirit to the body of the cigar." },
+      { title: "Maduro + High-Rye Bourbon", body: "Spice and fruit esters match the dark chocolate–espresso profile. Booker's or Four Roses Single Barrel. Bold on bold — reinforces, not overpowers." },
+      { title: "Habano + Single Malt Scotch", body: "Rich oak and spice match the complexity. Macallan 18 or Eagle Rare. The sherry-cask sweetness bridges the earthy Habano mid-palette beautifully." },
+    ] },
+  { id: "revenue_coaching", label: "Revenue Coaching", icon: "◈", color: "#32B45A",
+    summary: "Attachment selling, second-round timing, premium conversion, and ticket growth.",
+    items: [
+      { title: "Second-Round Timing", body: "At 75% of the first cigar, return to the table. 'Would you like to select your next smoke?' Target conversion rate: 65%. Never wait until the guest asks." },
+      { title: "Premium Conversion", body: "Never say 'more expensive.' Use 'allocated,' 'reserve,' or 'signature.' Lead with the story: '500 boxes reached the US this year — we received 12.'" },
+      { title: "Pairing Bridge Upsell", body: "'The experience changes significantly with the right spirit — may I suggest our Macallan 18?' Always a question. Permission-based selling drives 40% ticket increase." },
+    ] },
+  { id: "recovery_guidance", label: "Recovery Guidance", icon: "⬡", color: "#C84A4A",
+    summary: "Complaint recovery (L.A.S.T.), intoxication management, de-escalation.",
+    items: [
+      { title: "L.A.S.T. Recovery Framework", body: "Listen (no interruption) → Acknowledge ('You're absolutely right, I sincerely apologize') → Solve (immediate, concrete remedy) → Thank ('Thank you for telling us')." },
+      { title: "Intoxication Protocol", body: "Slow the pace naturally. Redirect with food — compliments of the house. Bring water as a palate cleanser, no comment. Notify manager via SMS, never over radio in earshot." },
+      { title: "De-escalation Technique", body: "Speak 20% below normal volume. Move to the guest's eye level. Remove audience by guiding to private area. Agree with feelings, not facts. Offer two acceptable options." },
+    ] },
+  { id: "flavor_education", label: "Flavor Education", icon: "◉", color: "#7B5EA7",
+    summary: "Wrapper varieties, regional terroir, filler architecture, and cutting techniques.",
+    items: [
+      { title: "Wrapper Guide", body: "Connecticut: silky, mild, cedar, cream. Maduro: dark chocolate, espresso, dried fruit. Habano: spicy, complex, cedar. Corojo: earthy, oily. Cameroon: sweet, toothy, unique." },
+      { title: "Filler Architecture", body: "Seco: combustion and balance (40%). Viso: flavor and complexity (40%). Ligero: strength and length (20% medium / 30% full). Ratio drives the strength trajectory." },
+      { title: "Region Terroir", body: "Cuba (Vuelta Abajo): world's finest. Nicaragua (Jalapa): volcanic, complex. Dominican (Santiago): smooth, refined. Honduras (Danlí): hearty, earthy. Each region imprints the leaf." },
+    ] },
+  { id: "vip_coaching", label: "VIP Coaching", icon: "⟡", color: "#C8960A",
+    summary: "High-value guest retention, anticipatory service, and lifetime value thinking.",
+    items: [
+      { title: "Anticipatory Intelligence", body: "Repeat VIP + known preference = stage before they arrive. 'We received the Padron 1926 this week — I thought of you immediately.' That sentence is worth $500 in loyalty." },
+      { title: "The Graceful Departure", body: "When a VIP is deep in conversation, a slow withdrawal and brief nod is preferred over verbal interruption. Never hover. Presence without intrusion is the highest service level." },
+      { title: "VIP Recovery Investment", body: "A $15 cigar complaint resolves with a $50 credit and a personal follow-up call. The remedy must exceed the complaint for high-value guests. Think lifetime value, not transaction cost." },
+    ] },
+  { id: "quick_answers", label: "Quick Answers", icon: "◎", color: "#4A9BC8",
+    summary: "Instant answers to the most common operational and guest service questions.",
+    items: [
+      { title: "How do I reset a session?", body: "Settings → Session → Reset Session. Clears the current profile and returns to CraftHub. Guest data is preserved in sessionStorage — they can return on the same device." },
+      { title: "Humidor emergency (RH > 75%)", body: "Remove all Boveda packs immediately. Leave the humidor lid slightly ajar for 2 hours. Monitor every 30 minutes. Do not add any humidification until RH drops below 72%." },
+      { title: "Staff PIN locked out?", body: "After 5 failed attempts: automatic 15-minute lockout. Reset via Settings → Security (management PIN required). Contact your venue administrator if management PIN is unavailable." },
+    ] },
+  { id: "live_ai", label: "Live AI", icon: "⊞", color: "#D4AF37",
+    summary: "Ask the AI Coach anything about hospitality, operations, pairings, or guest situations.",
+    items: [] },
 ];
 
-const COACH_FAQS = [
-  { q: "How do I reset my session?",               a: "Go to Settings → Session → tap 'Reset Session'. This clears your current profile and returns to the CraftHub." },
-  { q: "Can I save my pairing preferences?",        a: "Yes — any pairing you interact with is automatically saved to your taste profile for future recommendations." },
-  { q: "What is ElevenLabs audio?",                 a: "The platform uses ElevenLabs AI voice to narrate key moments, blend descriptions, and mentor guidance. It activates automatically." },
-  { q: "How do I unlock the Control Chamber?",      a: "Hold the top-left corner for 3 seconds, or triple-tap the bottom-right corner. A 6-digit Founder PIN is required to enter." },
-  { q: "Why are some nav items hidden?",            a: "Staff-only items like E.A.T Intel and Lounge are hidden from guests. Enter your staff PIN to reveal them." },
-  { q: "What is the Affinity Vector?",              a: "Your Affinity Vector is an AI-calculated taste fingerprint built from your session responses. It drives all recommendations." },
+const STAFF_ROLES_COACH = [
+  { id: "server",           label: "Server" },
+  { id: "bartender",        label: "Bartender" },
+  { id: "tobacconist",      label: "Tobacconist" },
+  { id: "manager",          label: "Manager" },
+  { id: "concierge",        label: "Concierge" },
+  { id: "vip_host",         label: "VIP Host" },
+  { id: "brand_ambassador", label: "Ambassador" },
 ];
+
+interface AiCoachResult {
+  answer: string;
+  confidence: number;
+  sources: { title: string; domain: string }[];
+  lowConfidenceWarning: boolean;
+  provider: string;
+  suggestedFollowUps: string[];
+}
 
 function CoachHelpView() {
-  const { navigate } = useGuest() as any;
-  const [activeTopic, setActiveTopic] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"guides" | "faq">("guides");
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState("server");
+  const [aiQuery, setAiQuery] = useState("");
+  const [aiResult, setAiResult] = useState<AiCoachResult | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [docSearchQuery, setDocSearchQuery] = useState("");
+  const [docResults, setDocResults] = useState<{ title: string; source: string; excerpt: string }[]>([]);
+  const [docLoading, setDocLoading] = useState(false);
 
-  const topic = COACH_TOPICS.find(t => t.id === activeTopic);
+  const section = INTEL_SECTIONS.find(s => s.id === activeSection);
+
+  async function handleAskAI() {
+    if (!aiQuery.trim() || aiLoading) return;
+    setAiLoading(true);
+    setAiError(null);
+    setAiResult(null);
+    try {
+      const res = await fetch("/api/coach-ai/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: aiQuery, role: selectedRole }),
+      });
+      if (!res.ok) throw new Error("AI service unavailable");
+      const data = await res.json() as AiCoachResult;
+      setAiResult(data);
+    } catch {
+      setAiError("AI Coach is temporarily unavailable. Use Quick Answers or consult your manager.");
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  async function handleDocSearch() {
+    if (!docSearchQuery.trim()) return;
+    setDocLoading(true);
+    try {
+      const res = await fetch("/api/coach-ai/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: docSearchQuery }),
+      });
+      const data = await res.json() as { results: { title: string; source: string; excerpt: string }[] };
+      setDocResults(data.results ?? []);
+    } catch {
+      setDocResults([]);
+    } finally {
+      setDocLoading(false);
+    }
+  }
 
   return (
     <div style={{ position: "relative", inset: 0, flex: 1, minHeight: 0, display: "flex", flexDirection: "column", background: "linear-gradient(160deg,#0A0600 0%,#060400 100%)", overflow: "hidden" }}>
-      {/* Ambient glow */}
-      <div style={{ position: "absolute", top: -80, left: "30%", width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${GOLD}0A 0%, transparent 70%)`, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: -80, left: "30%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${GOLD}08 0%, transparent 70%)`, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: -60, right: "10%", width: 300, height: 300, borderRadius: "50%", background: `radial-gradient(circle, #C8702818 0%, transparent 70%)`, pointerEvents: "none" }} />
 
-      {/* Header */}
       <div style={{ padding: "20px 24px 0", flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
           <div>
-            <div style={{ fontSize: 32, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em", lineHeight: 1.1 }}>COACH HELP</div>
-            <div style={{ fontSize: 13, color: `${GOLD}66`, letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 3 }}>Guided tutorials &amp; platform mastery</div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em", lineHeight: 1.1 }}>HOSPITALITY INTELLIGENCE</div>
+            <div style={{ fontSize: 11, color: `${GOLD}55`, letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 3, fontFamily: "'Inter',sans-serif" }}>AI-Powered Staff Coach · 8 Knowledge Domains</div>
           </div>
-          <div style={{ width: 54, height: 54, borderRadius: 14, background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>◈</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "5px 11px", borderRadius: 20, background: "rgba(50,180,90,0.10)", border: "1px solid rgba(50,180,90,0.28)" }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 5px #32B45A" }} />
+            <span style={{ fontSize: 10, color: "#32B45A", fontWeight: 700, letterSpacing: "0.16em", fontFamily: "'Inter',sans-serif" }}>AI ACTIVE</span>
+          </div>
         </div>
-        {/* Tab switcher */}
-        <div style={{ display: "flex", gap: 6, marginTop: 16, padding: 4, background: "rgba(255,255,255,0.03)", borderRadius: 10, border: `1px solid ${GOLD}1A` }}>
-          {(["guides", "faq"] as const).map(tab => (
-            <motion.button key={tab} type="button" whileTap={{ scale: 0.97 }} onClick={() => setActiveTab(tab)}
-              style={{ flex: 1, padding: "11px 0", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase",
-                background: activeTab === tab ? `linear-gradient(135deg, ${GOLD}22, ${AMBER}18)` : "transparent",
-                color: activeTab === tab ? GOLD : `${GOLD}55`,
-                boxShadow: activeTab === tab ? `inset 0 0 0 1px ${GOLD}33` : "none",
-              }}>
-              {tab === "guides" ? "⊹ GUIDES" : "◆ FAQ"}
+        <div style={{ display: "flex", gap: 5, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
+          {STAFF_ROLES_COACH.map(r => (
+            <motion.button key={r.id} type="button" whileTap={{ scale: 0.95 }} onClick={() => setSelectedRole(r.id)}
+              style={{ flexShrink: 0, padding: "5px 11px", borderRadius: 6, border: `1px solid ${selectedRole === r.id ? GOLD + "66" : GOLD + "18"}`, background: selectedRole === r.id ? `rgba(212,175,55,0.14)` : "transparent", color: selectedRole === r.id ? GOLD : `${GOLD}55`, fontSize: 10, fontWeight: 700, letterSpacing: "0.10em", cursor: "pointer", fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap" }}>
+              {r.label.toUpperCase()}
             </motion.button>
           ))}
         </div>
       </div>
 
-      {/* Body */}
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "16px 24px 32px" }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "14px 24px 32px" }}>
         <AnimatePresence mode="wait">
-          {activeTab === "guides" && (
-            <motion.div key="guides" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
-              {!activeTopic ? (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-                  {COACH_TOPICS.map((t, i) => (
-                    <motion.div key={t.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                      whileTap={{ scale: 0.97 }} onClick={() => setActiveTopic(t.id)}
-                      style={{ padding: "20px 18px", borderRadius: 14, border: `1px solid ${t.color}33`, background: "rgba(255,255,255,0.03)", cursor: "pointer", position: "relative", overflow: "hidden" }}>
-                      <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: `radial-gradient(circle, ${t.color}18 0%, transparent 70%)` }} />
-                      <div style={{ fontSize: 28, marginBottom: 10 }}>{t.icon}</div>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: CREAM, letterSpacing: "0.06em", marginBottom: 4 }}>{t.label}</div>
-                      <div style={{ fontSize: 12, color: `${CREAM}55`, letterSpacing: "0.08em" }}>{t.steps.length} steps</div>
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <motion.div key={activeTopic} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
-                  <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setActiveTopic(null)}
-                    style={{ marginBottom: 18, display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: `1px solid ${GOLD}33`, background: "rgba(212,175,55,0.06)", color: GOLD, fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: "0.14em" }}>
-                    ← BACK
+
+          {!activeSection && (
+            <motion.div key="grid" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 9, marginBottom: 16 }}>
+                {INTEL_SECTIONS.map((s, i) => (
+                  <motion.div key={s.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                    whileTap={{ scale: 0.97 }} onClick={() => setActiveSection(s.id)}
+                    style={{ padding: "16px 14px", borderRadius: 12, border: `1px solid ${s.color}33`, background: "rgba(255,255,255,0.025)", cursor: "pointer", position: "relative", overflow: "hidden" }}>
+                    <div style={{ position: "absolute", top: -15, right: -15, width: 60, height: 60, borderRadius: "50%", background: `radial-gradient(circle, ${s.color}18 0%, transparent 70%)` }} />
+                    <div style={{ fontSize: 20, color: s.color, marginBottom: 7, fontFamily: "'Inter',sans-serif" }}>{s.icon}</div>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, letterSpacing: "0.04em", marginBottom: 4, fontFamily: "'Inter',sans-serif" }}>{s.label}</div>
+                    <div style={{ fontSize: 10, color: `${CREAM}50`, lineHeight: 1.4, fontFamily: "'Inter',sans-serif" }}>{s.summary}</div>
+                  </motion.div>
+                ))}
+              </div>
+              <div style={{ padding: "14px 16px", borderRadius: 12, border: `1px solid ${GOLD}22`, background: "rgba(255,255,255,0.02)" }}>
+                <div style={{ fontSize: 11, color: `${GOLD}77`, letterSpacing: "0.20em", fontWeight: 700, marginBottom: 9, fontFamily: "'Inter',sans-serif" }}>SEARCH KNOWLEDGE BASE</div>
+                <div style={{ display: "flex", gap: 7 }}>
+                  <input value={docSearchQuery} onChange={e => setDocSearchQuery(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && void handleDocSearch()}
+                    placeholder="e.g. How do I relight a cigar? Bourbon pairing..."
+                    style={{ flex: 1, padding: "9px 12px", borderRadius: 7, border: `1px solid ${GOLD}33`, background: "rgba(255,255,255,0.04)", color: CREAM, fontSize: 12, fontFamily: "'Inter',sans-serif", outline: "none" }} />
+                  <motion.button type="button" whileTap={{ scale: 0.96 }} onClick={() => void handleDocSearch()} disabled={docLoading}
+                    style={{ padding: "9px 14px", borderRadius: 7, border: `1px solid ${GOLD}55`, background: `rgba(212,175,55,0.14)`, color: GOLD, fontSize: 11, fontWeight: 800, cursor: "pointer", letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif" }}>
+                    {docLoading ? "..." : "SEARCH"}
                   </motion.button>
-                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20, padding: "16px 18px", borderRadius: 12, background: `rgba(212,175,55,0.06)`, border: `1px solid ${topic?.color ?? GOLD}33` }}>
-                    <span style={{ fontSize: 32 }}>{topic?.icon}</span>
-                    <div>
-                      <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, letterSpacing: "0.06em" }}>{topic?.label}</div>
-                      <div style={{ fontSize: 12, color: `${GOLD}55`, letterSpacing: "0.14em", marginTop: 2 }}>Step-by-step guide</div>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {topic?.steps.map((step, i) => (
-                      <motion.div key={i} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.07 }}
-                        style={{ display: "flex", gap: 14, alignItems: "flex-start", padding: "14px 16px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: `1px solid ${GOLD}18` }}>
-                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD}33, ${AMBER}22)`, border: `1px solid ${GOLD}55`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12, fontWeight: 900, color: GOLD }}>{i + 1}</div>
-                        <div style={{ fontSize: 16, color: "rgba(240,232,212,0.82)", lineHeight: 1.55, paddingTop: 3 }}>{step}</div>
-                      </motion.div>
+                </div>
+                {docResults.length > 0 && (
+                  <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 6 }}>
+                    {docResults.slice(0, 4).map((r, i) => (
+                      <div key={i} style={{ padding: "9px 11px", borderRadius: 7, background: "rgba(212,175,55,0.05)", border: `1px solid ${GOLD}18` }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: GOLD, marginBottom: 2, fontFamily: "'Inter',sans-serif" }}>{r.title}</div>
+                        <div style={{ fontSize: 10, color: `${CREAM}55`, marginBottom: 2, fontFamily: "'Inter',sans-serif" }}>{r.source}</div>
+                        <div style={{ fontSize: 11, color: `${CREAM}75`, lineHeight: 1.4, fontFamily: "'Inter',sans-serif" }}>{r.excerpt.substring(0, 120)}...</div>
+                      </div>
                     ))}
                   </div>
-                </motion.div>
-              )}
+                )}
+              </div>
             </motion.div>
           )}
 
-          {activeTab === "faq" && (
-            <motion.div key="faq" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}
-              style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {COACH_FAQS.map((faq, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <motion.div whileTap={{ scale: 0.99 }} onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                    style={{ padding: "16px 18px", borderRadius: expandedFaq === i ? "12px 12px 0 0" : 12, background: expandedFaq === i ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${expandedFaq === i ? GOLD + "44" : GOLD + "18"}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: expandedFaq === i ? GOLD : CREAM, letterSpacing: "0.04em" }}>{faq.q}</div>
-                    <motion.div animate={{ rotate: expandedFaq === i ? 180 : 0 }} style={{ flexShrink: 0, fontSize: 14, color: `${GOLD}88` }}>▾</motion.div>
+          {activeSection && activeSection !== "live_ai" && section && (
+            <motion.div key={activeSection} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
+              <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setActiveSection(null)}
+                style={{ marginBottom: 14, display: "flex", alignItems: "center", gap: 7, padding: "6px 12px", borderRadius: 7, border: `1px solid ${GOLD}33`, background: "rgba(212,175,55,0.06)", color: GOLD, fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>
+                ← ALL SECTIONS
+              </motion.button>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 15px", borderRadius: 10, background: `rgba(212,175,55,0.06)`, border: `1px solid ${section.color}33`, marginBottom: 12 }}>
+                <span style={{ fontSize: 26, color: section.color, fontFamily: "'Inter',sans-serif" }}>{section.icon}</span>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: GOLD, letterSpacing: "0.06em", fontFamily: "'Cormorant Garamond',serif" }}>{section.label}</div>
+                  <div style={{ fontSize: 10, color: `${GOLD}55`, letterSpacing: "0.12em", marginTop: 1, fontFamily: "'Inter',sans-serif" }}>{section.summary}</div>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 14 }}>
+                {section.items.map((item, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
+                    style={{ padding: "13px 15px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: `1px solid ${GOLD}18` }}>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: CREAM, letterSpacing: "0.03em", marginBottom: 5, fontFamily: "'Inter',sans-serif" }}>{item.title}</div>
+                    <div style={{ fontSize: 12, color: "rgba(240,232,212,0.72)", lineHeight: 1.6, fontFamily: "'Inter',sans-serif" }}>{item.body}</div>
                   </motion.div>
-                  <AnimatePresence>
-                    {expandedFaq === i && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
-                        style={{ overflow: "hidden", padding: "14px 18px", background: "rgba(212,175,55,0.04)", border: `1px solid ${GOLD}33`, borderTop: "none", borderRadius: "0 0 12px 12px" }}>
-                        <div style={{ fontSize: 15, color: "rgba(240,232,212,0.72)", lineHeight: 1.6 }}>{faq.a}</div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
+                ))}
+              </div>
+              <motion.button type="button" whileTap={{ scale: 0.97 }}
+                onClick={() => { setAiQuery(`Tell me more about ${section.label} for a ${selectedRole}`); setActiveSection("live_ai"); }}
+                style={{ width: "100%", padding: "12px", borderRadius: 9, border: `1px solid ${GOLD}44`, background: `rgba(212,175,55,0.10)`, color: GOLD, fontSize: 12, fontWeight: 800, cursor: "pointer", letterSpacing: "0.16em", fontFamily: "'Inter',sans-serif" }}>
+                ASK AI ABOUT {section.label.toUpperCase()}
+              </motion.button>
             </motion.div>
           )}
+
+          {activeSection === "live_ai" && (
+            <motion.div key="live_ai" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
+              <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => { setActiveSection(null); setAiResult(null); setAiError(null); }}
+                style={{ marginBottom: 14, display: "flex", alignItems: "center", gap: 7, padding: "6px 12px", borderRadius: 7, border: `1px solid ${GOLD}33`, background: "rgba(212,175,55,0.06)", color: GOLD, fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>
+                ← ALL SECTIONS
+              </motion.button>
+              <div style={{ padding: "13px 15px", borderRadius: 10, background: "rgba(212,175,55,0.06)", border: `1px solid ${GOLD}33`, marginBottom: 12 }}>
+                <div style={{ fontSize: 18, fontWeight: 900, color: GOLD, letterSpacing: "0.06em", fontFamily: "'Cormorant Garamond',serif", marginBottom: 2 }}>LIVE AI COACH</div>
+                <div style={{ fontSize: 10, color: `${GOLD}55`, letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif" }}>Responding as {STAFF_ROLES_COACH.find(r => r.id === selectedRole)?.label ?? "Server"} · Grounded on internal manuals</div>
+              </div>
+              {!aiResult && !aiLoading && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 12 }}>
+                  <div style={{ fontSize: 10, color: `${GOLD}55`, letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif" }}>SUGGESTED QUESTIONS</div>
+                  {["How do I relight a cigar properly?", "What bourbon pairs best with a Maduro?", "How do I recover an upset VIP guest?", "Show me the pre-shift humidor checklist."].map((q, i) => (
+                    <motion.button key={i} type="button" whileTap={{ scale: 0.98 }} onClick={() => setAiQuery(q)}
+                      style={{ padding: "9px 12px", borderRadius: 7, border: `1px solid ${GOLD}22`, background: "rgba(255,255,255,0.02)", color: `${CREAM}77`, fontSize: 12, textAlign: "left", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
+                      {q}
+                    </motion.button>
+                  ))}
+                </div>
+              )}
+              <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 12 }}>
+                <textarea value={aiQuery} onChange={e => setAiQuery(e.target.value)}
+                  placeholder="Ask anything about guest service, pairings, operations, or conflict recovery..."
+                  rows={3}
+                  style={{ padding: "11px 13px", borderRadius: 9, border: `1px solid ${GOLD}33`, background: "rgba(255,255,255,0.04)", color: CREAM, fontSize: 12, fontFamily: "'Inter',sans-serif", outline: "none", resize: "none", lineHeight: 1.5 }} />
+                <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => void handleAskAI()} disabled={aiLoading || !aiQuery.trim()}
+                  style={{ padding: "12px", borderRadius: 9, border: `1px solid ${aiLoading ? GOLD + "33" : GOLD + "66"}`, background: aiLoading ? "rgba(212,175,55,0.06)" : `rgba(212,175,55,0.18)`, color: aiLoading ? `${GOLD}55` : GOLD, fontSize: 13, fontWeight: 800, cursor: aiLoading ? "default" : "pointer", letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif" }}>
+                  {aiLoading ? "CONSULTING AI COACH..." : "ASK AI COACH"}
+                </motion.button>
+              </div>
+              <AnimatePresence>
+                {aiError && (
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                    style={{ padding: "12px 14px", borderRadius: 9, background: "rgba(200,74,74,0.08)", border: "1px solid rgba(200,74,74,0.28)", color: "#F07070", fontSize: 12, fontFamily: "'Inter',sans-serif", lineHeight: 1.5, marginBottom: 9 }}>
+                    {aiError}
+                  </motion.div>
+                )}
+                {aiResult && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                    {aiResult.lowConfidenceWarning && (
+                      <div style={{ padding: "7px 11px", borderRadius: 7, background: "rgba(200,160,10,0.10)", border: "1px solid rgba(200,160,10,0.28)", color: "#C8A00A", fontSize: 10, fontFamily: "'Inter',sans-serif", letterSpacing: "0.10em" }}>
+                        LOW CONFIDENCE — Verify with your manager or Knowledge Center before acting on this guidance.
+                      </div>
+                    )}
+                    <div style={{ padding: "14px 16px", borderRadius: 10, background: "rgba(212,175,55,0.06)", border: `1px solid ${GOLD}33` }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 9 }}>
+                        <div style={{ fontSize: 10, color: `${GOLD}66`, letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif" }}>AI RESPONSE · {(STAFF_ROLES_COACH.find(r => r.id === selectedRole)?.label ?? "Server").toUpperCase()}</div>
+                        <div style={{ fontSize: 10, color: aiResult.confidence >= 0.7 ? "#32B45A" : "#C8A00A", fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>
+                          {Math.round(aiResult.confidence * 100)}% CONFIDENCE
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 13, color: CREAM, lineHeight: 1.65, fontFamily: "'Inter',sans-serif", whiteSpace: "pre-wrap" }}>{aiResult.answer}</div>
+                    </div>
+                    {aiResult.sources.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, alignItems: "center" }}>
+                        <span style={{ fontSize: 9, color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.12em" }}>SOURCES:</span>
+                        {aiResult.sources.slice(0, 3).map((s, i) => (
+                          <div key={i} style={{ padding: "2px 7px", borderRadius: 4, background: "rgba(212,175,55,0.08)", border: `1px solid ${GOLD}22`, fontSize: 9, color: `${GOLD}88`, fontFamily: "'Inter',sans-serif" }}>{s.title}</div>
+                        ))}
+                      </div>
+                    )}
+                    {aiResult.suggestedFollowUps.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: 9, color: `${GOLD}55`, letterSpacing: "0.14em", marginBottom: 5, fontFamily: "'Inter',sans-serif" }}>FOLLOW-UP QUESTIONS</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          {aiResult.suggestedFollowUps.map((q, i) => (
+                            <motion.button key={i} type="button" whileTap={{ scale: 0.98 }} onClick={() => { setAiQuery(q); setAiResult(null); }}
+                              style={{ padding: "7px 10px", borderRadius: 6, border: `1px solid ${GOLD}22`, background: "rgba(255,255,255,0.02)", color: `${CREAM}77`, fontSize: 11, textAlign: "left", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
+                              {q}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+
         </AnimatePresence>
       </div>
     </div>
   );
 }
+
 
 /* ─────────────────────────────────────────────
    OS Nav Bar — persistent top navigation

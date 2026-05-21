@@ -1,0 +1,530 @@
+FINAL
+
+MISSING / REQUIRED
+
+• Universal Integration Kernel is not confirmed.
+• Provider abstraction layer may still be partially hardcoded.
+• Venue-owned API infrastructure is incomplete.
+• AI provider routing/fallback system is incomplete.
+• Secure encrypted credential storage is not fully verified.
+• API orchestration event bus may be missing.
+• Webhook management infrastructure may be incomplete.
+• Multi-tenant integration isolation is not verified.
+• Integration health monitoring may be incomplete.
+• Rate limiting and token governance may be incomplete.
+• API usage billing/metering system may be incomplete.
+• Offline fallback intelligence layer may be incomplete.
+• Device orchestration layer may be incomplete.
+• Integration permission/RBAC isolation may be incomplete.
+• Custom API upload framework may be missing.
+• Integration SDK architecture may be missing.
+• Retry queue + dead-letter queue handling may be incomplete.
+• Observability/logging infrastructure may be incomplete.
+• Environment synchronization orchestration may be incomplete.
+• Event-driven orchestration architecture may still be request-based only.
+• Enterprise scalability hardening may be incomplete.
+
+IMPACT OF MISSING ITEMS
+
+Without these systems:
+• every new API integration becomes technical debt
+• enterprise scaling becomes unstable
+• venues cannot safely manage their own providers
+• AI costs become uncontrollable
+• integrations become brittle
+• multi-location deployments become risky
+• provider outages can cripple venue operations
+• vendor onboarding becomes painful
+• system orchestration breaks under scale
+• NOVEE OS cannot fully operate as a true environment intelligence system
+
+FAILURE PREVENTION CHECKLIST
+
+✔ Build universal integration infrastructure
+✔ Add provider abstraction architecture
+✔ Add venue-owned API provider management
+✔ Add encrypted credential vault
+✔ Add API failover orchestration
+✔ Add event-driven orchestration system
+✔ Add webhook manager + retry queues
+✔ Add health monitoring dashboards
+✔ Add integration observability
+✔ Add usage metering and billing controls
+✔ Add offline fallback intelligence
+✔ Add custom API upload support
+✔ Add role-based integration permissions
+✔ Add SDK-ready provider architecture
+✔ Add multi-tenant isolation
+✔ Add scalable queue processing
+✔ Add device orchestration infrastructure
+✔ Add enterprise deployment readiness
+✔ Preserve existing functionality
+✔ Maintain Replit compatibility
+✔ Prevent hardcoded provider dependencies
+
+MASTER EXECUTION PROMPT
+
+EXECUTE COMPLETE UNIVERSAL API INFRASTRUCTURE + ENTERPRISE INTEGRATION ORCHESTRATION SYSTEM FOR NOVEE OS / SMOKECRAFT 360 / COMMAND HUB / E.A.T. SYSTEM
+
+OBJECTIVE
+
+Transform NOVEE OS into a fully scalable enterprise orchestration platform capable of supporting:
+• venue-owned APIs
+• centralized APIs
+• hybrid API management
+• interchangeable providers
+• future integrations
+• enterprise-grade scaling
+• event-driven environment intelligence
+
+THIS IS NOT A SIMPLE “API SETTINGS PAGE.”
+
+THIS IS:
+THE UNIVERSAL INTEGRATION BACKBONE OF NOVEE OS.
+
+DO NOT CREATE STUBS.
+DO NOT HARDCODE PROVIDERS.
+DO NOT BUILD SINGLE-PROVIDER LOGIC.
+EVERYTHING MUST BE MODULAR, SCALABLE, ENCRYPTED, MULTI-TENANT, AND ENTERPRISE READY.
+
+────────────────────────────
+
+PHASE 1 — UNIVERSAL INTEGRATION KERNEL
+
+CREATE:
+server/core/integrationKernel/
+
+ARCHITECTURE MUST INCLUDE:
+
+• provider registry
+• provider abstraction layer
+• orchestration router
+• event bus
+• webhook manager
+• retry queue
+• dead-letter queue
+• encryption manager
+• auth manager
+• health monitoring
+• usage metering
+• failover engine
+• offline fallback engine
+• integration observability
+• audit logging
+• SDK support layer
+
+THIS BECOMES:
+THE CENTRAL NERVOUS SYSTEM FOR ALL INTEGRATIONS.
+
+────────────────────────────
+
+PHASE 2 — PROVIDER ABSTRACTION SYSTEM
+
+CREATE:
+server/providers/
+
+DO NOT:
+call APIs directly from business logic.
+
+ALL PROVIDERS MUST USE:
+adapter architecture.
+
+EXAMPLES:
+
+AIOrchestrator.generateResponse()
+
+internally routes to:
+• OpenAI
+• Gemini
+• Anthropic
+• local AI later
+
+POSOrchestrator.createOrder()
+
+internally routes to:
+• Toast
+• Square
+• Clover
+• Lightspeed
+
+MusicOrchestrator.changePlaylist()
+
+internally routes to:
+• Spotify
+• Sonos
+• Apple Music
+
+THIS ALLOWS:
+future provider swapping without rewriting NOVEE OS.
+
+────────────────────────────
+
+PHASE 3 — VENUE API MANAGEMENT CENTER
+
+CREATE:
+Command Hub → Settings → Integration Infrastructure
+
+SECTIONS:
+• AI Providers
+• POS Providers
+• Payment Providers
+• Music Providers
+• Lighting Providers
+• Sensor Providers
+• CRM Providers
+• Booking Providers
+• Voice Providers
+• Analytics Providers
+• Device Providers
+• Custom APIs
+
+ALLOW VENUES TO:
+• add APIs
+• edit APIs
+• disable providers
+• set primary provider
+• set fallback provider
+• test connection
+• monitor health
+• monitor usage
+• view failures
+
+────────────────────────────
+
+PHASE 4 — ENCRYPTED CREDENTIAL VAULT
+
+CREATE:
+server/security/credentialVault.ts
+
+USE:
+AES-256-GCM encryption.
+
+NEVER STORE RAW KEYS.
+
+STORE:
+• encrypted_api_key
+• encrypted_secret
+• webhook_secret
+• oauth_tokens
+• provider_metadata
+
+DATABASE TABLE:
+integration_providers
+
+FIELDS:
+• id
+• venue_id
+• provider_name
+• provider_type
+• encrypted_credentials
+• endpoint_url
+• region
+• webhook_config
+• usage_limits
+• failover_provider_id
+• last_tested_at
+• last_used_at
+• is_active
+• created_by
+• created_at
+
+────────────────────────────
+
+PHASE 5 — CUSTOM API UPLOAD SYSTEM
+
+CREATE:
+“Custom Provider Configuration”
+
+ALLOW USERS TO ADD:
+• custom APIs
+• local systems
+• private CRMs
+• distributor systems
+• regional vendors
+• private inventory systems
+
+FIELDS:
+• API Name
+• Base URL
+• Auth Type
+• API Key
+• OAuth Config
+• Headers
+• Retry Rules
+• Webhook URL
+• Timeout Settings
+
+THIS MAKES NOVEE OS:
+a universal orchestration operating system.
+
+────────────────────────────
+
+PHASE 6 — EVENT-DRIVEN ORCHESTRATION
+
+CREATE:
+server/core/eventBus/
+
+STOP USING:
+simple request-response architecture.
+
+MOVE TO:
+event-driven orchestration.
+
+EXAMPLES:
+
+Guest enters VIP lounge
+→ trigger lighting scene
+→ trigger playlist transition
+→ notify host
+→ recommend pairing
+→ log analytics
+→ preload guest profile
+→ trigger upsell suggestions
+
+ALL MODULES MUST COMMUNICATE THROUGH EVENTS.
+
+────────────────────────────
+
+PHASE 7 — AI PROVIDER ORCHESTRATION
+
+SUPPORT:
+• OpenAI
+• Gemini
+• Anthropic
+• Ollama/local AI later
+
+ADD:
+• provider failover
+• confidence scoring
+• retry handling
+• token budgeting
+• offline cached guidance
+
+IF OPENAI FAILS:
+→ auto-switch Gemini
+
+IF ALL FAIL:
+→ use local cached intelligence
+
+────────────────────────────
+
+PHASE 8 — HEALTH MONITORING + OBSERVABILITY
+
+CREATE:
+Integration Health Dashboard
+
+SHOW:
+• provider status
+• response times
+• failure rates
+• webhook errors
+• token usage
+• API latency
+• queue depth
+• retry activity
+
+STATUS TYPES:
+• healthy
+• degraded
+• failed
+• fallback active
+
+────────────────────────────
+
+PHASE 9 — USAGE METERING + BILLING CONTROL
+
+TRACK:
+• API calls
+• AI tokens
+• webhook traffic
+• music usage
+• POS transactions
+• integration bandwidth
+
+ALLOW:
+• venue quotas
+• package limits
+• overage billing
+• emergency shutdown
+• usage alerts
+
+────────────────────────────
+
+PHASE 10 — MULTI-TENANT ISOLATION
+
+ENSURE:
+venue integrations are fully isolated.
+
+ONE VENUE MUST NEVER:
+access another venue’s:
+• credentials
+• providers
+• analytics
+• AI usage
+• webhooks
+
+ADD:
+tenant scoping everywhere.
+
+────────────────────────────
+
+PHASE 11 — RBAC PERMISSIONS
+
+SUPER ADMIN:
+full control
+
+VENUE OWNER:
+venue integrations only
+
+MANAGER:
+view-only access
+
+STAFF:
+no provider access
+
+────────────────────────────
+
+PHASE 12 — OFFLINE RESILIENCE
+
+CREATE:
+offline knowledge cache.
+
+STORE:
+• SOPs
+• pairing logic
+• training docs
+• emergency guidance
+• local automation rules
+
+ENSURE:
+venue operations still function during outages.
+
+────────────────────────────
+
+PHASE 13 — WEBHOOK INFRASTRUCTURE
+
+CREATE:
+universal webhook manager.
+
+SUPPORT:
+• retries
+• signature validation
+• dead-letter queues
+• replay protection
+• audit logs
+
+────────────────────────────
+
+PHASE 14 — DEVICE ORCHESTRATION
+
+SUPPORT:
+• kiosk management
+• tablet heartbeat
+• remote refresh
+• remote reboot
+• forced updates
+• screen sync
+• health monitoring
+
+────────────────────────────
+
+PHASE 15 — SDK + DEVELOPER EXTENSIBILITY
+
+CREATE:
+NOVEE Integration SDK
+
+ALLOW:
+future developers/vendors to build:
+• plugins
+• providers
+• modules
+• adapters
+
+WITHOUT modifying core architecture.
+
+────────────────────────────
+
+PHASE 16 — SUPPORTED INTEGRATION CATEGORIES
+
+FULL SUPPORT FOR:
+
+AI:
+• OpenAI
+• Gemini
+• Anthropic
+
+POS:
+• Toast
+• Square
+• Clover
+• Lightspeed
+
+PAYMENTS:
+• Stripe
+• PayPal
+• Square Payments
+
+MUSIC:
+• Spotify
+• Sonos
+
+LIGHTING:
+• Philips Hue
+• Lutron
+• DMX
+
+COMMUNICATION:
+• SendGrid
+• Twilio
+
+BOOKING:
+• OpenTable
+• Resy
+• Tock
+
+CRM:
+• HubSpot
+• Salesforce
+
+VOICE:
+• ElevenLabs
+• Azure Voice
+
+ANALYTICS:
+• Power BI
+• Tableau
+
+────────────────────────────
+
+PHASE 17 — UI DESIGN REQUIREMENTS
+
+STYLE:
+• obsidian glass
+• warm amber accents
+• cinematic depth
+• premium transitions
+• realistic imagery
+• Apple/Tesla luxury feel
+
+NO:
+• flat UI
+• emojis
+• cheap admin dashboards
+• dead screens
+
+────────────────────────────
+
+FINAL RESULT
+
+NOVEE OS becomes:
+
+• universal intelligence operating system
+• enterprise orchestration platform
+• venue nervous system
+• scalable integration ecosystem
+• AI orchestration layer
+• adaptive environment engine
+• future-proof enterprise platform
+
+The Command Hub becomes:
+the master infrastructure control center for every connected provider, venue system, AI engine, device, and environment orchestration layer.

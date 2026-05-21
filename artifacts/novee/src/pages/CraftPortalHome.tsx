@@ -25,7 +25,7 @@ const GOLDEN_BOX_RULES = [
   {
     num: "§ IV",
     title: "YOUR LEGACY RESERVE AWAITS",
-    body: "Complete the full ritual to unlock your signature cigar profile — kept in the vault.",
+    body: "Complete the full experience to unlock your signature cigar profile — kept in the vault.",
   },
 ];
 
