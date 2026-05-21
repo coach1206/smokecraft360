@@ -2,6 +2,7 @@ import { useState, createContext, useContext, useEffect } from "react";
 import { IntegrationInfraPanel }     from "@/components/IntegrationInfraPanel";
 import { HealthMonitorPanel }         from "@/components/HealthMonitorPanel";
 import { IntegrationAnalyticsPanel }  from "@/components/IntegrationAnalyticsPanel";
+import { useVisualSync } from "@/hooks/useVisualSync";
 import { startHeartbeat, getOrCreateDeviceId } from "@/lib/deviceTelemetry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -1535,6 +1536,7 @@ function handlePointerDown() { playClick(); hapticClick(); }
 
 function OsShell() {
   const { setPhase, resetProfile } = useGuest();
+  const { env: syncedEnv, updateEnv } = useVisualSync();
   const [eatFlags, setEatFlags]    = useState<EATModuleFlags>(DEFAULT_FLAGS);
 
   /* PIN gate state */

@@ -4,6 +4,7 @@ import { IntegrationInfraPanel }     from "@/components/IntegrationInfraPanel";
 import { HealthMonitorPanel }         from "@/components/HealthMonitorPanel";
 import { IntegrationAnalyticsPanel }  from "@/components/IntegrationAnalyticsPanel";
 import { NoveeGuestProfileProvider, useNoveeGuest } from "@/contexts/NoveeGuestProfileContext";
+import { useVisualSync } from "@/hooks/useVisualSync";
 import type { Phase } from "@/contexts/NoveeGuestProfileContext";
 
 // Lazy-load ported pages
@@ -1442,6 +1443,7 @@ function handlePointerDown() { playClick(); hapticClick(); }
 
 function OsShellContent() {
   const { setPhase, resetProfile } = useNoveeGuest();
+  const { env: syncedEnv, updateEnv } = useVisualSync();
   const [eatFlags, setEatFlags]    = useState<any>({
     revenue: true,
     environmental: true,
