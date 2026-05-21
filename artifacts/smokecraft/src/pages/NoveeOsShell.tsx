@@ -1,5 +1,6 @@
 import React, { useState, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { IntegrationInfraPanel } from "@/components/IntegrationInfraPanel";
 import { NoveeGuestProfileProvider, useNoveeGuest } from "@/contexts/NoveeGuestProfileContext";
 import type { Phase } from "@/contexts/NoveeGuestProfileContext";
 
@@ -548,8 +549,9 @@ function SettingsView() {
     { id: "api",      label: "API Config",     icon: "⟡" },
     { id: "theme",    label: "Theme",          icon: "◐" },
     { id: "roles",      label: "User Roles",        icon: "◆" },
-    { id: "knowledge",  label: "Knowledge Center", icon: "◎" },
-    { id: "system",     label: "System",            icon: "⊹" },
+    { id: "knowledge",     label: "Knowledge Center",  icon: "◎" },
+    { id: "integrations", label: "Integrations",      icon: "⟡" },
+    { id: "system",       label: "System",             icon: "⊹" },
   ];
 
   function SettingsRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
@@ -662,6 +664,9 @@ function SettingsView() {
           <div style={{ fontSize: 9, color: `${GOLD}60`, marginTop: 2, fontFamily: "'Inter',sans-serif", lineHeight: 1.5 }}>Guest Guidance · Pairing Intelligence · Revenue Coaching · Recovery · Flavor Education · VIP Coaching · Quick Answers · Live AI</div>
         </div>
       </div>
+    );
+    if (activeSection === "integrations") return (
+      <IntegrationInfraPanel venueId="demo-venue" GOLD={GOLD} CREAM={CREAM} />
     );
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>

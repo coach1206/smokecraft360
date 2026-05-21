@@ -206,6 +206,7 @@ import knowledgeRouter             from "./routes/knowledge";
 import complianceRouter            from "./routes/compliance";
 import experienceLayerRouter       from "./routes/experience";
 import coachAiRouter               from "./routes/coachAi";
+import integrationKernelRouter     from "./routes/integrationKernel";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -604,7 +605,8 @@ app.use("/api/learning",   learningRouter);
 app.use("/api/knowledge",  knowledgeRouter);
 app.use("/api/compliance", complianceRouter);
 app.use("/api/experience", experienceLayerRouter);
-app.use("/api/coach-ai",  coachAiRouter);
+app.use("/api/coach-ai",          coachAiRouter);
+app.use("/api/integration-kernel", integrationKernelRouter);
 
 // ── Platform Maturity Layer ───────────────────────────────────────────────────
 // Feature flags, policy engine, observability, backpressure, versioning,
