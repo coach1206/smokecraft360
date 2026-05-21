@@ -146,3 +146,6 @@ export type {
   PairingGuide,
   EmergencyDoc,
 } from "./offlineBundle";
+
+// Kernel Background Worker
+export { startKernelWorker, stopKernelWorker } from "./kernelWorker";

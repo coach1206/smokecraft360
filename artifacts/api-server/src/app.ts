@@ -708,6 +708,11 @@ if (process.env["NODE_ENV"] !== "test") {
   startHealthMonitor();
   startEdgeSyncReplay();
 
+  // Integration Kernel background worker — health sweeps, stale device cleanup,
+  // rate limit pruning, dead-letter processing, usage alert checks
+  const { startKernelWorker } = await import("./core/integrationKernel/kernelWorker");
+  startKernelWorker();
+
   // Non-blocking DB index hardening + runtime activation
   Promise.all([
     initProductionIndexes(),

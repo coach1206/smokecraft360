@@ -178,6 +178,36 @@ try {
   logger.warn({ err }, "kernelProviderBoot: failed — live provider routing degraded to env vars");
 }
 
+// ── Integration Kernel schema boot — ALL tables provisioned at startup ────────
+// Ensures vault, metrics, devices, webhooks, tenants, audit, and global-controls
+// tables are ready before the first HTTP request — not lazily on first route hit.
+// Each ensure function is IF NOT EXISTS safe and idempotent.
+try {
+  const {
+    ensureVaultSchema,
+    ensureMetricsSchema,
+    ensureDeviceSchema,
+    ensureWebhookSchema,
+    ensureTenantSchema,
+    ensureAuditSchema,
+    ensureGlobalControlsSchema,
+    wireMetricsToEventBus,
+  } = await import("./core/integrationKernel");
+  await Promise.all([
+    ensureVaultSchema(),
+    ensureMetricsSchema(),
+    ensureDeviceSchema(),
+    ensureWebhookSchema(),
+    ensureTenantSchema(),
+    ensureAuditSchema(),
+    ensureGlobalControlsSchema(),
+  ]);
+  wireMetricsToEventBus();
+  logger.info("Integration Kernel: all schemas provisioned at startup");
+} catch (err) {
+  logger.warn({ err }, "Integration Kernel schema boot: one or more tables may be unavailable");
+}
+
 // ── Universal POS Integration Layer — provision tables if missing ─────────────
 // All 10 POS/EEIS tables are IF NOT EXISTS safe (idempotent on every restart).
 try {

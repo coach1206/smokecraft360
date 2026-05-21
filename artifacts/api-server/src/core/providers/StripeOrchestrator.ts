@@ -175,3 +175,38 @@ export async function resolveStripeKeyLegacy(venueId = SYSTEM_VENUE_ID): Promise
   const { key } = await resolveStripeKey(venueId);
   return key;
 }
+
+/**
+ * StripeOrchestrator namespace — groups all Stripe kernel functions into a single
+ * importable object matching the pattern of VoiceOrchestrator, BookingOrchestrator, etc.
+ */
+export const StripeOrchestrator = {
+  getContext:       getStripeContext,
+  recordSuccess:    recordStripeSuccess,
+  recordFailure:    recordStripeFailure,
+  resolveKeyLegacy: resolveStripeKeyLegacy,
+
+  circuitBreakerStatus(): Array<{ venueId: string; state: string; failures: number }> {
+    return Array.from(breakers.entries()).map(([venueId, b]) => ({
+      venueId,
+      ...b.toJSON(),
+    }));
+  },
+
+  /** Convenience: resolve context, run the provided action, and record success/failure automatically. */
+  async withStripe<T>(
+    venueId: string,
+    action: (ctx: StripeContext) => Promise<T>,
+  ): Promise<T> {
+    const t0  = Date.now();
+    const ctx = await getStripeContext(venueId);
+    try {
+      const result = await action(ctx);
+      recordStripeSuccess(ctx, Date.now() - t0);
+      return result;
+    } catch (err) {
+      recordStripeFailure(ctx, Date.now() - t0, null, err instanceof Error ? err.message : String(err));
+      throw err;
+    }
+  },
+};

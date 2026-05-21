@@ -30,8 +30,12 @@ vi.mock("@workspace/db", () => ({
   },
   kernelModulesTable: { slug: "slug", id: "id", registeredAt: "registeredAt" },
   kernelModeConfigTable: { venueId: "venue_id", mode: "mode", updatedAt: "updated_at", updatedBy: "updated_by" },
+  kernelModeAuditLogTable: {},
   telemetryEventsTable: {},
   kernelModuleAuditLogTable: {},
+  kernelModuleSlugHistoryTable: {},
+  usersTable: {},
+  venueAiProvidersTable: {},
 }));
 
 vi.mock("../middleware/auth", () => ({
@@ -90,6 +94,34 @@ function makeInsertMock(result: object | Error) {
   const onConflictDoUpdate = vi.fn().mockReturnValue({ returning });
   const values = vi.fn().mockReturnValue({ returning, onConflictDoUpdate });
   (db.insert as ReturnType<typeof vi.fn>).mockReturnValue({ values });
+}
+
+/**
+ * Makes db.transaction call its callback with a proxy tx object that
+ * delegates select/insert/update to the already-mocked db methods.
+ * Also sets up db.select to return an empty array inside the tx
+ * (simulating "no existing row found") so PATCH handlers can check
+ * for prior state without finding anything.
+ */
+function makeTransactionMock() {
+  // Set up db.select to return empty (no prior mode row)
+  const selectBuilder = {
+    from: vi.fn(),
+    where: vi.fn(),
+    limit: vi.fn(),
+  };
+  selectBuilder.limit.mockResolvedValue([]);
+  selectBuilder.where.mockReturnValue(selectBuilder);
+  selectBuilder.from.mockReturnValue(selectBuilder);
+  (db.select as ReturnType<typeof vi.fn>).mockReturnValue(selectBuilder);
+
+  // Make transaction actually invoke the callback
+  (db.transaction as ReturnType<typeof vi.fn>).mockImplementation(
+    async (cb: (tx: typeof db) => Promise<unknown>) => {
+      const tx = { select: db.select, insert: db.insert, update: db.update } as unknown as typeof db;
+      return cb(tx);
+    },
+  );
 }
 
 /**
@@ -225,6 +257,7 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
 
   it("super_admin can update any venue", async () => {
     mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+    makeTransactionMock();
     makeInsertMock({ venueId: VENUE_A, mode: "essential", updatedAt: new Date().toISOString() });
 
     const app = buildApp();
@@ -238,6 +271,7 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
 
   it("super_admin can update a venue they do not own", async () => {
     mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: VENUE_B };
+    makeTransactionMock();
     makeInsertMock({ venueId: VENUE_A, mode: "sovereign", updatedAt: new Date().toISOString() });
 
     const app = buildApp();
@@ -251,6 +285,7 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
 
   it("venue_owner can update their own venue", async () => {
     mockUser = { id: "vo-uuid", email: "vo@test.com", role: "venue_owner", name: "Owner", venueId: VENUE_A };
+    makeTransactionMock();
     makeInsertMock({ venueId: VENUE_A, mode: "essential", updatedAt: new Date().toISOString() });
 
     const app = buildApp();
