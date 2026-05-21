@@ -1706,7 +1706,7 @@ export default function NoveeOsShell() {
     <NoveeGuestProfileProvider>
       <AnimatePresence mode="wait">
         {!bootDone ? (
-          <Suspense fallback={null}>
+          <Suspense fallback={<PhaseLoadingFallback />}>
             <CompBoot key="boot" onComplete={handleBootComplete} />
           </Suspense>
         ) : (

@@ -1,0 +1,71 @@
+EXECUTE DEFCON-1 HARDWARE ENGINE COMPILATION: FORCE ANIMATED LOGO BOOT SEQUENCE, 4-TILE HUMAN CAROUSEL LOOPS, ACTIVE PIN-GATED E.A.T. CONTROL CENTER, AND TOTAL SYSTEM CREAM ACCENT RE-GRADIENT (CRITICAL SYSTEM RECOVERY • ZERO STUBS)
+
+====================================================
+1. REASON FOR THIS DIRECTIVE (CRITICAL ARCHITECTURAL SMASH)
+====================================================
+The current repository is fundamentally broken and fragmented. Look at the 3:21 PM and 3:34 PM compilation states. You are rendering a bowl of food/dumplings on the 'SMOKECRAFT 360' luxury tile. The top toolbar remains cluttered with redundant navigation sub-tabs. The inner frames are uncomfortably dark and lack engagement. The 'Reset Blend' state tracker is dead. Clicking 'OPEN COMMAND CENTER >' drops the terminal into a blank black screen because your state validation hooks are failing compilation. Stop running parallel exploratory tasks. You are ordered to execute this unified master repair script immediately.
+
+====================================================
+2. REMOVE TOP NAVBAR DUPLICATES & CLEAN CLUTTER
+====================================================
+- Strip the Top Rail: Open the global navigation layout headers across both applications. Completely strip out the text-tag buttons for 'HUB CRAFTHUB', 'SC SMOKECRAFT', 'PR PAIRING', and 'CH COACH HELP'. They are completely redundant and overcrowd the status bar display footprint.
+- Isolate the Global Navigation Rail: The Left Vertical Obsidian Rail (Hub, SC, PR, CH icons) is now the ONLY system-wide routing machine. Wire pointerDown / touchStart triggers natively to these nodes. Clicking 'Hub' from ANY sub-view must cleanly unmount the active module view and instantly return the canvas back to the 4-Tile Human Selection Matrix.
+
+====================================================
+3. MANDATORY MULTI-STAGE BOOT SEQUENCE TIMELINE (PATH: '/')
+====================================================
+Before rendering any landing page or allowing access to session files, enforce a non-skippable initialization timeline on a solid True Obsidian (#010101) layout backdrop:
+- Phase 1 (Corporate Initialization): Animate the center-frame smoked chrome vector emblem. Render the text "PROFOUND INNOVATIONS LLC" in an oversized luxury serif font with a premium gold foil material texture (3-second hold, 0.35s left-slide fade out).
+- Phase 2 (OS Power-Up): Smoothly fade in the "NOVEE OS" branding layer accompanied by a pulsating gold ambient loading ring and the "POWERED" subtitle status tracking text.
+- Phase 3 (Ecosystem Activation): Animate the explicit "CraftHub" network launcher logo into view with a smooth ambient smoke dissolve.
+- Phase 4 (Backend Telemetry Bind): Pop up the official "E.A.T. SYSTEM" logo, illuminating an absolute status indicator showing "DATA INTEGRATION CHASSIS ONLINE". Write the "SYSTEM ACTIVE" token directly to localStorage on completion, then transition seamlessly via a camera-blur dissolve into the 4-tile grid layout.
+
+====================================================
+4. THE HUMAN-CENTERED 4-TILE CRAFTHUB GRID CAROUSEL REBUILD (PATH: '/craft-hub')
+====================================================
+- Completely eliminate the dumpling food assets and dead placeholder images. Re-architect the landing interface into a clean, full-screen 1920x1080 tactical layout using 4 massive card containers built with layered Obsidian Glass and brushed titanium outlines.
+- Build Automated Background Image Rotation Loops: For each tile, program a background array that automatically cross-fades gracefully every 6 seconds using 'object-fit: cover' and strict aspect ratios. Every asset must feature cinematic, human-centered luxury social compositions capturing real human experiences, atmosphere, and elite culture:
+  * TILE 1: 'SMOKECRAFT 360' (ACTIVE)
+    - Rotation Image A: A cinematic, editorial photo of a sophisticated lounge scene. Refined people engaged in deep conversation, relaxing in leather tufted chairs under warm amber illumination vectors.
+    - Rotation Image B: Close-up of high-end social interaction—hands holding a premium lit Maduro, soft volumetric smoke catching gold backlit rays.
+    - Rotation Image C: An elite group celebrating inside a private VIP room with rich wood textures and warm ambient lighting.
+    - Click Action: Tapping this tile must be the singular active clickable mechanism that boots straight into the ritual onboarding journey.
+  * TILE 2: 'POURCRAFT 360' (COMING SOON)
+    - Rotation Image A: A focused master mixologist shaking a premium spirit behind a glowing, smoked-crystal bar top.
+    - Rotation Image B: Well-dressed VIP couples laughing and socializing over luxury cocktails in a dimly lit elite bar scene.
+    - Overlay: Affix a permanent small brushed bronze 'COMING SOON' overlay tag.
+  * TILE 3: 'BEERCRAFT 360' (COMING SOON)
+    - Rotation Image A: A stylish group of friends interacting under twilight string-lighting, catching a premium city skyline horizon backdrop.
+    - Rotation Image B: Upscale lounge seating at an elevated rooftop brewery with high-vibe social conversations.
+    - Overlay: Affix a 'COMING SOON' tag.
+  * TILE 4: 'WINECRAFT 360' (COMING SOON)
+    - Rotation Image A: An intimate, refined date-night scene inside a stone-walled private wine cellar as a sommelier pours a vintage selection.
+    - Rotation Image B: Sophisticated members participating in an exclusive wine tasting lounge event.
+    - Overlay: Affix a 'COMING SOON' tag.
+
+====================================================
+5. TOTAL TOUCHSCREEN-READY REFACTOR (HAPTIC TARGETING SUITE)
+====================================================
+To support seamless field operations on kiosk hardware and touchscreen terminals, you must fully optimize the hit-box interactive boundaries:
+- Strict Hit-Box Minimums: Every menu selection item, rail node, close icon, tool list entry, and toggle switch must maintain a massive, physical touch footprint of at least 58px by 58px.
+- Dynamic Keyboard Integration: Ensure tapping any text input field instantly gains focus, triggers an interactive on-screen keyboard component overlay, updates internal React/Zustand state hooks instantly on character input, and handles submission routines smoothly without element layout overlapping.
+- Drag & Swipe Layer Calibration: Convert all sliders, volume bars, and horizontal list wheels (like the 6 pairing categories) into high-velocity touch swipe components utilizing GPU-accelerated drag layers for fluid performance.
+
+====================================================
+6. REPAIR ACTIVE COMPONENT INTERACTIONS & ERADICATE THE BLANK SCREEN
+====================================================
+- Fix 'Reset Blend' Core State: Re-code the state context handler for the 'Reset Blend' button. Clicking it must immediately flush the active tobacco blend progress indices, completely wipe the current filler/wrapper cache from the state machine, and cleanly re-initialize the component views without freezing, looping, or crashing.
+- Fix E.A.T Command Center Blank Screen: Locate the click event handler on the bottom right button labeled 'OPEN COMMAND CENTER >' and anchor its position securely in the highlighted bottom corner of the viewport layout. 
+- PIN Gateway Activation: Clicking this button must launch an oversized, minimal 4-digit numeric Staff PIN pad overlay window. 
+- Staff Handoff Ripple Animation: Entering a valid Staff PIN must trigger an explosive, hardware-accelerated concentric ripple animation that scales outward from the exact touch coordinates across the 1920x1080 canvas using GPU layers, smoothly dissolving the modal to expose the live E.A.T. High-Velocity POS terminal layout (enlarged text scales, live table maps, and a 145 puros humidor stock countdown) connected to the universal 'POSRouterEngine' for 2x, 3x, and 5x receipt multipliers.
+- Executive Command Hub Toggles: Protect the root administrative hub behind a unique Management PIN. Give the manager physical toggle switches to globally inject, show, or completely wipe out individual E.A.T elements from client terminals in real-time, backed by a secure WebSocket tunnel for remote Developer overrides.
+
+====================================================
+7. CONTRAST ELEVATION & EXPENSIVE CREAM GRADIENT OVERLAYS
+====================================================
+- Brighten the Workspace Substrates: Eliminate the oppressive, muddy dark gray tones inside the inner panels. Wrap all content, data metrics, and descriptions inside lighter, semi-translucent smoke-tinted glass boxes.
+- Rich Cream & Gold Accents: Introduce rich Cream (#FFFDD0 / #FDFBF7) and liquid metallic Warm Gold across all sub-modules (including Pairing Intelligence and the Coach Help matrix). Use these premium cream tones strictly to highlight active layout selection boxes, button borders, operational labels, and typography data outputs.
+- Luminous Gradients: Apply soft, glowing radial ambient gradients behind text blocks inside the panels so that information pops forward beautifully in dim lounge environments, completely eliminating screen-glare eye strain.
+- Strict Typography Scale: Erase all duplicate text headers or overlapping layers. Titles must lock at 40-48px max, section headers at 22-28px, card text at 18-22px, and touch buttons at 22px primary / 20px secondary.
+
+Execute an absolute, total file compilation sweep across the entire project repository workspace. Force the sub-modules to inherit the master layout chassis. Verify zero type-safety alignment breaks or compile drops.
