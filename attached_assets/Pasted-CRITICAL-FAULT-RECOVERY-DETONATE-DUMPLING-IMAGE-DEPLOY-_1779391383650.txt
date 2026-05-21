@@ -1,0 +1,36 @@
+CRITICAL FAULT RECOVERY: DETONATE DUMPLING IMAGE, DEPLOY MULTI-IMAGE ROTATING CAROUSEL LOOP FOR THE 4-TILE GRID, AND FIX ALL RESTORATION PATHS (ZERO COMPROMISE)
+
+1. REASON FOR THIS INTERCEPTION (THE IMAGE FAILURE CONTINUES)
+Look at the 3:21 PM compiled state of the CraftHub 4-tile grid. You are rendering a bowl of food/dumplings on the 'SMOKECRAFT 360' tile. This completely violates the luxury hospitality protocol and looks incredibly cheap. Furthermore, the cards are completely static. You are ordered to implement a fully automated multi-image rotating carousel loop for each tile to capture alive, high-end social environments.
+
+2. BUILD AUTOMATED ROTATING LOOPS (HUMAN-CENTERED ASSETS ONLY)
+Completely remove the food image and the isolated product bottles. For each of the 4 tiles, configure a background image array that automatically rotates/fades gracefully every 6 seconds. Utilize 'object-fit: cover' and strict aspect ratios:
+
+- TILE 1: SMOKECRAFT 360 (THE CIGAR LOUNGE RITUAL)
+  * Rotation Image 1: A cinematic, editorial photo of a sophisticated lounge scene. Refined people engaged in deep conversation, relaxing in leather tufted chairs under warm amber illumination.
+  * Rotation Image 2: A close-up of high-end social interaction—hands holding a premium lit Maduro, soft volumetric smoke catching gold backlit rays.
+  * Rotation Image 3: An elite group celebrating inside a private VIP room with rich wood textures and warm lighting.
+
+- TILE 2: POURCRAFT 360 (THE MIXOLOGY ENCLAVE)
+  * Rotation Image 1: A focused master mixologist shaking a premium spirit behind a glowing, smoked-crystal bar top.
+  * Rotation Image 2: Well-dressed VIP couples laughing and socializing over luxury cocktails in a dimly lit elite bar scene.
+
+- TILE 3: BEERCRAFT 360 (THE SOCIAL ROOFTOP)
+  * Rotation Image 1: A stylish group of friends interacting under twilight string-lighting, catching a premium city skyline horizon backdrop.
+  * Rotation Image 2: Upscale lounge seating at an elevated rooftop brewery with high-vibe social conversations.
+
+- TILE 4: WINECRAFT 360 (THE SOMMELIER RESERVE)
+  * Rotation Image 1: An intimate, refined date-night scene inside a stone-walled private wine cellar as a sommelier pours a vintage selection.
+  * Rotation Image 2: Sophisticated members participating in an exclusive wine tasting lounge event.
+
+3. HARDWARE TOUCHSCREEN & CREAM GRADIENT CALIBRATION
+- Overlay a luminous Cream (#FDFBF7) and liquid metallic Warm Gold gradient border on the active SmokeCraft tile to make it pop instantly.
+- Surfaces must feel luxurious: apply an explicit Obsidian Glass blur filter over the background imagery so text fields read cleanly.
+- Ensure all touch targets maintain a strict 58px footprint. Tapping any item or text input field must immediately trigger responsive touchscreen activation hooks.
+
+4. FIX THE RESET BLEND STATE & BLANK E.A.T. COMMAND CENTER
+- Repair 'Reset Blend': Re-code the state context handler. Clicking 'Reset Blend' must immediately flush the active tobacco blend progress indices, clear the wrapper/filler cache from the state machine, and cleanly re-initialize the view without freezing.
+- Eradicate the Blank E.A.T. Screen: Fix the click event handler on the bottom right button labeled 'OPEN COMMAND CENTER >' and anchor its position securely in the highlighted bottom corner. Clicking this button must launch the oversized, minimal 4-digit numeric Staff PIN pad overlay window.
+- Staff Handoff Ripple Animation: Entering a valid Staff PIN must trigger an explosive, hardware-accelerated concentric ripple animation that scales outward from the exact touch coordinates across the 1920x1080 canvas using GPU layers, smoothly dissolving the screen to expose the live E.A.T. High-Velocity POS terminal layout (enlarged text scales, live table maps, and a 145 puros humidor stock countdown) connected to the universal 'POSRouterEngine' for 2x, 3x, and 5x receipt multipliers.
+
+Execute full file-by-file compilation immediately across the workspace repository tree. Overwrite all legacy product placeholder files with this explicit human-centered asset specification. Ensure 100% type safety and zero TypeScript build errors.

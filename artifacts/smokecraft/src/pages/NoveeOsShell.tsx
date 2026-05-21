@@ -1465,6 +1465,32 @@ function NoveeCraftHubWrapper() {
   return <CraftGrid onSmokecraft={() => setPhase("s1_demo")} />;
 }
 
+function PhaseLoadingFallback() {
+  return (
+    <div style={{
+      position: "absolute", inset: 0,
+      background: "linear-gradient(175deg, #100C06 0%, #080502 50%, #0C0804 100%)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      flexDirection: "column", gap: 20,
+    }}>
+      <motion.div
+        animate={{ scale: [1, 1.18, 1], opacity: [0.55, 1, 0.55] }}
+        transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          width: 56, height: 56, borderRadius: "50%",
+          background: `radial-gradient(circle, ${GOLD}55 0%, ${GOLD}22 50%, transparent 70%)`,
+          border: `1.5px solid ${GOLD}44`,
+          boxShadow: `0 0 32px ${GOLD}33`,
+        }}
+      />
+      <span style={{
+        fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.32em",
+        color: `${GOLD}55`, textTransform: "uppercase",
+      }}>Loading Experience</span>
+    </div>
+  );
+}
+
 function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange: (f: any) => void }) {
   const { profile } = useNoveeGuest();
   const { phase }   = profile;
@@ -1478,7 +1504,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange
   const CompBoot = NoveeKioskBootSequence as any;
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<PhaseLoadingFallback />}>
       {phase === "crafthub" && <NoveeCraftHubWrapper />}
       {phase === "eat_dashboard" && <CompEAT eatFlags={eatFlags} />}
       {phase === "executive_command" && <POSCommandHub />}
