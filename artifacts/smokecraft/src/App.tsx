@@ -106,6 +106,7 @@ const DesignerPage          = lazy(() => import('@/pages/DesignerPage'));
 const UpgradePage           = lazy(() => import('@/pages/UpgradePage'));
 const UpgradeRequired       = lazy(() => import('@/pages/UpgradeRequired'));
 const NoveeOsShell          = lazy(() => import('@/pages/NoveeOsShell'));
+const CraftEntryPoint       = lazy(() => import('@/pages/CraftEntryPoint'));
 const ControlChamber        = lazy(() => import('@/pages/ControlChamber'));
 
 /* ── Lazy-loaded pages previously unregistered in router ───── */
@@ -1154,7 +1155,9 @@ export default function App() {
             <SubPageProviders><IntelligenceManifest /></SubPageProviders>
           </Route>
           <Route path="/craft-hub">
-            <NoveeOsShell />
+            <Suspense fallback={null}>
+              <CraftEntryPoint />
+            </Suspense>
           </Route>
           <Route path="/pos">
             <SubPageProviders><PosMode /></SubPageProviders>

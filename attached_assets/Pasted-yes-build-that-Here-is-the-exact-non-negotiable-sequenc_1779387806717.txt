@@ -1,0 +1,25 @@
+yes, build that.
+
+Here is the exact, non-negotiable sequence you must execute immediately across the root application entry files:
+
+1. FORCE LOGO POWER-UP & TIMELINE SEQUENCE (PATH: '/')
+Before rendering any operational workspace or landing pages, mount a sequential initialization timeline on a True Obsidian (#010101) solid layout layer:
+- Phase 1 (Corporate Initialization): Animate the center-frame smoked chrome vector emblem. Render the text "PROFOUND INNOVATIONS LLC" in an oversized luxury serif font with a gold foil texture (3-second hold, 0.35s left-slide dissolve).
+- Phase 2 (OS Power-Up): Smoothly fade in the "NOVEE OS" branding layer accompanied by a pulsating gold ambient loading ring and the "POWERED" subtitle text.
+- Phase 3 (Ecosystem Activation): Animate the explicit "CraftHub" network launcher logo into view with a smooth ambient smoke dissolve.
+- Phase 4 (Backend Telemetry Bind): Pop up the official "E.A.T. SYSTEM" logo, illuminating an absolute status indicator showing "DATA INTEGRATION CHASSIS ONLINE". Write the "SYSTEM ACTIVE" token directly to localStorage on completion, then transition seamlessly via a camera-blur dissolve.
+
+2. RENDER THE TRUE 4-TILE TACTICAL GRID (PATH: '/craft-hub')
+- Completely wipe out the current text-link sub-tabs from the top of the header viewport.
+- Re-architect the landing interface into a clean, full-screen 1920x1080 tactical layout using 4 massive, touchscreen-optimized card containers engineered out of layered Obsidian Glass and brushed titanium outlines. Maintain a strict 58px minimum touch footprint.
+- Map the precise high-fidelity visual assets to the 4 tiles:
+  * TILE 1: 'SMOKECRAFT 360' -> Bind your high-resolution photograph of a hand-rolled Maduro cigar resting on volcanic soil. This tile must be the singular active, clickable state mechanism that launches the ritual onboarding journey.
+  * TILE 2: 'POURCRAFT 360' -> Luxury spirits/crystal tumbler photography (Affix a small brushed bronze 'COMING SOON' overlay banner).
+  * TILE 3: 'BEERCRAFT 360' -> Artisanal micro-brewery visual asset (Affix a 'COMING SOON' tag).
+  * TILE 4: 'WINECRAFT 360' -> Premium reserve wine cellar visualization (Affix a 'COMING SOON' tag).
+
+3. SPATIAL STYLE & NAV RAIL ALIGNMENT
+- Enforce the True Obsidian (#010101) contrast baseline with backlit smoke-glass panels and warm gold/amber ambient illumination vectors.
+- Ensure clicking the 'CraftHub' node on the persistent Left Navigation Rail instantly unmounts the active sub-module view and returns the entire canvas back to this 4-Tile Selection Chassis.
+
+Execute full workspace tree compilation immediately. Verify that all components render with 100% operational fidelity and zero TypeScript compilation drops.

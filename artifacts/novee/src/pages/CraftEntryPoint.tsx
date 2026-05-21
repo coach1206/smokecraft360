@@ -1,0 +1,369 @@
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const BASE = import.meta.env.BASE_URL;
+const IMG  = (n: string) => `${BASE}images/${n}`;
+const GOLD = "#D4AF37";
+const EASE: [number,number,number,number] = [0.22, 1, 0.36, 1];
+
+type Stage = "boot" | "grid";
+type BootPhase = 1 | 2 | 3 | 4;
+
+const BOOT_PHASES: { phase: BootPhase; logo: string; label: string; sub: string; hold: number }[] = [
+  { phase: 1, logo: IMG("logo_profound.png"),  label: "PROFOUND INNOVATION", sub: "Software & Systems Development Company", hold: 3200 },
+  { phase: 2, logo: IMG("logo_novee_os.jpg"),  label: "NOVEE OS",            sub: "Intelligence That Elevates",              hold: 2800 },
+  { phase: 3, logo: IMG("logo_craft_hub.jpg"), label: "CRAFT HUB",           sub: "Intro To Smoke Craft",                    hold: 2800 },
+  { phase: 4, logo: IMG("logo_eat.png"),       label: "E.A.T. SYSTEM",       sub: "Environment · Asset · Transactions",      hold: 3000 },
+];
+
+const TILES = [
+  {
+    id: "smokecraft",
+    label: "SMOKECRAFT 360",
+    sub: "The Luxury Cigar Ritual",
+    img: `https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=1200&q=80`,
+    active: true,
+    accent: GOLD,
+  },
+  {
+    id: "pourcraft",
+    label: "POURCRAFT 360",
+    sub: "Master Mixology & Spirits",
+    img: `https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1200&q=80`,
+    active: false,
+    accent: "#C08040",
+  },
+  {
+    id: "beercraft",
+    label: "BEERCRAFT 360",
+    sub: "Artisanal Craft Brewing",
+    img: `https://images.unsplash.com/photo-1436076863939-06870fe779c2?auto=format&fit=crop&w=1200&q=80`,
+    active: false,
+    accent: "#B8860B",
+  },
+  {
+    id: "winecraft",
+    label: "WINECRAFT 360",
+    sub: "Fine Wine & Cellar Curation",
+    img: `https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80`,
+    active: false,
+    accent: "#8B1A2F",
+  },
+];
+
+function BootSequence({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState<BootPhase>(1);
+  const [visible, setVisible] = useState(true);
+
+  const advance = useCallback(() => {
+    setVisible(false);
+    setTimeout(() => {
+      if (phase < 4) {
+        setPhase((p) => (p + 1) as BootPhase);
+        setVisible(true);
+      } else {
+        try { localStorage.setItem("craft_system_active", "1"); } catch {}
+        onComplete();
+      }
+    }, 600);
+  }, [phase, onComplete]);
+
+  useEffect(() => {
+    const current = BOOT_PHASES.find((b) => b.phase === phase)!;
+    const t = setTimeout(advance, current.hold);
+    return () => clearTimeout(t);
+  }, [phase, advance]);
+
+  const current = BOOT_PHASES.find((b) => b.phase === phase)!;
+  const isPhase4 = phase === 4;
+
+  return (
+    <div
+      onClick={phase >= 2 ? advance : undefined}
+      style={{
+        position: "fixed", inset: 0, background: "#010101",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        cursor: phase >= 2 ? "pointer" : "default",
+        userSelect: "none",
+      }}
+    >
+      <motion.div
+        animate={{ opacity: [0.04, 0.10, 0.04] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          background: `radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.18) 0%, transparent 70%)`,
+        }}
+      />
+
+      <AnimatePresence mode="wait">
+        {visible && (
+          <motion.div
+            key={`phase-${phase}`}
+            initial={{ opacity: 0, scale: 0.92, filter: "blur(14px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, x: -60, filter: "blur(8px)" }}
+            transition={{ duration: 0.75, ease: EASE }}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28, zIndex: 2 }}
+          >
+            <motion.img
+              src={current.logo}
+              alt={current.label}
+              initial={{ scale: 0.88 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.0, ease: EASE }}
+              style={{
+                height: phase === 1 ? 200 : 220,
+                width: "auto",
+                objectFit: "contain",
+                filter: phase === 2 ? "none" : phase === 3 ? "none" : "drop-shadow(0 0 32px rgba(212,175,55,0.55))",
+              }}
+            />
+
+            {phase === 2 && (
+              <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", marginTop: -10 }}>
+                {[1, 2, 3].map((i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ scale: [1, 1.6 + i * 0.2], opacity: [0.55, 0] }}
+                    transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.45, ease: "easeOut" }}
+                    style={{ position: "absolute", width: 56, height: 56, borderRadius: "50%", border: `1.5px solid ${GOLD}` }}
+                  />
+                ))}
+                <div style={{ width: 56, height: 56, borderRadius: "50%", border: `2px solid ${GOLD}`, boxShadow: `0 0 28px ${GOLD}88` }} />
+              </div>
+            )}
+
+            {isPhase4 && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  background: "rgba(212,175,55,0.08)", border: `1px solid ${GOLD}44`,
+                  borderRadius: 8, padding: "10px 22px",
+                }}
+              >
+                <motion.div
+                  animate={{ opacity: [1, 0.3, 1] }}
+                  transition={{ duration: 1.0, repeat: Infinity }}
+                  style={{ width: 8, height: 8, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 10px #32B45A" }}
+                />
+                <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, letterSpacing: "0.26em", color: `${GOLD}CC`, textTransform: "uppercase" }}>
+                  Data Integration Chassis Online
+                </span>
+              </motion.div>
+            )}
+
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 600, color: GOLD, letterSpacing: "0.18em", textTransform: "uppercase", margin: "0 0 8px", textShadow: `0 0 40px ${GOLD}66` }}>{current.label}</p>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, letterSpacing: "0.30em", color: "rgba(240,228,196,0.48)", textTransform: "uppercase", margin: 0 }}>{current.sub}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div style={{ position: "absolute", bottom: 36, display: "flex", gap: 10 }}>
+        {BOOT_PHASES.map((b) => (
+          <motion.div
+            key={b.phase}
+            animate={{ width: b.phase === phase ? 28 : 6, background: b.phase <= phase ? GOLD : "rgba(255,255,255,0.18)" }}
+            transition={{ duration: 0.3 }}
+            style={{ height: 4, borderRadius: 3 }}
+          />
+        ))}
+      </div>
+
+      {phase >= 2 && (
+        <div style={{ position: "absolute", bottom: 20, fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.30em", color: "rgba(255,255,255,0.20)", textTransform: "uppercase" }}>
+          Tap to continue
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "#010101", display: "flex", flexDirection: "column" }}>
+      <div style={{
+        flexShrink: 0, padding: "24px 48px 20px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        borderBottom: "1px solid rgba(212,175,55,0.10)",
+        background: "rgba(0,0,0,0.60)", backdropFilter: "blur(20px)",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <img src={IMG("logo_craft_hub.jpg")} alt="Craft Hub" style={{ height: 48, width: "auto", objectFit: "contain" }} />
+          <div>
+            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 600, color: GOLD, letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>Craft Hub</p>
+            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.30em", color: "rgba(240,228,196,0.38)", margin: 0, textTransform: "uppercase" }}>Select Your Craft Experience</p>
+          </div>
+        </div>
+        <img src={IMG("logo_novee_os.jpg")} alt="NOVEE OS" style={{ height: 40, width: "auto", objectFit: "contain", opacity: 0.85 }} />
+      </div>
+
+      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", overflow: "hidden" }}>
+        {TILES.map((tile) => {
+          const isHovered = hovered === tile.id;
+          return (
+            <motion.button
+              key={tile.id}
+              type="button"
+              onHoverStart={() => setHovered(tile.id)}
+              onHoverEnd={() => setHovered(null)}
+              onPointerDown={() => tile.active && onSmokecraft()}
+              whileTap={tile.active ? { scale: 0.98 } : {}}
+              style={{
+                position: "relative", border: "none", padding: 0,
+                background: "transparent", cursor: tile.active ? "pointer" : "default",
+                overflow: "hidden", outline: "none",
+                borderRight: "1px solid rgba(255,255,255,0.04)",
+              }}
+            >
+              <motion.img
+                src={tile.img}
+                alt={tile.label}
+                animate={{ scale: isHovered && tile.active ? 1.06 : 1 }}
+                transition={{ duration: 0.6, ease: EASE }}
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+              />
+              <motion.div
+                animate={{ opacity: isHovered && tile.active ? 0.55 : 0.75 }}
+                transition={{ duration: 0.4 }}
+                style={{ position: "absolute", inset: 0, background: `linear-gradient(180deg, rgba(1,1,1,0.30) 0%, rgba(1,1,1,0.88) 100%)` }}
+              />
+              <div style={{ position: "absolute", inset: 0, backdropFilter: tile.active && isHovered ? "blur(0px)" : "blur(1px)", WebkitBackdropFilter: tile.active && isHovered ? "blur(0px)" : "blur(1px)" }} />
+
+              <AnimatePresence>
+                {isHovered && tile.active && (
+                  <motion.div
+                    key="top-rim"
+                    initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                    style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${tile.accent}, transparent)`, transformOrigin: "left" }}
+                  />
+                )}
+              </AnimatePresence>
+
+              {!tile.active && (
+                <div style={{
+                  position: "absolute", top: 22, right: 18,
+                  background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}44`,
+                  borderRadius: 4, padding: "5px 12px",
+                  fontFamily: "'Inter',sans-serif", fontSize: 9, fontWeight: 800,
+                  letterSpacing: "0.28em", color: `${GOLD}88`, textTransform: "uppercase",
+                }}>
+                  Coming Soon
+                </div>
+              )}
+
+              {tile.active && (
+                <div style={{ position: "absolute", top: 22, right: 18, display: "flex", alignItems: "center", gap: 6 }}>
+                  <motion.div
+                    animate={{ opacity: [1, 0.3, 1] }}
+                    transition={{ duration: 1.4, repeat: Infinity }}
+                    style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }}
+                  />
+                  <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.26em", color: "#32B45A99", textTransform: "uppercase" }}>Active</span>
+                </div>
+              )}
+
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 28px 32px" }}>
+                <motion.div animate={{ y: isHovered && tile.active ? -6 : 0 }} transition={{ duration: 0.4, ease: EASE }}>
+                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.36em", color: `${tile.accent}88`, textTransform: "uppercase", margin: "0 0 10px" }}>
+                    {tile.active ? "Select Experience →" : "Not Yet Available"}
+                  </p>
+                  <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 32, fontWeight: 600, color: "#F0E8D4", letterSpacing: "0.06em", margin: "0 0 8px", lineHeight: 1.1, textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
+                    {tile.label}
+                  </p>
+                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, letterSpacing: "0.18em", color: "rgba(240,228,196,0.48)", textTransform: "uppercase", margin: 0 }}>
+                    {tile.sub}
+                  </p>
+                </motion.div>
+
+                {tile.active && (
+                  <motion.div
+                    animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 8 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ marginTop: 18 }}
+                  >
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 10,
+                      background: `linear-gradient(135deg, ${GOLD}22, ${GOLD}11)`,
+                      border: `1px solid ${GOLD}66`, borderRadius: 6, padding: "12px 24px", minHeight: 58,
+                    }}>
+                      <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase" }}>
+                        Enter SmokeCraft 360
+                      </span>
+                      <span style={{ color: GOLD, fontSize: 16 }}>→</span>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      <div style={{
+        flexShrink: 0, padding: "12px 48px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        borderTop: "1px solid rgba(212,175,55,0.07)",
+        background: "rgba(0,0,0,0.50)",
+      }}>
+        <img src={IMG("logo_profound.png")} alt="Profound Innovation" style={{ height: 28, width: "auto", filter: "drop-shadow(0 0 8px rgba(212,175,55,0.30))" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <motion.div
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity }}
+            style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }}
+          />
+          <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}55`, textTransform: "uppercase" }}>System Active</span>
+        </div>
+        <img src={IMG("logo_eat.png")} alt="E.A.T System" style={{ height: 28, width: "auto", filter: "drop-shadow(0 0 8px rgba(212,175,55,0.30))" }} />
+      </div>
+    </div>
+  );
+}
+
+interface Props {
+  onComplete: () => void;
+}
+
+export default function CraftEntryPoint({ onComplete }: Props) {
+  const [stage, setStage] = useState<Stage>(() => {
+    try { return sessionStorage.getItem("craft_entry_done") === "1" ? "grid" : "boot"; } catch { return "boot"; }
+  });
+
+  function handleBootComplete() {
+    try { sessionStorage.setItem("craft_entry_done", "1"); } catch {}
+    setStage("grid");
+  }
+
+  function handleSmokecraftSelect() {
+    onComplete();
+  }
+
+  return (
+    <AnimatePresence mode="wait">
+      {stage === "boot" && (
+        <motion.div key="boot" style={{ position: "fixed", inset: 0, zIndex: 9999 }}
+          exit={{ opacity: 0, filter: "blur(16px)" }} transition={{ duration: 1.0, ease: EASE }}>
+          <BootSequence onComplete={handleBootComplete} />
+        </motion.div>
+      )}
+      {stage === "grid" && (
+        <motion.div key="grid" style={{ position: "fixed", inset: 0, zIndex: 9999 }}
+          initial={{ opacity: 0, filter: "blur(16px)" }} animate={{ opacity: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 1.04, filter: "blur(12px)" }}
+          transition={{ duration: 1.0, ease: EASE }}>
+          <CraftGrid onSmokecraft={handleSmokecraftSelect} />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

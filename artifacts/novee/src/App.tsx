@@ -21,7 +21,7 @@ import { DEFAULT_FLAGS } from "@/pages/ExecutiveCommandCenter";
 import DevConsole from "@/pages/DevConsole";
 import { StaffPinGate } from "@/components/StaffPinGate";
 import type { PinRole } from "@/components/StaffPinGate";
-import KioskBootSequence from "@/pages/KioskBootSequence";
+import CraftEntryPoint from "@/pages/CraftEntryPoint";
 import { S1_InitGate } from "@/pages/S1_InitGate";
 import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
 import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
@@ -1703,7 +1703,7 @@ export default function App() {
       <GuestProfileProvider>
         <AnimatePresence mode="wait">
           {!bootDone ? (
-            <KioskBootSequence key="boot" onComplete={handleBootComplete} />
+            <CraftEntryPoint key="boot" onComplete={handleBootComplete} />
           ) : (
             <motion.div key="shell"
               initial={{ opacity: 0, filter: "blur(12px)" }}
