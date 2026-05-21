@@ -2900,11 +2900,11 @@ function GatewayTerroir({ onNext, onBack, onCountrySelect, selectedMentor }: {
 
 // -- Gateway: Seed Biology & Priming (Stage 3b) ----------------------------
 const SEED_VARIETAL_IMAGES: Record<string, string> = {
-  "Criollo 98":        "https://images.unsplash.com/photo-1559181567-c3190ca9be23?auto=format&fit=crop&w=600&q=80",
-  "Corojo 99":         "https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=600&q=80",
-  "Habano 2000":       "https://images.unsplash.com/photo-1466781783364-36c955e42a7f?auto=format&fit=crop&w=600&q=80",
-  "Connecticut Shade": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
-  "Broadleaf":         "https://images.unsplash.com/photo-1504113888839-1c8eb50233d3?auto=format&fit=crop&w=600&q=80",
+  "Criollo 98":        "https://images.unsplash.com/photo-1527066579998-d4e419000c4b?auto=format&fit=crop&w=600&q=80",
+  "Corojo 99":         "https://images.unsplash.com/photo-1576869726369-d54a90d18a71?auto=format&fit=crop&w=600&q=80",
+  "Habano 2000":       "https://images.unsplash.com/photo-1601379760883-1bb497c558c0?auto=format&fit=crop&w=600&q=80",
+  "Connecticut Shade": "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80",
+  "Broadleaf":         "https://images.unsplash.com/photo-1574112507-0f17fffb17b1?auto=format&fit=crop&w=600&q=80",
 };
 function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [selectedLeaf,    setSelectedLeaf]    = useState<string | null>(null);
@@ -2914,19 +2914,19 @@ function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: ()
     {
       id: "volado", pos: "Bottom — Volado", strength: 14,
       profile: "Light body · Combustion agent", color: "#8BC34A",
-      img: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=700&q=80",
+      img: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=700&q=80",
       note: "Highest natural sugars — proximity to roots delivers peak soil nutrients and potassium. Ensures even combustion throughout. Every master blend needs at least 20% Volado for reliable burn physics.",
     },
     {
       id: "seco", pos: "Mid — Seco", strength: 52,
       profile: "Medium body · Flavor bridge", color: GOLD,
-      img: "https://images.unsplash.com/photo-1547753062-93041c1f9c3a?auto=format&fit=crop&w=700&q=80",
+      img: "https://images.unsplash.com/photo-1574627745916-8ec21d66bced?auto=format&fit=crop&w=700&q=80",
       note: "The architect's leaf. Primary flavor expression: cedar, leather, cocoa, spice. Air-cured 45–60 days to lock aromatic oils. Constitutes 40–60% of all premium blends worldwide.",
     },
     {
       id: "ligero", pos: "Crown — Ligero", strength: 94,
       profile: "Full power · Strength apex", color: "#E8741A",
-      img: "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=700&q=80",
+      img: "https://images.unsplash.com/photo-1585150797887-dc8c9a6a3a27?auto=format&fit=crop&w=700&q=80",
       note: "The sovereign leaf. Highest nicotine density — demands 18–24 months aging minimum. Top-canopy leaves absorb direct sunlight, producing thick oily alkaloids. One Ligero transforms any blend to full-body.",
     },
   ];
@@ -2961,7 +2961,7 @@ function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: ()
       {/* Active pulsing obsidian viewport */}
       <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
         <img
-          src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1400&q=80"
+          src="https://images.unsplash.com/photo-1527066579998-d4e419000c4b?auto=format&fit=crop&w=1400&q=80"
           alt=""
           className="w-full h-full object-cover"
           style={{ filter: "brightness(0.10) saturate(0.35) sepia(0.50)" }}
@@ -3450,10 +3450,10 @@ function ReadTimer({ seconds, onReady }: { seconds: number; onReady: () => void 
 
 // ── Movement II · Screen 1: Leaf Harvest & Primings ─────────────────────
 const HARVEST_LEAF_PHOTOS: Record<string, string> = {
-  volado: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=700&q=80",
-  seco:   "https://images.unsplash.com/photo-1560472355-109703aa3edc?auto=format&fit=crop&w=700&q=80",
-  viso:   "https://images.unsplash.com/photo-1547753062-93041c1f9c3a?auto=format&fit=crop&w=700&q=80",
-  ligero: "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=700&q=80",
+  volado: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=700&q=80",
+  seco:   "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=700&q=80",
+  viso:   "https://images.unsplash.com/photo-1574627745916-8ec21d66bced?auto=format&fit=crop&w=700&q=80",
+  ligero: "https://images.unsplash.com/photo-1585150797887-dc8c9a6a3a27?auto=format&fit=crop&w=700&q=80",
 };
 function GatewayHarvest({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [readyToAdvance, setReadyToAdvance] = useState(false);
@@ -3485,7 +3485,7 @@ function GatewayHarvest({ onNext, onBack }: { onNext: () => void; onBack: () => 
       style={GW.bg}>
       <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
         <img
-          src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1400&q=80"
+          src="https://images.unsplash.com/photo-1527066579998-d4e419000c4b?auto=format&fit=crop&w=1400&q=80"
           alt="" className="w-full h-full object-cover"
           style={{ filter: "brightness(0.10) saturate(0.40) sepia(0.45)" }} />
         <div style={{ position: "absolute", inset: 0,
@@ -3641,7 +3641,7 @@ function GatewayCuring({ onNext, onBack }: { onNext: () => void; onBack: () => v
       title: "Traditional Barn Air-Curing",
       subtitle: "45\u201390 days passive ventilation",
       color: "#8BC34A",
-      img: "https://images.unsplash.com/photo-1559181567-c3190ca9be23?auto=format&fit=crop&w=700&q=80",
+      img: "https://images.unsplash.com/photo-1527066579998-d4e419000c4b?auto=format&fit=crop&w=700&q=80",
       traits: ["Preserves natural sweetness", "Chlorophyll breakdown", "Cream & cedar notes emerge", "Ideal for Connecticut & Seco leaves"],
       mentor: "The barn's patience is your greatest tool. Let the air do the work \u2014 force nothing. The leaf will release its chlorophyll when it is ready, not before.",
       science: "Passive barn airflow reduces moisture from 85% to under 20% over 45\u201390 days. Natural enzymes break down starches into simple sugars, unlocking sweetness without heat distortion.",
@@ -3651,7 +3651,7 @@ function GatewayCuring({ onNext, onBack }: { onNext: () => void; onBack: () => v
       title: "Controlled Thermal Fermentation",
       subtitle: "Pilon stack \u00b7 100\u2013130\u00b0F internal heat",
       color: "#E8741A",
-      img: "https://images.unsplash.com/photo-1547753062-93041c1f9c3a?auto=format&fit=crop&w=700&q=80",
+      img: "https://images.unsplash.com/photo-1574627745916-8ec21d66bced?auto=format&fit=crop&w=700&q=80",
       traits: ["Ammonia fully expelled", "Alkaloid transformation", "Dark chocolate & earth locked in", "Essential for Maduro & Ligero"],
       mentor: "The pilon is the volcano's cousin \u2014 controlled destruction creates rebirth. Stack with precision, rotate every 72 hours, and trust the heat to do what centuries of knowledge have proven.",
       science: "Tightly compressed 3\u20134 ft leaf stacks generate 100\u2013130\u00b0F internally. Microbial fermentation expels harsh ammonia compounds, permanently transforming raw nicotine into complex, smooth alkaloids.",
@@ -3936,7 +3936,7 @@ function GatewayVitolaScience({
   const [readyToAdvance, setReadyToAdvance] = useState(false);
 
   const VITOLAS = [
-    { name: "Robusto",      ring: 50, length: "5\"",    profile: "The universal standard. 45-min journey, perfect flavor development arc.",                           img: "photo-1558618666-fcd25c85cd64" },
+    { name: "Robusto",      ring: 50, length: "5\"",    profile: "The universal standard. 45-min journey, perfect flavor development arc.",                           img: "photo-1576869726369-d54a90d18a71" },
     { name: "Churchill",    ring: 47, length: "7\"",    profile: "90-min extended masterwork. Cedar through rich earth across three distinct thirds.",               img: "photo-1531771686035-25f47595c87a" },
     { name: "Torpedo",      ring: 52, length: "6.25\"", profile: "Tapered head concentrates draw. Complex aromatic layers. Artisan construction required.",          img: "photo-1574091879823-ecf4a2cc10e7" },
     { name: "Gordo",        ring: 60, length: "6\"",    profile: "Maximum smoke volume. Cooler burn temperature. Punchy draw physics. Oils coat the palate.",        img: "photo-1508962914676-134849a727f0" },
@@ -3947,7 +3947,7 @@ function GatewayVitolaScience({
   const CUT_ASSETS = [
     {
       id: "straight", label: "Straight Cut", subtitle: "Guillotine", color: "#8BC34A",
-      img: "photo-1558618666-fcd25c85cd64",
+      img: "photo-1576869726369-d54a90d18a71",
       draw: "Full open draw. Maximum smoke volume. Preserves full cap flavor surface area. Best for RG 46\u201354.",
       best: "Robusto \u00b7 Corona \u00b7 Churchill",
     },
@@ -3991,7 +3991,7 @@ function GatewayVitolaScience({
 
       {/* Ambient backdrop */}
       <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
-        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1400&q=70"
+        <img src="https://images.unsplash.com/photo-1576869726369-d54a90d18a71?auto=format&fit=crop&w=1400&q=70"
           alt="" className="w-full h-full object-cover"
           style={{ filter: "brightness(0.08) saturate(0.12) sepia(0.30)" }} />
         <div style={{ position: "absolute", inset: 0,
@@ -4532,13 +4532,13 @@ function GatewayPrimingMatrix({ onNext, onBack, onPrimingChange }: {
   ];
   const LEAF_VISUALS = [
     { id: "volado", pct: volado,   color: "#8BC34A", label: "Volado",
-      img: "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=700&q=80",
+      img: "https://images.unsplash.com/photo-1574112507-0f17fffb17b1?auto=format&fit=crop&w=700&q=80",
       desc: "High-sugar base leaf \u00b7 Burn stability" },
     { id: "seco",   pct: secoViso, color: GOLD,      label: "Seco / Viso",
-      img: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=700&q=80",
+      img: "https://images.unsplash.com/photo-1527066579998-d4e419000c4b?auto=format&fit=crop&w=700&q=80",
       desc: "Aromatic bloom layer \u00b7 Flavor expression" },
     { id: "ligero", pct: ligero,   color: "#ef4444", label: "Ligero",
-      img: "https://images.unsplash.com/photo-1533779183510-8738c1c4bab0?auto=format&fit=crop&w=700&q=80",
+      img: "https://images.unsplash.com/photo-1601379760883-1bb497c558c0?auto=format&fit=crop&w=700&q=80",
       desc: "Crown-tier strength \u00b7 Raw intensity" },
   ];
 
@@ -6841,21 +6841,21 @@ export default function MasterBlender() {
                         exp: "Balanced and approachable with a cooler burn and softer finish.",
                         bestFor: "Relaxed evenings and smoother whiskey pairings.",
                         indicator: "BEGINNER", ic: "#8BC34A", c: "#c8a06a",
-                        leafImg: "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=600&q=80" },
+                        leafImg: "https://images.unsplash.com/photo-1574112507-0f17fffb17b1?auto=format&fit=crop&w=600&q=80" },
                       { id: "viso",   label: "Viso",
                         body: "Medium Body \u00b7 Aromatic Balance",
                         flavors: ["Earth","Cocoa","Spice"],
                         exp: "Adds complexity and layered aroma while maintaining smooth balance.",
                         bestFor: "Classic lovers wanting fuller flavor without overpowering strength.",
                         indicator: "INTERMEDIATE", ic: GOLD, c: "#b88a28",
-                        leafImg: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80" },
+                        leafImg: "https://images.unsplash.com/photo-1527066579998-d4e419000c4b?auto=format&fit=crop&w=600&q=80" },
                       { id: "ligero", label: "Ligero",
                         body: "Full Body \u00b7 Slow Burn",
                         flavors: ["Pepper","Espresso","Dark Chocolate"],
                         exp: "The strongest leaf delivering bold intensity and rich smoke density.",
                         bestFor: "Experienced smokers and stronger bourbon pairings.",
                         indicator: "EXPERT", ic: "#ef4444", c: "#9b3a1a",
-                        leafImg: "https://images.unsplash.com/photo-1533779183510-8738c1c4bab0?auto=format&fit=crop&w=600&q=80" },
+                        leafImg: "https://images.unsplash.com/photo-1601379760883-1bb497c558c0?auto=format&fit=crop&w=600&q=80" },
                     ] as { id: string; label: string; body: string; flavors: string[]; exp: string;
                               bestFor: string; indicator: string; ic: string; c: string; leafImg: string }[]).map((spec) => {
                       const leaf = LEAVES.find(l => l.id === spec.id);
@@ -7063,9 +7063,9 @@ export default function MasterBlender() {
                     {/* Selected leaf macro visual */}
                     {sel.leaf && (() => {
                       const leafImgMap: Record<string,string> = {
-                        seco:   "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=600&q=80",
-                        viso:   "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80",
-                        ligero: "https://images.unsplash.com/photo-1533779183510-8738c1c4bab0?auto=format&fit=crop&w=600&q=80",
+                        seco:   "https://images.unsplash.com/photo-1574112507-0f17fffb17b1?auto=format&fit=crop&w=600&q=80",
+                        viso:   "https://images.unsplash.com/photo-1527066579998-d4e419000c4b?auto=format&fit=crop&w=600&q=80",
+                        ligero: "https://images.unsplash.com/photo-1601379760883-1bb497c558c0?auto=format&fit=crop&w=600&q=80",
                       };
                       return (
                         <motion.div key={sel.leaf.id}
