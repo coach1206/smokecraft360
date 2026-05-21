@@ -319,6 +319,100 @@ export default function OSShell() {
           ))}
         </motion.div>
 
+        {/* ── QUICK ACCESS — direct tab deep-links ── */}
+        <section style={{ marginBottom: 56 }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)", marginBottom: 16 }}>
+            QUICK ACCESS
+          </div>
+
+          {/* E.A.T. ENGINE tabs */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(245,237,216,0.45)", marginBottom: 10, textTransform: "uppercase" }}>
+              ⬡ E.A.T. Engine
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {[
+                { label: "Command Center", slug: "command-center" },
+                { label: "Environment",    slug: "environment"    },
+                { label: "Assets",         slug: "assets"         },
+                { label: "Transactions",   slug: "transactions"   },
+                { label: "Pairing Engine", slug: "pairing-engine" },
+                { label: "Lounge Control", slug: "lounge-control" },
+                { label: "Analytics",      slug: "analytics"      },
+                { label: "Staffing",       slug: "staffing"       },
+              ].map(({ label, slug }) => (
+                <motion.button
+                  key={slug}
+                  onClick={() => { mechanicalClick(); navigate(`/eat-engine?tab=${slug}`); }}
+                  whileHover={{ scale: 1.04, boxShadow: "0 0 0 1px rgba(212,139,0,0.55), 0 4px 14px rgba(196,97,10,0.20)" }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    background: "rgba(196,97,10,0.09)",
+                    border: "1px solid rgba(196,97,10,0.28)",
+                    borderRadius: 8,
+                    padding: "7px 14px",
+                    cursor: "pointer",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: "0.14em",
+                    color: "#C4610A",
+                    textTransform: "uppercase",
+                    fontFamily: "'Inter', sans-serif",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {label}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {/* COMMAND CENTER tabs */}
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(245,237,216,0.45)", marginBottom: 10, textTransform: "uppercase" }}>
+              ◆ Command Center
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {[
+                { label: "Overview",    slug: "overview"    },
+                { label: "Awareness",   slug: "awareness"   },
+                { label: "Social",      slug: "social"      },
+                { label: "Adaptive",    slug: "adaptive"    },
+                { label: "Learning",    slug: "learning"    },
+                { label: "Knowledge",   slug: "knowledge"   },
+                { label: "Compliance",  slug: "compliance"  },
+                { label: "Supply",      slug: "supply"      },
+                { label: "Experience",  slug: "experience"  },
+                { label: "Temporal",    slug: "temporal"    },
+                { label: "Edge",        slug: "edge"        },
+              ].map(({ label, slug }) => (
+                <motion.button
+                  key={slug}
+                  onClick={() => { mechanicalClick(); navigate(`/command-center?tab=${slug}`); }}
+                  whileHover={{ scale: 1.04, boxShadow: "0 0 0 1px rgba(212,175,55,0.40), 0 4px 14px rgba(212,175,55,0.12)" }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    background: "rgba(212,175,55,0.07)",
+                    border: "1px solid rgba(212,175,55,0.22)",
+                    borderRadius: 8,
+                    padding: "7px 14px",
+                    cursor: "pointer",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: "0.14em",
+                    color: "#D4AF37",
+                    textTransform: "uppercase",
+                    fontFamily: "'Inter', sans-serif",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {label}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Module Registry */}
         <section>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>

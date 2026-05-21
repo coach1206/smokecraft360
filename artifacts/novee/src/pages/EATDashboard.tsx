@@ -36,6 +36,32 @@ const TOP_TABS = [
 ] as const;
 type TopTab = (typeof TOP_TABS)[number];
 
+// ── URL tab sync helpers ───────────────────────────────────────────────────────
+// Slug ↔ tab-name mapping; slugs are lowercase-hyphenated for clean URLs.
+const EAT_TAB_SLUG_MAP: Record<string, TopTab> = {
+  "command-center":  "Command Center",
+  "environment":     "Environment",
+  "assets":          "Assets",
+  "transactions":    "Transactions",
+  "pairing-engine":  "Pairing Engine",
+  "lounge-control":  "Lounge Control",
+  "analytics":       "Analytics",
+  "staffing":        "Staffing",
+};
+
+export function eatTabToSlug(tab: TopTab): string {
+  return tab.toLowerCase().replace(/\s+/g, "-");
+}
+
+function parseEATTabFromSearch(search: string): TopTab {
+  try {
+    const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+    const raw = params.get("tab");
+    if (raw && raw in EAT_TAB_SLUG_MAP) return EAT_TAB_SLUG_MAP[raw];
+  } catch { /* ignore */ }
+  return "Command Center";
+}
+
 // ── Fallback static data ───────────────────────────────────────────────────────
 const STATIC_DEVICES = [
   { id:"T-B01", name:"Tablet 01", room:"Main Lounge",    battery:100, signal:4, online:true  },
@@ -196,7 +222,27 @@ function SectionHead({ title, action, onAction }: { title:string; action?:string
 export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboardProps) {
   const { profile } = useGuest();
   const venueId = (profile as { venueId?: string }).venueId ?? localStorage.getItem("axiom_venue_id") ?? "default";
-  const [activeTab, setActiveTab] = useState<TopTab>("Command Center");
+  const [activeTab, setTabState] = useState<TopTab>(() => parseEATTabFromSearch(window.location.search));
+
+  const setActiveTab = useCallback((t: TopTab) => {
+    setTabState(t);
+    const url = new URL(window.location.href);
+    if (t === "Command Center") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", eatTabToSlug(t));
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, []);
+
+  // Sync active tab with browser back/forward navigation
+  useEffect(() => {
+    const onPopState = () => {
+      setTabState(parseEATTabFromSearch(window.location.search));
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   const [panelVis, setPanelVis] = useState<{environment:PanelVis;asset:PanelVis;transaction:PanelVis}>(
     { environment:"on", asset:"on", transaction:"on" }

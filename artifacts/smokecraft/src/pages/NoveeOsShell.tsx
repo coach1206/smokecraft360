@@ -1100,6 +1100,73 @@ const NAV_ITEMS = [
   { id: "coach_help",        label: "Coach Help",     abbr: "CH",  targetPhase: "coach_help" as Phase,        staffOnly: false, isActive: (p: string) => p === "coach_help" },
 ];
 
+// ── Quick Nav Bar — staff-only EAT Engine + Exec Command tab shortcuts ──────────
+const EAT_QN_TABS = [
+  { label: "CMD CTR",   slug: "command-center"  },
+  { label: "ENVIRON",   slug: "environment"     },
+  { label: "ASSETS",    slug: "assets"          },
+  { label: "TXNS",      slug: "transactions"    },
+  { label: "PAIRING",   slug: "pairing-engine"  },
+  { label: "LOUNGE",    slug: "lounge-control"  },
+  { label: "ANALYTICS", slug: "analytics"       },
+  { label: "STAFFING",  slug: "staffing"        },
+];
+
+function QuickNavBar() {
+  const { navigate } = useNoveeNav();
+  const isStaff = useStaffModeSC();
+
+  if (!isStaff) return null;
+
+  function goToEATTab(slug: string) {
+    const url = new URL(window.location.href);
+    if (slug === "command-center") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", slug);
+    }
+    window.history.replaceState({}, "", url.toString());
+    navigate("eat_dashboard");
+  }
+
+  return (
+    <div style={{
+      width: "100%", flexShrink: 0, height: 34,
+      background: "rgba(2,1,0,0.96)",
+      backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+      borderBottom: `1px solid rgba(212,175,55,0.12)`,
+      display: "flex", flexDirection: "row", alignItems: "center",
+      paddingLeft: 12, paddingRight: 12, gap: 5,
+      zIndex: 190, overflowX: "auto",
+    }}>
+      <span style={{ fontSize: 8, fontWeight: 800, letterSpacing: "0.26em", color: `${GOLD}44`, fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap", paddingRight: 8, borderRight: `1px solid ${GOLD}18`, marginRight: 4, flexShrink: 0 }}>⬡ E.A.T.</span>
+      {EAT_QN_TABS.map(({ label, slug }) => (
+        <motion.button key={slug}
+          onPointerDown={() => goToEATTab(slug)}
+          whileTap={{ scale: 0.92 }}
+          style={{
+            flexShrink: 0,
+            background: "rgba(196,97,10,0.08)",
+            border: "1px solid rgba(196,97,10,0.25)",
+            borderRadius: 5,
+            padding: "3px 10px",
+            cursor: "pointer",
+            fontSize: 8,
+            fontWeight: 800,
+            letterSpacing: "0.14em",
+            color: "#C4610A",
+            textTransform: "uppercase",
+            fontFamily: "'Inter', sans-serif",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {label}
+        </motion.button>
+      ))}
+    </div>
+  );
+}
+
 function OsNavBar() {
   return (
     <div style={{
@@ -1657,6 +1724,7 @@ function OsShellContent() {
         />
 
         <OsNavBar />
+        <QuickNavBar />
 
         <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden", position: "relative" }}>
           <LeftRail />
