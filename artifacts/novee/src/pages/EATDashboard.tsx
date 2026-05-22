@@ -529,7 +529,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
     fetch(`/api/tabs/${selectedTab.id}/items`, {
       method:"POST",
       headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ name:featuredCigar.name, price:featuredCigar.price, qty:1, category:"cigar" }),
+      body:JSON.stringify({ productName:featuredCigar.name, unitCents:Math.round(featuredCigar.price*100), quantity:1, craftType:"smoke" }),
     }).catch(()=>{});
   }, [selectedTab, featuredCigar]);
 
@@ -539,7 +539,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
     fetch(`/api/tabs/${selectedTab.id}/items`, {
       method:"POST",
       headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ name:"Premium Pairing Selection", price:28, qty:1, category:"pairing" }),
+      body:JSON.stringify({ productName:"Premium Pairing Selection", unitCents:2800, quantity:1, craftType:"pour" }),
     }).catch(()=>{});
   }, [selectedTab]);
 
@@ -549,7 +549,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
     fetch(`/api/tabs/${selectedTab.id}/items`, {
       method:"POST",
       headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ name:"Full Cigar & Pairing Experience", price:featuredCigar.price + 28, qty:1, category:"experience" }),
+      body:JSON.stringify({ productName:"Full Cigar & Pairing Experience", unitCents:Math.round((featuredCigar.price+28)*100), quantity:1, craftType:"smoke" }),
     }).catch(()=>{});
   }, [selectedTab, featuredCigar]);
 

@@ -541,6 +541,7 @@ import { startEdgeSyncReplay }            from "./integrations/services/edgeSync
 import { platformAdminRouter }           from "./routes/platformAdmin";
 import deploymentRouter                  from "./routes/deployment";
 import noveeEngineRouter                 from "./routes/noveeEngine";
+import { eatKernelRouter }              from "./routes/eatKernel";
 app.use("/api/mentor",        aiLimiter, mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
@@ -616,6 +617,7 @@ app.use("/api/integration-kernel", integrationKernelRouter);
 app.use("/api",           platformAdminRouter);
 app.use("/api",           deploymentRouter);
 app.use("/api",           noveeEngineRouter);
+app.use("/api",           eatKernelRouter);
 
 // ── Universal POS Integration Layer ───────────────────────────────────────────
 // Connections CRUD, credential vault, OAuth flow, on-demand sync

@@ -195,6 +195,37 @@ router.get(
   },
 );
 
+// ── GET /api/orders/venue/:venueId — EAT dashboard live order feed ───────────
+router.get(
+  "/venue/:venueId",
+  requireAuth,
+  requireRole("venue_owner", "manager", "staff", "super_admin"),
+  async (req: AuthRequest, res: Response) => {
+    const { venueId } = req.params as { venueId: string };
+
+    if (req.user!.role !== "super_admin" && req.user!.venueId !== venueId) {
+      res.status(403).json({ error: "forbidden" });
+      return;
+    }
+
+    const limitRaw = parseInt(String(req.query["limit"] ?? "20"), 10);
+    const limit    = isNaN(limitRaw) || limitRaw < 1 ? 20 : Math.min(limitRaw, 200);
+
+    try {
+      const orders = await db
+        .select()
+        .from(ordersTable)
+        .where(eq(ordersTable.venueId, venueId))
+        .orderBy(desc(ordersTable.createdAt))
+        .limit(limit);
+
+      res.json({ orders, total: orders.length, venueId });
+    } catch (err) {
+      res.status(500).json({ error: "query_failed" });
+    }
+  },
+);
+
 // ── GET /api/orders ───────────────────────────────────────────────────────────
 router.get(
   "/",

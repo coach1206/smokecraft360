@@ -1,0 +1,120 @@
+=======================================================================
+FINAL COMPREHENSIVE PRODUCTION DIRECTIVE: VISUAL EXPERIENCE ENGINE (VEE)
+SYSTEM REBUILD STACK: NOVEE OS + E.A.T CORE TOUCH-INFLECTED SYSTEM CONSOLE
+DEPLOYMENT MATRIX · VERSION 5.5.0-RELEASE · MASTER SPECIFICATION FOR REPLIT
+=======================================================================
+
+You are to execute a complete architectural transformation of the NOVEE OS + E.A.T System from a static user interface shell into an automated, inventory-aware, real-time Visual Experience Engine (VEE). This specification details the unified data layers, automated asset manipulation systems, real-time synchronization buses, tactile touch-perceptive interfaces, and light-mode ivory-and-obsidian layout grids required to build a living cinematic luxury hospitality intelligence platform.
+
+All placeholder icons, static placeholder containers, un-mapped graphics, and generic typographic glyph blocks must be completely decoupled and eliminated from production memory.
+
+---
+
+## SECTION 1: GLOBAL LAYOUT GEOMETRY & TOUCH-INFLECTED CONTROLS
+
+To eliminate the text-collision bugs, overlapping header rows, and compressed tracking baselines visible on early layout iterations, you must apply strict visual constraints and direct tactile haptic properties across the user interface.
+
+### 1.1 Structural Single-Header Ivory Geometry
+* **Unified Header Strip (`.eat-navigation-bar`):** Lock the absolute top system header containment block to a rigid `height: 72px;` profile. Background color must compile to Solid Ivory Cream (`#F4F3EF` or `#F9F8F6`). Text elements must render in True Obsidian (`#010101`).
+* **Collision Prevention Grid Rules:** The interaction target parameters ("Command Center", "Assets", "Transactions", "Pairing Engine", "Analytics", "Staff") must be structured inside a dedicated flexbox matrix using the layout rules below to guarantee clean separation and zero text layering anomalies:
+    ```css
+    .eat-navigation-bar .nav-item-link-group {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 24px;
+        gap: 24px;
+    }
+    .eat-navigation-bar .nav-item-link {
+        font-family: 'Inter Display', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: +0.5px;
+        white-space: nowrap;
+        color: #8E8E93;
+        padding: 12px 20px;
+        border-radius: 4px;
+        transition: all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .eat-navigation-bar .nav-item-link:active,
+    .eat-navigation-bar .nav-item-link.active {
+        color: #F4F3EF;
+        background-color: #010101; /* Active state locks into solid dark container */
+    }
+    ```
+
+### 1.2 Capacitive Button Shells & Kinetic Sliders
+* **Touch Target Minimum Boundaries:** Ensure all touch targets maintain a physical tap zone sizing footprint of at least 44px up to 72px square to account for human hand mechanics on local display glass.
+* **Dynamic Touch Compression Feedback:**
+    ```css
+    .sovereign-touch-target {
+        transition: transform 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.08s ease;
+        cursor: pointer;
+    }
+    .sovereign-touch-target:active {
+        transform: scale(0.96); /* Instant tactile physical compression feedback */
+        filter: brightness(85%); /* Subtle illumination drop under direct thumb focus */
+    }
+    ```
+* **Kinetic Slider Custom Tracks (Lighting, Scent, Climate Controls):** Replace generic browser sliders with thick, luxury tactile pill tracks (`height: 12px;` background background layers initialized to `#F4F3EF` with a fine inner shadow). Fill the active track path seamlessly with Honey Amber (`#D4AF37`) as it expands. The thumb manipulator point must be an elevated solid circular ivory node (`width: 28px; height: 28px; box-shadow: var(--shadow-lg); border: 1px solid #2C2C30;`). Inject a subtle scale flash (`transform: scale(1.15);`) to the drag handle instantly on `onTouchStart` and drop it back to uniform size on `onTouchEnd`.
+
+---
+
+## SECTION 2: ARCHITECTURAL DATA CORE SCHEMAS (POSTGRESQL)
+
+To support inventory-aware asset mapping, metadata categorization, and cross-platform runtime state tracking, you must deploy the relational database tables defined below.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 2.1 Media Assets Core System Table
+CREATE TABLE media_assets (
+    asset_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    file_name VARCHAR(255) NOT NULL,
+    storage_url TEXT NOT NULL,
+    thumbnail_url TEXT NOT NULL,
+    mime_type VARCHAR(64) NOT NULL,
+    file_size_bytes INTEGER NOT NULL,
+    category_tag VARCHAR(32) CHECK (category_tag IN ('CIGAR', 'BOURBON', 'WHISKEY', 'COCKTAIL', 'FOOD', 'PAIRING_SCENE', 'LOUNGE_ATMOSPHERE', 'STAFF_IMAGERY', 'EVENT_PROMOTION', 'VIP_ROOM', 'LIGHTING_SCENE', 'MUSIC_THEME', 'FLAVOR_VISUAL')),
+    flavor_tags VARCHAR(64)[] DEFAULT '{}',
+    atmosphere_tags VARCHAR(64)[] DEFAULT '{}',
+    metadata_json JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2.2 Pairing Visuals Aggregation Table
+CREATE TABLE pairing_visuals (
+    pairing_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    cigar_product_sku VARCHAR(64) NOT NULL,
+    liquor_product_sku VARCHAR(64) NOT NULL,
+    food_product_sku VARCHAR(64) DEFAULT NULL,
+    generated_scene_url TEXT NOT NULL,
+    fallback_generated_boolean BOOLEAN DEFAULT FALSE,
+    composition_metadata JSONB DEFAULT '{}'::jsonb,
+    last_rendered_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2.3 Generated Scenes Cache Ledger
+CREATE TABLE generated_scenes (
+    scene_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    prompt_payload TEXT NOT NULL,
+    image_base64_payload TEXT DEFAULT NULL,
+    cached_cdn_url TEXT NOT NULL,
+    associated_atmosphere_id VARCHAR(64) NOT NULL,
+    generation_metrics_json JSONB DEFAULT '{}'::jsonb,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+-- 2.4 Inventory Image Mappings Record
+CREATE TABLE inventory_images (
+    mapping_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    product_sku VARCHAR(64) UNIQUE NOT NULL,
+    primary_media_id UUID REFERENCES media_assets(asset_id) ON DELETE SET NULL,
+    secondary_alpha_png_id UUID REFERENCES media_assets(asset_id) ON DELETE SET NULL,
+    is_active_in_vault BOOLEAN DEFAULT TRUE,
+    last_synchronized_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

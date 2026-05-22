@@ -1,0 +1,276 @@
+/**
+ * =======================================================================
+ * NOVEE OS PLATFORM STACK — ENTERPRISE E.A.T. SYSTEM BACKEND KERNEL
+ * ENVIRONMENT • ASSET • TRANSACTION INTEGRATION SERVICES
+ * VERSION: 4.2.0-RELEASE (PRODUCTION) · SECURE EXECUTION CONTEXT
+ * =======================================================================
+ */
+
+const express = require('express');
+const cors = require('cors');
+const http = require('http');
+const WebSocket = require('ws');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// Global Middleware Configuration
+app.use(cors());
+app.use(express.json());
+
+/**
+ * -----------------------------------------------------------------------
+ * IN-MEMORY TELEMETRY DATA STORES (MOCK REAL-WORLD HARDWARE CHANNELS)
+ * -----------------------------------------------------------------------
+ */
+
+let environmentState = {
+    target_zone: "VIP_LOUNGE_4",
+    active_preset: "Smokecraft Dimmed Lounge",
+    climate: {
+        current_temp_fahrenheit: 70.0,
+        relative_humidity_pct: 68.0,
+        air_exchange_cfm: 420.0,
+        status: "OPTIMAL"
+    },
+    audio: {
+        zone_id: "Main Lounge B",
+        gain_db: -18.5,
+        frequency_shaping_profile: "DEEP_LOUNGE_LOWS"
+    },
+    scent: {
+        active_fluid_profile: "Terrane Woods 04",
+        diffusion_interval_sec: 12,
+        atomization_density_pct: 40.0
+    }
+};
+
+let assetVaultInventory = [
+    { id: "SKU-N92-0482", designation: "Padrón 1926 Serie Exclusive", zone: "Vault Drawer 4B", weight_grams: 14.2, status: "SECURED" },
+    { id: "SKU-RPV-1992", designation: "Rocky Patel Vintage 1992", zone: "Vault Drawer 1A", weight_grams: 15.1, status: "UNLOCKED" },
+    { id: "SKU-OPX-0085", designation: "Opus X Double Corona", zone: "Vault Drawer 2C", weight_grams: 16.5, status: "SECURED" },
+    { id: "SKU-BTB-0028", designation: "Buffalo Trace Single Barrel Bourbon", zone: "Spirits Vault Rack 01", weight_grams: 750.0, status: "SECURED" }
+];
+
+let transactionTelemetry = {
+    station_valuation_total: 1420.50,
+    session_lifetime_seconds: 8051, // 02 Hrs 14 Mins 11 Secs
+    estimated_billing_line_items_count: 3,
+    active_ledger: [
+        { item_id: 1, designation: "Rocky Patel Vintage 1992", category: "Cigar", price: 42.00, status: "Checked Out" },
+        { item_id: 2, designation: "Buffalo Trace Single Barrel", category: "Pour", price: 28.00, status: "Dispensed" },
+        { item_id: 3, designation: "Opus X Double Corona", category: "Cigar", price: 85.00, status: "Pending Vault Scan" }
+    ],
+    pos_gateway: {
+        api_port: 8443,
+        tls_version: "TLS 1.3 Link Active",
+        gateway_sync_status: "CONNECTED"
+    }
+};
+
+/**
+ * -----------------------------------------------------------------------
+ * HELPER METRIC: BEHAVIORAL HESITATION CALCULATION
+ * -----------------------------------------------------------------------
+ * Mathematical metric analyzing micro-interaction metrics for luxury upselling.
+ * Calculated as: $H = \\frac{\\Delta t}{\\text{velocity}} \\times \\delta_{\\text{force}}$
+ */
+function calculateHesitationIndex(deltaTime, scrollVelocity, capacitanceDelta) {
+    if (scrollVelocity === 0) return 1.0;
+    const rawIndex = (deltaTime / scrollVelocity) * capacitanceDelta;
+    return Math.min(Math.max(rawIndex, 0.0), 1.0).toFixed(2);
+}
+
+/**
+ * -----------------------------------------------------------------------
+ * WEBSOCKET REAL-TIME BROADCAST MATRIX
+ * -----------------------------------------------------------------------
+ */
+function broadcastTelemetryUpdate(channel, payload) {
+    const broadcastBody = JSON.stringify({ channel, timestamp: new Date().toISOString(), payload });
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(broadcastBody);
+        }
+    });
+}
+
+// Global WebSocket Event Core Handshake Routing
+wss.on('connection', (ws) => {
+    console.log('[NOVEE MESH CONNECTED] Client registered to high-latency secure event stream.');
+    
+    // Immediately transmit initial frame system caches to client on link activation
+    ws.send(JSON.stringify({ channel: 'INIT_ENV', payload: environmentState }));
+    ws.send(JSON.stringify({ channel: 'INIT_ASSET', payload: assetVaultInventory }));
+    ws.send(JSON.stringify({ channel: 'INIT_TRANSACTION', payload: transactionTelemetry }));
+
+    ws.on('close', () => {
+        console.log('[NOVEE MESH DISCONNECTED] Secure client registration frame terminated.');
+    });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * 1. [ ENVIRONMENT CONSOLE ] — AIR, LIGHT, AND SPATIAL TELEMETRY
+ * -----------------------------------------------------------------------
+ */
+
+// Fetch active environment configuration vectors
+app.get('/api/v1/environment', (req, res) => {
+    res.status(200).json({ success: true, schema_type: "ENVIRONMENT_STATE", data: environmentState });
+});
+
+// Update environmental metrics or activate layout scenarios
+app.post('/api/v1/environment/configure', (req, res) => {
+    const { active_preset, target_temp, target_humidity, audio_gain, scent_interval } = req.body;
+
+    if (active_preset) environmentState.active_preset = active_preset;
+    if (target_temp) environmentState.climate.current_temp_fahrenheit = parseFloat(target_temp);
+    if (target_humidity) environmentState.climate.relative_humidity_pct = parseFloat(target_humidity);
+    if (audio_gain) environmentState.audio.gain_db = parseFloat(audio_gain);
+    if (scent_interval) environmentState.scent.diffusion_interval_sec = parseInt(scent_interval);
+
+    // Broadcast modified environmental profiles instantly via secure local mesh lanes
+    broadcastTelemetryUpdate('ENVIRONMENT_ALTERATION', environmentState);
+
+    res.status(200).json({
+        success: true,
+        message: "Environmental variables dispatched to physical logic arrays successfully.",
+        updated_state: environmentState
+    });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * 2. [ ASSET VAULT CONSOLE ] — LIVE SECURE INVENTORY MATRIX
+ * -----------------------------------------------------------------------
+ */
+
+// Fetch live warehouse/humidor asset arrays
+app.get('/api/v1/assets', (req, res) => {
+    res.status(200).json({ success: true, schema_type: "ASSET_VAULT_LEDGER", count: assetVaultInventory.length, data: assetVaultInventory });
+});
+
+// Structural override security state mutation endpoint
+app.post('/api/v1/assets/vault-override', (req, res) => {
+    const { manager_passcode, asset_id, force_disposition } = req.body;
+
+    // Direct verification fallback simulation
+    if (!manager_passcode || manager_passcode !== "3600") {
+        return res.status(403).json({ success: false, error: "ERR_AUTH_DENIED", message: "Invalid authorization profile token parameters." });
+    }
+
+    const targetedAsset = assetVaultInventory.find(item => item.id === asset_id);
+    if (!targetedAsset) {
+        return res.status(404).json({ success: false, error: "ERR_SKU_MISMATCH", message: "Target asset identification tag signature missing." });
+    }
+
+    if (force_disposition) {
+        targetedAsset.status = force_disposition;
+        
+        // If an item is unlocked, simulate staging it directly into the open transaction stream
+        if (force_disposition === "UNLOCKED" && !transactionTelemetry.active_ledger.some(l => l.designation === targetedAsset.designation)) {
+            transactionTelemetry.active_ledger.push({
+                item_id: transactionTelemetry.active_ledger.length + 1,
+                designation: targetedAsset.designation,
+                category: "Vault Item",
+                price: 125.00,
+                status: "Pending Vault Scan"
+            });
+            transactionTelemetry.estimated_billing_line_items_count = transactionTelemetry.active_ledger.length;
+            transactionTelemetry.station_valuation_total += 125.00;
+        }
+    }
+
+    broadcastTelemetryUpdate('ASSET_VAULT_MUTATION', assetVaultInventory);
+    broadcastTelemetryUpdate('TRANSACTION_ALTERATION', transactionTelemetry);
+
+    res.status(200).json({
+        success: true,
+        message: "Vault lock configuration mutated successfully.",
+        target_asset: targetedAsset
+    });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * 3. [ TRANSACTION CONSOLE ] — LIVE REVENUE & COMMERCE TELEMETRY
+ * -----------------------------------------------------------------------
+ */
+
+// Fetch live financial billing analytics data
+app.get('/api/v1/transactions', (req, res) => {
+    res.status(200).json({ success: true, schema_type: "TRANSACTION_TELEMETRY", data: transactionTelemetry });
+});
+
+// Append lines directly to integrated external point of sale tickets
+app.post('/api/v1/transactions/append', (req, res) => {
+    const { designation, category, price } = req.body;
+
+    if (!designation || !price) {
+        return res.status(400).json({ success: false, error: "ERR_MALFORMED_PAYLOAD", message: "Missing required line item data criteria fields." });
+    }
+
+    const incomingLineItem = {
+        item_id: transactionTelemetry.active_ledger.length + 1,
+        designation,
+        category: category || "General Curation",
+        price: parseFloat(price),
+        status: "Checked Out"
+    };
+
+    transactionTelemetry.active_ledger.push(incomingLineItem);
+    transactionTelemetry.estimated_billing_line_items_count = transactionTelemetry.active_ledger.length;
+    transactionTelemetry.station_valuation_total += parseFloat(price);
+
+    // Broadcast modified transactional ledger frames via local secure web sockets
+    broadcastTelemetryUpdate('TRANSACTION_ALTERATION', transactionTelemetry);
+
+    res.status(201).json({
+        success: true,
+        message: "Line item injected successfully into active point of sale checkout escrow stack.",
+        active_ledger: transactionTelemetry.active_ledger
+    });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * SYSTEM WORKSPACE VIEWPORT STABILIZATION DIRECTIVE ENGINE
+ * -----------------------------------------------------------------------
+ */
+app.post('/api/v1/system/viewport-stabilization', (req, res) => {
+    const { enforce_high_readability } = req.body;
+
+    const renderingDirectives = {
+        system_directive: enforce_high_readability ? "ENFORCE_HIGH_READABILITY" : "RESTORE_DEFAULT_THEME",
+        global_constraints: {
+            override_ambient_lux_response: enforce_high_readability,
+            base_font_size_pt: enforce_high_readability ? 24 : 14,
+            active_accent_hex: "#D4AF37",
+            surface_material_rendering: "TRUE_OBSIDIAN_SOLID"
+        }
+    };
+
+    broadcastTelemetryUpdate('SYSTEM_VIEWPORT_OVERRIDE', renderingDirectives);
+
+    res.status(200).json({
+        success: true,
+        message: "High-Readability Viewport stabilization payload broadcasted to all terminal endpoints.",
+        directives: renderingDirectives
+    });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * PORT LIFECYCLE HOST ENTRY BOUNDARY
+ * -----------------------------------------------------------------------
+ */
+const PORT = process.env.PORT || 8443;
+server.listen(PORT, () => {
+    console.log(`=======================================================================`);
+    console.log(` NOVEE OS CORE ENGINE EDGE INTEGRATION SERVER RUNNING ON PORT ${PORT}`);
+    console.log(` LOCAL AREA DATA SECURITY ENFORCED ON PROTOCOL VLAN 100`);
+    console.log(` SYSTEM READY FOR LIVE CLIENT ATTACHMENTS AND HARDWARE SENSOR STREAMS`);
+    console.log(`=======================================================================`);
+});
