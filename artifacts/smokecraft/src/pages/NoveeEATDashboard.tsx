@@ -84,6 +84,51 @@ const PAIRINGS = [
   { name:"Maker's Mark Bourbon",     sub:"alcohol",  notes:"Chef feature tonight",     price:16 },
 ];
 
+const STAFF_ROSTER = [
+  { name:"Sofia R.",  role:"Lead Sommelier",   status:"online",  tables:"7–14",  sales:1240 },
+  { name:"Jordan K.", role:"Lounge Attendant", status:"online",  tables:"3–6",   sales:890  },
+  { name:"Dev P.",    role:"Bartender",        status:"online",  tables:"Bar",   sales:760  },
+  { name:"Amy L.",    role:"Hostess",          status:"break",   tables:"Entry", sales:0    },
+  { name:"Chris M.",  role:"Lounge Attendant", status:"offline", tables:"—",     sales:0    },
+];
+const ASSET_CATALOG = [
+  { name:"Rocky Patel Vintage 1992",  cat:"Cigars",      sku:"RVP-92",  stock:24, min:10, price:42  },
+  { name:"Cohiba Behike BHK 52",      cat:"Cigars",      sku:"COH-BHK", stock:8,  min:10, price:118 },
+  { name:"Ashton VSG Torpedo",        cat:"Cigars",      sku:"ASH-VSG", stock:18, min:8,  price:38  },
+  { name:"Davidoff Millennium Blend", cat:"Cigars",      sku:"DAV-MIL", stock:6,  min:10, price:52  },
+  { name:"Buffalo Trace Bourbon",     cat:"Spirits",     sku:"BTR-001", stock:12, min:6,  price:18  },
+  { name:"Remy Martin XO",            cat:"Spirits",     sku:"RMY-XO",  stock:3,  min:4,  price:48  },
+  { name:"Hennessy VSOP",             cat:"Spirits",     sku:"HEN-VSP", stock:9,  min:5,  price:22  },
+  { name:"Premium Cutter Set",        cat:"Accessories", sku:"ACC-CUT", stock:14, min:5,  price:28  },
+];
+const TXN_LOG = [
+  { id:"T-2847", table:7,  items:"Rocky Patel + Bourbon",      total:82,  status:"closed", ago:"8m"     },
+  { id:"T-2846", table:12, items:"Cohiba BHK + XO Cognac",     total:248, status:"open",   ago:"14m"    },
+  { id:"T-2845", table:3,  items:"Ashton VSG + Espresso",      total:58,  status:"closed", ago:"31m"    },
+  { id:"T-2844", table:9,  items:"Davidoff + Aged Rum",        total:96,  status:"open",   ago:"47m"    },
+  { id:"T-2843", table:5,  items:"Padron 1964 + Hendricks",    total:112, status:"closed", ago:"1h"     },
+  { id:"T-2842", table:11, items:"Rocky Patel + Maker's Mark", total:74,  status:"closed", ago:"1h 12m" },
+];
+const PAIRING_RECS = [
+  { name:"Buffalo Trace Bourbon",  type:"Whiskey",    match:94, notes:"Caramel · Oak · Vanilla",       price:18 },
+  { name:"Remy Martin XO",         type:"Cognac",     match:88, notes:"Dried Fruit · Vanilla · Spice", price:48 },
+  { name:"Blue Mountain Coffee",   type:"Coffee",     match:82, notes:"Earthy · Roasted · Bold",       price:9  },
+  { name:"Dark Chocolate Truffle", type:"Confection", match:76, notes:"Bitter · Sweet · Rich",         price:12 },
+  { name:"Hennessy VSOP",          type:"Cognac",     match:71, notes:"Floral · Toasted Oak · Citrus", price:22 },
+  { name:"Single Origin Espresso", type:"Coffee",     match:68, notes:"Bold · Smoky · Nutty",          price:7  },
+];
+const WEEKLY_REV = [
+  { day:"Mon", pct:72 },{ day:"Tue", pct:63 },{ day:"Wed", pct:92 },{ day:"Thu", pct:81 },
+  { day:"Fri", pct:100},{ day:"Sat", pct:94 },{ day:"Sun", pct:60 },
+];
+const TOP_PRODS = [
+  { name:"Rocky Patel Vintage 1992", sold:47, rev:1974 },
+  { name:"Cohiba Behike BHK 52",     sold:23, rev:2714 },
+  { name:"Buffalo Trace Bourbon",    sold:64, rev:1152 },
+  { name:"Ashton VSG Torpedo",       sold:31, rev:1178 },
+  { name:"Remy Martin XO",           sold:18, rev:864  },
+];
+
 interface FloorTable { id:number|string; x:number; y:number; vip:boolean; active:boolean; guests:number; }
 const INITIAL_TABLES: FloorTable[] = [
   { id:101, x:8,  y:6,  vip:false, active:false, guests:0 },
@@ -206,7 +251,7 @@ function KineticSlider({ value, onChange }: { value:number; onChange:(v:number)=
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps) {
-  const { profile } = useNoveeGuest();
+  const { profile, setPhase } = useNoveeGuest();
   const venueId = (profile as { venueId?: string }).venueId ?? localStorage.getItem("axiom_venue_id") ?? "default";
   const [activeTab, setTabState] = useState<TopTab>(() => parseEATTabFromSearch(window.location.search));
   const setActiveTab = useCallback((t: TopTab) => {
@@ -473,10 +518,16 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
       {/* ── TOP NAV ──────────────────────────────────────────────────────── */}
       <header style={{ height:72, background:IVORY, borderBottom:`1px solid ${BORDER}`, display:"flex", alignItems:"center", padding:"0 20px", gap:0, flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,0.07)", zIndex:50 }}>
 
-        {/* Brand */}
-        <div style={{ width:220, flexShrink:0 }}>
-          <div style={{ fontSize:17, fontWeight:900, color:OBSID, letterSpacing:"0.04em", lineHeight:1 }}>E.A.T SYSTEM</div>
-          <div style={{ fontSize:9, fontWeight:600, color:TEXT3, letterSpacing:"0.18em", marginTop:2, textTransform:"uppercase" }}>Elevated Atmosphere &amp; Transactions</div>
+        {/* Brand + Back */}
+        <div style={{ width:220, flexShrink:0, display:"flex", alignItems:"center", gap:10 }}>
+          <motion.button whileTap={{scale:0.94}} onClick={()=>setPhase("crafthub")}
+            style={{ padding:"7px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, cursor:"pointer", fontSize:11, fontWeight:800, letterSpacing:"0.10em", textTransform:"uppercase", flexShrink:0 }}>
+            Back
+          </motion.button>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:OBSID, letterSpacing:"0.04em", lineHeight:1 }}>E.A.T SYSTEM</div>
+            <div style={{ fontSize:9, fontWeight:600, color:TEXT3, letterSpacing:"0.18em", marginTop:2, textTransform:"uppercase" }}>Hospitality OS</div>
+          </div>
         </div>
 
         {/* Nav tabs */}
@@ -660,7 +711,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
 
         {/* COL 3 — Main product + pairing / E.A.T. VI Panel */}
         <main style={{ flex:1, overflowY:"auto", background:PAGE_BG, minWidth:0 }}>
-          {activeTab === "Venue Intelligence" ? (
+          {activeTab === "Venue Intelligence" && (
             <div style={{ padding:"16px 14px" }}>
 
               {/* VI Header */}
@@ -776,7 +827,248 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
               </div>
 
             </div>
-          ) : (
+          )}
+
+          {/* ── ASSETS ─────────────────────────────────────────────────────── */}
+          {activeTab === "Assets" && (
+            <div style={{ padding:"16px 14px" }}>
+              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16 }}>
+                <div>
+                  <div style={{ fontSize:10, letterSpacing:"0.28em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:4 }}>E.A.T. SYSTEM</div>
+                  <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Assets</div>
+                  <div style={{ fontSize:11, color:TEXT3 }}>Inventory + Catalog</div>
+                </div>
+                <motion.button whileTap={{scale:0.96}} style={{ padding:"10px 18px", borderRadius:7, border:`1px solid ${AMBER}`, background:`rgba(212,175,55,0.08)`, color:AMBER2, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                  Add Product
+                </motion.button>
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:16 }}>
+                {([{ label:"Cigars", count:4, low:2 },{ label:"Spirits", count:3, low:1 },{ label:"Accessories", count:1, low:0 }] as {label:string;count:number;low:number}[]).map(c=>(
+                  <div key={c.label} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                    <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:6 }}>{c.label}</div>
+                    <div style={{ fontSize:26, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:4 }}>{c.count}</div>
+                    {c.low > 0 ? <div style={{ fontSize:10, fontWeight:700, color:RED_CLR }}>{c.low} LOW STOCK</div> : <div style={{ fontSize:10, color:GREEN, fontWeight:700 }}>All stocked</div>}
+                  </div>
+                ))}
+              </div>
+              <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, overflow:"hidden" }}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 90px 80px 70px 50px 80px", padding:"8px 14px", background:IVORY, borderBottom:`1px solid ${BORDER}` }}>
+                  {["Product","Category","SKU","Stock","Min","Price"].map(h=>(
+                    <div key={h} style={{ fontSize:10, fontWeight:800, color:TEXT3, letterSpacing:"0.12em", textTransform:"uppercase" }}>{h}</div>
+                  ))}
+                </div>
+                {ASSET_CATALOG.map((a,i)=>{
+                  const low = a.stock < a.min;
+                  return (
+                    <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr 90px 80px 70px 50px 80px", padding:"10px 14px", borderBottom:i<ASSET_CATALOG.length-1?`1px solid ${BORDER}`:"none", background:low?"rgba(192,57,43,0.02)":"transparent", alignItems:"center" }}>
+                      <div style={{ fontSize:13, fontWeight:700, color:TEXT1 }}>{a.name}</div>
+                      <div style={{ fontSize:11, color:TEXT3 }}>{a.cat}</div>
+                      <div style={{ fontSize:11, color:TEXT3, fontFamily:"monospace" }}>{a.sku}</div>
+                      <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                        <span style={{ fontSize:13, fontWeight:700, color:low?RED_CLR:TEXT1 }}>{a.stock}</span>
+                        {low && <span style={{ fontSize:9, fontWeight:800, color:RED_CLR, border:`1px solid ${RED_CLR}55`, padding:"1px 5px", borderRadius:3 }}>LOW</span>}
+                      </div>
+                      <div style={{ fontSize:11, color:TEXT3 }}>{a.min}</div>
+                      <div style={{ fontSize:13, fontWeight:700, color:AMBER2 }}>${a.price}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── TRANSACTIONS ──────────────────────────────────────────────── */}
+          {activeTab === "Transactions" && (
+            <div style={{ padding:"16px 14px" }}>
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:10, letterSpacing:"0.28em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:4 }}>E.A.T. SYSTEM</div>
+                <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Transactions</div>
+                <div style={{ fontSize:11, color:TEXT3 }}>Live Revenue Feed</div>
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:16 }}>
+                {([
+                  { label:"Today Revenue", value:"$2,847", sub:"12% vs yesterday",  color:GREEN    },
+                  { label:"Orders",        value:"18",     sub:"4 currently open",  color:TEXT1    },
+                  { label:"Avg Spend",     value:"$158",   sub:"Per table",         color:AMBER2   },
+                  { label:"Open Tabs",     value:"4",      sub:"Awaiting checkout", color:RED_CLR  },
+                ] as {label:string;value:string;sub:string;color:string}[]).map(k=>(
+                  <div key={k.label} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                    <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:6 }}>{k.label}</div>
+                    <div style={{ fontSize:26, fontWeight:900, color:k.color, lineHeight:1, marginBottom:3 }}>{k.value}</div>
+                    <div style={{ fontSize:10, color:TEXT3 }}>{k.sub}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, overflow:"hidden" }}>
+                <div style={{ display:"grid", gridTemplateColumns:"80px 50px 1fr 80px 80px 60px", padding:"8px 14px", background:IVORY, borderBottom:`1px solid ${BORDER}` }}>
+                  {["Order","Table","Items","Total","Status","Time"].map(h=>(
+                    <div key={h} style={{ fontSize:10, fontWeight:800, color:TEXT3, letterSpacing:"0.12em", textTransform:"uppercase" }}>{h}</div>
+                  ))}
+                </div>
+                {TXN_LOG.map((t,i)=>(
+                  <div key={i} style={{ display:"grid", gridTemplateColumns:"80px 50px 1fr 80px 80px 60px", padding:"10px 14px", borderBottom:i<TXN_LOG.length-1?`1px solid ${BORDER}`:"none", alignItems:"center" }}>
+                    <div style={{ fontSize:11, fontFamily:"monospace", color:TEXT3 }}>{t.id}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:TEXT1 }}>T-{t.table}</div>
+                    <div style={{ fontSize:12, color:TEXT2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{t.items}</div>
+                    <div style={{ fontSize:13, fontWeight:800, color:AMBER2 }}>${t.total}</div>
+                    <div><span style={{ fontSize:10, fontWeight:800, color:t.status==="open"?GREEN:TEXT3, border:`1px solid ${t.status==="open"?GREEN+"66":BORDER}`, padding:"2px 8px", borderRadius:4, textTransform:"uppercase" }}>{t.status}</span></div>
+                    <div style={{ fontSize:11, color:TEXT3 }}>{t.ago}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── PAIRING ENGINE ────────────────────────────────────────────── */}
+          {activeTab === "Pairing Engine" && (
+            <div style={{ padding:"16px 14px" }}>
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:10, letterSpacing:"0.28em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:4 }}>E.A.T. SYSTEM</div>
+                <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Pairing Engine</div>
+                <div style={{ fontSize:11, color:TEXT3 }}>AI-Matched Recommendations</div>
+              </div>
+              <div style={{ background:OBSID, borderRadius:10, padding:"14px 16px", marginBottom:16, display:"flex", alignItems:"center", gap:16 }}>
+                <div style={{ width:48, height:48, borderRadius:8, overflow:"hidden", background:`linear-gradient(135deg,#2C1A08,#3A1A06)`, flexShrink:0 }}>
+                  <img src={IMG("cigar_hero.jpg")} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:13, fontWeight:800, color:IVORY, lineHeight:1.3 }}>{featuredCigar.name}</div>
+                  <div style={{ fontSize:11, color:AMBER, marginTop:2 }}>{featuredCigar.type} · {featuredCigar.origin}</div>
+                </div>
+                <div style={{ textAlign:"right" }}>
+                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.40)", letterSpacing:"0.16em", textTransform:"uppercase", marginBottom:2 }}>AI Confidence</div>
+                  <div style={{ fontSize:20, fontWeight:900, color:GREEN }}>94%</div>
+                </div>
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                {PAIRING_RECS.map((p,i)=>(
+                  <div key={i} style={{ background:CARD_BG, border:`1px solid ${i===0?AMBER:BORDER}`, borderRadius:10, padding:"14px 16px", display:"flex", gap:12, alignItems:"center", cursor:"pointer", position:"relative", overflow:"hidden" }}>
+                    {i===0 && <div style={{ position:"absolute", top:0, right:0, fontSize:9, fontWeight:800, color:"#1A0C00", background:AMBER, padding:"4px 10px", borderRadius:"0 8px 0 6px", textTransform:"uppercase", letterSpacing:"0.10em" }}>Best Match</div>}
+                    <div style={{ flexShrink:0, textAlign:"center", minWidth:46 }}>
+                      <div style={{ fontSize:22, fontWeight:900, color:i===0?AMBER2:TEXT1, lineHeight:1 }}>{p.match}%</div>
+                      <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.08em" }}>Match</div>
+                    </div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ fontSize:13, fontWeight:800, color:TEXT1, marginBottom:2, lineHeight:1.3 }}>{p.name}</div>
+                      <div style={{ fontSize:10, color:TEXT3, marginBottom:4 }}>{p.type}</div>
+                      <div style={{ fontSize:11, color:TEXT2 }}>{p.notes}</div>
+                    </div>
+                    <div style={{ fontSize:16, fontWeight:900, color:AMBER2, flexShrink:0 }}>${p.price}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── ANALYTICS ─────────────────────────────────────────────────── */}
+          {activeTab === "Analytics" && (
+            <div style={{ padding:"16px 14px" }}>
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:10, letterSpacing:"0.28em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:4 }}>E.A.T. SYSTEM</div>
+                <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Analytics</div>
+                <div style={{ fontSize:11, color:TEXT3 }}>Revenue + Engagement Intelligence</div>
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:16 }}>
+                {([
+                  { label:"Month Revenue", value:"$18,420", sub:"22% vs last month",  color:GREEN  },
+                  { label:"Sessions",      value:"143",     sub:"This month",          color:TEXT1  },
+                  { label:"Avg Spend",     value:"$129",    sub:"Per session",         color:AMBER2 },
+                  { label:"Conversion",    value:"68%",     sub:"Swipe to purchase",   color:GREEN  },
+                ] as {label:string;value:string;sub:string;color:string}[]).map(k=>(
+                  <div key={k.label} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                    <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:6 }}>{k.label}</div>
+                    <div style={{ fontSize:26, fontWeight:900, color:k.color, lineHeight:1, marginBottom:3 }}>{k.value}</div>
+                    <div style={{ fontSize:10, color:TEXT3 }}>{k.sub}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"16px" }}>
+                  <div style={{ fontSize:11, fontWeight:800, color:TEXT1, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:14 }}>Weekly Revenue</div>
+                  <div style={{ display:"flex", alignItems:"flex-end", gap:8, height:120 }}>
+                    {WEEKLY_REV.map(w=>(
+                      <div key={w.day} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:4, height:"100%" }}>
+                        <div style={{ flex:1, display:"flex", alignItems:"flex-end", width:"100%" }}>
+                          <div style={{ width:"100%", height:`${w.pct}%`, background:`linear-gradient(180deg,${AMBER},${AMBER2})`, borderRadius:"3px 3px 0 0", minHeight:4 }} />
+                        </div>
+                        <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.06em", fontWeight:700 }}>{w.day}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"16px" }}>
+                  <div style={{ fontSize:11, fontWeight:800, color:TEXT1, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:14 }}>Top Products</div>
+                  {TOP_PRODS.map((p,i)=>(
+                    <div key={i} style={{ padding:"8px 0", borderBottom:i<TOP_PRODS.length-1?`1px solid ${BORDER}`:"none" }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
+                        <span style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{p.name}</span>
+                        <span style={{ fontSize:12, fontWeight:800, color:AMBER2 }}>${p.rev.toLocaleString()}</span>
+                      </div>
+                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                        <div style={{ flex:1, height:4, borderRadius:2, background:"rgba(0,0,0,0.08)", overflow:"hidden" }}>
+                          <div style={{ width:`${Math.round((p.rev/2714)*100)}%`, height:"100%", background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:2 }} />
+                        </div>
+                        <span style={{ fontSize:10, color:TEXT3, flexShrink:0 }}>{p.sold} sold</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── STAFF ──────────────────────────────────────────────────────── */}
+          {activeTab === "Staff" && (
+            <div style={{ padding:"16px 14px" }}>
+              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16 }}>
+                <div>
+                  <div style={{ fontSize:10, letterSpacing:"0.28em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:4 }}>E.A.T. SYSTEM</div>
+                  <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Staff</div>
+                  <div style={{ fontSize:11, color:TEXT3 }}>Floor Management · 3 Active</div>
+                </div>
+                <motion.button whileTap={{scale:0.96}} style={{ padding:"10px 18px", borderRadius:7, border:`1px solid ${BORDER}`, background:CARD_BG, color:TEXT2, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                  Add Staff
+                </motion.button>
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:10 }}>
+                {STAFF_ROSTER.map((s,i)=>{
+                  const sc = s.status==="online"?GREEN:s.status==="break"?AMBER2:TEXT3;
+                  return (
+                    <div key={i} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"14px 16px", display:"flex", gap:14, alignItems:"center" }}>
+                      <div style={{ width:44, height:44, borderRadius:"50%", background:`linear-gradient(135deg,${AMBER},${AMBER2})`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                        <span style={{ fontSize:16, fontWeight:900, color:"#1A0C00" }}>{s.name.charAt(0)}</span>
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:2 }}>
+                          <div style={{ fontSize:14, fontWeight:800, color:TEXT1 }}>{s.name}</div>
+                          <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                            <div style={{ width:6, height:6, borderRadius:"50%", background:sc }} />
+                            <span style={{ fontSize:10, fontWeight:700, color:sc, textTransform:"capitalize" }}>{s.status}</span>
+                          </div>
+                        </div>
+                        <div style={{ fontSize:11, color:TEXT3, marginBottom:6 }}>{s.role}</div>
+                        <div style={{ display:"flex", gap:14 }}>
+                          <div>
+                            <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", marginBottom:1 }}>Tables</div>
+                            <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{s.tables}</div>
+                          </div>
+                          {s.sales > 0 && (
+                            <div>
+                              <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", marginBottom:1 }}>Sales</div>
+                              <div style={{ fontSize:12, fontWeight:700, color:GREEN }}>${s.sales.toLocaleString()}</div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── COMMAND CENTER ────────────────────────────────────────────── */}
+          {activeTab === "Command Center" && (
           <div style={{ padding:"12px 14px" }}>
 
             {/* Hero image */}

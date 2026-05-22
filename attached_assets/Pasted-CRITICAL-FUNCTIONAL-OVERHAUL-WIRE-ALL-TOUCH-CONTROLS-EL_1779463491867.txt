@@ -1,0 +1,38 @@
+CRITICAL FUNCTIONAL OVERHAUL: WIRE ALL TOUCH CONTROLS, ELIMINATE PLACEHOLDERS, AND ACTIVATE ADMIN COMMAND CENTER SUITE
+
+The interface is operating as an unresponsive visual shell. Generic placeholder imagery (the purple flower) is rendering across primary component views, and the absolute bottom-right corner zone for the Command Center/Hub remains completely dead and unresponsive to touch inputs. 
+
+You must immediately replace all generic fallback image paths, establish real-world server connections, and wire the administrative command drawer infrastructure into the active core application template files.
+
+=======================================================================
+1. RESOLVE THE COMMAND CENTER & HUB DROPOUT (BOTTOM RIGHT WIREUP)
+=======================================================================
+- Build and inject the Admin Command Center overlay component precisely as an animated slide-up drawer container using the full ivory-and-obsidian management design specifications.
+- To wire it up and make it responsive, attach an invisible, dedicated hit box element wrapper measuring exactly 80px by 80px pinned directly to the absolute bottom-right corner bounding margin of the viewport shell.
+- Map its touch listener hooks ('onTouchStart') to toggle the global 'isCommandCenterOpen' state vector layout cleanly. Tapping this corner target must instantly throw open the full Command Center panel with zero vertical offset or layout lag.
+- Ensure the closing action button ('CLOSE COMMAND DRAWER') reset-links perfectly back to standard parameters, dropping the drawer view cleanly from active viewport memory.
+
+=======================================================================
+2. PURGE THE PURPLE FLOWER — ENGINE REAL HOSPITALITY IMAGERY
+=======================================================================
+- Completely strip out the purple flower image asset path from all UI rendering loops, detail windows, and environment modules.
+- Map the primary hero pane, the 'Pairing Suggestion' slots, and the product preview rows directly to real-world luxury hospitality media assets.
+- The center console hero view must render high-definition portrait photography of a premium lit cigar resting on a solid tray beside a crystal glass of bourbon with an active, volumetric smoke overlay loop asset (.gif or video interleave).
+
+=======================================================================
+3. HARDWIRE INTERACTIVE TRANSACTION TAPS & TABS
+=======================================================================
+- Make the bottom primary interaction button items fully live and responsive:
+  * [Add Cigar - $42] -> Tapping this must instantly append the 'Rocky Patel Vintage 1992' line item object directly into the active open checkout bill stack.
+  * [Add Pairing - From $16] -> Tapping this must append both the cigar and the curated single-barrel bourbon pour to the transaction object.
+  * [Checkout - $248.75] -> Tapping this must initialize the secure POS synchronization protocol via Port 8443, running a clean checkout confirmation before resetting the terminal state to idle.
+- Wire up the circular table node indicators inside the floor plan layout map. Tapping an active table target (e.g., Table 104 / VIP) must trigger an immediate state change, updating the right-side 'ACTIVE TABS' pane to highlight that specific table's open bill tracker, elapsed session timelines, and gross metrics.
+
+=======================================================================
+4. HARDWIRE ENVIRONMENTAL FEEDBACK SLIDERS
+=======================================================================
+- The custom tactile horizontal slider tracks for 'Lighting' and 'Scent' on the right-side panel must be completely dynamic.
+- Dragging your thumb along the elevated circular ivory node manipulator must update the live percentage text readout (e.g., 65%) and dispatch a real-time state mutation payload to the environment server, dynamically altering the brightness overlay vector of the layout background canvas.
+
+EXECUTION CONSTRAINT:
+Ensure no text overlap defects occur when switching navigation tabs. All systems must be fully wired, active, responsive to physical human touch mechanics, and rendered inside the premium Ivory & Obsidian light-mode sovereign design standard.

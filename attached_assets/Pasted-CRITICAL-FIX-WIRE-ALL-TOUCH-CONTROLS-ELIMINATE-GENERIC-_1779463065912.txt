@@ -1,0 +1,26 @@
+CRITICAL FIX: WIRE ALL TOUCH CONTROLS, ELIMINATE GENERIC FALLBACK IMAGES, AND DEPLOY THE REAL VEE MEDIA ENGINE
+
+The interface is still operating as a dead visual shell. Generic placeholder imagery (the purple flower) is rendering inside the primary hero spot, product preview cards, and environment modules because the data streams are completely un-wired. 
+
+You must immediately replace all generic fallback image paths, connect the real-world operational endpoints, and make every touchscreen control live and functional based on the following rules:
+
+1. PURGE THE PURPLE FLOWER INSTANTLY — DEPLOY THE MASTER VEE IMAGERY PIPELINE:
+- Completely strip out the purple flower asset path from all UI rendering components. 
+- Map the primary hero pane, the 'Pairing Suggestion' cards, the product thumbnails, and the environment preview window directly to real-world luxury hospitality imagery assets.
+- Ensure the center console displays high-definition portrait photography of a premium lit cigar resting beside a crystal glass of dark bourbon with an ambient, real smoke asset overlay.
+
+2. WIRE UP THE INTERACTIVE TRANSACTION TAPS (BOTTOM ACTION STRIP):
+- Make the bottom primary interaction buttons fully live:
+  * [Add Cigar - $42] -> Tapping this must instantly append the 'Rocky Patel Vintage 1992' line item to the active open bill stack.
+  * [Add Pairing - From $16] -> Tapping this must append both the cigar and the curated single-barrel bourbon pour to the transaction object.
+  * [Checkout - $248.75] -> Tapping this must initialize the secure POS synchronization protocol via Port 8443, running a clean checkout animation before resetting the terminal state to idle.
+
+3. HARDWIRE ENVIRONMENTAL FEEDBACK (RIGHT FLANK CONTROLS):
+- The horizontal slider tracks for 'Lighting' and 'Scent' must be completely dynamic.
+- Moving your thumb along the 'Lighting' slider handle must update the live percentage text readout (e.g., 65%) and dispatch a real-time state mutation payload to the environment server, dynamically altering the brightness overlay vector of the layout background canvas.
+
+4. DYNAMIC SEATING INTERACTION (ACTIVE TABLES MAP):
+- Wire up the circular table node nodes in the floor plan view. Tapping an active table indicator (e.g., Table 104 / VIP) must trigger an immediate state transition, updating the right-side 'ACTIVE TABS' pane to highlight that table's specific open bill, active session timeline, and gross valuation metrics.
+
+EXECUTION CONSTRAINT:
+Ensure no text overlap defects occur when switching tabs. All features must be fully interactive, live, and rendered inside the premium Ivory & Obsidian light-mode sovereign design standard.
