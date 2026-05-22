@@ -110,12 +110,12 @@ const TXN_LOG = [
   { id:"T-2842", table:11, items:"Rocky Patel + Maker's Mark", total:74,  status:"closed", ago:"1h 12m" },
 ];
 const PAIRING_RECS = [
-  { name:"Buffalo Trace Bourbon",  type:"Whiskey",    match:94, notes:"Caramel · Oak · Vanilla",       price:18 },
-  { name:"Remy Martin XO",         type:"Cognac",     match:88, notes:"Dried Fruit · Vanilla · Spice", price:48 },
-  { name:"Blue Mountain Coffee",   type:"Coffee",     match:82, notes:"Earthy · Roasted · Bold",       price:9  },
-  { name:"Dark Chocolate Truffle", type:"Confection", match:76, notes:"Bitter · Sweet · Rich",         price:12 },
-  { name:"Hennessy VSOP",          type:"Cognac",     match:71, notes:"Floral · Toasted Oak · Citrus", price:22 },
-  { name:"Single Origin Espresso", type:"Coffee",     match:68, notes:"Bold · Smoky · Nutty",          price:7  },
+  { name:"Buffalo Trace Bourbon",  type:"Whiskey",    match:94, notes:"Caramel · Oak · Vanilla",       price:18, img:IMG("pour/pour_whiskey.png"),  gradient:"135deg,#2C1800,#4A2A10" },
+  { name:"Remy Martin XO",         type:"Cognac",     match:88, notes:"Dried Fruit · Vanilla · Spice", price:48, img:IMG("pour/pour_aged.png"),     gradient:"135deg,#1A0E08,#3A1E0E" },
+  { name:"Blue Mountain Coffee",   type:"Coffee",     match:82, notes:"Earthy · Roasted · Bold",       price:9,  img:IMG("pour/pour_bar.png"),      gradient:"135deg,#3D2008,#5A3010" },
+  { name:"Dark Chocolate Truffle", type:"Confection", match:76, notes:"Bitter · Sweet · Rich",         price:12, img:IMG("pour/pour_cocktail.png"), gradient:"135deg,#1A0A04,#2D120A" },
+  { name:"Hennessy VSOP",          type:"Cognac",     match:71, notes:"Floral · Toasted Oak · Citrus", price:22, img:IMG("pour/pour_tasting.png"), gradient:"135deg,#1E1208,#3A2010" },
+  { name:"Single Origin Espresso", type:"Coffee",     match:68, notes:"Bold · Smoky · Nutty",          price:7,  img:IMG("pour/pour_bar.png"),      gradient:"135deg,#2C1800,#4A2A0A" },
 ];
 const WEEKLY_REV = [
   { day:"Mon", pct:72 },{ day:"Tue", pct:63 },{ day:"Wed", pct:92 },{ day:"Thu", pct:81 },
@@ -291,6 +291,9 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [isCommandCenterOpen, setIsCommandCenterOpen] = useState(false);
   const [highReadabilityMode, setHighReadabilityMode] = useState(false);
   const [toastMsg, setToastMsg] = useState<string|null>(null);
+  const [showAddStaff, setShowAddStaff] = useState(false);
+  const [staffList, setStaffList] = useState(() => STAFF_ROSTER.map(s => ({ ...s })));
+  const [newStaff, setNewStaff] = useState({ name:"", role:"", tables:"", status:"online" as "online"|"break"|"offline" });
   const [activeModule, setActiveModule] = useState<string>("E.A.T");
 
   // ── E.A.T. VI — Venue Intelligence state ───────────────────────────────────
@@ -988,18 +991,19 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
               </div>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
                 {PAIRING_RECS.map((p,i)=>(
-                  <div key={i} style={{ background:CARD_BG, border:`1px solid ${i===0?AMBER:BORDER}`, borderRadius:10, padding:"14px 16px", display:"flex", gap:12, alignItems:"center", cursor:"pointer", position:"relative", overflow:"hidden" }}>
+                  <div key={i} style={{ background:CARD_BG, border:`1px solid ${i===0?AMBER:BORDER}`, borderRadius:10, padding:"12px 14px", display:"flex", gap:10, alignItems:"center", cursor:"pointer", position:"relative", overflow:"hidden" }}>
                     {i===0 && <div style={{ position:"absolute", top:0, right:0, fontSize:9, fontWeight:800, color:"#1A0C00", background:AMBER, padding:"4px 10px", borderRadius:"0 8px 0 6px", textTransform:"uppercase", letterSpacing:"0.10em" }}>Best Match</div>}
-                    <div style={{ flexShrink:0, textAlign:"center", minWidth:46 }}>
-                      <div style={{ fontSize:22, fontWeight:900, color:i===0?AMBER2:TEXT1, lineHeight:1 }}>{p.match}%</div>
-                      <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.08em" }}>Match</div>
+                    <div style={{ width:44, height:44, borderRadius:8, overflow:"hidden", flexShrink:0, background:`linear-gradient(${p.gradient})` }}>
+                      <img src={p.img} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
                     </div>
                     <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ fontSize:13, fontWeight:800, color:TEXT1, marginBottom:2, lineHeight:1.3 }}>{p.name}</div>
-                      <div style={{ fontSize:10, color:TEXT3, marginBottom:4 }}>{p.type}</div>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:2 }}>
+                        <div style={{ fontSize:13, fontWeight:800, color:TEXT1, lineHeight:1.3 }}>{p.name}</div>
+                        <div style={{ fontSize:15, fontWeight:900, color:AMBER2, flexShrink:0, marginLeft:6 }}>${p.price}</div>
+                      </div>
+                      <div style={{ fontSize:10, color:TEXT3, marginBottom:3 }}>{p.type} · <span style={{ color:i===0?AMBER2:TEXT2, fontWeight:700 }}>{p.match}% match</span></div>
                       <div style={{ fontSize:11, color:TEXT2 }}>{p.notes}</div>
                     </div>
-                    <div style={{ fontSize:16, fontWeight:900, color:AMBER2, flexShrink:0 }}>${p.price}</div>
                   </div>
                 ))}
               </div>
@@ -1072,12 +1076,50 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Staff</div>
                   <div style={{ fontSize:11, color:TEXT3 }}>Floor Management · 3 Active</div>
                 </div>
-                <motion.button whileTap={{scale:0.96}} style={{ padding:"10px 18px", borderRadius:7, border:`1px solid ${BORDER}`, background:CARD_BG, color:TEXT2, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                <motion.button whileTap={{scale:0.96}} onClick={()=>setShowAddStaff(true)} style={{ padding:"10px 18px", borderRadius:7, border:`1px solid ${AMBER}`, background:`rgba(212,175,55,0.08)`, color:AMBER2, fontSize:12, fontWeight:700, cursor:"pointer" }}>
                   Add Staff
                 </motion.button>
               </div>
+              {showAddStaff && (
+                <div style={{ marginBottom:14, background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:10, padding:"16px 18px" }}>
+                  <div style={{ fontSize:13, fontWeight:900, color:TEXT1, marginBottom:12 }}>New Staff Member</div>
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
+                    <div>
+                      <div style={{ fontSize:10, fontWeight:700, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", marginBottom:4 }}>Full Name</div>
+                      <input value={newStaff.name} onChange={e=>setNewStaff(p=>({...p,name:e.target.value}))} placeholder="e.g. Jordan M." style={{ width:"100%", boxSizing:"border-box" as const, padding:"8px 10px", borderRadius:6, border:`1px solid ${BORDER}`, background:"#FDFCF8", color:TEXT1, fontSize:13, fontWeight:600, outline:"none" }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize:10, fontWeight:700, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", marginBottom:4 }}>Role</div>
+                      <input value={newStaff.role} onChange={e=>setNewStaff(p=>({...p,role:e.target.value}))} placeholder="e.g. Lounge Attendant" style={{ width:"100%", boxSizing:"border-box" as const, padding:"8px 10px", borderRadius:6, border:`1px solid ${BORDER}`, background:"#FDFCF8", color:TEXT1, fontSize:13, fontWeight:600, outline:"none" }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize:10, fontWeight:700, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", marginBottom:4 }}>Tables / Station</div>
+                      <input value={newStaff.tables} onChange={e=>setNewStaff(p=>({...p,tables:e.target.value}))} placeholder="e.g. 1–6 or Bar" style={{ width:"100%", boxSizing:"border-box" as const, padding:"8px 10px", borderRadius:6, border:`1px solid ${BORDER}`, background:"#FDFCF8", color:TEXT1, fontSize:13, fontWeight:600, outline:"none" }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize:10, fontWeight:700, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", marginBottom:4 }}>Status</div>
+                      <select value={newStaff.status} onChange={e=>setNewStaff(p=>({...p,status:e.target.value as "online"|"break"|"offline"}))} style={{ width:"100%", padding:"8px 10px", borderRadius:6, border:`1px solid ${BORDER}`, background:"#FDFCF8", color:TEXT1, fontSize:13, fontWeight:600, outline:"none" }}>
+                        <option value="online">Online</option>
+                        <option value="break">On Break</option>
+                        <option value="offline">Offline</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", gap:8, justifyContent:"flex-end" }}>
+                    <motion.button whileTap={{scale:0.96}} onClick={()=>{ setShowAddStaff(false); setNewStaff({name:"",role:"",tables:"",status:"online"}); }} style={{ padding:"8px 16px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:TEXT3, fontSize:12, fontWeight:700, cursor:"pointer" }}>Cancel</motion.button>
+                    <motion.button whileTap={{scale:0.96}} onClick={()=>{
+                      if(!newStaff.name.trim()||!newStaff.role.trim()) return;
+                      setStaffList(prev=>[...prev,{ name:newStaff.name.trim(), role:newStaff.role.trim(), status:newStaff.status, tables:newStaff.tables.trim()||"TBD", sales:0 }]);
+                      setNewStaff({name:"",role:"",tables:"",status:"online"});
+                      setShowAddStaff(false);
+                      setToastMsg(`${newStaff.name.trim()} added to floor`);
+                      setTimeout(()=>setToastMsg(null),2800);
+                    }} style={{ padding:"8px 18px", borderRadius:6, border:`1px solid ${AMBER}`, background:`rgba(212,175,55,0.14)`, color:AMBER2, fontSize:12, fontWeight:800, cursor:"pointer" }}>Add Member</motion.button>
+                  </div>
+                </div>
+              )}
               <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:10 }}>
-                {STAFF_ROSTER.map((s,i)=>{
+                {staffList.map((s,i)=>{
                   const sc = s.status==="online"?GREEN:s.status==="break"?AMBER2:TEXT3;
                   return (
                     <div key={i} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"14px 16px", display:"flex", gap:14, alignItems:"center" }}>
