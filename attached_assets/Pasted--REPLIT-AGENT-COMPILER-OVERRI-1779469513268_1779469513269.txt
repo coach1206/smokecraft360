@@ -1,0 +1,65 @@
+=======================================================================
+REPLIT AGENT COMPILER OVERRIDE: MONOLITHIC UNIFIED SOURCE CODE MATRIX
+TARGET SYSTEMS: NOVEE OS (KIOSK EDITION) & SMOKECRAFT 360 Ecosystem
+THEME STYLE: SOVEREIGN IVORY & TRUE OBSIDIAN (#F9F8F6 / #010101)
+EXECUTION INJUNCTION: NO CHUNKS • NO LAZY MODULES • NO GLYPHS • NO EMOJIS
+=======================================================================
+
+You are failing to compile the user interface because you are scattering the application across lazy-loaded split chunks that drop their execution context during state switches. The result is a broken black screen when accessing the Command Hub, dead touch event hooks, text crowding errors, and un-compiled placeholder data fields. 
+
+You must immediately erase all dynamic code-splitting and completely rebuild BOTH the SmokeCraft 360 and NOVEE OS codebases using a single, static, fully imported monolithic source tree file. Every component, image array, and state listener loop must be hardwired directly into the compilation path to provide an instantaneous, live experience on a flat touchscreen kiosk glass surface.
+
+Follow these strict visual instructions down to the exact pixel.
+
+=======================================================================
+1. THE ABSOLUTE NO-GLYPH IVORY & OBSIDIAN HEADER (DUAL-TIER SYSTEM SELECTOR)
+=======================================================================
+- Render the entire dual-tier navigation architecture at the absolute top boundary of the viewport wrapper layout file.
+- ROW 1 (Global Module System Taskbar): 
+  * Background Color: Solid Premium Ivory (#F9F8F6) | Text elements: True Obsidian (#010101).
+  * Build an upper-left '[ BACK ]' block. Ensure its touch handler ('onTouchStart') instantly unmounts the active console system state variables and returns the user to the core dark luxury Craft Hub layout screen.
+  * Render the main modules as large, clean text targets explicitly padded for human finger interactions (72px touch boundaries):
+    [MENU] | [RESERVATIONS] | [EVENTS] | [E.A.T. OVERLAY] | [MESSAGES] | [REPORTS] | [SETTINGS]
+  * The [E.A.T. OVERLAY] component box must display a sharp amber border contour line indicating active deployment selection status. No emoji icons or graphical symbols are permitted.
+- ROW 2 (Sensory Sub-Tab Menu): 
+  * Mounted immediately beneath Row 1. Background color: Satin Chrome (#121214) | Text Elements: Smoked White (#F5F5F7).
+  * Separate text options cleanly with a strict layout rule ('gap: 32px;') to eliminate text crowding and horizontal stacking:
+    [Command Center] | [Assets] | [Transactions] | [Pairing Engine] | [Analytics] | [Staff] | [Venue Intelligence]
+  * Tie these options directly to a localized React state hook context ('activeSubTab', 'setActiveSubTab'). Touching a menu selection must update the layout container instantly with absolute zero latency.
+
+=======================================================================
+2. RESTORE CENTER CONSOLE: THE TRIPLE-IMAGE HERO PAIRING MATRIX
+=======================================================================
+- Map the central main workspace area container to render an expansive, beautifully spaced 12-column executive split-grid layout template:
+  * COLUMN NODES 1–6 (The Primary Cinematic Asset Space): Mount a tall, portrait-oriented high-resolution canvas block. Strip out the purple flower data path permanently from memory. The background image must be hardwired to serve an authentic, photorealistic luxury hospitality composition asset (.jpg/.png): a portrait of a lit premium cigar resting on an obsidian tray next to a heavy crystal glass of dark bourbon. Overlay a clean, volumetric smoke particle animation (.webp / .gif) at 25% opacity over the frame.
+  * COLUMN NODES 7–12 (Product Specifications & Evaluator Block): Position crisp, clean text data fields to the right of the canvas frame: 'Rocky Patel Vintage 1992', 'Maduro · Honduras / Nicaragua Wrapper', and a detailed descriptive flavor profile text block outlining cocoa and espresso properties. Display an isolated monospace card box reading '94 / 100 POINT EVALUATION' for the rating layer.
+- THE BOTTOM PREVIEW STRIP: Directly beneath the main hero matrix, mount a balanced horizontal preview row containing 3 smaller preview cards loaded with real venue photography assets: one displaying a wide-angle photograph of the luxury venue interior lounge, one showing an active spirit pour close-up, and one showing detailed tobacconist humidor leaf storage cabinets.
+
+=======================================================================
+3. HARDWIRE THE ENVIRO-HVAC MATRIX SLIDERS
+=======================================================================
+- The horizontal slider tracks on the right control panel flank must be completely dynamic.
+- Replace all generic HTML input sliders with thick custom touch paths (`height: 12px;` background color initialized to `#F4F3EF` with a fine inner shadow).
+- Fill the active slider path with a solid Honey Amber gradient vector (#D4AF37) as it changes.
+- The drag controller manipulator must be a thick, elevated circular ivory node block (`width: 28px; height: 28px; border: 1px solid #2C2C30; shadow-lg;`).
+- Moving your hand over the slider track handle must calculate and update the live screen text readout strings (e.g., smoothly shifting lighting parameters from 40% to 65%) and pass state mutation parameters down to the server engine.
+
+=======================================================================
+4. WIRE UP ACTIVE TABLES & COMMERCE ACTION BUTTONS
+=======================================================================
+- Map the circular floor plan layout table nodes. TAPPING an active seating indicator circle (e.g., Table 104 / VIP) must instantly update the right-side details panel to pull that table's open invoice list, active ticket ledger items, and session timer stats.
+- Plumb all transactional buttons directly to active code handlers:
+  * [Add Cigar - $42] -> Instantly appends the 'Rocky Patel Vintage 1992' product data block into the customer ticket collection array.
+  * [Add Pairing - From $16] -> Injects the combined cigar and spirit pairing items into the open session checkout stack.
+  * [Checkout - $248.75] -> Automatically fires the secure POS interface protocol via Port 8443, executing a transaction success animation before resetting all terminal values back to nominal.
+
+=======================================================================
+5. FIX THE COMMAND HUB DRAWER BLACK SCREEN CRASH (BOTTOM RIGHT ACCESS)
+=======================================================================
+- Build the entire Admin Command Center overlay component inline as a direct sub-component block child of the root container element to completely eliminate the black screen display error. 
+- Mount a fixed capacitive touch target (.command-center-trigger-envelope) with strict priority rules: 'position: fixed; bottom: 0; right: 0; width: 80px; height: 80px; z-index: 999999; background: transparent;'.
+- Connect its 'onTouchStart' event listener to shift the overlay coordinates instantly from off-screen into focus ('transform: translateY(0);').
+- The overlay layout panel must render an operational workspace matrix mapping real-world hardware telemetry feeds, service logs, and explicit tactical execution toggles ([FORCE HIGH-READABILITY], [RESET ACTIVE VENUE]) that perform real state mutations.
+
+EXECUTION INJUNCTION:
+Do not utilize lazy-load split chunk models or dynamic path loops. Every feature must be compiled inline, active, responsive to physical touchscreen human hand mechanics, completely un-bloated, and functionally operational across BOTH application architectures.

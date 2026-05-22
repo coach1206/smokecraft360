@@ -755,7 +755,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
         </aside>
 
         {/* COL 3 — Main product + pairing / E.A.T. VI Panel */}
-        <main style={{ flex:1, overflowY:"auto", background:PAGE_BG, minWidth:0 }}>
+        <main style={{ flex:1, minHeight:0, overflowY:"auto", background:PAGE_BG, minWidth:0 }}>
           {activeTab === "Venue Intelligence" && (
             <div style={{ padding:"16px 14px" }}>
 
