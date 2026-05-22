@@ -1,0 +1,39 @@
+CRITICAL MONOLITHIC RENDERING ENFORCEMENT: FLATTEN COMMAND DRAWER, BYPASS CONDITIONAL GATES, AND LIVE-WIRE ALL INTERACTIVE TERMINALS
+
+The typechecks are clean, but the application is still experiencing severe runtime failures: the Command Hub results in a total black screen loop when triggered, the center panel lacks the specified high-resolution cinematic imagery, and interactive elements are completely non-responsive. This happens because you are using conditional block rendering that drops context across execution states. 
+
+You must immediately refactor BOTH the SmokeCraft 360 and NOVEE OS codebases to completely bypass conditional chunking, flatten your UI tree layout, and compile the entire visual experience directly into the root layout templates.
+
+=======================================================================
+1. RESOLVE THE BLACK SCREEN LOOPS: COMPILING INLINE COMMAND OVERLAYS
+=======================================================================
+- Under no circumstances should the Admin Command Center be rendered as a conditional router view or separate dynamic page component. It must be hard-coded directly into the master application layout file as a flat, absolute-positioned inline container layer.
+- Ensure the invisible capacitive touch target (.command-center-trigger-envelope) maps strictly to these root layout coordinates: 'position: fixed; bottom: 0; right: 0; width: 80px; height: 80px; z-index: 999999; background: transparent;'.
+- The 'onTouchStart' handle must instantly fire a flat CSS matrix translation toggle ('transform: translateY(0);' instead of 'translateY(100%)'). Tapping the bottom-right corner must instantly call the control board up smoothly, with zero black screen crashes. All tactical actions ([FORCE HIGH-READABILITY], [RESET ACTIVE VENUE]) must execute real state transformations.
+
+=======================================================================
+2. RESTORE THE DECOUPLED DUAL-TIER TOP NAVIGATION DECK
+=======================================================================
+- Ensure your top-anchored layout navigation operates flawlessly as a rigid, non-overlapping dual-tier control bar directly above your newly fixed scrollable panel:
+  * TIER 1 (Global Module Taskbar): Runs [MENU] | [RESERVATIONS] | [EVENTS] | [E.A.T. OVERLAY] | [MESSAGES] | [REPORTS] | [SETTINGS] in solid Premium Ivory (#F9F8F6) and True Obsidian (#010101). The upper-left '[ BACK ]' option must instantly return the user to the core luxury dark selector hub.
+  * TIER 2 (Sensory Sub-Nav Row): Positioned immediately below Tier 1 inside a solid Satin Chrome block (#121214) with a rigid flex layout tracking a strict 'gap: 32px;' to guarantee text options never wrap or layer across each other.
+- Verify that clicking any option immediately mounts the respective sub-view with absolute zero transition delays.
+
+=======================================================================
+3. HARDWIRE CENTER CONSOLE: THE TRIPLE-IMAGE CINEMATIC PAIRING MATRIX
+=======================================================================
+- Completely delete the purple flower image asset string from all image maps, component trees, and state wrappers.
+- The center workspace must serve your 12-column executive split-grid layout:
+  * COLUMNS 1–6 (Cinematic Asset Space): Must render portrait-oriented, photorealistic luxury hospitality media assets: a premium lit cigar resting on an obsidian tray next to a heavy crystal glass of dark bourbon, with a volumetric smoke animation loop overlay (.webp or .gif) at 25% opacity. No static placeholder text shapes or empty frames are permitted.
+  * COLUMNS 7–12 (Specifications Core): Renders real product texts: 'Rocky Patel Vintage 1992', 'Maduro · Honduras / Nicaragua Wrapper', and a bold descriptive flavor profile block flanking a clean monospace card box reading '94 / 100 POINT EVALUATION'.
+- Directly under the main matrix, render the 3 horizontal preview thumbnail cards running real venue photography (lounge interiors, alternative spirit pours, and humidor cabinets).
+
+=======================================================================
+4. PLUMB EVERY COUPLING TOUCH STREAM, SLIDER, AND INTERACTION EVENT
+=======================================================================
+- Hardwire all slider components on the right panel flank. Interacting with the custom ivory thumb node handle must calculate and render matching percentage numbers in real-time (e.g., updating lighting values directly to 65%) and pass immediate state updates down to the server.js file.
+- Tapping circular seating targets inside the floor plan view must instantly trigger a state change, updating the right-hand 'ACTIVE TABS' panel to pull that table's active ticket ledger list, running balance, and timer metrics.
+- Make all transactional points fully live: tapping [Add Cigar - $42] or [Add Pairing] must dynamically insert functional data parameters into the open checkout bill array, and tapping [Checkout - $248.75] must fire a clean payment processing execution animation before resetting values to idle.
+
+EXECUTION CONSTRAINT:
+Do not utilize dynamic import syntax loops or split modules that detach execution contexts from the root application tree. Every feature must be inline, active, responsive to physical touchscreen hand mechanics, and operating with absolute fluid stability across BOTH SmokeCraft 360 and NOVEE OS.

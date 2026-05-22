@@ -289,6 +289,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [scentPct, setScentPct]     = useState(40);
   const [pairingIdx, setPairingIdx] = useState(0);
   const [isCommandCenterOpen, setIsCommandCenterOpen] = useState(false);
+  const [highReadabilityMode, setHighReadabilityMode] = useState(false);
   const [toastMsg, setToastMsg] = useState<string|null>(null);
   const [activeModule, setActiveModule] = useState<string>("E.A.T");
 
@@ -1397,9 +1398,10 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
         )}
       </AnimatePresence>
 
-      {/* ── ADMIN COMMAND CENTER — 80×80 bottom-right hitbox ────────────── */}
+      {/* ── ADMIN COMMAND CENTER — 80×80 bottom-right capacitive hitbox ──── */}
       <div onTouchStart={()=>setIsCommandCenterOpen(true)} onClick={()=>setIsCommandCenterOpen(true)}
-        style={{ position:"fixed", bottom:0, right:0, width:80, height:80, zIndex:998, cursor:"pointer" }}>
+        className="command-center-trigger-envelope"
+        style={{ position:"fixed", bottom:0, right:0, width:80, height:80, zIndex:999999, cursor:"pointer", background:"transparent" }}>
         <div style={{ position:"absolute", bottom:8, right:8, width:28, height:28, borderRadius:6, background:"rgba(212,175,55,0.08)", border:"1px solid rgba(212,175,55,0.18)", display:"flex", alignItems:"center", justifyContent:"center", opacity:0.55 }}>
           <div style={{ display:"grid", gridTemplateColumns:"5px 5px", gap:"2px", width:12, height:12 }}>
             {[0,1,2,3].map(i=><div key={i} style={{ background:AMBER, borderRadius:1, width:5, height:5 }} />)}
@@ -1407,94 +1409,125 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
         </div>
       </div>
 
-      {/* ── ADMIN COMMAND CENTER SLIDE-UP DRAWER ─────────────────────────── */}
-      <AnimatePresence>
-        {isCommandCenterOpen && (
-          <>
-            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:0.2}}
-              onClick={()=>setIsCommandCenterOpen(false)}
-              style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:999, backdropFilter:"blur(4px)" }} />
-            <motion.div initial={{y:"100%"}} animate={{y:0}} exit={{y:"100%"}} transition={{type:"spring",damping:32,stiffness:280}}
-              style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:1000, background:"#0D0D0E", borderTop:"1px solid rgba(212,175,55,0.22)", borderRadius:"20px 20px 0 0", maxHeight:"72vh", overflow:"hidden", display:"flex", flexDirection:"column", boxShadow:"0 -8px 60px rgba(0,0,0,0.65)" }}>
-              <div style={{ display:"flex", justifyContent:"center", padding:"14px 0 6px" }}>
-                <div style={{ width:40, height:4, borderRadius:2, background:"rgba(255,255,255,0.15)" }} />
+      {/* ── ADMIN COMMAND CENTER — always-mounted CSS-transform drawer ─────── */}
+      {/* Backdrop — opacity toggle, no backdropFilter (prevents WebKit black flash) */}
+      <div onClick={()=>setIsCommandCenterOpen(false)}
+        style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:999998,
+          opacity: isCommandCenterOpen ? 1 : 0,
+          pointerEvents: isCommandCenterOpen ? "auto" : "none",
+          transition:"opacity 0.2s ease" }} />
+
+      {/* Drawer panel — CSS translateY toggle, no mount/unmount */}
+      <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:999999,
+        background:"#0D0D0E", borderTop:"1px solid rgba(212,175,55,0.22)",
+        borderRadius:"20px 20px 0 0", maxHeight:"72vh", overflow:"hidden",
+        display:"flex", flexDirection:"column", boxShadow:"0 -8px 60px rgba(0,0,0,0.65)",
+        transform: isCommandCenterOpen ? "translateY(0)" : "translateY(100%)",
+        transition:"transform 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
+
+        <div style={{ display:"flex", justifyContent:"center", padding:"14px 0 6px" }}>
+          <div style={{ width:40, height:4, borderRadius:2, background:"rgba(255,255,255,0.15)" }} />
+        </div>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"6px 20px 14px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+          <div>
+            <div style={{ fontSize:11, fontWeight:900, letterSpacing:"0.22em", color:AMBER, textTransform:"uppercase" }}>Admin Command Center</div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.40)", marginTop:2 }}>Venue-level controls — authorized personnel only</div>
+          </div>
+          <motion.button whileTap={{scale:0.93}} onClick={()=>setIsCommandCenterOpen(false)}
+            style={{ padding:"8px 16px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:8, color:"rgba(255,255,255,0.75)", fontSize:11, fontWeight:700, cursor:"pointer", letterSpacing:"0.08em" }}>
+            CLOSE COMMAND DRAWER
+          </motion.button>
+        </div>
+
+        <div style={{ overflowY:"auto", flex:1, padding:"16px 20px 24px" }}>
+
+          {/* ── PRIMARY TACTICAL ACTIONS ── */}
+          <div style={{ display:"flex", gap:8, marginBottom:16 }}>
+            <motion.button whileTap={{scale:0.96}}
+              onClick={()=>{
+                setHighReadabilityMode(m => { const next = !m; setToastMsg(next ? "High-readability mode ON — text enlarged for low-light" : "High-readability mode OFF"); setTimeout(()=>setToastMsg(null),2800); return next; });
+                setIsCommandCenterOpen(false);
+              }}
+              style={{ flex:1, padding:"14px 10px", borderRadius:10, border:`2px solid ${highReadabilityMode ? AMBER : "rgba(212,175,55,0.40)"}`, background:highReadabilityMode ? `rgba(212,175,55,0.14)` : "rgba(212,175,55,0.05)", color:AMBER, fontSize:11, fontWeight:900, cursor:"pointer", letterSpacing:"0.07em", textTransform:"uppercase" as const }}>
+              {highReadabilityMode ? "HIGH-READABILITY ON" : "FORCE HIGH-READABILITY"}
+            </motion.button>
+            <motion.button whileTap={{scale:0.96}}
+              onClick={()=>{
+                setLighting(65); setScentPct(40); setEnvPreset(PRESET_OPTIONS[0]);
+                setToastMsg("Active venue reset — environment restored to defaults");
+                setTimeout(()=>setToastMsg(null),2800);
+                setIsCommandCenterOpen(false);
+              }}
+              style={{ flex:1, padding:"14px 10px", borderRadius:10, border:"1px solid rgba(255,255,255,0.18)", background:"rgba(255,255,255,0.05)", color:"rgba(255,255,255,0.82)", fontSize:11, fontWeight:900, cursor:"pointer", letterSpacing:"0.07em", textTransform:"uppercase" as const }}>
+              RESET ACTIVE VENUE
+            </motion.button>
+          </div>
+
+          <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:10 }}>Quick Actions</div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, marginBottom:18 }}>
+            {([
+              { label:"Kill Switch",   tag:"[X]", desc:"Halt all transactions"  },
+              { label:"Force Sync",    tag:"[S]", desc:"Push config to devices" },
+              { label:"Broadcast",     tag:"[B]", desc:"Send staff message"      },
+              { label:"Panic Mode",    tag:"[!]", desc:"Lock down venue ops"     },
+              { label:"Vent Override", tag:"[V]", desc:"Open HVAC manual mode"  },
+              { label:"Dev Mode",      tag:"[D]", desc:"Debug overlay toggle"   },
+            ] as {label:string;tag:string;desc:string}[]).map(a=>(
+              <motion.button key={a.label} whileTap={{scale:0.95}}
+                style={{ padding:"12px 8px", borderRadius:10, border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.04)", cursor:"pointer", textAlign:"center" as const }}>
+                <div style={{ fontSize:11, fontWeight:900, color:"rgba(255,255,255,0.55)", marginBottom:4, fontFamily:"'Space Mono','Courier New',monospace", letterSpacing:"0.06em" }}>{a.tag}</div>
+                <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.85)", marginBottom:2 }}>{a.label}</div>
+                <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)", lineHeight:1.4 }}>{a.desc}</div>
+              </motion.button>
+            ))}
+          </div>
+
+          <div style={{ display:"flex", gap:8, marginBottom:18 }}>
+            {([
+              { label:"Tables",   val:String(activeTabs.length),                               unit:"active"    },
+              { label:"Revenue",  val:`$${activeTabs.reduce((s,t)=>s+t.total,0).toFixed(0)}`,  unit:"open tabs" },
+              { label:"Devices",  val:String(devices.filter(d=>d.online).length),              unit:"online"    },
+              { label:"Lighting", val:`${lighting}%`,                                          unit:"current"   },
+            ] as {label:string;val:string;unit:string}[]).map(s=>(
+              <div key={s.label} style={{ flex:1, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:8, padding:"10px 8px", textAlign:"center" as const }}>
+                <div style={{ fontSize:16, fontWeight:900, color:"rgba(255,255,255,0.9)" }}>{s.val}</div>
+                <div style={{ fontSize:9, color:"rgba(255,255,255,0.40)", textTransform:"uppercase" as const, letterSpacing:"0.10em", marginTop:2 }}>{s.label}</div>
+                <div style={{ fontSize:9, color:"rgba(255,255,255,0.25)", marginTop:1 }}>{s.unit}</div>
               </div>
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"6px 20px 14px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
-                <div>
-                  <div style={{ fontSize:11, fontWeight:900, letterSpacing:"0.22em", color:AMBER, textTransform:"uppercase" }}>Admin Command Center</div>
-                  <div style={{ fontSize:11, color:"rgba(255,255,255,0.40)", marginTop:2 }}>Venue-level controls — authorized personnel only</div>
-                </div>
-                <motion.button whileTap={{scale:0.93}} onClick={()=>setIsCommandCenterOpen(false)}
-                  style={{ padding:"8px 16px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:8, color:"rgba(255,255,255,0.75)", fontSize:11, fontWeight:700, cursor:"pointer", letterSpacing:"0.08em" }}>
-                  CLOSE COMMAND DRAWER
-                </motion.button>
-              </div>
-              <div style={{ overflowY:"auto", flex:1, padding:"16px 20px 24px" }}>
-                <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:10 }}>Quick Actions</div>
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, marginBottom:18 }}>
-                  {([
-                    { label:"Kill Switch",   icon:"⛔", desc:"Halt all transactions"   },
-                    { label:"Force Sync",    icon:"↻",  desc:"Push config to devices"  },
-                    { label:"Broadcast",     icon:"📢", desc:"Send staff message"       },
-                    { label:"Panic Mode",    icon:"🔴", desc:"Lock down venue ops"      },
-                    { label:"Vent Override", icon:"💨", desc:"Open HVAC manual mode"    },
-                    { label:"Dev Mode",      icon:"⚙",  desc:"Debug overlay toggle"     },
-                  ] as {label:string;icon:string;desc:string}[]).map(a=>(
-                    <motion.button key={a.label} whileTap={{scale:0.95}}
-                      style={{ padding:"12px 8px", borderRadius:10, border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.04)", cursor:"pointer", textAlign:"center" as const }}>
-                      <div style={{ fontSize:20, marginBottom:5 }}>{a.icon}</div>
-                      <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.85)", marginBottom:2 }}>{a.label}</div>
-                      <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)", lineHeight:1.4 }}>{a.desc}</div>
-                    </motion.button>
-                  ))}
-                </div>
-                <div style={{ display:"flex", gap:8, marginBottom:18 }}>
-                  {([
-                    { label:"Tables",   val:String(activeTabs.length),                              unit:"active"   },
-                    { label:"Revenue",  val:`$${activeTabs.reduce((s,t)=>s+t.total,0).toFixed(0)}`, unit:"open tabs"},
-                    { label:"Devices",  val:String(devices.filter(d=>d.online).length),             unit:"online"   },
-                    { label:"Lighting", val:`${lighting}%`,                                         unit:"current"  },
-                  ] as {label:string;val:string;unit:string}[]).map(s=>(
-                    <div key={s.label} style={{ flex:1, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:8, padding:"10px 8px", textAlign:"center" as const }}>
-                      <div style={{ fontSize:16, fontWeight:900, color:"rgba(255,255,255,0.9)" }}>{s.val}</div>
-                      <div style={{ fontSize:9, color:"rgba(255,255,255,0.40)", textTransform:"uppercase" as const, letterSpacing:"0.10em", marginTop:2 }}>{s.label}</div>
-                      <div style={{ fontSize:9, color:"rgba(255,255,255,0.25)", marginTop:1 }}>{s.unit}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:10 }}>Environment Fast Controls</div>
-                <div style={{ display:"flex", gap:6, flexWrap:"wrap" as const, marginBottom:18 }}>
-                  {PRESET_OPTIONS.map(p=>(
-                    <motion.button key={p} whileTap={{scale:0.95}} onClick={()=>{setEnvPreset(p);setIsCommandCenterOpen(false);}}
-                      style={{ padding:"8px 14px", borderRadius:20, border:`1px solid ${envPreset===p?AMBER:"rgba(255,255,255,0.12)"}`, background:envPreset===p?`rgba(212,175,55,0.15)`:"transparent", color:envPreset===p?AMBER:"rgba(255,255,255,0.60)", fontSize:11, fontWeight:700, cursor:"pointer" }}>
-                      {p}
-                    </motion.button>
-                  ))}
-                </div>
-                <div style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:"12px 14px" }}>
-                  <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:8 }}>System Status</div>
-                  <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                    {([
-                      { name:"WebSocket",   ok:wsConnected },
-                      { name:"POS Bridge",  ok:true        },
-                      { name:"Environment", ok:true        },
-                      { name:"Stripe",      ok:true        },
-                    ] as {name:string;ok:boolean}[]).map(s=>(
-                      <div key={s.name} style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                        <span style={{ fontSize:11, color:"rgba(255,255,255,0.50)" }}>{s.name}</span>
-                        <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                          <div style={{ width:7, height:7, borderRadius:"50%", background:s.ok?"#27AE60":"#C0392B" }} />
-                          <span style={{ fontSize:11, fontWeight:700, color:s.ok?"#27AE60":"#C0392B" }}>{s.ok?"Online":"Offline"}</span>
-                        </div>
-                      </div>
-                    ))}
+            ))}
+          </div>
+
+          <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:10 }}>Environment Fast Controls</div>
+          <div style={{ display:"flex", gap:6, flexWrap:"wrap" as const, marginBottom:18 }}>
+            {PRESET_OPTIONS.map(p=>(
+              <motion.button key={p} whileTap={{scale:0.95}} onClick={()=>{setEnvPreset(p);setIsCommandCenterOpen(false);}}
+                style={{ padding:"8px 14px", borderRadius:20, border:`1px solid ${envPreset===p?AMBER:"rgba(255,255,255,0.12)"}`, background:envPreset===p?`rgba(212,175,55,0.15)`:"transparent", color:envPreset===p?AMBER:"rgba(255,255,255,0.60)", fontSize:11, fontWeight:700, cursor:"pointer" }}>
+                {p}
+              </motion.button>
+            ))}
+          </div>
+
+          <div style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:"12px 14px" }}>
+            <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:8 }}>System Status</div>
+            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+              {([
+                { name:"WebSocket",   ok:wsConnected },
+                { name:"POS Bridge",  ok:true        },
+                { name:"Environment", ok:true        },
+                { name:"Stripe",      ok:true        },
+              ] as {name:string;ok:boolean}[]).map(s=>(
+                <div key={s.name} style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <span style={{ fontSize:11, color:"rgba(255,255,255,0.50)" }}>{s.name}</span>
+                  <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                    <div style={{ width:7, height:7, borderRadius:"50%", background:s.ok?"#27AE60":"#C0392B" }} />
+                    <span style={{ fontSize:11, fontWeight:700, color:s.ok?"#27AE60":"#C0392B" }}>{s.ok?"Online":"Offline"}</span>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   );
