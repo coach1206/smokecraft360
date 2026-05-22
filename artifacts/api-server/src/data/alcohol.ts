@@ -12,6 +12,7 @@ export const alcohol: Product[] = [
     tier: "mid",
     boostLevel: 0,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=600&h=820&q=80",
   },
   {
     id: "alc-002",
@@ -24,6 +25,7 @@ export const alcohol: Product[] = [
     tier: "standard",
     boostLevel: 0,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1574696934124-7b7c0a54a1d6?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "alc-003",
@@ -38,6 +40,7 @@ export const alcohol: Product[] = [
     sponsored: true,
     brandId: "beam-suntory",
     campaignId: "knob-creek-q2-2026",
+    imageUrl: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "alc-004",
@@ -50,6 +53,7 @@ export const alcohol: Product[] = [
     tier: "premium",
     boostLevel: 0,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1585494156145-1c60a4fe952b?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "alc-005",
@@ -62,6 +66,7 @@ export const alcohol: Product[] = [
     tier: "premium",
     boostLevel: 1,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=600&q=80",
   },
   // ── House Signature Pairings (per brief) ──────────────────────────────
   // Adding the drinks side of SmokeCraft's named pairings so the
@@ -74,7 +79,6 @@ export const alcohol: Product[] = [
   // Keep alc-006…alc-010 ID range stable so future seeders/tests can
   // reference them.
   {
-    // "The Boss Session" — caramel/oak/pepper bourbon, top-seller energy
     id: "alc-006",
     name: "Blanton's Single Barrel Bourbon",
     category: "alcohol",
@@ -85,9 +89,9 @@ export const alcohol: Product[] = [
     tier: "premium",
     boostLevel: 0,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=600&h=800&q=80",
   },
   {
-    // "Midnight Legacy" — sherry-cask single malt for the storytelling tier
     id: "alc-007",
     name: "Macallan 12 Year Single Malt",
     category: "alcohol",
@@ -98,9 +102,9 @@ export const alcohol: Product[] = [
     tier: "premium",
     boostLevel: 0,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=600&q=80",
   },
   {
-    // "Luxury Flex" — high-ticket cognac for VIP / celebration moments
     id: "alc-008",
     name: "Hennessy XO Cognac",
     category: "alcohol",
@@ -111,9 +115,9 @@ export const alcohol: Product[] = [
     tier: "premium",
     boostLevel: 0,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=600&q=80",
   },
   {
-    // "The Sweet Escape" — wheated bourbon with honey/cinnamon profile
     id: "alc-009",
     name: "Maker's Mark 46 Bourbon",
     category: "alcohol",
@@ -124,9 +128,9 @@ export const alcohol: Product[] = [
     tier: "premium",
     boostLevel: 0,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1574696934124-7b7c0a54a1d6?auto=format&fit=crop&w=600&q=80",
   },
   {
-    // "The Dark Room" — Islay peat monster, edgy strong-cigar pairing only
     id: "alc-010",
     name: "Ardbeg 10 Year Scotch",
     category: "alcohol",
@@ -137,5 +141,71 @@ export const alcohol: Product[] = [
     tier: "premium",
     boostLevel: 0,
     sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1585494156145-1c60a4fe952b?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "alc-011",
+    name: "Don Julio 1942 Añejo Tequila",
+    category: "alcohol",
+    flavorNotes: ["agave", "caramel", "vanilla", "fruity"],
+    strength: 2,
+    moodTags: ["celebratory", "social", "relaxed"],
+    pairingTags: ["light cigar", "mild cigar", "sweet cigar"],
+    tier: "premium",
+    boostLevel: 1,
+    sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1559494007-9f5847c49d94?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "alc-012",
+    name: "Rémy Martin XO Cognac",
+    category: "alcohol",
+    flavorNotes: ["dark-fruit", "floral", "spicy", "vanilla", "oak"],
+    strength: 3,
+    moodTags: ["celebratory", "bold", "social"],
+    pairingTags: ["full-body cigar", "nutty cigar", "sweet cigar"],
+    tier: "premium",
+    boostLevel: 2,
+    sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=600&h=850&q=80",
+  },
+  {
+    id: "alc-013",
+    name: "Glenfiddich 18 Year Single Malt",
+    category: "alcohol",
+    flavorNotes: ["honey", "dried-fruit", "oak", "sweet"],
+    strength: 3,
+    moodTags: ["reflective", "relaxed", "focused"],
+    pairingTags: ["medium-body cigar", "creamy cigar", "nutty cigar"],
+    tier: "premium",
+    boostLevel: 0,
+    sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=600&h=800&q=80",
+  },
+  {
+    id: "alc-014",
+    name: "Ron Zacapa 23 Solera Rum",
+    category: "alcohol",
+    flavorNotes: ["molasses", "caramel", "vanilla", "oak", "fruity"],
+    strength: 2,
+    moodTags: ["relaxed", "social", "celebratory"],
+    pairingTags: ["medium-body cigar", "sweet cigar", "mild cigar"],
+    tier: "premium",
+    boostLevel: 0,
+    sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1493887181-82fd55e7abb4?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "alc-015",
+    name: "Angel's Envy Port Cask Finish",
+    category: "alcohol",
+    flavorNotes: ["dark-fruit", "maple", "vanilla", "fruity", "sweet"],
+    strength: 3,
+    moodTags: ["relaxed", "celebratory", "social"],
+    pairingTags: ["full-body cigar", "medium-body cigar", "sweet cigar"],
+    tier: "premium",
+    boostLevel: 1,
+    sponsored: false,
+    imageUrl: "https://images.unsplash.com/photo-1574696934124-7b7c0a54a1d6?auto=format&fit=crop&w=600&h=800&q=80",
   },
 ];

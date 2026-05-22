@@ -1,0 +1,27 @@
+We need to stop focusing on static, cosmetic UI layouts and build the functional, connected back-office engine for our ecosystem. The platform is currently acting as a passive viewer; it needs to be an active Executive Control Panel. 
+
+We are managing two distinct but tightly integrated systems that must match perfectly:
+1. SMOKECRAFT 360: The premium, cinematic consumer-facing ritual, pairing, and catalog experience.
+2. NOVEE OS (Kiosk/Venue Edition): The operational brain running the E.A.T. (Environment, Asset, Transaction) Signal Engine.
+
+Execute a complete overhaul across the frontend state, backend data layers, and component wiring to build out the missing capabilities listed below:
+
+---
+
+### 1. THE MISSING OPERATIONAL & CONFIGURATION SYSTEMS (NOVEE OS)
+Create and implement the functional interfaces and database structures for these missing back-office systems:
+* **POS & E.A.T. Integration Hub:** Add a "System Config / E.A.T. Gateway" terminal. Build an onboarding panel to simulate or map a POS API (e.g., Toast/Clover) to mirror menu products and active tickets. Write the automation rule-builder engine: if Transaction Volume (T) shifts, dynamically trigger changes in Environmental Controls (E) and product layout visibility/Assets (A).
+* **Drink Specials & Marketing Engine:** Inside the Command Center, build a "Push Broadcaster / Ticket Tapper." A manager must be able to input a product flash special, set a countdown timer, and hit "Broadcast" to instantly inject a stylized promotional banner into the active guest-facing SmokeCraft tablet interfaces.
+* **Staffing Matrix & Role Assignment:** Expand the "Staff" tab into a scheduling/assignment grid. Managers must be able to drag-and-drop specific servers/sommeliers to designated active tables/VIP zones (e.g., mapping Marcus C. to Tables 101-104) and set system access permissions.
+* **The Vault (Historical Ledger, Invoices & Contests):** Overhaul or expand the "Analytics" tab to access historical databases. Build an end-of-night reconciliation view to audit closed transactions, generate downloadable invoices, and view live metrics for staff sales contests (e.g., top-performing server for specific cigar or spirit assets).
+
+---
+
+### 2. FULL INTERACTIVITY & COMPONENT WIRING (SMOKECRAFT x NOVEE OS SYNC)
+Break the data silos across the components visible in our screenshots and wire them together completely:
+* **Active Table Map x Transaction Ledger Interactivity:** Clicking any Table Node on the visual layout wheel (e.g., Table 103) must dynamically filter the Transaction list, Active Tabs list, and Command Center viewport to show only that table's active data. Conversely, clicking an order row (like T-2846) in the Transactions view must flash/highlight that exact table on the mini-map.
+* **Live Guest Behavior & Tablet Monitoring:** Turn the passive "Tablet & Device Status" list into an active monitoring feed. Clicking any active tablet (Tablet 01-05) must reveal an overlay showing exactly what that guest is currently interacting with inside SmokeCraft (e.g., "Browsing Humidor Reserve for 4 mins") so staff can offer proactive tableside service.
+* **Dynamic Pairing Engine Workflow:** Clicking or tapping any product recommendation card (e.g., Buffalo Trace Bourbon, Blue Mountain Coffee) within the Pairing Engine or Command Center must open an actionable "Ticket Tapper" modal. This modal must allow the manager/server to instantly add that item directly to a specific table's Active Tab or send it as a recommended push action to their tablet.
+* **Asset Catalog Modifiability:** Managers must be able to click directly into any product card (like the Rocky Patel Vintage 1992 main feature image) to open a modification modal. This modal must allow them to edit pricing, update text, swap product images, or tag them with custom flavor profile markers on the fly.
+
+Ensure that all interactive states, data updates, and transitions use high-end smooth animations, touchscreen-optimized click areas, and physical feeling sliders that strictly maintain our obsidian glass, smoked chrome, and gold accented luxury aesthetic across both SmokeCraft and NOVEE OS. Run all required backend and frontend code generations in parallel to bring this architecture alive completely.

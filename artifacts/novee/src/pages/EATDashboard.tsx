@@ -295,6 +295,9 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [staffList, setStaffList] = useState(() => STAFF_ROSTER.map(s => ({ ...s })));
   const [newStaff, setNewStaff] = useState({ name:"", role:"", tables:"", status:"online" as "online"|"break"|"offline" });
   const [activeModule, setActiveModule] = useState<string>("E.A.T");
+  const [cmdSubSection, setCmdSubSection] = useState<"overview"|"kitchen"|"humidor"|"bar">("overview");
+  const [tableDelegations, setTableDelegations] = useState<Record<string, string>>({});
+  const [delegateTarget, setDelegateTarget] = useState<number|null>(null);
 
   // ── E.A.T. VI — Venue Intelligence state ───────────────────────────────────
   interface VIServiceSignal   { table:string; signal:string; urgency:"HIGH"|"MED"|"LOW" }
@@ -516,10 +519,13 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
     setTimeout(()=>setToastMsg(null),2400);
   },[selectedTab]);
   const handleRoute = useCallback((dest:string) => {
-    const token=localStorage.getItem("axiom_token")??""; if(!selectedTab) return;
-    fetch(`/api/tabs/${selectedTab.id}/route`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({destination:dest,items:selectedTab.items})}).catch(()=>{});
-    setToastMsg(`✓ Order routed to ${dest.charAt(0).toUpperCase()+dest.slice(1)}`);
-    setTimeout(()=>setToastMsg(null),2200);
+    const token=localStorage.getItem("axiom_token")??"";
+    setCmdSubSection(dest as "kitchen"|"humidor"|"bar");
+    if(selectedTab) {
+      fetch(`/api/tabs/${selectedTab.id}/route`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({destination:dest,items:selectedTab.items})}).catch(()=>{});
+    }
+    setToastMsg(`✓ Order sent to ${dest.charAt(0).toUpperCase()+dest.slice(1)} — view in Command Center`);
+    setTimeout(()=>setToastMsg(null),2800);
   },[selectedTab]);
   const handleCheckout = useCallback(async () => {
     if(!selectedTab||!selectedTab.items.length) return;
@@ -1143,7 +1149,9 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                         <div style={{ display:"flex", gap:14 }}>
                           <div>
                             <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", marginBottom:1 }}>Tables</div>
-                            <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{s.tables}</div>
+                            <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>
+                              {Object.entries(tableDelegations).filter(([,v])=>v===s.name).map(([k])=>`T${k}`).join(", ")||s.tables}
+                            </div>
                           </div>
                           {s.sales > 0 && (
                             <div>
@@ -1152,11 +1160,54 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                             </div>
                           )}
                         </div>
+                        <div style={{ marginTop:8, paddingTop:7, borderTop:`1px solid ${BORDER}`, display:"flex", justifyContent:"flex-end" }}>
+                          <motion.button whileTap={{scale:0.96}} onClick={()=>setDelegateTarget(delegateTarget===i?null:i)}
+                            style={{ padding:"4px 12px", borderRadius:5, border:`1px solid ${delegateTarget===i?AMBER:BORDER}`, background:delegateTarget===i?`rgba(212,175,55,0.10)`:"transparent", color:delegateTarget===i?AMBER2:TEXT3, fontSize:10, fontWeight:700, cursor:"pointer" }}>
+                            {delegateTarget===i?"Done":"Assign Tables"}
+                          </motion.button>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
+
+              {/* ── TABLE DELEGATION MODAL ───────────────────────────────── */}
+              {delegateTarget !== null && staffList[delegateTarget] && (
+                <div style={{ marginTop:12, background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:10, padding:"16px 18px" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                    <div style={{ fontSize:13, fontWeight:900, color:TEXT1 }}>
+                      Assign Tables — {staffList[delegateTarget].name}
+                    </div>
+                    <span style={{ fontSize:10, color:TEXT3 }}>Tap table to toggle assignment</span>
+                  </div>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6 }}>
+                    {floorTables.map(t=>{
+                      const assignedTo = tableDelegations[String(t.id)];
+                      const isThisStaff = assignedTo === staffList[delegateTarget!]?.name;
+                      return (
+                        <motion.button key={t.id} whileTap={{scale:0.94}}
+                          onClick={()=>{
+                            const staffName = staffList[delegateTarget!]?.name;
+                            if(!staffName) return;
+                            setTableDelegations(prev=>{
+                              const n={...prev};
+                              if(isThisStaff) { delete n[String(t.id)]; } else { n[String(t.id)]=staffName; }
+                              return n;
+                            });
+                            setToastMsg(isThisStaff?`${t.label} unassigned from ${staffName}`:`${t.label} → ${staffName}`);
+                            setTimeout(()=>setToastMsg(null),2000);
+                          }}
+                          style={{ padding:"8px 6px", borderRadius:7, border:`1px solid ${isThisStaff?AMBER:assignedTo?`rgba(212,175,55,0.3)`:BORDER}`, background:isThisStaff?`rgba(212,175,55,0.12)`:IVORY, color:isThisStaff?AMBER2:assignedTo&&!isThisStaff?TEXT3:TEXT1, fontSize:11, fontWeight:isThisStaff?800:600, cursor:"pointer", textAlign:"center" as const }}>
+                          {t.label}
+                          {assignedTo && !isThisStaff && <div style={{ fontSize:8, color:TEXT3, marginTop:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" as const }}>{assignedTo.split(" ")[0]}</div>}
+                          {isThisStaff && <div style={{ fontSize:8, color:AMBER2, marginTop:2 }}>Assigned</div>}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1164,8 +1215,18 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           {activeTab === "Command Center" && (
           <div style={{ padding:"12px 14px", display:"flex", flexDirection:"column", gap:12 }}>
 
+            {/* ── COMMAND CENTER SUB-NAV ──────────────────────────────────── */}
+            <div style={{ display:"flex", gap:6, flexShrink:0 }}>
+              {(["overview","kitchen","humidor","bar"] as const).map(s=>(
+                <motion.button key={s} whileTap={{scale:0.95}} onClick={()=>setCmdSubSection(s)}
+                  style={{ padding:"7px 16px", borderRadius:7, border:`1px solid ${cmdSubSection===s?AMBER:BORDER}`, background:cmdSubSection===s?`rgba(212,175,55,0.12)`:IVORY, color:cmdSubSection===s?AMBER2:TEXT2, fontSize:12, fontWeight:cmdSubSection===s?800:600, cursor:"pointer", textTransform:"capitalize", letterSpacing:"0.03em", flexShrink:0 }}>
+                  {s==="overview"?"Overview":s==="kitchen"?"Kitchen":s==="humidor"?"Humidor":"Bar"}
+                </motion.button>
+              ))}
+            </div>
+
             {/* ── TRIPLE-IMAGE HERO PAIRING MATRIX ─────────────────────────── */}
-            <div style={{ display:"flex", gap:14, minHeight:340 }}>
+            {cmdSubSection === "overview" && <div style={{ display:"flex", gap:14, minHeight:340 }}>
 
               {/* LEFT PANEL — portrait image canvas */}
               <div style={{ flex:"0 0 48%", position:"relative", borderRadius:12, overflow:"hidden", background:"#0D0600", boxShadow:"0 4px 28px rgba(0,0,0,0.32)" }}>
@@ -1250,20 +1311,18 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   ))}
                 </div>
               </div>
-            </div>
+            </div>}
 
             {/* ── BOTTOM THUMBNAIL PREVIEW STRIP ────────────────────────────── */}
-            <div style={{ display:"flex", gap:10 }}>
+            {cmdSubSection === "overview" && <div style={{ display:"flex", gap:10 }}>
               {[
-                { src:IMG("lounge_bg.jpg"),      label:"LOUNGE SEATING",   sub:"Luxury leather seating"   },
-                { src:IMG("pour-1.jpg"),          label:"SPIRIT SERVICE",   sub:"Premium pour selection"   },
-                { src:IMG("cigar1.png"),          label:"HUMIDOR RESERVE",  sub:"Tobacconist selection"    },
+                { src:IMG("lounge_bg.jpg"),      label:"LOUNGE SEATING",   sub:"Luxury leather seating",   section:"overview" as const },
+                { src:IMG("pour-1.jpg"),          label:"SPIRIT SERVICE",   sub:"Premium pour selection",   section:"bar" as const      },
+                { src:IMG("cigar1.png"),          label:"HUMIDOR RESERVE",  sub:"Tobacconist selection",    section:"humidor" as const  },
               ].map((card,i)=>(
-                <div key={i} style={{ flex:1, borderRadius:9, overflow:"hidden", background:`linear-gradient(135deg,#1C0A02,#0D0600)`, border:`1.5px solid ${BORDER}`, cursor:"pointer", position:"relative", height:92 }}>
+                <div key={i} onClick={()=>setCmdSubSection(card.section)} style={{ flex:1, borderRadius:9, overflow:"hidden", background:`linear-gradient(135deg,#1C0A02,#0D0600)`, border:`1.5px solid ${BORDER}`, cursor:"pointer", position:"relative", height:92 }}>
                   <img src={card.src} alt={card.label} style={{ width:"100%", height:"100%", objectFit:"cover", position:"absolute", inset:0, opacity:0.82 }}
-                    onError={e=>{
-                      (e.target as HTMLImageElement).style.display="none";
-                    }}
+                    onError={e=>{ (e.target as HTMLImageElement).style.display="none"; }}
                   />
                   <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.62) 0%,rgba(0,0,0,0.08) 60%)", pointerEvents:"none" }} />
                   <div style={{ position:"absolute", bottom:8, left:9, right:9 }}>
@@ -1272,7 +1331,181 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   </div>
                 </div>
               ))}
+            </div>}
+
+            {/* ── KITCHEN PANEL ─────────────────────────────────────────────── */}
+            {cmdSubSection === "kitchen" && (
+            <div style={{ background:CARD_BG, borderRadius:12, border:`1px solid ${BORDER}`, overflow:"hidden" }}>
+              <div style={{ background:`linear-gradient(135deg,#1C0A02,#0D0600)`, padding:"14px 16px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                <div>
+                  <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:2 }}>COMMAND CENTER</div>
+                  <div style={{ fontSize:18, fontWeight:900, color:"#F0E8D4" }}>Kitchen Operations</div>
+                </div>
+                <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                  <div style={{ width:8, height:8, borderRadius:"50%", background:GREEN }} />
+                  <span style={{ fontSize:11, color:GREEN, fontWeight:700 }}>LIVE</span>
+                </div>
+              </div>
+              <div style={{ padding:"14px 16px" }}>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:14 }}>
+                  {[
+                    { label:"Active Orders", val:"4", color:AMBER2 },
+                    { label:"Avg Wait", val:"8 min", color:TEXT1 },
+                    { label:"Status", val:"BUSY", color:"#EF4444" },
+                  ].map(m=>(
+                    <div key={m.label} style={{ background:IVORY, borderRadius:8, padding:"10px 12px", border:`1px solid ${BORDER}` }}>
+                      <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", fontWeight:700, marginBottom:4 }}>{m.label}</div>
+                      <div style={{ fontSize:16, fontWeight:900, color:m.color }}>{m.val}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize:10, fontWeight:800, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:8 }}>Order Queue</div>
+                {[
+                  { table:"Table 1", items:"Wagyu Carpaccio, Cheese Flight", status:"Plating", elapsed:"4m" },
+                  { table:"Table 4", items:"Smoked Short Rib Sliders x2", status:"Cooking", elapsed:"7m" },
+                  { table:"Table 7", items:"Truffle Charcuterie Board", status:"Ready", elapsed:"12m" },
+                  { table:"Bar", items:"Dark Chocolate Tart x3", status:"Plating", elapsed:"3m" },
+                ].map((o,i)=>(
+                  <div key={i} style={{ padding:"10px 12px", borderRadius:8, border:`1px solid ${BORDER}`, background:IVORY, marginBottom:6, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <div style={{ flex:1 }}>
+                      <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:3 }}>
+                        <span style={{ fontSize:12, fontWeight:800, color:TEXT1 }}>{o.table}</span>
+                        <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, background:o.status==="Ready"?`rgba(46,125,79,0.15)`:o.status==="Cooking"?`rgba(212,175,55,0.14)`:`rgba(59,130,246,0.10)`, color:o.status==="Ready"?GREEN:o.status==="Cooking"?AMBER2:"#3B82F6", fontWeight:700 }}>{o.status}</span>
+                      </div>
+                      <div style={{ fontSize:11, color:TEXT3 }}>{o.items}</div>
+                    </div>
+                    <div style={{ fontSize:12, fontWeight:700, color:TEXT3 }}>{o.elapsed}</div>
+                  </div>
+                ))}
+                <div style={{ fontSize:10, fontWeight:800, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.14em", marginTop:14, marginBottom:8 }}>Kitchen Staff</div>
+                <div style={{ display:"flex", gap:8 }}>
+                  {["Chef Marco R.", "Line Cook — A. Park", "Expo — D. Chen"].map((s,i)=>(
+                    <div key={i} style={{ flex:1, padding:"8px 10px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, textAlign:"center" as const }}>
+                      <div style={{ fontSize:11, fontWeight:700, color:TEXT1 }}>{s.split("—")[0].trim()}</div>
+                      {s.includes("—") && <div style={{ fontSize:10, color:TEXT3 }}>{s.split("—")[1].trim()}</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
+            )}
+
+            {/* ── HUMIDOR PANEL ─────────────────────────────────────────────── */}
+            {cmdSubSection === "humidor" && (
+            <div style={{ background:CARD_BG, borderRadius:12, border:`1px solid ${BORDER}`, overflow:"hidden" }}>
+              <div style={{ background:`linear-gradient(135deg,#1C0A02,#0D0600)`, padding:"14px 16px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                <div>
+                  <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:2 }}>COMMAND CENTER</div>
+                  <div style={{ fontSize:18, fontWeight:900, color:"#F0E8D4" }}>Humidor Reserve</div>
+                </div>
+                <div style={{ textAlign:"right" as const }}>
+                  <div style={{ fontSize:10, color:TEXT3, fontWeight:700 }}>Climate</div>
+                  <div style={{ fontSize:13, fontWeight:900, color:AMBER2 }}>68°F · 70% RH</div>
+                </div>
+              </div>
+              <div style={{ padding:"14px 16px" }}>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8, marginBottom:14 }}>
+                  {[
+                    { label:"Temperature", val:"68°F", ok:true },
+                    { label:"Humidity", val:"70%", ok:true },
+                    { label:"In Stock", val:"284", ok:true },
+                    { label:"Low Stock", val:"3", ok:false },
+                  ].map(m=>(
+                    <div key={m.label} style={{ background:IVORY, borderRadius:8, padding:"10px 10px", border:`1px solid ${m.ok?BORDER:"#FCA5A5"}` }}>
+                      <div style={{ fontSize:8, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.09em", fontWeight:700, marginBottom:3 }}>{m.label}</div>
+                      <div style={{ fontSize:15, fontWeight:900, color:m.ok?TEXT1:"#EF4444" }}>{m.val}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize:10, fontWeight:800, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:8 }}>Cigar Inventory — By Brand</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {[
+                    { brand:"Arturo Fuente", models:"Opus X, Hemingway, Don Carlos", qty:42, stock:"in_stock" },
+                    { brand:"Padron", models:"1926, 1964 Anniversary", qty:28, stock:"low_stock" },
+                    { brand:"Liga Privada", models:"No. 9, T52, Papas Fritas", qty:16, stock:"low_stock" },
+                    { brand:"Oliva", models:"Serie V Melanio, Serie O", qty:55, stock:"in_stock" },
+                    { brand:"Davidoff", models:"Winston Churchill, Grand Cru", qty:31, stock:"in_stock" },
+                    { brand:"My Father", models:"Le Bijou, El Centurion", qty:19, stock:"in_stock" },
+                    { brand:"Rocky Patel", models:"Decade, Edge", qty:8, stock:"out_of_stock" },
+                    { brand:"Cohiba", models:"Behike 52, BHK", qty:6, stock:"low_stock" },
+                  ].map((c,i)=>(
+                    <div key={i} style={{ padding:"9px 12px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                      <div>
+                        <div style={{ fontSize:12, fontWeight:800, color:TEXT1 }}>{c.brand}</div>
+                        <div style={{ fontSize:10, color:TEXT3 }}>{c.models}</div>
+                      </div>
+                      <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+                        <span style={{ fontSize:13, fontWeight:800, color:TEXT1 }}>{c.qty}</span>
+                        <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, fontWeight:700, background:c.stock==="in_stock"?`rgba(46,125,79,0.12)`:c.stock==="low_stock"?`rgba(212,175,55,0.14)`:`rgba(239,68,68,0.12)`, color:c.stock==="in_stock"?GREEN:c.stock==="low_stock"?AMBER2:"#EF4444" }}>{c.stock==="in_stock"?"IN STOCK":c.stock==="low_stock"?"LOW":"OUT"}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            )}
+
+            {/* ── BAR PANEL ─────────────────────────────────────────────────── */}
+            {cmdSubSection === "bar" && (
+            <div style={{ background:CARD_BG, borderRadius:12, border:`1px solid ${BORDER}`, overflow:"hidden" }}>
+              <div style={{ background:`linear-gradient(135deg,#1C0A02,#0D0600)`, padding:"14px 16px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                <div>
+                  <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:2 }}>COMMAND CENTER</div>
+                  <div style={{ fontSize:18, fontWeight:900, color:"#F0E8D4" }}>Bar Operations</div>
+                </div>
+                <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                  <div style={{ width:8, height:8, borderRadius:"50%", background:GREEN }} />
+                  <span style={{ fontSize:11, color:GREEN, fontWeight:700 }}>LIVE</span>
+                </div>
+              </div>
+              <div style={{ padding:"14px 16px" }}>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:14 }}>
+                  {[
+                    { label:"Open Bar Tabs", val:String(activeTabs.length), color:AMBER2 },
+                    { label:"Tab Revenue", val:"$"+activeTabs.reduce((a,t)=>a+t.total,0).toFixed(0), color:GREEN },
+                    { label:"Pours Served", val:"24", color:TEXT1 },
+                  ].map(m=>(
+                    <div key={m.label} style={{ background:IVORY, borderRadius:8, padding:"10px 12px", border:`1px solid ${BORDER}` }}>
+                      <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em", fontWeight:700, marginBottom:4 }}>{m.label}</div>
+                      <div style={{ fontSize:16, fontWeight:900, color:m.color }}>{m.val}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize:10, fontWeight:800, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:8 }}>Spirit Inventory</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {[
+                    { brand:"Bourbon", items:"Blanton's, Woodford, Maker's, Knob Creek", qty:18, stock:"in_stock" },
+                    { brand:"Scotch", items:"Macallan, Balvenie, Lagavulin, Glenfiddich", qty:12, stock:"in_stock" },
+                    { brand:"Cognac", items:"Hennessy XO/VSOP, Rémy Martin XO", qty:9, stock:"low_stock" },
+                    { brand:"Tequila", items:"Don Julio 1942, Clase Azul, Casamigos", qty:14, stock:"in_stock" },
+                    { brand:"Rum", items:"Ron Zacapa 23, Mount Gay Black Barrel", qty:7, stock:"low_stock" },
+                    { brand:"Mezcal", items:"Del Maguey Vida, Clase Azul Guerrero", qty:5, stock:"low_stock" },
+                  ].map((s,i)=>(
+                    <div key={i} style={{ padding:"9px 12px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                      <div>
+                        <div style={{ fontSize:12, fontWeight:800, color:TEXT1 }}>{s.brand}</div>
+                        <div style={{ fontSize:10, color:TEXT3 }}>{s.items}</div>
+                      </div>
+                      <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+                        <span style={{ fontSize:13, fontWeight:800, color:TEXT1 }}>{s.qty}</span>
+                        <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, fontWeight:700, background:s.stock==="in_stock"?`rgba(46,125,79,0.12)`:`rgba(212,175,55,0.14)`, color:s.stock==="in_stock"?GREEN:AMBER2 }}>{s.stock==="in_stock"?"IN STOCK":"LOW"}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize:10, fontWeight:800, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.14em", marginTop:14, marginBottom:8 }}>Active Bar Tabs</div>
+                {activeTabs.slice(0,3).map(t=>(
+                  <div key={t.id} style={{ padding:"9px 12px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, marginBottom:5, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:800, color:TEXT1 }}>{t.name}</div>
+                      <div style={{ fontSize:10, color:TEXT3 }}>Table {t.tableNumber} · {t.items.length} items</div>
+                    </div>
+                    <span style={{ fontSize:14, fontWeight:900, color:AMBER2 }}>${t.total.toFixed(0)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            )}
 
             {/* ── ACTION BUTTONS ─────────────────────────────────────────────── */}
             <div style={{ display:"flex", gap:8 }}>
