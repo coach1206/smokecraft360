@@ -69,6 +69,20 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    warmup: {
+      clientFiles: [
+        "./src/App.tsx",
+        "./src/pages/MasterBlender.tsx",
+        "./src/pages/NoveeOsShell.tsx",
+        "./src/pages/NoveeEATDashboard.tsx",
+        "./src/pages/CraftEntryPoint.tsx",
+        "./src/pages/NoveeExecutiveCommandCenter.tsx",
+        "./src/pages/NoveeKioskBootSequence.tsx",
+        "./src/pages/NoveeCraftPortalHome.tsx",
+        "./src/pages/S1_InitGate.tsx",
+        "./src/pages/Home.tsx",
+      ],
+    },
   },
   preview: {
     port,

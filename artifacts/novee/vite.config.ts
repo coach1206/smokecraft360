@@ -70,6 +70,19 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    warmup: {
+      clientFiles: [
+        "./src/App.tsx",
+        "./src/pages/MasterBlender.tsx",
+        "./src/pages/EATDashboard.tsx",
+        "./src/pages/ExecutiveCommandCenter.tsx",
+        "./src/pages/OSShell.tsx",
+        "./src/pages/CraftEntryPoint.tsx",
+        "./src/pages/KioskBootSequence.tsx",
+        "./src/pages/CraftPortalHome.tsx",
+        "./src/pages/S1_InitGate.tsx",
+      ],
+    },
   },
   preview: {
     port,
