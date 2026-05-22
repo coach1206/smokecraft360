@@ -1249,6 +1249,8 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
             </div>
           </div>
           )}
+          {/* bottom clearance — prevents fixed hitbox clipping last row */}
+          <div style={{ height:90, flexShrink:0 }} />
         </main>
 
         {/* COL 4 — Perfect Pairings */}
