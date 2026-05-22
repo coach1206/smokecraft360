@@ -1879,7 +1879,7 @@ function OsShellContent() {
 
         <AnimatePresence>
           {pinGate && (
-            <Suspense fallback={null}>
+            <Suspense fallback={<PhaseLoadingFallback />}>
               <NoveeStaffPinGate
                 key={`pin-${pinGate.phase}`}
                 level={pinGate.level}

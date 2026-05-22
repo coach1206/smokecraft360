@@ -535,7 +535,10 @@ export default function CraftEntryPoint() {
   }
 
   function handleSmokecraftSelect() {
-    try { localStorage.setItem("novee_boot_done", "1"); } catch {}
+    try {
+      sessionStorage.setItem("novee_boot_done", "1");
+      sessionStorage.setItem("novee_initial_phase", "s1_demo");
+    } catch {}
     setStage("journey");
   }
 

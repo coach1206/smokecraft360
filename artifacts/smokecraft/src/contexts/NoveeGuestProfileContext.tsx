@@ -139,11 +139,16 @@ const Ctx = createContext<GuestProfileCtx | null>(null);
 export function NoveeGuestProfileProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<GuestProfile>(() => {
     try {
+      const overridePhase = (() => {
+        try {
+          const p = sessionStorage.getItem("novee_initial_phase") as Phase | null;
+          if (p) { sessionStorage.removeItem("novee_initial_phase"); return p; }
+        } catch {}
+        return null;
+      })();
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        // Always start at crafthub on fresh load — kiosk resets to hub every session
-        return { ...DEFAULT_PROFILE, ...JSON.parse(raw), phase: "crafthub" };
-      }
+      const base = raw ? { ...DEFAULT_PROFILE, ...JSON.parse(raw) } : { ...DEFAULT_PROFILE };
+      return { ...base, phase: overridePhase ?? "crafthub" };
     } catch {}
     return DEFAULT_PROFILE;
   });

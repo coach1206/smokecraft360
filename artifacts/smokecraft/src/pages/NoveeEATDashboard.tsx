@@ -48,7 +48,7 @@ const EAT_TAB_SLUG_MAP: Record<string, TopTab> = {
   "staffing":        "Staffing",
 };
 
-export function eatTabToSlug(tab: TopTab): string {
+function eatTabToSlug(tab: TopTab): string {
   return tab.toLowerCase().replace(/\s+/g, "-");
 }
 
