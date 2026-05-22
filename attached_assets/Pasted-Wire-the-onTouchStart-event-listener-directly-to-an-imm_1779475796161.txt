@@ -1,0 +1,36 @@
+Wire the 'onTouchStart' event listener directly to an immediate boolean variable change ('isCommandCenterOpen'). When triggered, render the panel layout instantly using direct inline transform coordinates ('transform: translateY(0);') instead of a dynamic route check, completely bypassing the black screen failure path.
+
+All administrative buttons inside this unified drawer ([FORCE HIGH-READABILITY], [RESET ACTIVE VENUE]) must execute instantaneous state changes on your current app configurations.
+
+=======================================================================
+2. COUNTER SYSTEM LATENCY — ENFORCE STATIC LOCALIZED MEDIA CACHING
+To completely eradicate the slow loading speeds, decouple the primary layout from external asset network extraction scripts or dynamic payload requests.
+
+Map all visual paths directly to local, high-fidelity media assets, lowering system load and module transition times down under 200ms across all touchscreen viewports.
+
+Completely strip out the purple flower image asset string from all image rendering arrays, detail cards, and fallback image paths across BOTH repositories.
+
+Hardwire the primary 12-column center grid display to a premium visual operating layout framework:
+
+Columns 1–6 (Cinematic Canvas View): Mount a portrait-oriented, photorealistic luxury hospitality presentation image block featuring a premium lit cigar resting beside a crystal glass of dark bourbon. Apply an elegant volumetric rising smoke animation overlay (.webp or .gif format) at 20% tracking opacity.
+
+Columns 7–12 (Data Analytics & Ratings Card): Render clean typographic text lines detailing full product specifics: 'Rocky Patel Vintage 1992', 'Maduro · Honduras / Nicaragua Wrapper', and an isolated custom monospace rating card box reading '94 / 100 POINT EVALUATION'.
+
+=======================================================================
+3. LOCK DECK ARRAYS TO THE TOP & FIX THE OVERCROWDING ERROR
+Re-anchor the global navigation row to the absolute top of the layout viewport on BOTH applications, positioning it cleanly as a stacked dual-tier header:
+
+Tier 1 (Global Module Selector Box): Displays high-contrast, touch-padded target boxes [MENU] | [RESERVATIONS] | [EVENTS] | [E.A.T. OVERLAY] | [MESSAGES] | [REPORTS] | [SETTINGS] styled using a solid Premium Ivory (#F9F8F6) and True Obsidian (#010101) grid. Include a bold, functional '[ BACK ]' option on the left margin to instantly return to the main luxury Craft Hub selector deck.
+
+Tier 2 (Operations Sub-Nav Links): Rendered directly underneath Tier 1. Enforce a strict layout rule ('gap: 32px; width: 100%; white-space: nowrap;') on this navigation element line. This instantly forces the links to space out cleanly and completely kills the horizontal text collision and vertical stacking bugs on all touchscreen resolutions.
+
+=======================================================================
+4. PLUMB EVERY SINGLE INTERACTIVE ON-SCREEN HIT ZONE
+Make the custom horizontal slider tracks on the right control panel flank fully operational. Interacting with the elevated ivory thumb node on the 'Lighting' and 'Scent' sliders must calculate and display live percentage numbers (e.g., smoothly changing the text readout directly from 40% to 65%) and pass asynchronous state changes down to the server engine instantly.
+
+Map the circular floor plan table maps. Tapping an active seating circle must instantly update the right-side dashboard panel to pull that specific table's open ticket ledger, itemized list, and active session timeline variables.
+
+Hardwire all transactional items on the console row: [Add Cigar - $42] and [Add Pairing] must dynamically insert line items into the open bill collection, and tapping [Checkout - $248.75] must fire a clean POS payment loop simulation via Port 8443 before resetting values back to nominal.
+
+EXECUTION ENFORCEMENT:
+Do not utilize lazy-load split chunk configurations or modular path loops. Every feature must be compiled inline, active, responsive to physical touchscreen human hand mechanics, completely un-bloated, and functionally operational across BOTH application architectures.

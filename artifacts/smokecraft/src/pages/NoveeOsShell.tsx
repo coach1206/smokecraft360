@@ -9,14 +9,15 @@ import { useVisualSync } from "@/hooks/useVisualSync";
 import type { Phase } from "@/contexts/NoveeGuestProfileContext";
 import NoveeEATDashboard from "@/pages/NoveeEATDashboard";
 
-// Lazy-load ported pages
-const NoveeKioskBootSequence = lazy(() => import("@/pages/NoveeKioskBootSequence").then((m: any) => ({ default: m.default || m })));
-const NoveeCraftPortalHome = lazy(() => import("@/pages/NoveeCraftPortalHome").then((m: any) => ({ default: m.default || m })));
+// Critical-path pages: static imports — zero async chunking on boot / crafthub / command-center
+import NoveeKioskBootSequence from "@/pages/NoveeKioskBootSequence";
+import NoveeCraftPortalHome from "@/pages/NoveeCraftPortalHome";
+import NoveeExecutiveCommandCenter from "@/pages/NoveeExecutiveCommandCenter";
+// Deep-flow pages: lazy-loaded (only reached after boot + crafthub navigation)
 const S1_InitGate = lazy(() => import("@/pages/S1_InitGate").then((m: any) => ({ default: m.S1_InitGate || m.default || m })));
 const S2_TerroirMatrix = lazy(() => import("@/pages/S2_TerroirMatrix").then((m: any) => ({ default: m.S2_TerroirMatrix || m.default || m })));
 const S3_FormulationLab = lazy(() => import("@/pages/S3_FormulationLab").then((m: any) => ({ default: m.S3_FormulationLab || m.default || m })));
 const S4_DesignStudio = lazy(() => import("@/pages/S4_DesignStudio").then((m: any) => ({ default: m.S4_DesignStudio || m.default || m })));
-const NoveeExecutiveCommandCenter = lazy(() => import("@/pages/NoveeExecutiveCommandCenter").then((m: any) => ({ default: m.default || m })));
 const ControlChamber = lazy(() => import("@/pages/ControlChamber").then((m: any) => ({ default: m.default || m })));
 const NoveeStaffPinGate = lazy(() => import("@/components/NoveeStaffPinGate").then(m => ({ default: m.NoveeStaffPinGate })));
 import type { PinRole } from "@/components/NoveeStaffPinGate";
@@ -1942,7 +1943,7 @@ function OsShellContent() {
       import("@/pages/S2_TerroirMatrix").catch(() => {});
       import("@/pages/S3_FormulationLab").catch(() => {});
       import("@/pages/S4_DesignStudio").catch(() => {});
-      import("@/pages/NoveeExecutiveCommandCenter").catch(() => {});
+
       import("@/pages/ControlChamber").catch(() => {});
       import("@/components/NoveeStaffPinGate").catch(() => {});
     }, 800);
@@ -2088,9 +2089,7 @@ export default function NoveeOsShell() {
     <NoveeGuestProfileProvider>
       <AnimatePresence mode="wait">
         {!bootDone ? (
-          <Suspense fallback={<PhaseLoadingFallback />}>
-            <CompBoot key="boot" onComplete={handleBootComplete} />
-          </Suspense>
+          <CompBoot key="boot" onComplete={handleBootComplete} />
         ) : (
           <motion.div key="shell"
             initial={{ opacity: 0, filter: "blur(4px)" }}
