@@ -34,7 +34,12 @@ class EATErrorBoundary extends React.Component<
     this.state = { error: null };
   }
   static getDerivedStateFromError(err: unknown) {
-    return { error: String(err) };
+    const msg = String(err);
+    if (msg.includes("Failed to fetch dynamically imported module") || msg.includes("Importing a module script failed")) {
+      window.location.reload();
+      return { error: null };
+    }
+    return { error: msg };
   }
   componentDidCatch(err: unknown, info: { componentStack: string }) {
     console.error("[EAT Dashboard Crash]", err, "\nComponent stack:", info.componentStack);
