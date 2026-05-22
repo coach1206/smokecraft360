@@ -1,4 +1,5 @@
-import { useState, createContext, useContext, useEffect } from "react";
+import { useState, createContext, useContext, useEffect, Component } from "react";
+import type { ReactNode } from "react";
 import { IntegrationInfraPanel }          from "@/components/IntegrationInfraPanel";
 import { HealthMonitorPanel }             from "@/components/HealthMonitorPanel";
 import { IntegrationAnalyticsPanel }      from "@/components/IntegrationAnalyticsPanel";
@@ -34,6 +35,31 @@ import { RevenueOptimizationOverlay } from "@/components/RevenueOptimizationOver
 import { NoveeXPBridge }              from "@/components/PosXPFeedback";
 import { playClick } from "@/hooks/useAudio";
 import { hapticClick } from "@/hooks/useHaptic";
+
+class EATErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: string | null }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(err: unknown) {
+    return { error: String(err) };
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#0A0604", color: "#D4AF37", fontFamily: "'Inter',sans-serif", gap: 16, padding: 32 }}>
+          <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: "0.12em" }}>E.A.T SYSTEM</div>
+          <div style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", textAlign: "center", maxWidth: 400, lineHeight: 1.6 }}>The dashboard encountered an error. Please contact your system administrator.</div>
+          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 8, padding: "10px 24px", borderRadius: 8, border: "1px solid #D4AF37", background: "rgba(212,175,55,0.12)", color: "#D4AF37", fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: "0.10em" }}>RETRY</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const GOLD  = "#D4AF37";
 const AMBER = "#C4860A";
@@ -1266,7 +1292,7 @@ function SystemBar() {
   function onStaffAuth() {
     setStaffAuthActive(true);
     setStaffAuthPulsing(false);
-    navigate("eat_dashboard", "staff");
+    navigate("eat_dashboard");
     setTimeout(() => { setStaffAuthActive(false); setStaffAuthPulsing(true); }, 4000);
   }
 
@@ -1291,7 +1317,7 @@ function SystemBar() {
           RESET BLEND
         </motion.button>
 
-        <motion.button type="button" onPointerDown={() => navigate("eat_dashboard", "staff")} whileTap={{ scale: 0.95 }}
+        <motion.button type="button" onPointerDown={() => navigate("eat_dashboard")} whileTap={{ scale: 0.95 }}
           style={{ border: `1px solid ${GOLD}66`, borderRadius: 6, padding: "5px 14px", background: `rgba(212,175,55,0.14)`, cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: `0 0 10px ${GOLD}22` }}>
           COACH HELP
         </motion.button>
@@ -1363,7 +1389,7 @@ function EATTelemetryBar() {
   ];
 
   return (
-    <motion.div onPointerDown={() => navigate("eat_dashboard", "staff")} whileTap={{ scale: 0.995 }}
+    <motion.div onPointerDown={() => navigate("eat_dashboard")} whileTap={{ scale: 0.995 }}
       style={{ width: "100%", flexShrink: 0, height: 42, background: "rgba(3,2,0,0.98)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderTop: `1px solid rgba(212,175,55,0.30)`, borderBottom: `1px solid rgba(212,175,55,0.12)`, display: "flex", flexDirection: "row", alignItems: "center", position: "relative", zIndex: 180, cursor: "pointer", overflow: "hidden" }}>
       <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 200, background: `radial-gradient(ellipse at 0% 50%, rgba(212,175,55,0.07) 0%, transparent 70%)`, pointerEvents: "none" }} />
 
@@ -1575,7 +1601,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; on
   const { profile } = useGuest();
   const { phase }   = profile;
   if (phase === "crafthub")          return <CraftHubWrapper />;
-  if (phase === "eat_dashboard")     return <EATDashboard eatFlags={eatFlags} />;
+  if (phase === "eat_dashboard")     return <EATErrorBoundary><EATDashboard eatFlags={eatFlags} /></EATErrorBoundary>;
   if (phase === "executive_command") return <POSCommandHub />;
   if (phase === "pairing_view")      return <PairingView />;
   if (phase === "lounge_view")       return <LoungeView />;
