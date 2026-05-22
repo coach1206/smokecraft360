@@ -468,7 +468,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const SEL = (s:React.CSSProperties): React.CSSProperties => s;
 
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100vh", background:PAGE_BG, fontFamily:"'Inter','Helvetica Neue',sans-serif", overflow:"hidden" }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", background:PAGE_BG, fontFamily:"'Inter','Helvetica Neue',sans-serif", overflow:"hidden" }}>
 
       {/* ── TOP NAV ──────────────────────────────────────────────────────── */}
       <header style={{ height:72, background:IVORY, borderBottom:`1px solid ${BORDER}`, display:"flex", alignItems:"center", padding:"0 20px", gap:0, flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,0.07)", zIndex:50 }}>
