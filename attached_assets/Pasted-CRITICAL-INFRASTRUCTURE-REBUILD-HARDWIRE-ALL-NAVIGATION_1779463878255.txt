@@ -1,0 +1,39 @@
+CRITICAL INFRASTRUCTURE REBUILD: HARDWIRE ALL NAVIGATION CHANNELS, INTEGRATE BACK-BUTTONS, AND ACTIVATE FULL APPS
+
+The agent is stuck on static layout dimensions while leaving the functional core dead. The top sub-navigation options ('Command Center', 'Assets', 'Transactions', 'Pairing Engine', 'Analytics', 'Staff', 'Venue Intelligence') are completely unresponsive, clicking buttons does nothing, and there is no back button to drop out of this screen or return to the main Craft Hub selection workspace.
+
+You must immediately execute an absolute functional override across BOTH the SmokeCraft 360 and NOVEE OS codebases. Wire up every button state, build the layout content containers for all 6 tabs, inject true high-resolution photography, and deploy absolute back-navigation routines.
+
+=======================================================================
+1. DEPLOY LIVE VIEWPORT CONDITIONAL SWITCHING (NAV HEADER CORES)
+=======================================================================
+- Implement a rigid active tab state manager (e.g., 'activeTab', 'setActiveTab') tied directly to the top sub-nav options across BOTH apps.
+- Clicking any option must instantly clear the center workspace panel and load its unique layout container cleanly:
+  * [Command Center]: Renders the primary triple-image luxury console view.
+  * [Assets]: Renders the high-contrast tabular 'Real-Time Vault Inventory Ledger' grid mapping SKU metrics, mass deltas, and secure locations.
+  * [Transactions]: Renders the live billing ledger tracking open accounts, ticket items, and secure API port connections.
+  * [Pairing Engine]: Renders the dynamic image generation studio and CMS media upload portal layers.
+  * [Analytics / Staff / Venue]: Surface actual, clean monospace analytics readouts, live tablet device statuses, and crowd acoustic noise metrics.
+
+=======================================================================
+2. IMPLEMENT THE GLOBAL SOVEREIGN BACK-BUTTON INFRASTRUCTURE
+=======================================================================
+- Build a prominent, clean, high-contrast '[ BACK ]' or '[ RETURN TO CRAFT HUB ]' action target box directly inside the upper left corner boundary of the E.A.T. navigation bar on ALL application screens.
+- Hardwire the touch listener hooks ('onTouchStart' / 'onClick') to instantly pop the active routing layer out of the sub-system views and drop the user back cleanly to the main dark luxury Craft Hub selector deck (SmokeCraft, PourCraft, BeerCraft, WineCraft 360). This must be fully live with zero freeze delays.
+
+=======================================================================
+3. PURGE ALL GENERIC PLACEHOLDERS — HARDWIRE MEDIA PATHS
+=======================================================================
+- Completely delete the purple flower asset string from production memory.
+- Hook up real high-definition luxury hospitality imagery. The primary display section must render cinematic portrait photography of a premium lit cigar resting on an obsidian tray beside a crystal glass of bourbon with real smoke overlay effects. No static text boxes or empty white frames are allowed.
+
+=======================================================================
+4. WIRE TRANSACTION CONSOLE TAP ACTIONS
+=======================================================================
+- Make the bottom primary interface options fully operational:
+  * [Add Cigar - $42] -> Instantly injects the 'Rocky Patel Vintage 1992' product object into the active checkout basket array.
+  * [Add Pairing - From $16] -> Appends both the cigar item and the single-barrel bourbon pour to the current session bill tracking data.
+  * [Checkout - $248.75] -> Automatically processes a secure transaction checkout loop, executing a clean terminal payment animation before returning the workspace state to idle.
+
+EXECUTION CONSTRAINT:
+Do not alter the light-mode Ivory & Obsidian aesthetic. Every button, nav item, and back key must be fully responsive to touchscreen human hand mechanics with completely separated layouts and zero text overlap on BOTH apps.

@@ -1,0 +1,42 @@
+CRITICAL DUAL-PLATFORM CODE METAMORPHOSIS: HARDWIRE ALL NAVIGATION CHANNELS, INTEGRATE BACK-BUTTONS, AND ACTIVATE CORES ACROSS SMOKECRAFT AND NOVEE OS
+
+The interface implementation across BOTH the SmokeCraft 360 and NOVEE OS codebases remains frozen as an unresponsive visual shell of mock placeholders. The top toolbar options ('Command Center', 'Assets', 'Transactions', 'Pairing Engine', 'Analytics', 'Staff', 'Venue Intelligence') are completely dead, clicking buttons creates zero state transitions, right-side sliders emit no reactive event listeners, and the system continues to serve a generic purple flower placeholder instead of a premium visual pipeline.
+
+You must immediately break out of static layout dimensions and execute an end-to-end interactive code rewrite across BOTH repository frameworks. Every button, slider, navigation path, and back-button across both apps must be fully wired, active, and responsive to physical touchscreen mechanics.
+
+=======================================================================
+1. DEPLOY LIVE VIEWPORT CONDITIONAL SWITCHING (NAV HEADER CORES)
+=======================================================================
+- Implement a rigid active tab state manager (e.g., 'activeTab', 'setActiveTab') tied directly to the top sub-nav options inside the entry files for BOTH applications.
+- Touching a navigation tab option must update the active layout instance immediately with no screen freezes, clearing the center panel and mounting its unique layout container cleanly:
+  * [Command Center]: Renders the primary triple-image luxury console view.
+  * [Assets]: Loads a live, high-contrast tabular 'Real-Time Vault Inventory Ledger' grid sorting real data columns: SKU numbers, product tags, storage vaults, and mass deltas.
+  * [Transactions]: Renders the structural commerce billing ledger, displaying itemized checkout lists, running open invoices, and active POS gateway links.
+  * [Pairing Engine]: Loads the active Media CMS upload control view and AI canvas prompt synthesis layout panels.
+  * [Analytics / Staff / Venue / Venue Intelligence]: Renders actual responsive data feeds tracking room decibel ranges, connected tablet battery logs, and active session duration tracks.
+
+=======================================================================
+2. IMPLEMENT GLOBAL SOVEREIGN BACK-BUTTON & COMMAND MASTER OVERRIDES
+=======================================================================
+- Build a prominent, clean, high-contrast '[ BACK ]' or '[ RETURN TO CRAFT HUB ]' action target box directly inside the upper left corner boundary of the E.A.T. navigation header row on ALL application views.
+- Hardwire the touch listener hooks ('onTouchStart' / 'onClick') to instantly pop the active routing layer out of the sub-system views and drop the user back cleanly to the main dark luxury Craft Hub selector deck (SmokeCraft, PourCraft, BeerCraft, WineCraft 360) with zero freeze delays.
+- Create an explicit state layer ('isCommandCenterOpen', 'setIsCommandCenterOpen') in the primary layouts. Deploy the invisible 80px by 80px capacitive touch hitbox (.command-center-trigger-envelope) pinned securely to the absolute bottom-right corner of the viewport frame. Map its 'onTouchStart' event to immediately slide up the Admin Command Center control drawer window. All override controls inside the command hub must emit actual state updates.
+
+=======================================================================
+3. ABSOLUTE PURGE OF THE PURPLE FLOWER — ENGINE REAL VISUAL PATHS
+=======================================================================
+- Completely delete the purple flower image asset string from production memory, frontend view files, image maps, and local caches across BOTH applications.
+- Replace all placeholder nodes with true high-resolution luxury hospitality media files. The center console hero display must serve cinematic portrait photography of a premium lit cigar resting on an obsidian tray next to a crystal glass of dark bourbon with an active, volumetric smoke overlay effect. No static text boxes or empty white frames are allowed.
+
+=======================================================================
+4. WIRE UP ACCESS DIALS, TRANSACTION BUTTONS, AND SEATING NODES
+=======================================================================
+- Hardwire all slider elements on the right panel. Dragging your thumb along the elevated circular ivory node manipulator handle must instantly update the live text readout string (e.g., updating lighting values directly from 40% to 65%) and dispatch an asynchronous state mutation payload to the local environment server, dynamically altering the brightness overlay vector of the background canvas.
+- Tapping circular seating targets inside the floor plan diagram view must instantly trigger a state change, updating the right-hand 'ACTIVE TABS' account dashboard list to display that precise table's open bill, item list, and session timer logs.
+- Make every transactional point on the bottom bar fully live and functional:
+  * [Add Cigar - $42] -> Instantly injects the 'Rocky Patel Vintage 1992' product object directly into the active open checkout bill stack.
+  * [Add Pairing - From $16] -> Injects the combined cigar and spirit pairing items directly into the current transaction stream.
+  * [Checkout - $248.75] -> Triggers a clean payment processing execution state, running a success alert banner or animation before resetting the terminal values back to idle.
+
+EXECUTION ENFORCEMENT:
+Do not alter or break the clean light-mode Ivory & Obsidian design aesthetic currently displayed on the screen. All layout containers must be perfectly separated, completely responsive to touchscreen hand mechanics, and operating with zero placeholder code or label overlaps on BOTH SmokeCraft 360 and NOVEE OS.

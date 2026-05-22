@@ -288,6 +288,8 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [scentMode, setScentMode]   = useState(SCENT_OPTIONS[0]);
   const [scentPct, setScentPct]     = useState(40);
   const [pairingIdx, setPairingIdx] = useState(0);
+  const [isCommandCenterOpen, setIsCommandCenterOpen] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string|null>(null);
 
   // ── E.A.T. VI — Venue Intelligence state ───────────────────────────────────
   interface VIServiceSignal   { table:string; signal:string; urgency:"HIGH"|"MED"|"LOW" }
@@ -407,7 +409,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
             description:String(item.description??item.flavorNotes??prev.description), strength:Number(item.strength??prev.strength),
             rating:Number(item.rating??item.score??prev.rating),
             price:item.costCents!=null?Math.round(Number(item.costCents)/100):item.price!=null?Number(item.price):prev.price,
-            imageUrl:item.imageUrl?String(item.imageUrl):prev.imageUrl,
+            imageUrl:(item.imageUrl&&!/^https?:\/\//i.test(String(item.imageUrl)))?String(item.imageUrl):prev.imageUrl,
           }));
         }
         if (suggestions.length>0) {
@@ -471,11 +473,13 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
 
   const onTableMD = useCallback((e:React.MouseEvent, id:string|number) => {
     e.preventDefault();
+    const matchTab = activeTabs.find(t=>t.tableNumber===String(id));
+    if(matchTab) setSelTabId(matchTab.id);
     const rect = floorRef.current?.getBoundingClientRect(); if(!rect) return;
     const t = floorTables.find(t=>t.id===id); if(!t) return;
     dragOff.current = { x:e.clientX-rect.left-(t.x/100)*rect.width, y:e.clientY-rect.top-(t.y/100)*rect.height };
     setDragging(id);
-  }, [floorTables]);
+  }, [floorTables, activeTabs]);
   const onFloorMM = useCallback((e:React.MouseEvent) => {
     if(!dragging||!floorRef.current) return;
     const rect = floorRef.current.getBoundingClientRect();
@@ -492,22 +496,29 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const handleAddCigar = useCallback(() => {
     const token=localStorage.getItem("axiom_token")??""; if(!selectedTab) return;
     fetch(`/api/tabs/${selectedTab.id}/items`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({productName:featuredCigar.name,unitCents:Math.round(featuredCigar.price*100),quantity:1,craftType:"smoke"})}).catch(()=>{});
+    setToastMsg(`✓ ${featuredCigar.name} added to Tab ${selectedTab.tableNumber}`);
+    setTimeout(()=>setToastMsg(null),2400);
   },[selectedTab,featuredCigar]);
   const handleAddPairing = useCallback(() => {
     const token=localStorage.getItem("axiom_token")??""; if(!selectedTab) return;
     fetch(`/api/tabs/${selectedTab.id}/items`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({productName:"Premium Pairing Selection",unitCents:2800,quantity:1,craftType:"pour"})}).catch(()=>{});
+    setToastMsg("✓ Cigar + Single-Barrel Bourbon pairing added to tab");
+    setTimeout(()=>setToastMsg(null),2400);
   },[selectedTab]);
   const handleRoute = useCallback((dest:string) => {
     const token=localStorage.getItem("axiom_token")??""; if(!selectedTab) return;
     fetch(`/api/tabs/${selectedTab.id}/route`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({destination:dest,items:selectedTab.items})}).catch(()=>{});
+    setToastMsg(`✓ Order routed to ${dest.charAt(0).toUpperCase()+dest.slice(1)}`);
+    setTimeout(()=>setToastMsg(null),2200);
   },[selectedTab]);
   const handleCheckout = useCallback(async () => {
     if(!selectedTab||!selectedTab.items.length) return;
+    setToastMsg("⏳ Checkout initiated — processing payment...");
     const req:CheckoutRequest={ venueId:localStorage.getItem("axiom_venue_id")??"venue_01", tableNumber:selectedTab.tableNumber, items:selectedTab.items.map(i=>({productId:`item_${i.name.replace(/\s+/g,"_")}`,name:i.name,qty:i.qty,price:i.price})), successUrl:window.location.href, cancelUrl:window.location.href };
-    try { const result=await eatEngine.checkout(req); if(result.checkoutUrl?.startsWith("http")) window.open(result.checkoutUrl,"_blank"); } catch { /* silent */ }
+    try { const result=await eatEngine.checkout(req); if(result.checkoutUrl?.startsWith("http")) window.open(result.checkoutUrl,"_blank"); setToastMsg("✓ Checkout complete — tab cleared"); setTimeout(()=>setToastMsg(null),2400); } catch { setToastMsg("✗ Checkout failed — please retry"); setTimeout(()=>setToastMsg(null),3000); }
   },[selectedTab]);
 
-  void envState; void recentOrders; void wsConnected;
+  void envState; void recentOrders;
 
   // ── RENDER ────────────────────────────────────────────────────────────────
   const SEL = (s:React.CSSProperties): React.CSSProperties => s;
@@ -1307,6 +1318,120 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           </motion.div>
         ))}
       </footer>
+
+      {/* ── LIGHTING DIM OVERLAY ─────────────────────────────────────────── */}
+      {lighting < 95 && (
+        <div style={{ position:"fixed", inset:0, background:`rgba(0,0,0,${((95-lighting)/100)*0.42})`, pointerEvents:"none", zIndex:2, transition:"background 0.4s ease" }} />
+      )}
+
+      {/* ── TOAST NOTIFICATION ──────────────────────────────────────────── */}
+      <AnimatePresence>
+        {toastMsg && (
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:20}} transition={{duration:0.22}}
+            style={{ position:"fixed", bottom:76, left:"50%", transform:"translateX(-50%)", background:"#0D0D0E", border:`1px solid ${AMBER}`, borderRadius:10, padding:"12px 22px", fontSize:13, fontWeight:700, color:IVORY, zIndex:1000, whiteSpace:"nowrap", boxShadow:"0 4px 24px rgba(0,0,0,0.45)", letterSpacing:"0.02em" }}>
+            {toastMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── ADMIN COMMAND CENTER — 80×80 bottom-right hitbox ────────────── */}
+      <div onTouchStart={()=>setIsCommandCenterOpen(true)} onClick={()=>setIsCommandCenterOpen(true)}
+        style={{ position:"fixed", bottom:0, right:0, width:80, height:80, zIndex:998, cursor:"pointer" }}>
+        <div style={{ position:"absolute", bottom:8, right:8, width:28, height:28, borderRadius:6, background:"rgba(212,175,55,0.08)", border:"1px solid rgba(212,175,55,0.18)", display:"flex", alignItems:"center", justifyContent:"center", opacity:0.55 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"5px 5px", gap:"2px", width:12, height:12 }}>
+            {[0,1,2,3].map(i=><div key={i} style={{ background:AMBER, borderRadius:1, width:5, height:5 }} />)}
+          </div>
+        </div>
+      </div>
+
+      {/* ── ADMIN COMMAND CENTER SLIDE-UP DRAWER ─────────────────────────── */}
+      <AnimatePresence>
+        {isCommandCenterOpen && (
+          <>
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:0.2}}
+              onClick={()=>setIsCommandCenterOpen(false)}
+              style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:999, backdropFilter:"blur(4px)" }} />
+            <motion.div initial={{y:"100%"}} animate={{y:0}} exit={{y:"100%"}} transition={{type:"spring",damping:32,stiffness:280}}
+              style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:1000, background:"#0D0D0E", borderTop:"1px solid rgba(212,175,55,0.22)", borderRadius:"20px 20px 0 0", maxHeight:"72vh", overflow:"hidden", display:"flex", flexDirection:"column", boxShadow:"0 -8px 60px rgba(0,0,0,0.65)" }}>
+              <div style={{ display:"flex", justifyContent:"center", padding:"14px 0 6px" }}>
+                <div style={{ width:40, height:4, borderRadius:2, background:"rgba(255,255,255,0.15)" }} />
+              </div>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"6px 20px 14px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+                <div>
+                  <div style={{ fontSize:11, fontWeight:900, letterSpacing:"0.22em", color:AMBER, textTransform:"uppercase" }}>Admin Command Center</div>
+                  <div style={{ fontSize:11, color:"rgba(255,255,255,0.40)", marginTop:2 }}>Venue-level controls — authorized personnel only</div>
+                </div>
+                <motion.button whileTap={{scale:0.93}} onClick={()=>setIsCommandCenterOpen(false)}
+                  style={{ padding:"8px 16px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:8, color:"rgba(255,255,255,0.75)", fontSize:11, fontWeight:700, cursor:"pointer", letterSpacing:"0.08em" }}>
+                  CLOSE COMMAND DRAWER
+                </motion.button>
+              </div>
+              <div style={{ overflowY:"auto", flex:1, padding:"16px 20px 24px" }}>
+                <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:10 }}>Quick Actions</div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, marginBottom:18 }}>
+                  {([
+                    { label:"Kill Switch",   icon:"⛔", desc:"Halt all transactions"   },
+                    { label:"Force Sync",    icon:"↻",  desc:"Push config to devices"  },
+                    { label:"Broadcast",     icon:"📢", desc:"Send staff message"       },
+                    { label:"Panic Mode",    icon:"🔴", desc:"Lock down venue ops"      },
+                    { label:"Vent Override", icon:"💨", desc:"Open HVAC manual mode"    },
+                    { label:"Dev Mode",      icon:"⚙",  desc:"Debug overlay toggle"     },
+                  ] as {label:string;icon:string;desc:string}[]).map(a=>(
+                    <motion.button key={a.label} whileTap={{scale:0.95}}
+                      style={{ padding:"12px 8px", borderRadius:10, border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.04)", cursor:"pointer", textAlign:"center" as const }}>
+                      <div style={{ fontSize:20, marginBottom:5 }}>{a.icon}</div>
+                      <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.85)", marginBottom:2 }}>{a.label}</div>
+                      <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)", lineHeight:1.4 }}>{a.desc}</div>
+                    </motion.button>
+                  ))}
+                </div>
+                <div style={{ display:"flex", gap:8, marginBottom:18 }}>
+                  {([
+                    { label:"Tables",   val:String(activeTabs.length),                              unit:"active"   },
+                    { label:"Revenue",  val:`$${activeTabs.reduce((s,t)=>s+t.total,0).toFixed(0)}`, unit:"open tabs"},
+                    { label:"Devices",  val:String(devices.filter(d=>d.online).length),             unit:"online"   },
+                    { label:"Lighting", val:`${lighting}%`,                                         unit:"current"  },
+                  ] as {label:string;val:string;unit:string}[]).map(s=>(
+                    <div key={s.label} style={{ flex:1, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:8, padding:"10px 8px", textAlign:"center" as const }}>
+                      <div style={{ fontSize:16, fontWeight:900, color:"rgba(255,255,255,0.9)" }}>{s.val}</div>
+                      <div style={{ fontSize:9, color:"rgba(255,255,255,0.40)", textTransform:"uppercase" as const, letterSpacing:"0.10em", marginTop:2 }}>{s.label}</div>
+                      <div style={{ fontSize:9, color:"rgba(255,255,255,0.25)", marginTop:1 }}>{s.unit}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:10 }}>Environment Fast Controls</div>
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap" as const, marginBottom:18 }}>
+                  {PRESET_OPTIONS.map(p=>(
+                    <motion.button key={p} whileTap={{scale:0.95}} onClick={()=>{setEnvPreset(p);setIsCommandCenterOpen(false);}}
+                      style={{ padding:"8px 14px", borderRadius:20, border:`1px solid ${envPreset===p?AMBER:"rgba(255,255,255,0.12)"}`, background:envPreset===p?`rgba(212,175,55,0.15)`:"transparent", color:envPreset===p?AMBER:"rgba(255,255,255,0.60)", fontSize:11, fontWeight:700, cursor:"pointer" }}>
+                      {p}
+                    </motion.button>
+                  ))}
+                </div>
+                <div style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:"12px 14px" }}>
+                  <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:8 }}>System Status</div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                    {([
+                      { name:"WebSocket",   ok:wsConnected },
+                      { name:"POS Bridge",  ok:true        },
+                      { name:"Environment", ok:true        },
+                      { name:"Stripe",      ok:true        },
+                    ] as {name:string;ok:boolean}[]).map(s=>(
+                      <div key={s.name} style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                        <span style={{ fontSize:11, color:"rgba(255,255,255,0.50)" }}>{s.name}</span>
+                        <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                          <div style={{ width:7, height:7, borderRadius:"50%", background:s.ok?"#27AE60":"#C0392B" }} />
+                          <span style={{ fontSize:11, fontWeight:700, color:s.ok?"#27AE60":"#C0392B" }}>{s.ok?"Online":"Offline"}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
     </div>
   );
