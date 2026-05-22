@@ -1054,6 +1054,19 @@ function DeviceHeartbeatMount() {
   return null;
 }
 
+/* Pre-fetches key lazy chunks in the background after initial paint */
+function PrefetchChunks() {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      import('@/pages/NoveeOsShell').catch(() => {});
+      import('@/pages/CraftHub').catch(() => {});
+      import('@/pages/Dashboard').catch(() => {});
+    }, 1800);
+    return () => clearTimeout(t);
+  }, []);
+  return null;
+}
+
 /* ══════════════════════════════════════════════════════════════
    ROOT APP — wouter router
    All sub-pages lazy-loaded; / → CraftHub
@@ -1063,6 +1076,7 @@ export default function App() {
   const userRole = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_role')       ?? 'venue_owner') : 'venue_owner';
   return (
     <Router base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+      <PrefetchChunks />
       <DeviceHeartbeatMount />
       <GestureGateway />
       <BrandPartnerFirewall />

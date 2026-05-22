@@ -47,13 +47,17 @@ class EATErrorBoundary extends Component<
   static getDerivedStateFromError(err: unknown) {
     return { error: String(err) };
   }
+  componentDidCatch(err: unknown, info: { componentStack: string }) {
+    console.error("[EAT Dashboard Crash]", err, "\nComponent stack:", info.componentStack);
+  }
   render() {
     if (this.state.error) {
       return (
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#0A0604", color: "#D4AF37", fontFamily: "'Inter',sans-serif", gap: 16, padding: 32 }}>
-          <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: "0.12em" }}>E.A.T SYSTEM</div>
-          <div style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", textAlign: "center", maxWidth: 400, lineHeight: 1.6 }}>The dashboard encountered an error. Please contact your system administrator.</div>
-          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 8, padding: "10px 24px", borderRadius: 8, border: "1px solid #D4AF37", background: "rgba(212,175,55,0.12)", color: "#D4AF37", fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: "0.10em" }}>RETRY</button>
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#1A1008", color: "#D4AF37", fontFamily: "'Inter',sans-serif", gap: 16, padding: 32 }}>
+          <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "0.12em" }}>E.A.T SYSTEM ERROR</div>
+          <div style={{ fontSize: 18, color: "rgba(255,200,100,0.90)", textAlign: "center", maxWidth: 520, lineHeight: 1.6, wordBreak: "break-word" }}>{this.state.error}</div>
+          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.40)", textAlign: "center" }}>Full details in browser console</div>
+          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 8, padding: "14px 32px", borderRadius: 8, border: "1px solid #D4AF37", background: "rgba(212,175,55,0.15)", color: "#D4AF37", fontSize: 16, fontWeight: 700, cursor: "pointer", letterSpacing: "0.10em" }}>RETRY</button>
         </div>
       );
     }
