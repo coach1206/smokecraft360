@@ -7,6 +7,7 @@ import { GlobalProviderControlCenter }    from "@/components/GlobalProviderContr
 import { NoveeGuestProfileProvider, useNoveeGuest } from "@/contexts/NoveeGuestProfileContext";
 import { useVisualSync } from "@/hooks/useVisualSync";
 import type { Phase } from "@/contexts/NoveeGuestProfileContext";
+import NoveeEATDashboard from "@/pages/NoveeEATDashboard";
 
 // Lazy-load ported pages
 const NoveeKioskBootSequence = lazy(() => import("@/pages/NoveeKioskBootSequence").then((m: any) => ({ default: m.default || m })));
@@ -15,7 +16,6 @@ const S1_InitGate = lazy(() => import("@/pages/S1_InitGate").then((m: any) => ({
 const S2_TerroirMatrix = lazy(() => import("@/pages/S2_TerroirMatrix").then((m: any) => ({ default: m.S2_TerroirMatrix || m.default || m })));
 const S3_FormulationLab = lazy(() => import("@/pages/S3_FormulationLab").then((m: any) => ({ default: m.S3_FormulationLab || m.default || m })));
 const S4_DesignStudio = lazy(() => import("@/pages/S4_DesignStudio").then((m: any) => ({ default: m.S4_DesignStudio || m.default || m })));
-const NoveeEATDashboard = lazy(() => import("@/pages/NoveeEATDashboard").then((m: any) => ({ default: m.default || m })));
 const NoveeExecutiveCommandCenter = lazy(() => import("@/pages/NoveeExecutiveCommandCenter").then((m: any) => ({ default: m.default || m })));
 const ControlChamber = lazy(() => import("@/pages/ControlChamber").then((m: any) => ({ default: m.default || m })));
 const NoveeStaffPinGate = lazy(() => import("@/components/NoveeStaffPinGate").then(m => ({ default: m.NoveeStaffPinGate })));
@@ -1862,14 +1862,13 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange
   const Comp2 = S2_TerroirMatrix as any;
   const Comp3 = S3_FormulationLab as any;
   const Comp4 = S4_DesignStudio as any;
-  const CompEAT = NoveeEATDashboard as any;
   const CompExec = NoveeExecutiveCommandCenter as any;
   const CompBoot = NoveeKioskBootSequence as any;
 
   return (
     <Suspense fallback={<PhaseLoadingFallback />}>
       {phase === "crafthub" && <NoveeCraftHubWrapper />}
-      {phase === "eat_dashboard" && <EATErrorBoundary><CompEAT eatFlags={eatFlags} /></EATErrorBoundary>}
+      {phase === "eat_dashboard" && <EATErrorBoundary><NoveeEATDashboard eatFlags={eatFlags} /></EATErrorBoundary>}
       {phase === "executive_command" && <POSCommandHub />}
       {phase === "pairing_view" && <PairingView />}
       {phase === "lounge_view" && <LoungeView />}
@@ -1934,7 +1933,6 @@ function OsShellContent() {
 
   React.useEffect(() => {
     const t = setTimeout(() => {
-      import("@/pages/NoveeEATDashboard").catch(() => {});
       import("@/pages/S1_InitGate").catch(() => {});
       import("@/pages/S2_TerroirMatrix").catch(() => {});
       import("@/pages/S3_FormulationLab").catch(() => {});
