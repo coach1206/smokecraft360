@@ -298,6 +298,15 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [cmdSubSection, setCmdSubSection] = useState<"overview"|"kitchen"|"humidor"|"bar">("overview");
   const [tableDelegations, setTableDelegations] = useState<Record<string, string>>({});
   const [delegateTarget, setDelegateTarget] = useState<number|null>(null);
+  const [broadcastModal, setBroadcastModal] = useState(false);
+  const [broadcastForm, setBroadcastForm] = useState({ product:"", price:"", message:"", timer:30 });
+  const [activeBroadcast, setActiveBroadcast] = useState<null|{product:string;price:string;message:string;expiresAt:number}>(null);
+  const [ticketTapper, setTicketTapper] = useState<null|{name:string;sub:string;price:number;notes:string}>(null);
+  const [productEditModal, setProductEditModal] = useState(false);
+  const [productEditForm, setProductEditForm] = useState({ name:FEATURED_CIGAR.name, price:String(FEATURED_CIGAR.price), description:FEATURED_CIGAR.description });
+  const [tabletMonitor, setTabletMonitor] = useState<null|{id:string;name:string;zone:string}>(null);
+  const [analyticsSubTab, setAnalyticsSubTab] = useState<"overview"|"contest"|"vault"|"reconciliation">("overview");
+  const [tableFilter, setTableFilter] = useState<string|null>(null);
 
   // ── E.A.T. VI — Venue Intelligence state ───────────────────────────────────
   interface VIServiceSignal   { table:string; signal:string; urgency:"HIGH"|"MED"|"LOW" }
@@ -483,6 +492,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
     e.preventDefault();
     const matchTab = activeTabs.find(t=>t.tableNumber===String(id));
     if(matchTab) setSelTabId(matchTab.id);
+    setTableFilter(String(id));
     const rect = floorRef.current?.getBoundingClientRect(); if(!rect) return;
     const t = floorTables.find(t=>t.id===id); if(!t) return;
     dragOff.current = { x:e.clientX-rect.left-(t.x/100)*rect.width, y:e.clientY-rect.top-(t.y/100)*rect.height };
@@ -961,9 +971,10 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   ))}
                 </div>
                 {TXN_LOG.map((t,i)=>(
-                  <div key={i} style={{ display:"grid", gridTemplateColumns:"80px 50px 1fr 80px 80px 60px", padding:"10px 14px", borderBottom:i<TXN_LOG.length-1?`1px solid ${BORDER}`:"none", alignItems:"center" }}>
+                  <div key={i} onClick={()=>{ setTableFilter(String(t.table)); setToastMsg(`Filtered to T-${t.table}`); setTimeout(()=>setToastMsg(null),1800); }}
+                    style={{ display:"grid", gridTemplateColumns:"80px 50px 1fr 80px 80px 60px", padding:"10px 14px", borderBottom:i<TXN_LOG.length-1?`1px solid ${BORDER}`:"none", alignItems:"center", cursor:"pointer", background:tableFilter===String(t.table)?`rgba(212,175,55,0.05)`:"transparent", transition:"background 0.2s" }}>
                     <div style={{ fontSize:11, fontFamily:"monospace", color:TEXT3 }}>{t.id}</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:TEXT1 }}>T-{t.table}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:tableFilter===String(t.table)?AMBER2:TEXT1 }}>T-{t.table}</div>
                     <div style={{ fontSize:12, color:TEXT2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{t.items}</div>
                     <div style={{ fontSize:13, fontWeight:800, color:AMBER2 }}>${t.total}</div>
                     <div><span style={{ fontSize:10, fontWeight:800, color:t.status==="open"?GREEN:TEXT3, border:`1px solid ${t.status==="open"?GREEN+"66":BORDER}`, padding:"2px 8px", borderRadius:4, textTransform:"uppercase" }}>{t.status}</span></div>
@@ -1019,57 +1030,182 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           {/* ── ANALYTICS ─────────────────────────────────────────────────── */}
           {activeTab === "Analytics" && (
             <div style={{ padding:"16px 14px" }}>
-              <div style={{ marginBottom:16 }}>
+              <div style={{ marginBottom:12 }}>
                 <div style={{ fontSize:10, letterSpacing:"0.28em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:4 }}>E.A.T. SYSTEM</div>
-                <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Analytics</div>
-                <div style={{ fontSize:11, color:TEXT3 }}>Revenue + Engagement Intelligence</div>
+                <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Analytics & Intelligence</div>
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:16 }}>
-                {([
-                  { label:"Month Revenue", value:"$18,420", sub:"22% vs last month",  color:GREEN  },
-                  { label:"Sessions",      value:"143",     sub:"This month",          color:TEXT1  },
-                  { label:"Avg Spend",     value:"$129",    sub:"Per session",         color:AMBER2 },
-                  { label:"Conversion",    value:"68%",     sub:"Swipe to purchase",   color:GREEN  },
-                ] as {label:string;value:string;sub:string;color:string}[]).map(k=>(
-                  <div key={k.label} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
-                    <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:6 }}>{k.label}</div>
-                    <div style={{ fontSize:26, fontWeight:900, color:k.color, lineHeight:1, marginBottom:3 }}>{k.value}</div>
-                    <div style={{ fontSize:10, color:TEXT3 }}>{k.sub}</div>
-                  </div>
+              {/* Sub-tabs */}
+              <div style={{ display:"flex", gap:6, marginBottom:16, borderBottom:`1px solid ${BORDER}`, paddingBottom:10 }}>
+                {([{id:"overview",label:"Overview"},{id:"contest",label:"Staff Contest"},{id:"vault",label:"The Vault"},{id:"reconciliation",label:"Reconciliation"}] as {id:"overview"|"contest"|"vault"|"reconciliation";label:string}[]).map(t=>(
+                  <motion.button key={t.id} whileTap={{scale:0.95}} onClick={()=>setAnalyticsSubTab(t.id)}
+                    style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${analyticsSubTab===t.id?AMBER:BORDER}`, background:analyticsSubTab===t.id?`rgba(212,175,55,0.10)`:IVORY, color:analyticsSubTab===t.id?AMBER2:TEXT2, fontSize:11, fontWeight:analyticsSubTab===t.id?800:600, cursor:"pointer" }}>
+                    {t.label}
+                  </motion.button>
                 ))}
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-                <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"16px" }}>
-                  <div style={{ fontSize:11, fontWeight:800, color:TEXT1, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:14 }}>Weekly Revenue</div>
-                  <div style={{ display:"flex", alignItems:"flex-end", gap:8, height:120 }}>
-                    {WEEKLY_REV.map(w=>(
-                      <div key={w.day} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:4, height:"100%" }}>
-                        <div style={{ flex:1, display:"flex", alignItems:"flex-end", width:"100%" }}>
-                          <div style={{ width:"100%", height:`${w.pct}%`, background:`linear-gradient(180deg,${AMBER},${AMBER2})`, borderRadius:"3px 3px 0 0", minHeight:4 }} />
+
+              {/* OVERVIEW */}
+              {analyticsSubTab === "overview" && (<>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:16 }}>
+                  {([
+                    { label:"Month Revenue", value:"$18,420", sub:"22% vs last month",  color:GREEN  },
+                    { label:"Sessions",      value:"143",     sub:"This month",          color:TEXT1  },
+                    { label:"Avg Spend",     value:"$129",    sub:"Per session",         color:AMBER2 },
+                    { label:"Conversion",    value:"68%",     sub:"Swipe to purchase",   color:GREEN  },
+                  ] as {label:string;value:string;sub:string;color:string}[]).map(k=>(
+                    <div key={k.label} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                      <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:6 }}>{k.label}</div>
+                      <div style={{ fontSize:26, fontWeight:900, color:k.color, lineHeight:1, marginBottom:3 }}>{k.value}</div>
+                      <div style={{ fontSize:10, color:TEXT3 }}>{k.sub}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                  <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"16px" }}>
+                    <div style={{ fontSize:11, fontWeight:800, color:TEXT1, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:14 }}>Weekly Revenue</div>
+                    <div style={{ display:"flex", alignItems:"flex-end", gap:8, height:120 }}>
+                      {WEEKLY_REV.map(w=>(
+                        <div key={w.day} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:4, height:"100%" }}>
+                          <div style={{ flex:1, display:"flex", alignItems:"flex-end", width:"100%" }}>
+                            <div style={{ width:"100%", height:`${w.pct}%`, background:`linear-gradient(180deg,${AMBER},${AMBER2})`, borderRadius:"3px 3px 0 0", minHeight:4 }} />
+                          </div>
+                          <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.06em", fontWeight:700 }}>{w.day}</div>
                         </div>
-                        <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.06em", fontWeight:700 }}>{w.day}</div>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"16px" }}>
+                    <div style={{ fontSize:11, fontWeight:800, color:TEXT1, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:14 }}>Top Products</div>
+                    {TOP_PRODS.map((p,i)=>(
+                      <div key={i} style={{ padding:"8px 0", borderBottom:i<TOP_PRODS.length-1?`1px solid ${BORDER}`:"none" }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
+                          <span style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{p.name}</span>
+                          <span style={{ fontSize:12, fontWeight:800, color:AMBER2 }}>${p.rev.toLocaleString()}</span>
+                        </div>
+                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                          <div style={{ flex:1, height:4, borderRadius:2, background:"rgba(0,0,0,0.08)", overflow:"hidden" }}>
+                            <div style={{ width:`${Math.round((p.rev/2714)*100)}%`, height:"100%", background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:2 }} />
+                          </div>
+                          <span style={{ fontSize:10, color:TEXT3, flexShrink:0 }}>{p.sold} sold</span>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"16px" }}>
-                  <div style={{ fontSize:11, fontWeight:800, color:TEXT1, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:14 }}>Top Products</div>
-                  {TOP_PRODS.map((p,i)=>(
-                    <div key={i} style={{ padding:"8px 0", borderBottom:i<TOP_PRODS.length-1?`1px solid ${BORDER}`:"none" }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-                        <span style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{p.name}</span>
-                        <span style={{ fontSize:12, fontWeight:800, color:AMBER2 }}>${p.rev.toLocaleString()}</span>
+              </>)}
+
+              {/* STAFF CONTEST */}
+              {analyticsSubTab === "contest" && (<>
+                <div style={{ fontSize:13, fontWeight:800, color:TEXT1, marginBottom:12 }}>Staff Sales Leaderboard — Tonight</div>
+                {staffList.filter(s=>s.sales>0).sort((a,b)=>b.sales-a.sales).map((s,i)=>(
+                  <div key={s.name} style={{ padding:"12px 14px", borderRadius:9, border:`1px solid ${i===0?AMBER:BORDER}`, background:i===0?`rgba(212,175,55,0.06)`:IVORY, marginBottom:8, display:"flex", alignItems:"center", gap:14 }}>
+                    <div style={{ width:30, height:30, borderRadius:"50%", background:i===0?`linear-gradient(135deg,${AMBER},${AMBER2})`:`linear-gradient(135deg,#6B5E4E,#2A2A2A)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                      <span style={{ fontSize:12, fontWeight:900, color:i===0?"#1A0C00":"#F0E8D4" }}>#{i+1}</span>
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:13, fontWeight:800, color:TEXT1 }}>{s.name}</div>
+                      <div style={{ fontSize:11, color:TEXT3 }}>{s.role}</div>
+                    </div>
+                    <div style={{ textAlign:"right" as const }}>
+                      <div style={{ fontSize:20, fontWeight:900, color:i===0?AMBER2:TEXT1 }}>${s.sales.toLocaleString()}</div>
+                      <div style={{ fontSize:10, color:TEXT3 }}>Tonight</div>
+                    </div>
+                  </div>
+                ))}
+                <div style={{ marginTop:14, padding:"14px", background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10 }}>
+                  <div style={{ fontSize:12, fontWeight:800, color:TEXT1, marginBottom:10 }}>Top Asset by Server</div>
+                  {[
+                    { server:"Sofia R.",  product:"Padron 1926 Anniversary", qty:4, rev:208 },
+                    { server:"Jordan K.", product:"Blanton's Bourbon",       qty:6, rev:192 },
+                    { server:"Dev P.",    product:"Hennessy XO",             qty:3, rev:144 },
+                  ].map((r,i)=>(
+                    <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 0", borderBottom:i<2?`1px solid ${BORDER}`:"none" }}>
+                      <div>
+                        <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{r.server}</div>
+                        <div style={{ fontSize:10, color:TEXT3 }}>{r.product} · {r.qty} sold</div>
                       </div>
-                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                        <div style={{ flex:1, height:4, borderRadius:2, background:"rgba(0,0,0,0.08)", overflow:"hidden" }}>
-                          <div style={{ width:`${Math.round((p.rev/2714)*100)}%`, height:"100%", background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:2 }} />
-                        </div>
-                        <span style={{ fontSize:10, color:TEXT3, flexShrink:0 }}>{p.sold} sold</span>
-                      </div>
+                      <span style={{ fontSize:14, fontWeight:800, color:GREEN }}>${r.rev}</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </>)}
+
+              {/* THE VAULT */}
+              {analyticsSubTab === "vault" && (<>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                  <div style={{ fontSize:13, fontWeight:800, color:TEXT1 }}>Historical Ledger</div>
+                  <motion.button whileTap={{scale:0.96}} onClick={()=>{ setToastMsg("Generating CSV export..."); setTimeout(()=>setToastMsg(null),2500); }}
+                    style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, fontSize:11, fontWeight:700, cursor:"pointer" }}>
+                    Export CSV
+                  </motion.button>
+                </div>
+                <div style={{ display:"flex", flexDirection:"column" as const, gap:6 }}>
+                  {[
+                    { id:"TXN-2046", guest:"Sofia Chen",      table:"7",     items:["Cohiba Behike 52","Hennessy XO"],                       total:166, time:"9:47 PM" },
+                    { id:"TXN-2045", guest:"Marcus T.",       table:"3",     items:["Padron 1964 Torpedo","Buffalo Trace x2"],                total:96,  time:"9:31 PM" },
+                    { id:"TXN-2044", guest:"Private Party",   table:"VIP-1", items:["Davidoff Churchill","Macallan 12","Cheese Board"],       total:248, time:"8:55 PM" },
+                    { id:"TXN-2043", guest:"James R.",        table:"11",    items:["Rocky Patel Vintage","Maker's Mark"],                   total:58,  time:"8:22 PM" },
+                    { id:"TXN-2042", guest:"Anniversary",     table:"VIP-2", items:["Cohiba Behike x2","Don Julio 1942","Wagyu"],             total:494, time:"7:45 PM" },
+                  ].map((t,i)=>(
+                    <div key={i} style={{ padding:"12px 14px", borderRadius:9, border:`1px solid ${BORDER}`, background:IVORY }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:5 }}>
+                        <div>
+                          <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                            <span style={{ fontSize:12, fontWeight:800, color:TEXT1 }}>{t.guest}</span>
+                            <span style={{ fontSize:10, color:TEXT3 }}>Table {t.table}</span>
+                            <span style={{ fontSize:9, padding:"2px 6px", borderRadius:3, background:`rgba(46,125,79,0.12)`, color:GREEN, fontWeight:700 }}>CLOSED</span>
+                          </div>
+                          <div style={{ fontSize:11, color:TEXT3, marginTop:3 }}>{t.items.join(" · ")}</div>
+                        </div>
+                        <div style={{ textAlign:"right" as const }}>
+                          <div style={{ fontSize:16, fontWeight:900, color:AMBER2 }}>${t.total}</div>
+                          <div style={{ fontSize:10, color:TEXT3 }}>{t.time}</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize:10, color:TEXT3, fontFamily:"'Space Mono','Courier New',monospace" }}>{t.id}</div>
+                    </div>
+                  ))}
+                </div>
+              </>)}
+
+              {/* RECONCILIATION */}
+              {analyticsSubTab === "reconciliation" && (<>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:14 }}>
+                  {[
+                    { label:"Reconciliation Score", val:"97%",  color:GREEN,     sub:"High accuracy"  },
+                    { label:"Closed Tabs",          val:"18",   color:TEXT1,     sub:"Tonight"        },
+                    { label:"Discrepancies",        val:"1",    color:"#EF4444", sub:"Needs review"   },
+                  ].map(m=>(
+                    <div key={m.label} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                      <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", fontWeight:700, marginBottom:6 }}>{m.label}</div>
+                      <div style={{ fontSize:22, fontWeight:900, color:m.color }}>{m.val}</div>
+                      <div style={{ fontSize:10, color:TEXT3 }}>{m.sub}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize:12, fontWeight:800, color:TEXT1, marginBottom:10 }}>End-of-Night Audit</div>
+                {[
+                  { account:"Cash Drawer",       expected:2840, actual:2840, status:"match"    },
+                  { account:"Card Payments",      expected:8642, actual:8642, status:"match"    },
+                  { account:"Tab T-2844 (Void)",  expected:0,    actual:28,   status:"mismatch" },
+                  { account:"Comps & Staff Meals",expected:140,  actual:140,  status:"match"    },
+                ].map((r,i)=>(
+                  <div key={i} style={{ padding:"10px 14px", borderRadius:8, border:`1px solid ${r.status==="mismatch"?"#FCA5A5":BORDER}`, background:IVORY, marginBottom:6, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{r.account}</div>
+                      <div style={{ fontSize:11, color:TEXT3 }}>Expected: ${r.expected.toLocaleString()}</div>
+                    </div>
+                    <div style={{ textAlign:"right" as const }}>
+                      <div style={{ fontSize:14, fontWeight:900, color:r.status==="match"?GREEN:"#EF4444" }}>${r.actual.toLocaleString()}</div>
+                      <div style={{ fontSize:10, fontWeight:700, color:r.status==="match"?GREEN:"#EF4444" }}>{r.status==="match"?"MATCHED":"MISMATCH"}</div>
+                    </div>
+                  </div>
+                ))}
+                <motion.button whileTap={{scale:0.97}} onClick={()=>{ setToastMsg("Reconciliation report generated"); setTimeout(()=>setToastMsg(null),2500); }}
+                  style={{ width:"100%", marginTop:12, padding:"13px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${AMBER},${AMBER2})`, color:"#1A0C00", fontSize:13, fontWeight:900, cursor:"pointer" }}>
+                  Generate Reconciliation Report
+                </motion.button>
+              </>)}
             </div>
           )}
 
@@ -1178,6 +1314,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   </div>
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6 }}>
                     {floorTables.map(t=>{
+                      const tLabel = `T${t.id}`;
                       const assignedTo = tableDelegations[String(t.id)];
                       const isThisStaff = assignedTo === staffList[delegateTarget!]?.name;
                       return (
@@ -1190,11 +1327,11 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                               if(isThisStaff) { delete n[String(t.id)]; } else { n[String(t.id)]=staffName; }
                               return n;
                             });
-                            setToastMsg(isThisStaff?`${t.label} unassigned from ${staffName}`:`${t.label} → ${staffName}`);
+                            setToastMsg(isThisStaff?`${tLabel} unassigned from ${staffName}`:`${tLabel} → ${staffName}`);
                             setTimeout(()=>setToastMsg(null),2000);
                           }}
                           style={{ padding:"8px 6px", borderRadius:7, border:`1px solid ${isThisStaff?AMBER:assignedTo?`rgba(212,175,55,0.3)`:BORDER}`, background:isThisStaff?`rgba(212,175,55,0.12)`:IVORY, color:isThisStaff?AMBER2:assignedTo&&!isThisStaff?TEXT3:TEXT1, fontSize:11, fontWeight:isThisStaff?800:600, cursor:"pointer", textAlign:"center" as const }}>
-                          {t.label}
+                          {tLabel}
                           {assignedTo && !isThisStaff && <div style={{ fontSize:8, color:TEXT3, marginTop:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" as const }}>{assignedTo.split(" ")[0]}</div>}
                           {isThisStaff && <div style={{ fontSize:8, color:AMBER2, marginTop:2 }}>Assigned</div>}
                         </motion.button>
@@ -1211,13 +1348,18 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           <div style={{ padding:"12px 14px", display:"flex", flexDirection:"column", gap:12 }}>
 
             {/* ── COMMAND CENTER SUB-NAV ──────────────────────────────────── */}
-            <div style={{ display:"flex", gap:6, flexShrink:0 }}>
+            <div style={{ display:"flex", gap:6, flexShrink:0, alignItems:"center" }}>
               {(["overview","kitchen","humidor","bar"] as const).map(s=>(
                 <motion.button key={s} whileTap={{scale:0.95}} onClick={()=>setCmdSubSection(s)}
                   style={{ padding:"7px 16px", borderRadius:7, border:`1px solid ${cmdSubSection===s?AMBER:BORDER}`, background:cmdSubSection===s?`rgba(212,175,55,0.12)`:IVORY, color:cmdSubSection===s?AMBER2:TEXT2, fontSize:12, fontWeight:cmdSubSection===s?800:600, cursor:"pointer", textTransform:"capitalize", letterSpacing:"0.03em", flexShrink:0 }}>
                   {s==="overview"?"Overview":s==="kitchen"?"Kitchen":s==="humidor"?"Humidor":"Bar"}
                 </motion.button>
               ))}
+              <div style={{ flex:1 }} />
+              <motion.button whileTap={{scale:0.95}} onClick={()=>setBroadcastModal(true)}
+                style={{ padding:"7px 16px", borderRadius:7, border:`1px solid ${activeBroadcast?"#EF4444":AMBER}`, background:activeBroadcast?`rgba(239,68,68,0.12)`:`rgba(212,175,55,0.12)`, color:activeBroadcast?"#EF4444":AMBER2, fontSize:11, fontWeight:800, cursor:"pointer", flexShrink:0, letterSpacing:"0.06em", textTransform:"uppercase" }}>
+                {activeBroadcast?"LIVE":"Broadcast"}
+              </motion.button>
             </div>
 
             {/* ── TRIPLE-IMAGE HERO PAIRING MATRIX ─────────────────────────── */}
@@ -1249,6 +1391,11 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                     {featuredCigar.body}
                   </span>
                 </div>
+                {/* Edit product overlay — top right */}
+                <motion.button whileTap={{scale:0.95}} onClick={()=>{ setProductEditForm({ name:featuredCigar.name, price:String(featuredCigar.price), description:featuredCigar.description||"" }); setProductEditModal(true); }}
+                  style={{ position:"absolute", top:12, right:12, zIndex:10, padding:"4px 10px", borderRadius:5, border:`1px solid ${AMBER}`, background:"rgba(0,0,0,0.60)", backdropFilter:"blur(4px)", color:AMBER, fontSize:10, fontWeight:800, cursor:"pointer", letterSpacing:"0.10em", textTransform:"uppercase" as const }}>
+                  Edit
+                </motion.button>
                 {/* featured label overlay bottom-left */}
                 <div style={{ position:"absolute", bottom:14, left:14 }}>
                   <div style={{ fontSize:9, letterSpacing:"0.22em", textTransform:"uppercase", color:"rgba(240,232,212,0.60)", fontWeight:700, marginBottom:3 }}>FEATURED SELECTION</div>
@@ -1543,7 +1690,11 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   <div style={{ fontSize:13, fontWeight:800, color:TEXT1, marginBottom:2, lineHeight:1.3 }}>{p.name}</div>
                   <div style={{ fontSize:11, color:TEXT3, marginBottom:3 }}>{p.sub}</div>
                   <div style={{ fontSize:11, color:TEXT2, marginBottom:6, lineHeight:1.4 }}>{p.notes}</div>
-                  <div style={{ display:"flex", justifyContent:"flex-end" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <motion.button whileTap={{scale:0.95}} onClick={(e)=>{ e.stopPropagation(); setTicketTapper(p); }}
+                      style={{ padding:"4px 10px", borderRadius:5, border:`1px solid ${AMBER}`, background:"transparent", color:AMBER2, fontSize:10, fontWeight:700, cursor:"pointer" }}>
+                      Tap to Add
+                    </motion.button>
                     <span style={{ fontSize:17, fontWeight:900, color:AMBER2 }}>${p.price}</span>
                   </div>
                 </div>
@@ -1552,8 +1703,18 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
 
             {/* Tab selector */}
             <div style={{ marginTop:14 }}>
-              <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.16em", color:TEXT3, textTransform:"uppercase", marginBottom:6 }}>Active Tabs</div>
-              {activeTabs.slice(0,4).map(t=>(
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.16em", color:TEXT3, textTransform:"uppercase" }}>
+                  Active Tabs{tableFilter ? ` — T${tableFilter}` : ""}
+                </div>
+                {tableFilter && (
+                  <motion.button whileTap={{scale:0.95}} onClick={()=>setTableFilter(null)}
+                    style={{ fontSize:9, fontWeight:700, color:AMBER2, background:"transparent", border:"none", cursor:"pointer", textDecoration:"underline", padding:0 }}>
+                    Clear
+                  </motion.button>
+                )}
+              </div>
+              {(tableFilter ? activeTabs.filter(t=>t.tableNumber===tableFilter) : activeTabs).slice(0,4).map(t=>(
                 <div key={t.id} onClick={()=>setSelTabId(t.id)}
                   style={{ padding:"8px 10px", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", background:selTabId===t.id?`rgba(212,175,55,0.08)`:"transparent", borderLeft:`3px solid ${selTabId===t.id?AMBER:"transparent"}`, borderBottom:`1px solid ${BORDER}`, borderRadius:selTabId===t.id?"0 6px 6px 0":"0" }}>
                   <div>
@@ -1813,6 +1974,242 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           </div>
         </div>
       </div>
+
+      {/* ── ACTIVE BROADCAST BANNER ─────────────────────────────────────── */}
+      {activeBroadcast && (
+        <motion.div initial={{ y:-80 }} animate={{ y:0 }}
+          style={{ position:"fixed", top:0, left:0, right:0, zIndex:9999, background:`linear-gradient(90deg,${AMBER},${AMBER2})`, padding:"10px 24px", display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 4px 24px rgba(212,175,55,0.45)" }}>
+          <div style={{ display:"flex", gap:14, alignItems:"center" }}>
+            <motion.div animate={{ scale:[1,1.4,1] }} transition={{ repeat:Infinity, duration:1.2 }}
+              style={{ width:8, height:8, borderRadius:"50%", background:"#1A0C00", flexShrink:0 }} />
+            <div>
+              <span style={{ fontSize:13, fontWeight:900, color:"#1A0C00", letterSpacing:"0.06em" }}>LIVE FLASH SPECIAL — </span>
+              <span style={{ fontSize:13, fontWeight:800, color:"#1A0C00" }}>{activeBroadcast.product}</span>
+              {activeBroadcast.price && <span style={{ fontSize:13, fontWeight:700, color:"#1A0C00" }}> · ${activeBroadcast.price}</span>}
+              {activeBroadcast.message && <span style={{ fontSize:12, color:"rgba(0,0,0,0.55)", marginLeft:10 }}>{activeBroadcast.message}</span>}
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:12, alignItems:"center" }}>
+            <span style={{ fontSize:11, fontWeight:700, color:"rgba(0,0,0,0.50)" }}>
+              Expires {new Date(activeBroadcast.expiresAt).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}
+            </span>
+            <motion.button whileTap={{scale:0.96}} onClick={()=>setActiveBroadcast(null)}
+              style={{ padding:"4px 12px", borderRadius:5, border:"1px solid rgba(0,0,0,0.20)", background:"rgba(0,0,0,0.10)", color:"#1A0C00", fontSize:11, fontWeight:700, cursor:"pointer" }}>
+              End
+            </motion.button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── BROADCAST MODAL ─────────────────────────────────────────────── */}
+      {broadcastModal && (
+        <div style={{ position:"fixed", inset:0, zIndex:9998, background:"rgba(0,0,0,0.74)", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+          <motion.div initial={{scale:0.92,opacity:0}} animate={{scale:1,opacity:1}}
+            style={{ background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:16, padding:"28px 32px", width:"100%", maxWidth:520, boxShadow:"0 24px 60px rgba(0,0,0,0.40)" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:22 }}>
+              <div>
+                <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, fontWeight:800, textTransform:"uppercase" as const, marginBottom:5 }}>COMMAND CENTER</div>
+                <div style={{ fontSize:22, fontWeight:900, color:TEXT1 }}>Push Broadcaster</div>
+                <div style={{ fontSize:12, color:TEXT3, marginTop:3 }}>Inject a flash special to all active guest tablets</div>
+              </div>
+              <motion.button whileTap={{scale:0.95}} onClick={()=>setBroadcastModal(false)}
+                style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:TEXT3, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                Close
+              </motion.button>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column" as const, gap:14 }}>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Flash Product</div>
+                <input value={broadcastForm.product} onChange={e=>setBroadcastForm(f=>({...f,product:e.target.value}))}
+                  placeholder="e.g. Padron 1926 Anniversary"
+                  style={{ width:"100%", padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:13, fontWeight:600, outline:"none", boxSizing:"border-box" as const }} />
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                <div>
+                  <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Flash Price</div>
+                  <input value={broadcastForm.price} onChange={e=>setBroadcastForm(f=>({...f,price:e.target.value}))}
+                    placeholder="$38"
+                    style={{ width:"100%", padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:13, fontWeight:600, outline:"none", boxSizing:"border-box" as const }} />
+                </div>
+                <div>
+                  <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Duration</div>
+                  <div style={{ display:"flex", gap:6 }}>
+                    {[15,30,60].map(ti=>(
+                      <motion.button key={ti} whileTap={{scale:0.95}} onClick={()=>setBroadcastForm(f=>({...f,timer:ti}))}
+                        style={{ flex:1, padding:"10px 4px", borderRadius:7, border:`1px solid ${broadcastForm.timer===ti?AMBER:BORDER}`, background:broadcastForm.timer===ti?`rgba(212,175,55,0.12)`:IVORY, color:broadcastForm.timer===ti?AMBER2:TEXT2, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                        {ti}m
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Message (optional)</div>
+                <input value={broadcastForm.message} onChange={e=>setBroadcastForm(f=>({...f,message:e.target.value}))}
+                  placeholder="e.g. Tonight only — limited stock"
+                  style={{ width:"100%", padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:13, fontWeight:600, outline:"none", boxSizing:"border-box" as const }} />
+              </div>
+              <motion.button whileTap={{scale:0.97}} onClick={()=>{
+                  if(!broadcastForm.product) return;
+                  const expiresAt = Date.now() + broadcastForm.timer * 60 * 1000;
+                  setActiveBroadcast({ product:broadcastForm.product, price:broadcastForm.price, message:broadcastForm.message, expiresAt });
+                  setBroadcastModal(false);
+                  setBroadcastForm({ product:"", price:"", message:"", timer:30 });
+                  setToastMsg(`Broadcast LIVE — ${broadcastForm.product}`);
+                  setTimeout(()=>setToastMsg(null),3000);
+                  setTimeout(()=>setActiveBroadcast(null), broadcastForm.timer * 60 * 1000);
+                }}
+                style={{ padding:"14px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${AMBER},${AMBER2})`, color:"#1A0C00", fontSize:14, fontWeight:900, cursor:"pointer" }}>
+                Broadcast to All Tablets
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ── TICKET TAPPER MODAL ──────────────────────────────────────────── */}
+      {ticketTapper && (
+        <div style={{ position:"fixed", inset:0, zIndex:9998, background:"rgba(0,0,0,0.74)", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+          <motion.div initial={{scale:0.92,opacity:0}} animate={{scale:1,opacity:1}}
+            style={{ background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:16, padding:"28px 32px", width:"100%", maxWidth:460, boxShadow:"0 24px 60px rgba(0,0,0,0.40)" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
+              <div>
+                <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, fontWeight:800, textTransform:"uppercase" as const, marginBottom:5 }}>TICKET TAPPER</div>
+                <div style={{ fontSize:20, fontWeight:900, color:TEXT1 }}>{ticketTapper.name}</div>
+                <div style={{ fontSize:12, color:TEXT3, marginTop:3 }}>{ticketTapper.notes} · <span style={{ color:AMBER2, fontWeight:800 }}>${ticketTapper.price}</span></div>
+              </div>
+              <motion.button whileTap={{scale:0.95}} onClick={()=>setTicketTapper(null)}
+                style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:TEXT3, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                Close
+              </motion.button>
+            </div>
+            <div style={{ fontSize:11, fontWeight:800, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.12em", marginBottom:10 }}>Add to Which Tab?</div>
+            <div style={{ display:"flex", flexDirection:"column" as const, gap:8 }}>
+              {activeTabs.map(t=>(
+                <motion.button key={t.id} whileTap={{scale:0.97}}
+                  onClick={()=>{
+                    const token=localStorage.getItem("axiom_token")??"";
+                    fetch(`/api/tabs/${t.id}/items`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({productName:ticketTapper.name,unitCents:Math.round(ticketTapper.price*100),quantity:1,craftType:ticketTapper.sub})}).catch(()=>{});
+                    setToastMsg(`${ticketTapper.name} added to ${t.name}`);
+                    setTimeout(()=>setToastMsg(null),2400);
+                    setTicketTapper(null);
+                  }}
+                  style={{ padding:"12px 16px", borderRadius:8, border:`1px solid ${BORDER}`, background:IVORY, cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div style={{ textAlign:"left" as const }}>
+                    <div style={{ fontSize:13, fontWeight:800, color:TEXT1 }}>{t.name}</div>
+                    <div style={{ fontSize:11, color:TEXT3 }}>Table {t.tableNumber} · {t.items.length} items · ${t.total.toFixed(0)}</div>
+                  </div>
+                  <span style={{ fontSize:13, fontWeight:700, color:AMBER2 }}>Add +</span>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ── PRODUCT EDIT MODAL ──────────────────────────────────────────── */}
+      {productEditModal && (
+        <div style={{ position:"fixed", inset:0, zIndex:9998, background:"rgba(0,0,0,0.74)", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+          <motion.div initial={{scale:0.92,opacity:0}} animate={{scale:1,opacity:1}}
+            style={{ background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:16, padding:"28px 32px", width:"100%", maxWidth:480, boxShadow:"0 24px 60px rgba(0,0,0,0.40)" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:22 }}>
+              <div>
+                <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, fontWeight:800, textTransform:"uppercase" as const, marginBottom:5 }}>ASSET CATALOG</div>
+                <div style={{ fontSize:22, fontWeight:900, color:TEXT1 }}>Edit Product</div>
+              </div>
+              <motion.button whileTap={{scale:0.95}} onClick={()=>setProductEditModal(false)}
+                style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:TEXT3, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                Close
+              </motion.button>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column" as const, gap:14 }}>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Product Name</div>
+                <input value={productEditForm.name} onChange={e=>setProductEditForm(f=>({...f,name:e.target.value}))}
+                  style={{ width:"100%", padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:13, fontWeight:600, outline:"none", boxSizing:"border-box" as const }} />
+              </div>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Price ($)</div>
+                <input type="number" value={productEditForm.price} onChange={e=>setProductEditForm(f=>({...f,price:e.target.value}))}
+                  style={{ width:"100%", padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:13, fontWeight:600, outline:"none", boxSizing:"border-box" as const }} />
+              </div>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Description</div>
+                <textarea value={productEditForm.description} onChange={e=>setProductEditForm(f=>({...f,description:e.target.value}))} rows={3}
+                  style={{ width:"100%", padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:12, fontWeight:500, outline:"none", boxSizing:"border-box" as const, resize:"none" as const, lineHeight:1.55 }} />
+              </div>
+              <div style={{ display:"flex", gap:10, marginTop:4 }}>
+                <motion.button whileTap={{scale:0.96}} onClick={()=>setProductEditModal(false)}
+                  style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                  Cancel
+                </motion.button>
+                <motion.button whileTap={{scale:0.97}} onClick={()=>{
+                    setFeaturedCigar(fc=>({...fc, name:productEditForm.name, price:Number(productEditForm.price)||fc.price, description:productEditForm.description}));
+                    setProductEditModal(false);
+                    setToastMsg("Product updated");
+                    setTimeout(()=>setToastMsg(null),2200);
+                  }}
+                  style={{ flex:1, padding:"12px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${AMBER},${AMBER2})`, color:"#1A0C00", fontSize:13, fontWeight:900, cursor:"pointer" }}>
+                  Save Changes
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ── TABLET MONITOR OVERLAY ──────────────────────────────────────── */}
+      {tabletMonitor && (
+        <div style={{ position:"fixed", inset:0, zIndex:9997, background:"rgba(0,0,0,0.40)" }} onClick={()=>setTabletMonitor(null)}>
+          <motion.div initial={{x:340,opacity:0}} animate={{x:0,opacity:1}} onClick={e=>e.stopPropagation()}
+            style={{ position:"absolute", top:60, right:24, background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:16, padding:"24px 26px", width:360, boxShadow:"0 24px 60px rgba(0,0,0,0.40)" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
+              <div>
+                <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, fontWeight:800, textTransform:"uppercase" as const, marginBottom:4 }}>LIVE MONITOR</div>
+                <div style={{ fontSize:18, fontWeight:900, color:TEXT1 }}>{tabletMonitor.name}</div>
+                <div style={{ fontSize:11, color:TEXT3 }}>Zone {tabletMonitor.zone}</div>
+              </div>
+              <motion.button whileTap={{scale:0.95}} onClick={()=>setTabletMonitor(null)}
+                style={{ padding:"6px 12px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:TEXT3, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                Close
+              </motion.button>
+            </div>
+            <div style={{ background:OBSID, borderRadius:10, padding:"14px 16px", marginBottom:14 }}>
+              <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:12 }}>
+                <motion.div animate={{ opacity:[1,0.3,1] }} transition={{ repeat:Infinity, duration:1.4 }}
+                  style={{ width:7, height:7, borderRadius:"50%", background:GREEN }} />
+                <span style={{ fontSize:11, fontWeight:700, color:"rgba(240,232,212,0.70)", letterSpacing:"0.10em" }}>LIVE SESSION</span>
+              </div>
+              {[
+                { label:"Current Screen",   val:"Humidor Reserve",         note:"2 min" },
+                { label:"Previous Screen",  val:"CraftHub — Smoke",        note:"4 min" },
+                { label:"Items Viewed",     val:"Rocky Patel, Padron 1964",note:""      },
+                { label:"Cart Status",      val:"Empty — still browsing",  note:""      },
+                { label:"Session Duration", val:"18 min",                  note:""      },
+              ].map(r=>(
+                <div key={r.label} style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+                  <span style={{ fontSize:11, color:"rgba(240,232,212,0.40)" }}>{r.label}</span>
+                  <span style={{ fontSize:11, fontWeight:700, color:"rgba(240,232,212,0.88)" }}>
+                    {r.val}{r.note && <span style={{ fontSize:10, color:"rgba(240,232,212,0.30)", marginLeft:6 }}>{r.note} ago</span>}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div style={{ display:"flex", gap:8 }}>
+              <motion.button whileTap={{scale:0.96}}
+                onClick={()=>{ setToastMsg(`Push alert sent to ${tabletMonitor.name}`); setTimeout(()=>setToastMsg(null),2200); setTabletMonitor(null); }}
+                style={{ flex:1, padding:"10px", borderRadius:7, border:`1px solid ${AMBER}`, background:`rgba(212,175,55,0.10)`, color:AMBER2, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                Send Alert
+              </motion.button>
+              <motion.button whileTap={{scale:0.96}}
+                onClick={()=>{ setTicketTapper(livePairings[0]); setTabletMonitor(null); }}
+                style={{ flex:1, padding:"10px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                Tap Item
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
     </div>
   );
