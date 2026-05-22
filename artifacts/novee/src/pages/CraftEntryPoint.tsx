@@ -477,15 +477,15 @@ export default function CraftEntryPoint({ onComplete }: Props) {
     <AnimatePresence mode="wait">
       {stage === "boot" && (
         <motion.div key="boot" style={{ position: "fixed", inset: 0, zIndex: 9999 }}
-          exit={{ opacity: 0, filter: "blur(16px)" }} transition={{ duration: 1.0, ease: EASE }}>
+          exit={{ opacity: 0, filter: "blur(4px)" }} transition={{ duration: 0.28, ease: EASE }}>
           <BootSequence onComplete={handleBootComplete} />
         </motion.div>
       )}
       {stage === "grid" && (
         <motion.div key="grid" style={{ position: "fixed", inset: 0, zIndex: 9999 }}
-          initial={{ opacity: 0, filter: "blur(16px)" }} animate={{ opacity: 1, filter: "blur(0px)" }}
-          exit={{ opacity: 0, scale: 1.04, filter: "blur(12px)" }}
-          transition={{ duration: 1.0, ease: EASE }}>
+          initial={{ opacity: 0, filter: "blur(4px)" }} animate={{ opacity: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 1.01, filter: "blur(3px)" }}
+          transition={{ duration: 0.28, ease: EASE }}>
           <CraftGrid onSmokecraft={handleSmokecraftSelect} />
         </motion.div>
       )}

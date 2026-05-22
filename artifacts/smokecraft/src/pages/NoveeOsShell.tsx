@@ -32,11 +32,11 @@ const G = GOLD;
 const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
 const PAGE_V = {
-  enter:  { opacity: 0, scale: 0.97, filter: "blur(10px)" },
-  active: { opacity: 1, scale: 1,    filter: "blur(0px)"  },
-  exit:   { opacity: 0, scale: 1.02, filter: "blur(8px)"  },
+  enter:  { opacity: 0, scale: 0.99, filter: "blur(4px)" },
+  active: { opacity: 1, scale: 1,    filter: "blur(0px)" },
+  exit:   { opacity: 0, scale: 1.01, filter: "blur(3px)" },
 };
-const PAGE_T = { duration: 1.60, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] };
+const PAGE_T = { duration: 0.28, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] };
 const EASE_CINEMA: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const S1_PHASES = new Set(["s1_demo", "s1_rules", "s1_leaderboard", "s1_mentor", "s1_seed", "s1_quiz", "s1_posgate"]);
@@ -1772,6 +1772,20 @@ function OsShellContent() {
   const [gestures, setGestures] = useState({ topLeft: 0, bottomRight: 0 });
 
   React.useEffect(() => {
+    const t = setTimeout(() => {
+      import("@/pages/NoveeEATDashboard").catch(() => {});
+      import("@/pages/S1_InitGate").catch(() => {});
+      import("@/pages/S2_TerroirMatrix").catch(() => {});
+      import("@/pages/S3_FormulationLab").catch(() => {});
+      import("@/pages/S4_DesignStudio").catch(() => {});
+      import("@/pages/NoveeExecutiveCommandCenter").catch(() => {});
+      import("@/pages/ControlChamber").catch(() => {});
+      import("@/components/NoveeStaffPinGate").catch(() => {});
+    }, 800);
+    return () => clearTimeout(t);
+  }, []);
+
+  React.useEffect(() => {
     const timer = setInterval(() => {
       setGestures(prev => ({
         ...prev,
@@ -1915,9 +1929,9 @@ export default function NoveeOsShell() {
           </Suspense>
         ) : (
           <motion.div key="shell"
-            initial={{ opacity: 0, filter: "blur(12px)" }}
+            initial={{ opacity: 0, filter: "blur(4px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1.20, ease: EASE_CINEMA }}
+            transition={{ duration: 0.28, ease: EASE_CINEMA }}
             style={{ position: "fixed", inset: 0 }}>
             <OsShellContent />
           </motion.div>
