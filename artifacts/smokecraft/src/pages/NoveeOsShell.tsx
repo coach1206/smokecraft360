@@ -1349,7 +1349,7 @@ const RAIL_ITEMS = [
   { id: "crafthub",          label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub" as Phase,          pinLevel: undefined,               staffOnly: false, icon: "⊹", isActive: (p: string) => p === "crafthub" },
   { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
   { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,               staffOnly: false, icon: "◆", isActive: (p: string) => p === "pairing_view" },
-  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "staff" as PinRole,      staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
+  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: undefined,               staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
   { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, staffOnly: true,  icon: "⟡", isActive: (p: string) => p === "executive_command" },
   { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,               staffOnly: true,  icon: "◯", isActive: (p: string) => p === "lounge_view" },
   { id: "coach_help",        label: "Coach Help",  abbr: "CH",  targetPhase: "coach_help" as Phase,       pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => p === "coach_help" },
@@ -1782,7 +1782,8 @@ function FullBleedBackground() {
 function handlePointerDown() { playClick(); hapticClick(); }
 
 function OsShellContent() {
-  const { setPhase, resetProfile } = useNoveeGuest();
+  const { setPhase, resetProfile, profile } = useNoveeGuest();
+  const isEAT = profile.phase === "eat_dashboard";
   const { env: syncedEnv, updateEnv } = useVisualSync();
   const [eatFlags, setEatFlags]    = useState<any>({
     revenue: true,
@@ -1900,21 +1901,21 @@ function OsShellContent() {
         />
 
         <OsNavBar />
-        <QuickNavBar />
+        {!isEAT && <QuickNavBar />}
 
         <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden", position: "relative" }}>
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
             <FullBleedBackground />
-            <SystemBar />
+            {!isEAT && <SystemBar />}
             {/* Content starts at top:44 so SystemBar never clips or intercepts */}
-            <div style={{ position: "absolute", top: 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: isEAT ? 0 : 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
               <PhaseRouter eatFlags={eatFlags} onFlagsChange={setEatFlags} />
             </div>
           </div>
         </div>
 
-        <EATTelemetryBar />
-        <BottomBar />
+        {!isEAT && <EATTelemetryBar />}
+        {!isEAT && <BottomBar />}
 
         <AnimatePresence>
           {pinGate && (

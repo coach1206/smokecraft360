@@ -1,0 +1,579 @@
+Plaintext
+=======================================================================
+FINAL COMPREHENSIVE REBUILD DIRECTIVE: AUTOMATED VISUAL EXPERIENCE ENGINE
+PRODUCTION IMPLEMENTATION STACK: NOVEE OS + E.A.T INTERACTIVE CONSOLE
+DEPLOYMENT MATRIX · VERSION 6.0.0-PROD · ABSOLUTE ZERO-GLYPH MANDATE FOR REPLIT
+=======================================================================
+
+You are to execute a complete architectural overhaul of the NOVEE OS + E.A.T System. This directive transforms the interface into a living, fully dynamic, touch-perceptive light-mode operating system. It completely strips out all character symbols, decorative glyph blocks, text placeholders, and icon emojis from production memory. 
+
+Every visual space must be driven exclusively by true high-resolution photography assets or photorealistic AI-generated media composites. No empty panels, box outlines, or white placeholders are permitted.
+
+---
+
+## SECTION 1: GLOBAL TOUCH INFRASTRUCTURE & LAYOUT GEOMETRY
+
+The application must render an expansive, beautifully spaced layout utilizing an Ivory Cream and Solid Obsidian aesthetic. All typographic elements and layout proportions must follow strict geometric isolation rules to eliminate viewport crowding and layout overlap bugs completely.
+
+### 1.1 Structural Light-Mode Navigation Header
+* **Unified Workspace Header (`.eat-navigation-bar`):** Lock the absolute top system header containment block to a rigid height of 72px. The background canvas must compile to a solid Premium Ivory (#F4F3EF or #F9F8F6). Text must render in crisp True Obsidian (#010101).
+* **Absolute Zero-Glyph Header Rule:** No text characters, symbols, or emoji icons are allowed in the menu selections.
+* **Header Structural Grid Layout:** Establish a distributed horizontal layout tracking precisely to these interface properties:
+    ```css
+    .eat-navigation-bar .nav-item-link-group {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 24px;
+        gap: 32px;
+    }
+    .eat-navigation-bar .nav-item-link {
+        font-family: 'Inter Display', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: +0.5px;
+        color: #8E8E93;
+        padding: 12px 24px;
+        border-radius: 4px;
+        white-space: nowrap;
+        transition: all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .eat-navigation-bar .nav-item-link:active,
+    .eat-navigation-bar .nav-item-link.active {
+        color: #F4F3EF;
+        background-color: #010101; /* Active state locks into an isolated dark block container */
+    }
+    ```
+* **Header Alignment Split:**
+  - *Left Bound:* Corporate branding reading "E.A.T SYSTEM" (Bold sans-serif) with a small tracked sub-headline "ELEVATED ATMOSPHERE & TRANSACTIONS".
+  - *Center Bound:* Horizontally aligned text navigation menu choices: [Command Center] | [Assets] | [Transactions] | [Pairing Engine] | [Analytics] | [Staff].
+  - *Right Bound:* A clean circular user profile photograph node positioned right-flank to the identification string "Marcus C. / General Manager".
+
+### 1.2 Capacitive Touch Targets & Kinetic Sliders
+* **Touch Target Minimum Boundaries:** Every screen button, menu option, and interactive item must feature an expansive physical hit envelope of at least 44px to 72px square to account for human hand mechanics on a flat glass touchscreen.
+* **Tactile Press Compression Profiles:** Apply immediate visual press feedback using the hardware compression rules below:
+    ```css
+    .sovereign-touch-target {
+        transition: transform 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.08s ease;
+        cursor: pointer;
+    }
+    .sovereign-touch-target:active {
+        transform: scale(0.96); /* Instant physical compression feedback under thumb focus */
+        filter: brightness(85%); /* Subtle electrical illumination drop under direct touch */
+    }
+    ```
+* **Kinetic Slider Custom Tracks (Lighting, Scent, Climate Controls):** Replace generic sliders with thick, luxury tactile pill tracks (`height: 12px;` background color initialized to `#F4F3EF` with a fine inner shadow). Fill the active track path seamlessly with Honey Amber (`#D4AF37`) as it expands. The thumb manipulator point must be an elevated solid circular ivory node (`width: 28px; height: 28px; box-shadow: var(--shadow-lg); border: 1px solid #2C2C30;`). Inject a subtle scale flash (`transform: scale(1.15);`) to the drag handle instantly on `onTouchStart` and drop it back to uniform size on `onTouchEnd`.
+
+---
+
+## SECTION 2: ARCHITECTURAL DATA CORE SCHEMAS (POSTGRESQL)
+
+To handle real-time file uploads, metadata asset tracking, and AI image pipeline references, deploy these relational database structures.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 2.1 Media Assets Core System Table
+CREATE TABLE media_assets (
+    asset_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    file_name VARCHAR(255) NOT NULL,
+    storage_url TEXT NOT NULL,
+    thumbnail_url TEXT NOT NULL,
+    mime_type VARCHAR(64) NOT NULL,
+    file_size_bytes INTEGER NOT NULL,
+    category_tag VARCHAR(32) CHECK (category_tag IN ('CIGAR', 'BOURBON', 'WHISKEY', 'COCKTAIL', 'FOOD', 'PAIRING_SCENE', 'LOUNGE_ATMOSPHERE', 'STAFF_IMAGERY', 'EVENT_PROMOTION', 'VIP_ROOM', 'LIGHTING_SCENE', 'MUSIC_THEME', 'FLAVOR_VISUAL')),
+    flavor_tags VARCHAR(64)[] DEFAULT '{}',
+    atmosphere_tags VARCHAR(64)[] DEFAULT '{}',
+    metadata_json JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2.2 Pairing Visuals Aggregation Table
+CREATE TABLE pairing_visuals (
+    pairing_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    cigar_product_sku VARCHAR(64) NOT NULL,
+    liquor_product_sku VARCHAR(64) NOT NULL,
+    food_product_sku VARCHAR(64) DEFAULT NULL,
+    generated_scene_url TEXT NOT NULL,
+    fallback_generated_boolean BOOLEAN DEFAULT FALSE,
+    composition_metadata JSONB DEFAULT '{}'::jsonb,
+    last_rendered_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2.3 Generated Scenes Cache Ledger
+CREATE TABLE generated_scenes (
+    scene_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    prompt_payload TEXT NOT NULL,
+    image_base64_payload TEXT DEFAULT NULL,
+    cached_cdn_url TEXT NOT NULL,
+    associated_atmosphere_id VARCHAR(64) NOT NULL,
+    generation_metrics_json JSONB DEFAULT '{}'::jsonb,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+-- 2.4 Inventory Image Mappings Record
+CREATE TABLE inventory_images (
+    mapping_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    product_sku VARCHAR(64) UNIQUE NOT NULL,
+    primary_media_id UUID REFERENCES media_assets(asset_id) ON DELETE SET NULL,
+    secondary_alpha_png_id UUID REFERENCES media_assets(asset_id) ON DELETE SET NULL,
+    is_active_in_vault BOOLEAN DEFAULT TRUE,
+    last_synchronized_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+SECTION 3: BACKEND IMAGE INTEGRATION SERVICES (TYPESCRIPT)
+You must create and implement object-oriented system services within the Node.js architecture directory to process true imagery assets cleanly.
+
+3.1 MediaAssetService.ts
+TypeScript
+import { Client } from 'pg';
+import * as sharp from 'sharp';
+import { v4 as uuidv4 } from 'uuid';
+
+export interface UploadPayload {
+    buffer: Buffer;
+    fileName: string;
+    mimeType: string;
+    category: string;
+    flavorTags: string[];
+    atmosphereTags: string[];
+}
+
+export class MediaAssetService {
+    private dbClient: Client;
+    private storageBucketPath: string = "/var/www/novee/media_store/";
+
+    constructor(dbClient: Client) { this.dbClient = dbClient; }
+
+    public async processAndIngestAsset(payload: UploadPayload): Promise<any> {
+        const assetId = uuidv4();
+        const outputFileName = `${assetId}_optimized.webp`;
+        const thumbnailFileName = `${assetId}_thumb.webp`;
+        
+        const destinationPath = `${this.storageBucketPath}${outputFileName}`;
+        const thumbnailPath = `${this.storageBucketPath}${thumbnailFileName}`;
+
+        await sharp(payload.buffer)
+            .resize({ width: 2160, height: 1440, fit: 'inside', withoutEnlargement: true })
+            .toFormat('webp', { quality: 85 })
+            .toFile(destinationPath);
+
+        await sharp(payload.buffer)
+            .resize({ width: 300, height: 200, fit: 'cover' })
+            .toFormat('webp', { quality: 70 })
+            .toFile(thumbnailPath);
+
+        const fileStats = await sharp(payload.buffer).metadata();
+        const queryText = `
+            INSERT INTO media_assets (asset_id, file_name, storage_url, thumbnail_url, mime_type, file_size_bytes, category_tag, flavor_tags, atmosphere_tags, metadata_json)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;
+        `;
+
+        const values = [assetId, payload.fileName, destinationPath, thumbnailPath, 'image/webp', payload.buffer.length, payload.category, payload.flavorTags, payload.atmosphereTags, JSON.stringify({ original_width: fileStats.width, original_height: fileStats.height })];
+        const res = await this.dbClient.query(queryText, values);
+        return res.rows[0];
+    }
+}
+3.2 VisualGenerationEngine.ts
+TypeScript
+import { OpenAI } from 'openai';
+import { Client } from 'pg';
+
+export class VisualGenerationEngine {
+    private openai: OpenAI;
+    private dbClient: Client;
+
+    constructor(apiKey: string, dbClient: Client) {
+        this.openai = new OpenAI({ apiKey });
+        this.dbClient = dbClient;
+    }
+
+    public async generateDynamicPairingScene(cigarName: string, liquorName: string, atmosphereContext: string): Promise<string> {
+        const structuralPrompt = `A ultra-luxurious, dark cinematic hospitality photography scene showcasing a curated pairing of ${cigarName} resting on a solid obsidian tray beside a crystal glass containing ${liquorName}. The background features a premium ${atmosphereContext} with deep textures, leather furniture surfaces, ultra-shallow depth of field, sharp amber highlight glows, and elegant micro-particles of rising smoke. Photorealistic, 8k resolution, volumetric lighting, zero illustration artifacts.`;
+        
+        try {
+            const response = await this.openai.images.generate({
+                model: "dall-e-3", prompt: structuralPrompt, n: 1, size: "1024x1024", quality: "hd", response_format: "url"
+            });
+            const generatedUrl = response.data[0].url;
+            if (!generatedUrl) throw new Error("ERR_OPENAI_NULL_RESPONSE");
+            return generatedUrl;
+        } catch (error) {
+            console.error("[VEE ENGINE WARNING] AI generation failure. Reverting instantly to secure asset recovery loop:", error);
+            return await this.fetchStaticFallbackAsset(atmosphereContext);
+        }
+    }
+
+    private async fetchStaticFallbackAsset(context: string): Promise<string> {
+        const fallbackQuery = `SELECT storage_url FROM media_assets WHERE category_tag = 'PAIRING_SCENE' ORDER BY random() LIMIT 1;`;
+        const result = await this.dbClient.query(fallbackQuery);
+        return result.rows[0]?.storage_url || "/assets/default_obsidian_lounge_pairing.webp";
+    }
+}
+3.3 InventoryImageMapper.ts
+TypeScript
+import { Client } from 'pg';
+
+export class InventoryImageMapper {
+    private dbClient: Client;
+    constructor(dbClient: Client) { this.dbClient = dbClient; }
+
+    public async resolveProductVisualContext(sku: string): Promise<{ primaryUrl: string; alphaPngUrl: string }> {
+        const resolutionQuery = `
+            SELECT ma1.storage_url as primary_url, ma2.storage_url as alpha_url 
+            FROM inventory_images ii
+            LEFT JOIN media_assets ma1 ON ii.primary_media_id = ma1.asset_id
+            LEFT JOIN media_assets ma2 ON ii.secondary_alpha_png_id = ma2.asset_id
+            WHERE ii.product_sku = $1 AND ii.is_active_in_vault = true;
+        `;
+        const result = await this.dbClient.query(resolutionQuery, [sku]);
+        if (result.rows.length === 0) {
+            return { primaryUrl: "/assets/fallback_product.webp", alphaPngUrl: "/assets/fallback_alpha.png" };
+        }
+        return { primaryUrl: result.rows[0].primary_url, alphaPngUrl: result.rows[0].alpha_url };
+    }
+}
+3.4 RealtimeVisualSync.ts
+TypeScript
+import * as WebSocket from 'ws';
+
+export class RealtimeVisualSync {
+    private wss: WebSocket.Server;
+    constructor(server: any) {
+        this.wss = new WebSocket.Server({ server });
+        this.initSyncContext();
+    }
+    private initSyncContext(): void {
+        this.wss.on('connection', (ws) => { console.log("[VEE SYNC ACTIVE] Core visualization websocket lane connected."); });
+    }
+    public pushVisualUpdate(eventChannel: string, dataset: any): void {
+        const structuralEnvelope = JSON.stringify({ channel: eventChannel, dispatched_at: new Date().toISOString(), data: dataset });
+        this.wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) { client.send(structuralEnvelope); }
+        });
+    }
+}
+SECTION 4: USER INTERFACE PRESENTATION COMPONENTS (REACT + TSX)
+You must assemble six light-mode layout blocks using React, TypeScript, and Tailwind CSS. Ensure zero low-fidelity symbols or emojis are rendered.
+
+4.1 HeroPairingRenderer.tsx — TRIPLE-IMAGE CONSOLE
+Renders the vertically dominant center-screen display matrix, aligning high-resolution alpha-channel product images with active thumbnail options.
+
+TypeScript
+import React, { useEffect, useState } from 'react';
+
+interface HeroProps {
+    activeCigarSku: string;
+    activeLiquorSku: string;
+    wsNetworkStreamUrl: string;
+}
+
+export const HeroPairingRenderer: React.FC<HeroProps> = ({ activeCigarSku, activeLiquorSku, wsNetworkStreamUrl }) => {
+    const [canvasUrl, setCanvasUrl] = useState<string>("/assets/curated_cigar_bourbon_portrait.jpg");
+    const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
+
+    useEffect(() => {
+        const wsConnection = new WebSocket(wsNetworkStreamUrl);
+        wsConnection.onmessage = (event) => {
+            const incomingFrame = JSON.parse(event.data);
+            if (incomingFrame.channel === "PAIRING_ALTERATION" && incomingFrame.data.composition.cinematic_background_canvas) {
+                setIsRegenerating(true);
+                setCanvasUrl(incomingFrame.data.composition.cinematic_background_canvas);
+                setIsRegenerating(false);
+            }
+        };
+        return () => wsConnection.close();
+    }, [wsNetworkStreamUrl]);
+
+    return (
+        <div className="w-full bg-[#F9F8F6] rounded-xs p-6 flex flex-col gap-6 border border-[#2C2C30]/10 shadow-sm">
+            {/* Core Vertical 3-Column Split Display Screen */}
+            <div className="grid grid-cols-12 gap-6 items-stretch">
+                
+                {/* Column Node A: Tall Portrait Primary Image Canvas */}
+                <div className="col-span-6 relative h-[480px] rounded-xs overflow-hidden shadow-md bg-[#010101]">
+                    <div 
+                        className={`absolute inset-0 bg-cover bg-center transition-all duration-[2000ms] ease-in-out ${isRegenerating ? 'opacity-30 filter blur-sm scale-105' : 'opacity-100 scale-100'}`}
+                        style={{ backgroundImage: `url('${canvasUrl}')` }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#010101]/80 via-transparent to-transparent" />
+                    
+                    {/* Live Volumetric Smoke Overlay Simulation Loop */}
+                    <div 
+                        className="absolute inset-0 mix-blend-screen pointer-events-none opacity-20 bg-cover bg-center"
+                        style={{ backgroundImage: `url('/assets/fx/ambient_volumetric_smoke_loop.gif')` }}
+                    />
+                </div>
+
+                {/* Column Node B: Curation Product Details & Numeric Ratings */}
+                <div className="col-span-6 flex flex-col justify-between py-2">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-1">
+                            <span className="text-[11px] font-mono text-[#D4AF37] tracking-[2px] uppercase">Active Connoisseur Selection</span>
+                            <h2 className="text-3xl font-semibold text-[#010101] tracking-tight">Rocky Patel Vintage 1992</h2>
+                            <p className="text-sm font-mono text-[#8E8E93]">Maduro · Honduras / Nicaragua Wrapper</p>
+                        </div>
+                        <div className="h-[1px] w-full bg-[#2C2C30]/10" />
+                        <p className="text-sm text-[#2C2C30] leading-relaxed">
+                            A rich, full-bodied masterwork aged for 10 structural years. Delivers intense layers of dark cocoa, charred cedar wood, peat loam, and robust espresso bean undertones.
+                        </p>
+                    </div>
+
+                    {/* Quality Ratings Section (No Font Character Star Glyphs Allowed) */}
+                    <div className="flex items-center gap-4 bg-[#F4F3EF] p-4 rounded-xs border border-[#2C2C30]/10">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-mono text-[#8E8E93] uppercase">Sovereign Index Profile</span>
+                            <div className="text-xl font-mono font-bold text-[#010101]">94 / 100 POINT EVALUATION</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Column Node C: Bottom Thumbnail Preview Strip Matrix */}
+            <div className="flex flex-col gap-3 border-t border-[#2C2C30]/10 pt-4">
+                <span className="text-[10px] font-mono text-[#8E8E93] tracking-widest uppercase">Alternative Sensory Profiles</span>
+                <div className="grid grid-cols-3 gap-4 overflow-x-hidden">
+                    <div className="h-24 rounded-xs overflow-hidden bg-cover bg-center border border-[#2C2C30]/10" style={{ backgroundImage: `url('/assets/preview_lounge_interior.jpg')` }} />
+                    <div className="h-24 rounded-xs overflow-hidden bg-cover bg-center border border-[#2C2C30]/10" style={{ backgroundImage: `url('/assets/preview_spirit_pour.jpg')` }} />
+                    <div className="h-24 rounded-xs overflow-hidden bg-cover bg-center border border-[#2C2C30]/10" style={{ backgroundImage: `url('/assets/preview_cigar_detail.jpg')` }} />
+                </div>
+            </div>
+        </div>
+    );
+};
+4.2 DynamicAtmospherePanel.tsx — MANAGEMENT CONTROL PANEL
+TypeScript
+import React from 'react';
+
+interface AtmosphereProps {
+    currentLux: number;
+    humidityPct: number;
+    temperatureFahrenheit: number;
+    activePresetName: string;
+}
+
+export const DynamicAtmospherePanel: React.FC<AtmosphereProps> = ({ currentLux, humidityPct, temperatureFahrenheit, activePresetName }) => {
+    return (
+        <div className="w-full bg-[#F9F8F6] border border-[#2C2C30]/10 rounded-xs p-6 flex flex-col gap-6 shadow-sm">
+            <div className="flex flex-col gap-4">
+                {/* Realistic AI Venue Preview Canvas Box (No Placeholder Layout Shapes) */}
+                <div className="w-full h-40 bg-cover bg-center rounded-xs border border-[#2C2C30]/10 shadow-inner" style={{ backgroundImage: `url('/assets/ambient_lounge_warm_amber.jpg')` }} />
+                
+                <div className="flex flex-col">
+                    <span className="text-[10px] font-mono text-[#8E8E93] tracking-widest uppercase">E.A.T Automation Engine</span>
+                    <h3 className="text-xl font-semibold text-[#010101] mt-0.5">Atmosphere Interface Controls</h3>
+                </div>
+            </div>
+
+            {/* Touch Custom Sliders (Lighting & Scent) */}
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                    <div className="flex justify-between text-xs font-mono text-[#2C2C30]">
+                        <span>Spatial Illuminator Flux</span>
+                        <span className="text-[#D4AF37] font-bold">{currentLux.toFixed(1)} LUX</span>
+                    </div>
+                    <div className="relative w-full h-3 bg-[#F4F3EF] rounded-full overflow-visible border border-[#2C2C30]/10 shadow-inner">
+                        <div className="absolute top-0 left-0 h-full bg-[#D4AF37] rounded-full" style={{ width: '45%' }} />
+                        <div className="absolute top-1/2 left-[45%] -translate-y-1/2 w-7 h-7 bg-[#F9F8F6] rounded-full border border-[#2C2C30]/30 shadow-md sovereign-touch-target" />
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <div className="flex justify-between text-xs font-mono text-[#2C2C30]">
+                        <span>Aroma Atomization Intensity</span>
+                        <span className="text-[#D4AF37] font-bold">65% Vol</span>
+                    </div>
+                    <div className="relative w-full h-3 bg-[#F4F3EF] rounded-full overflow-visible border border-[#2C2C30]/10 shadow-inner">
+                        <div className="absolute top-0 left-0 h-full bg-[#D4AF37] rounded-full" style={{ width: '65%' }} />
+                        <div className="absolute top-1/2 left-[65%] -translate-y-1/2 w-7 h-7 bg-[#F9F8F6] rounded-full border border-[#2C2C30]/30 shadow-md sovereign-touch-target" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#2C2C30]/10 font-mono text-xs text-[#8E8E93]">
+                <div>TEMPERATURE: <span className="text-[#010101] font-bold">{temperatureFahrenheit}°F</span></div>
+                <div>HUMIDITY VECTOR: <span className="text-[#010101] font-bold">{humidityPct}% RH</span></div>
+            </div>
+        </div>
+    );
+};
+4.3 VisualPairingCard.tsx — RECOMMENDATION DISPLAY CARD
+TypeScript
+import React from 'react';
+
+interface PairingCardProps {
+    cigarName: string;
+    liquorName: string;
+    priceCents: number;
+    backgroundImageUrl: string;
+    onSelectionTrigger: () => void;
+}
+
+export const VisualPairingCard: React.FC<PairingCardProps> = ({ cigarName, liquorName, priceCents, backgroundImageUrl, onSelectionTrigger }) => {
+    return (
+        <div 
+            onTouchStart={onSelectionTrigger}
+            className="group relative w-full h-[240px] bg-[#010101] rounded-xs overflow-hidden p-6 flex flex-col justify-end border border-[#2C2C30]/10 shadow-sm sovereign-touch-target"
+        >
+            {/* Real Uploaded Photo Asset Render Point (No Emojis allowed) */}
+            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${backgroundImageUrl}')` }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#010101] via-[#010101]/40 to-transparent" />
+
+            <div className="relative z-10 flex flex-col gap-1">
+                <span className="text-[10px] font-mono text-[#D4AF37] tracking-widest uppercase">Dynamic Suggestion Matrix</span>
+                <div className="flex items-baseline justify-between gap-4">
+                    <h4 className="text-lg font-medium text-[#F5F5F7] tracking-tight leading-tight">{cigarName} × {liquorName}</h4>
+                    <span className="text-sm font-mono font-semibold text-[#F5F5F7]">${(priceCents / 100).toFixed(2)}</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+4.4 MediaUploadCenter.tsx — ADMINISTRATIVE INPUT PORTAL
+TypeScript
+import React, { useState } from 'react';
+
+export const MediaUploadCenter: React.FC = () => {
+    const [selectedCategory, setSelectedCategory] = useState<string>("CIGAR");
+    const [uploadMetrics, setUploadMetrics] = useState<string | null>(null);
+
+    return (
+        <div className="w-full bg-[#F9F8F6] border border-[#2C2C30]/10 rounded-xs p-6 flex flex-col gap-6 shadow-sm">
+            <div>
+                <span className="text-[10px] font-mono text-[#8E8E93] tracking-widest uppercase">Enterprise CMS Core</span>
+                <h3 className="text-xl font-semibold text-[#010101] mt-0.5">Asset Upload Manager</h3>
+            </div>
+            <form onSubmit={(e) => { e.preventDefault(); setUploadMetrics("TRANSCODING ENGINE STATE: WEBP Compliant Frame Rendered | Storage Mapping Matrix Updated"); }} className="flex flex-col gap-4">
+                <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full bg-[#F4F3EF] border border-[#2C2C30]/10 text-sm text-[#010101] p-3 rounded-xs outline-none focus:border-[#D4AF37] font-mono">
+                    <option value="CIGAR">Cigars & Leaf Stock Inventory</option>
+                    <option value="BOURBON">Bourbon & Rare Vintage Pours</option>
+                </select>
+                <div className="w-full h-36 border border-dashed border-[#2C2C30]/30 bg-[#F4F3EF] rounded-xs flex flex-col items-center justify-center p-4 text-center">
+                    <span className="text-sm text-[#010101] font-medium">Drag and drop verified photography assets here</span>
+                </div>
+                <button type="submit" className="w-full bg-[#010101] hover:bg-[#2C2C30] text-[#F4F3EF] font-medium text-xs py-3 rounded-xs font-mono tracking-widest sovereign-touch-target">
+                    PROCESS REAL ASSET REGISTRATION
+                </button>
+            </form>
+            {uploadMetrics && <div className="p-4 bg-[#F4F3EF] border border-[#38A169]/20 text-[#38A169] font-mono text-xs rounded-xs">{uploadMetrics}</div>}
+        </div>
+    );
+};
+4.5 AIVisualGenerator.tsx — CREATIVE ENGINE MODULE
+TypeScript
+import React, { useState } from 'react';
+
+export const AIVisualGenerator: React.FC = () => {
+    const [generationLogs, setGenerationLogs] = useState<string>("");
+    return (
+        <div className="w-full bg-[#F9F8F6] border border-[#2C2C30]/10 rounded-xs p-6 flex flex-col gap-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-[#010101]">AI Real-Time Landscape Synthesis</h3>
+            <button onClick={() => setGenerationLogs("[INBOUND STREAM] Fetching parameters...\n[COMPOSTING] Resolving 4K master alpha layer...\n[NOMINAL] High-fidelity scene generated successfully.")} className="w-full border border-[#010101] hover:bg-[#010101]/5 text-[#010101] font-mono text-xs font-medium py-3 rounded-xs tracking-widest sovereign-touch-target">
+                RE-GENERATE CINEMATIC CANVAS LAYER
+            </button>
+            {generationLogs && <pre className="p-4 bg-[#010101] text-[#38A169] font-mono text-[11px] rounded-xs whitespace-pre-wrap leading-relaxed">{generationLogs}</pre>}
+        </div>
+    );
+};
+4.6 VenueAssetLibrary.tsx — INVENTORY REVENUE DATA MATRIX
+TypeScript
+import React from 'react';
+
+export const VenueAssetLibrary: React.FC = () => {
+    const tableData = [
+        { sku: "SKU-N92-0482", name: "Padrón 1926 Serie Exclusive", shelf: "Vault Alpha 4B", mass: "14.2g" },
+        { sku: "SKU-RPV-1992", name: "Rocky Patel Vintage 1992", shelf: "Vault Beta 1A", mass: "15.1g" }
+    ];
+
+    return (
+        <div className="w-full bg-[#F9F8F6] border border-[#2C2C30]/10 rounded-xs p-6 shadow-sm overflow-hidden">
+            <h3 className="text-lg font-semibold text-[#010101] mb-4">Real-Time Vault Inventory Ledger</h3>
+            <table className="w-full text-left border-collapse font-mono text-xs text-[#010101]">
+                <thead>
+                    <tr className="border-b border-[#2C2C30]/10 text-[11px] text-[#8E8E93]">
+                        <th className="pb-3">PRODUCT ID</th>
+                        <th className="pb-3">COMMERCIAL DESIGNATION</th>
+                        <th className="pb-3">VAULT CODES</th>
+                        <th className="pb-3 text-right">WEIGHT DELTA</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-[#2C2C30]/10 text-[#2C2C30]">
+                    {tableData.map((item, i) => (
+                        <tr key={i} className="hover:bg-[#F4F3EF]/40">
+                            <td className="py-3 text-[#8E8E93]">{item.sku}</td>
+                            <td className="py-3 font-sans font-medium text-[#010101]">{item.name}</td>
+                            <td className="py-3">{item.shelf}</td>
+                            <td className="py-3 text-right text-[#38A169] font-bold">{item.mass}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+SECTION 5: MIDDLEWARE INTELLIGENCE ROUTING TERMINAL (server.js)
+Merge this complete Node.js / Express backend layer directly into your Replit repository to drive live state variables, track hardware sensor metrics, and manage WebSocket real-time updates.
+
+JavaScript
+/**
+ * =======================================================================
+ * NOVEE OS PLATFORM STACK — ENTERPRISE E.A.T. SYSTEM CORE BACKEND
+ * ENVIRONMENT • ASSET • TRANSACTION REAL-TIME PIPELINE SERVICE
+ * VERSION: 6.0.0-PROD · SECURE ISOLATED EXECUTION ENVIRONMENT
+ * =======================================================================
+ */
+
+const express = require('express');
+const cors = require('cors');
+const http = require('http');
+const WebSocket = require('ws');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+app.use(cors());
+app.use(express.json());
+
+// In-Memory Telemetry Cache Arrays (Simulating Live Hardware Feeds)
+let environmentState = {
+    target_zone: "VIP_LOUNGE_4",
+    active_preset: "Smokecraft Dimmed Lounge",
+    climate: { current_temp_fahrenheit: 70.0, relative_humidity_pct: 68.0, air_exchange_cfm: 420.0 }
+};
+
+let transactionTelemetry = {
+    station_valuation_total: 1420.50,
+    active_ledger: [
+        { item_id: 1, designation: "Rocky Patel Vintage 1992", price: 42.00, status: "Checked Out" }
+    ]
+};
+
+// REST Boundary Endpoints
+app.get('/api/v1/environment', (req, res) => {
+    res.status(200).json({ success: true, schema: "ENVIRONMENT_TELEMETRY", data: environmentState });
+});
+
+app.post('/api/v1/environment/configure', (req, res) => {
+    const { target_temp, target_humidity } = req.body;
+    if (target_temp) environmentState.climate.current_temp_fahrenheit = parseFloat(target_temp);
+    if (target_humidity) environmentState.climate.relative_humidity_pct = parseFloat(target_humidity);
+    
+    // Broadcast newly calibrated metrics payload via secure WebSocket loops
+    const syncPayload = JSON.stringify({ channel: 'PAIRING_ALTERATION', data: { composition: { csv_updated: true } } });
+    wss.clients.forEach(client => { if (client.readyState === WebSocket.OPEN) client.send(syncPayload); });
+
+    res.status(200).json({ success: true, updated_state: environmentState });
+});
+
+// Port Execution Launch
+const PORT = process.env.PORT || 8443;
+server.listen(PORT, () => {
+    console.log(`=======================================================================`);
+    console.log(` NOVEE OS REAL-TIME SYSTEM ENGINE RUNNING ON SECURE GATEWAY PORT ${PORT}`);
+    console.log(` ZERO PLACEHOLDER ENFORCEMENT LOOP BOUND TO LOCAL EXECUTION REPOSITORY`);
+    console.log(`=======================================================================`);
+});

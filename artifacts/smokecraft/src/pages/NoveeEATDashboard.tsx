@@ -1,11 +1,10 @@
 /**
  * EATDashboard — E.A.T. System Hospitality OS
- * Elevated Atmosphere & Transactions · NOVEE OS
- * Rebuilt to match reference design: top-nav, device sidebar,
- * pairing engine, orders, environment controls, floor plan.
+ * Ivory Cream + Solid Obsidian aesthetic — matches reference screenshot v6
+ * ZERO GLYPH / ZERO EMOJI mandate enforced throughout
  */
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { socket } from "@/lib/socket";
 import { useNoveeGuest } from "@/contexts/NoveeGuestProfileContext";
 import {
@@ -16,73 +15,72 @@ import {
 } from "@/lib/eatEngine";
 import type { EATModuleFlags } from "@/pages/NoveeExecutiveCommandCenter";
 
-// ── Design tokens ─────────────────────────────────────────────────────────────
-const ESPRESSO = "#1E0C04";
-const CREAM    = "#F0EBE0";
-const CARD     = "#FAF7F1";
-const GOLD     = "#D4AF37";
-const AMBER    = "#C4860A";
-const GREEN    = "#2E7D4F";
-const RED_CLR  = "#C0392B";
-const DARK     = "#1A1208";
-const MED      = "#6B5240";
-const LIGHT    = "#A08B70";
-const BORDER   = "rgba(180,140,80,0.18)";
+const BASE = import.meta.env.BASE_URL;
+const IMG  = (n: string) => `${BASE}images/${n}`;
 
-// ── Navigation tabs ───────────────────────────────────────────────────────────
+// ── Design tokens ─────────────────────────────────────────────────────────────
+const IVORY   = "#F4F3EF";
+const OBSID   = "#010101";
+const AMBER   = "#D4AF37";
+const AMBER2  = "#C4860A";
+const GREEN   = "#2E7D4F";
+const RED_CLR = "#C0392B";
+const TEXT1   = "#1A1208";
+const TEXT2   = "#5A4020";
+const TEXT3   = "#8E8E93";
+const BORDER  = "#E5DFD0";
+const PAGE_BG = "#EDE8DA";
+const CARD_BG = "#FAFAF6";
+
+// ── Navigation ────────────────────────────────────────────────────────────────
 const TOP_TABS = [
-  "Command Center","Environment","Assets","Transactions",
-  "Pairing Engine","Lounge Control","Analytics","Staffing",
+  "Command Center","Assets","Transactions","Pairing Engine","Analytics","Staff",
 ] as const;
 type TopTab = (typeof TOP_TABS)[number];
 
-// ── URL tab sync helpers ───────────────────────────────────────────────────────
 const EAT_TAB_SLUG_MAP: Record<string, TopTab> = {
-  "command-center":  "Command Center",
-  "environment":     "Environment",
-  "assets":          "Assets",
-  "transactions":    "Transactions",
-  "pairing-engine":  "Pairing Engine",
-  "lounge-control":  "Lounge Control",
-  "analytics":       "Analytics",
-  "staffing":        "Staffing",
+  "command-center": "Command Center",
+  "assets":         "Assets",
+  "transactions":   "Transactions",
+  "pairing-engine": "Pairing Engine",
+  "analytics":      "Analytics",
+  "staff":          "Staff",
 };
 
 function eatTabToSlug(tab: TopTab): string {
   return tab.toLowerCase().replace(/\s+/g, "-");
 }
-
 function parseEATTabFromSearch(search: string): TopTab {
   try {
-    const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
-    const raw = params.get("tab");
-    if (raw && raw in EAT_TAB_SLUG_MAP) return EAT_TAB_SLUG_MAP[raw];
+    const p = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+    const r = p.get("tab");
+    if (r && r in EAT_TAB_SLUG_MAP) return EAT_TAB_SLUG_MAP[r];
   } catch { /* ignore */ }
   return "Command Center";
 }
 
-// ── Fallback static data ───────────────────────────────────────────────────────
+// ── Static data ───────────────────────────────────────────────────────────────
 const STATIC_DEVICES = [
-  { id:"T-B01", name:"Tablet 01", room:"Main Lounge",    battery:100, signal:4, online:true  },
-  { id:"T-B02", name:"Tablet 02", room:"VIP Room 1",     battery:85,  signal:3, online:true  },
-  { id:"T-B03", name:"Tablet 03", room:"Cigar Patio",    battery:73,  signal:3, online:true  },
-  { id:"T-B04", name:"Tablet 04", room:"Bar Station",    battery:92,  signal:4, online:true  },
-  { id:"T-B05", name:"Tablet 05", room:"Humidor",        battery:65,  signal:2, online:true  },
-  { id:"T-B06", name:"Tablet 06", room:"Kitchen Display",battery:100, signal:4, online:true  },
-  { id:"T-B07", name:"Tablet 07", room:"Wine Cellar",    battery:58,  signal:2, online:false },
-  { id:"T-B08", name:"Tablet 08", room:"Private Room 2", battery:41,  signal:1, online:true  },
+  { id:"T-B01", name:"Tablet 01", zone:"B01", battery:100, online:true  },
+  { id:"T-B02", name:"Tablet 02", zone:"B02", battery:85,  online:true  },
+  { id:"T-B03", name:"Tablet 03", zone:"B03", battery:73,  online:true  },
+  { id:"T-B04", name:"Tablet 04", zone:"B04", battery:92,  online:true  },
+  { id:"T-B05", name:"Tablet 05", zone:"B05", battery:65,  online:true  },
+  { id:"T-B06", name:"Tablet 06", zone:"B06", battery:100, online:true  },
+  { id:"T-B07", name:"Tablet 07", zone:"B07", battery:58,  online:false },
+  { id:"T-B08", name:"Tablet 08", zone:"B08", battery:41,  online:true  },
 ];
 
 const FEATURED_CIGAR = {
-  name:"Padrón 1926 Serie 80", type:"Maduro", origin:"Nicaragua",
-  body:"Full Bodied", strength:4, rating:4.5, price:36,
+  name:"Rocky Patel Vintage 1992", type:"Maduro", origin:"Nicaragua",
+  body:"Full Bodied", strength:4, rating:4, price:42,
   description:"Rich, bold and complex. Notes of espresso, dark chocolate, earth and black pepper with a long creamy finish.",
   imageUrl: undefined as string | undefined,
 };
 const PAIRINGS = [
-  { name:"The Macallan 18",      sub:"Sherry Oak",            notes:"Rich · Dried Fruit · Oak",   price:42 },
-  { name:"Smoked Old Fashioned", sub:"Bourbon · Bitters · Smoke", notes:"Artisan cocktail",       price:18 },
-  { name:"Wagyu Sliders",        sub:"Truffle Aioli · Brioche",   notes:"Chef feature tonight",   price:16 },
+  { name:"Rocky Patel Vintage 1992", sub:"cigar",   notes:"Rich · Dried Fruit · Oak", price:42 },
+  { name:"Buffalo Trace Bourbon",    sub:"alcohol",  notes:"Artisan · cocktail",       price:18 },
+  { name:"Maker's Mark Bourbon",     sub:"alcohol",  notes:"Chef feature tonight",     price:16 },
 ];
 
 interface FloorTable { id:number|string; x:number; y:number; vip:boolean; active:boolean; guests:number; }
@@ -110,172 +108,152 @@ interface TabRecord {
 const STATIC_TABS: TabRecord[] = [
   { id:"t1", name:"John D.", guests:3, server:"Alex T.", tableNumber:"103", total:248.75, tax:18.75,
     items:[
-      { name:"Padrón 1926 Serie 80", qty:1, price:36 },
-      { name:"The Macallan 18",      qty:2, price:42 },
-      { name:"Wagyu Sliders",        qty:1, price:32 },
-      { name:"Smoked Old Fashioned", qty:2, price:18 },
-      { name:"Lounge Charge",        qty:1, price:20 },
+      { name:"Rocky Patel Vintage 1992", qty:1, price:42 },
+      { name:"Buffalo Trace Bourbon",    qty:2, price:18 },
+      { name:"Wagyu Sliders",            qty:1, price:32 },
+      { name:"Smoked Old Fashioned",     qty:2, price:18 },
     ] },
-  { id:"t2", name:"Marcus B.", guests:2, server:"Sam K.",   tableNumber:"104",  total:340,  tax:0, items:[] },
-  { id:"t3", name:"Elena R.",  guests:4, server:"Alex T.",  tableNumber:"107",  total:198,  tax:0, items:[] },
-  { id:"t4", name:"David C.",  guests:2, server:"Chris M.", tableNumber:"108",  total:127,  tax:0, items:[] },
-  { id:"t5", name:"Group VIP", guests:5, server:"Alex T.",  tableNumber:"VIP1", total:820,  tax:0, items:[] },
-];
-const STATIC_EVENTS = [
-  { id:"e1", name:"Smooth Jazz Night",  schedule:"Every Friday 8PM – 12AM",  desc:"Live jazz, crafted cocktails and premium pairings.", emoji:"🎷" },
-  { id:"e2", name:"Cigar & Bourbon",    schedule:"Saturdays 7PM",            desc:"", emoji:"🥃" },
-  { id:"e3", name:"Wine Down",          schedule:"Wednesdays 6PM",           desc:"", emoji:"🍷" },
-  { id:"e4", name:"Latin Night",        schedule:"Thursdays 9PM",            desc:"", emoji:"💃" },
-  { id:"e5", name:"Poker Night",        schedule:"Tuesdays 8PM",             desc:"", emoji:"♠️" },
+  { id:"t2", name:"Marcus B.", guests:2, server:"Sam K.",   tableNumber:"104",  total:340, tax:0, items:[] },
+  { id:"t3", name:"Elena R.",  guests:4, server:"Alex T.",  tableNumber:"107",  total:198, tax:0, items:[] },
+  { id:"t4", name:"David C.",  guests:2, server:"Chris M.", tableNumber:"108",  total:127, tax:0, items:[] },
+  { id:"t5", name:"Group VIP", guests:5, server:"Alex T.",  tableNumber:"VIP1", total:820, tax:0, items:[] },
 ];
 
-const INVENTORY_TABS = ["Kitchen","Bar","Humidor"] as const;
-const INVENTORY_DATA: Record<string,{name:string;qty:number;status:"In Stock"|"Low Stock"}[]> = {
-  Kitchen:[ {name:"Wagyu Beef",qty:12,status:"In Stock"},{name:"Truffle Oil",qty:4,status:"Low Stock"},{name:"Brioche Buns",qty:28,status:"In Stock"} ],
-  Bar:    [ {name:"The Macallan 18",qty:6,status:"Low Stock"},{name:"Pappy Van Winkle",qty:3,status:"Low Stock"},{name:"Hennessy XO",qty:8,status:"In Stock"} ],
-  Humidor:[ {name:"Cohiba Behike 52",qty:144,status:"In Stock"},{name:"Padrón 1926 No.9",qty:89,status:"In Stock"},{name:"Oliva Serie V Melanio",qty:112,status:"In Stock"},{name:"Davidoff Millennium",qty:67,status:"In Stock"},{name:"Premium Lighters",qty:23,status:"Low Stock"} ],
-};
+const MUSIC_OPTIONS  = ["Smooth Jazz","Neo-Soul","Ambient Lounge","Classical","Upbeat Jazz"];
+const SCENT_OPTIONS  = ["Leather & Oak","Cedar & Vanilla","Aged Oak","Sandalwood","Citrus & Cedar"];
+const PRESET_OPTIONS = ["Warm Lounge","VIP Experience","Ceremony Mode","Late Night","Service Mode"];
 
-const MUSIC_OPTIONS = ["Smooth Jazz","Neo-Soul","Ambient Lounge","Classical","Upbeat Jazz"];
-const SCENT_OPTIONS = ["Leather & Oak","Cedar & Vanilla","Aged Oak","Sandalwood","Citrus & Cedar"];
-const PRESET_OPTIONS= ["Warm Lounge","VIP Experience","Ceremony Mode","Late Night","Service Mode"];
+const BOT_NAV = [
+  { label:"MENU",         img:IMG("lounge_bg.jpg"),      active:false },
+  { label:"RESERVATIONS", img:IMG("lounge-bg.png"),      active:false },
+  { label:"EVENTS",       img:IMG("cigar_hero.jpg"),     active:false },
+  { label:"E.A.T",        img:IMG("cigar_hero.jpg"),     active:true  },
+  { label:"MESSAGES",     img:IMG("pour-1.jpg"),         active:false },
+  { label:"REPORTS",      img:IMG("pourcraft-card.jpg"), active:false },
+  { label:"SETTINGS",     img:IMG("lounge-bg.jpg"),      active:false },
+];
 
 type PanelVis = "on"|"muted"|"hidden";
+interface EATDashboardProps { eatFlags?: EATModuleFlags; onBack?: () => void; }
 
-// ── Component props ───────────────────────────────────────────────────────────
-interface EATDashboardProps {
-  eatFlags?: EATModuleFlags;
-  onBack?: () => void;
-}
+// ── Micro-components (zero-glyph) ─────────────────────────────────────────────
 
-// ── Micro-components ──────────────────────────────────────────────────────────
-
-function Dot({ color=GREEN }: { color?:string }) {
+function PulseDot({ color=GREEN }: { color?:string }) {
   return (
     <motion.div
-      animate={{ scale:[1,1.5,1], opacity:[1,0.35,1] }}
-      transition={{ duration:1.6, repeat:Infinity }}
-      style={{ width:7, height:7, borderRadius:"50%", background:color, boxShadow:`0 0 5px ${color}99`, flexShrink:0 }}
+      animate={{ scale:[1,1.45,1], opacity:[1,0.4,1] }}
+      transition={{ duration:1.7, repeat:Infinity }}
+      style={{ width:7, height:7, borderRadius:"50%", background:color, flexShrink:0 }}
     />
   );
 }
 
 function BattBar({ pct }: { pct:number }) {
-  const c = pct>60 ? GREEN : pct>30 ? AMBER : RED_CLR;
+  const c = pct > 60 ? GREEN : pct > 30 ? AMBER2 : RED_CLR;
   return (
     <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-      <div style={{ width:26, height:9, background:"rgba(0,0,0,0.09)", borderRadius:2, overflow:"hidden", border:"1px solid rgba(0,0,0,0.14)" }}>
-        <div style={{ width:`${pct}%`, height:"100%", background:c, transition:"width 0.5s" }} />
+      <div style={{ display:"flex", alignItems:"center" }}>
+        <div style={{ width:22, height:8, borderRadius:"2px 0 0 2px", overflow:"hidden", border:`1px solid ${BORDER}`, borderRight:"none", background:"rgba(0,0,0,0.07)" }}>
+          <div style={{ width:`${pct}%`, height:"100%", background:c, transition:"width 0.5s" }} />
+        </div>
+        <div style={{ width:3, height:5, borderRadius:"0 1px 1px 0", background:BORDER }} />
       </div>
       <span style={{ fontSize:11, fontWeight:700, color:c }}>{pct}%</span>
     </div>
   );
 }
 
-function Stars({ v }: { v:number }) {
+function RatingDots({ v, max=5 }: { v:number; max?:number }) {
   return (
-    <div style={{ display:"flex", gap:2 }}>
-      {[1,2,3,4,5].map(i=>(
-        <span key={i} style={{ fontSize:16, color: i<=v ? GOLD : "rgba(180,140,80,0.22)", lineHeight:1 }}>
-          {i<=v ? "★" : "☆"}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function Strength({ v, max=5 }: { v:number; max?:number }) {
-  return (
-    <div style={{ display:"flex", gap:5 }}>
+    <div style={{ display:"flex", gap:3 }}>
       {Array.from({length:max},(_,i)=>(
         <div key={i} style={{
-          width:15, height:15, borderRadius:"50%",
-          background: i<v ? AMBER : "rgba(180,140,80,0.15)",
-          border:`1.5px solid ${i<v ? AMBER : "rgba(180,140,80,0.22)"}`,
+          width:13, height:13, borderRadius:2,
+          background: i < v ? AMBER : "rgba(212,175,55,0.15)",
+          border:`1px solid ${i < v ? AMBER : "rgba(212,175,55,0.22)"}`,
         }} />
       ))}
     </div>
   );
 }
 
-function SCard({ children, style }: { children:React.ReactNode; style?:React.CSSProperties }) {
+function StrengthDots({ v, max=5 }: { v:number; max?:number }) {
   return (
-    <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:10,
-      boxShadow:"0 1px 4px rgba(80,40,0,0.06)", ...style }}>
-      {children}
+    <div style={{ display:"flex", gap:5 }}>
+      {Array.from({length:max},(_,i)=>(
+        <div key={i} style={{
+          width:14, height:14, borderRadius:"50%",
+          background: i < v ? AMBER : "rgba(212,175,55,0.15)",
+          border:`1.5px solid ${i < v ? AMBER : "rgba(212,175,55,0.22)"}`,
+        }} />
+      ))}
     </div>
   );
 }
 
-function SectionHead({ title, action, onAction }: { title:string; action?:string; onAction?:()=>void }) {
+function KineticSlider({ value, onChange }: { value:number; onChange:(v:number)=>void }) {
+  const pct = value;
   return (
-    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-      <span style={{ fontSize:13, fontWeight:900, letterSpacing:"0.16em", color:MED, textTransform:"uppercase" }}>{title}</span>
-      {action && <button onClick={onAction} style={{ fontSize:12, color:AMBER, background:"none", border:"none", cursor:"pointer", fontWeight:700, letterSpacing:"0.08em" }}>{action}</button>}
+    <div style={{ position:"relative", height:12, borderRadius:6, background:"rgba(0,0,0,0.09)", cursor:"pointer", boxShadow:"inset 0 1px 2px rgba(0,0,0,0.10)" }}>
+      <div style={{ position:"absolute", left:0, top:0, height:"100%", width:`${pct}%`, background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:6 }} />
+      <input type="range" min={0} max={100} value={value} onChange={e=>onChange(Number(e.target.value))}
+        style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0, cursor:"pointer", margin:0 }} />
+      <div style={{ position:"absolute", top:"50%", left:`${pct}%`, transform:"translate(-50%,-50%)", width:20, height:20, borderRadius:"50%", background:IVORY, border:"1.5px solid #2C2C30", boxShadow:"0 2px 6px rgba(0,0,0,0.20)", pointerEvents:"none" }} />
     </div>
   );
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
-
-export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboardProps) {
+export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps) {
   const { profile } = useNoveeGuest();
   const venueId = (profile as { venueId?: string }).venueId ?? localStorage.getItem("axiom_venue_id") ?? "default";
   const [activeTab, setTabState] = useState<TopTab>(() => parseEATTabFromSearch(window.location.search));
-
   const setActiveTab = useCallback((t: TopTab) => {
     setTabState(t);
     const url = new URL(window.location.href);
-    if (t === "Command Center") {
-      url.searchParams.delete("tab");
-    } else {
-      url.searchParams.set("tab", eatTabToSlug(t));
-    }
+    t === "Command Center" ? url.searchParams.delete("tab") : url.searchParams.set("tab", eatTabToSlug(t));
     window.history.replaceState({}, "", url.toString());
   }, []);
-
-  // Sync active tab with browser back/forward navigation
   useEffect(() => {
-    const onPopState = () => {
-      setTabState(parseEATTabFromSearch(window.location.search));
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+    const h = () => setTabState(parseEATTabFromSearch(window.location.search));
+    window.addEventListener("popstate", h);
+    return () => window.removeEventListener("popstate", h);
   }, []);
 
-  const [panelVis, setPanelVis] = useState<{environment:PanelVis;asset:PanelVis;transaction:PanelVis}>(
-    { environment:"on", asset:"on", transaction:"on" }
-  );
+  const [, setPanelVis]    = useState<{environment:PanelVis;asset:PanelVis;transaction:PanelVis}>({ environment:"on", asset:"on", transaction:"on" });
   const [wsConnected, setWsConnected] = useState(socket.connected);
-
-  const [envState, setEnvState] = useState<EnvironmentState>(eatEngine.getEnvironment());
-  const [, setLiveInv]          = useState<InventoryProduct[]>([]);
-
+  const [envState, setEnvState]       = useState<EnvironmentState>(eatEngine.getEnvironment());
+  const [, setLiveInv]                = useState<InventoryProduct[]>([]);
   const [devices, setDevices]         = useState(STATIC_DEVICES);
   const [floorTables, setFloorTables] = useState<FloorTable[]>(INITIAL_TABLES);
   const [floorView, setFloorView]     = useState<"Floor Plan"|"List View">("Floor Plan");
   const [dragging, setDragging]       = useState<string|number|null>(null);
   const dragOff  = useRef({ x:0, y:0 });
   const floorRef = useRef<HTMLDivElement>(null);
-
-  const [pairingCat, setPairingCat] = useState<"Cigar"|"Spirits"|"Food">("Cigar");
-  const [txnTab, setTxnTab]         = useState<"Active Tabs"|"Recent Orders"|"Payments">("Active Tabs");
-  const [activeTabs, setActiveTabs] = useState<TabRecord[]>(STATIC_TABS);
-  const [selTabId, setSelTabId]     = useState<string>(STATIC_TABS[0].id);
+  const [activeTabs, setActiveTabs]   = useState<TabRecord[]>(STATIC_TABS);
+  const [selTabId, setSelTabId]       = useState(STATIC_TABS[0].id);
   type OrderRow = { id:string; tableNumber:string; items:{name:string;qty:number;price:number}[]; total:number; status:string; createdAt:string };
   const [recentOrders, setRecentOrders] = useState<OrderRow[]>([]);
-  type EventRow = { id:string; name:string; schedule:string; desc:string; emoji:string };
-  const [liveEvents, setLiveEvents] = useState<EventRow[]>([]);
-  const [envHistory, setEnvHistory] = useState<number[]>([28, 22, 25, 18, 20, 15, 17]);
   const [featuredCigar, setFeaturedCigar] = useState(FEATURED_CIGAR);
   const [livePairings, setLivePairings]   = useState(PAIRINGS);
-  const [invCat, setInvCat]         = useState<"Kitchen"|"Bar"|"Humidor">("Kitchen");
+  const [envPreset, setEnvPreset]   = useState(PRESET_OPTIONS[0]);
+  const [lighting, setLighting]     = useState(65);
+  const [musicMode, setMusicMode]   = useState(MUSIC_OPTIONS[0]);
+  const [scentMode, setScentMode]   = useState(SCENT_OPTIONS[0]);
+  const [scentPct, setScentPct]     = useState(40);
+  const [pairingIdx, setPairingIdx] = useState(0);
+  const [clock, setClock] = useState(() => {
+    const d = new Date();
+    return d.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"}).toUpperCase() + " | " + d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+  });
 
-  const [envPreset, setEnvPreset] = useState(PRESET_OPTIONS[0]);
-  const [lighting, setLighting]   = useState(65);
-  const [musicMode, setMusicMode] = useState(MUSIC_OPTIONS[0]);
-  const [scentMode, setScentMode] = useState(SCENT_OPTIONS[0]);
-  const [scentPct, setScentPct]   = useState(40);
+  useEffect(() => {
+    const tick = setInterval(() => {
+      const d = new Date();
+      setClock(d.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"}).toUpperCase() + " | " + d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
+    }, 30000);
+    return () => clearInterval(tick);
+  }, []);
 
   useEffect(() => {
     eatEngine.start();
@@ -283,887 +261,574 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
     const unsubEnv = eatEngine.subscribeEnvironment(setEnvState);
     const onConn    = () => setWsConnected(true);
     const onDisconn = () => setWsConnected(false);
-    const onPV = (d: Partial<typeof panelVis>) => setPanelVis(prev => ({ ...prev, ...d }));
-    socket.on("connect",          onConn);
-    socket.on("disconnect",       onDisconn);
-    socket.on("panel_visibility", onPV);
-
+    const onPV = (d: Partial<{environment:PanelVis;asset:PanelVis;transaction:PanelVis}>) => setPanelVis(prev => ({ ...prev, ...d }));
+    socket.on("connect", onConn); socket.on("disconnect", onDisconn); socket.on("panel_visibility", onPV);
     const token = localStorage.getItem("axiom_token") ?? "";
     const hdr = (t:string): Record<string,string> => t ? { Authorization:`Bearer ${t}` } : {};
     const vId  = venueId;
 
-    fetch("/api/admin/panel-config", { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{ if(d) setPanelVis(p=>({...p,...d})); })
-      .catch(()=>{});
+    fetch("/api/admin/panel-config", { headers:hdr(token) }).then(r=>r.ok?r.json():null).then(d=>{ if(d) setPanelVis(p=>({...p,...d})); }).catch(()=>{});
 
     const fetchDevices = () => {
-      fetch(`/api/devices/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) })
-        .then(r=>r.ok?r.json():null)
-        .then(d=>{
-          if (Array.isArray(d) && d.length>0) {
-            setDevices(d.slice(0,8).map((dev:Record<string,unknown>, i:number)=>({
-              id:   String(dev.id ?? `T-B0${i+1}`),
-              name: String(dev.nickname ?? `Tablet 0${i+1}`),
-              room: String(dev.tableNumber ?? "Main Floor"),
-              battery: typeof dev.battery === "number" ? dev.battery : 100,
-              signal:  typeof dev.signal  === "number" ? dev.signal  : 4,
-              online: dev.status === "active",
-            })));
-          }
-        })
-        .catch(()=>{});
+      fetch(`/api/devices/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) }).then(r=>r.ok?r.json():null).then(d=>{
+        if (Array.isArray(d) && d.length>0) {
+          setDevices(d.slice(0,8).map((dev:Record<string,unknown>,i:number)=>({
+            id:String(dev.id??`T-B0${i+1}`), name:String(dev.nickname??`Tablet 0${i+1}`), zone:String(dev.zone??`B0${i+1}`),
+            battery:typeof dev.battery==="number"?dev.battery:100, online:dev.status==="active",
+          })));
+        }
+      }).catch(()=>{});
     };
     fetchDevices();
     const devicePoll = setInterval(fetchDevices, 30000);
 
-    // Pairing engine — featured cigar + live pairings sidebar
-    fetch(`/api/pairing-engine/suggest`, { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        if(d && typeof d === "object") {
-          const rec = d as Record<string,unknown>;
-          const suggestions: unknown[] = Array.isArray(rec.suggestions) ? rec.suggestions
-            : Array.isArray(rec.recommendations) ? rec.recommendations : [];
-          const item = (suggestions[0] ?? rec) as Record<string,unknown>;
-          if (item && item.name) {
-            setFeaturedCigar(prev => ({
-              ...prev,
-              name:    String(item.name    ?? prev.name),
-              body:    String(item.body    ?? item.wrapper ?? prev.body),
-              origin:  String(item.origin  ?? item.country ?? prev.origin),
-              type:    String(item.type    ?? item.brand   ?? prev.type),
-              description: String(item.description ?? item.flavorNotes ?? prev.description),
-              strength:    Number(item.strength ?? prev.strength),
-              rating:      Number(item.rating   ?? item.score ?? prev.rating),
-              price:       item.costCents != null ? Math.round(Number(item.costCents)/100)
-                         : item.price    != null ? Number(item.price) : prev.price,
-              imageUrl:    item.imageUrl ? String(item.imageUrl) : prev.imageUrl,
-            }));
-          }
-          // Wire Perfect Pairings sidebar to live API suggestions
-          if (suggestions.length > 0) {
-            setLivePairings(suggestions.slice(0, 3).map((s: unknown, i: number) => {
-              const sg = s as Record<string,unknown>;
-              return {
-                name:   String(sg.name ?? PAIRINGS[i]?.name ?? "House Pairing"),
-                sub:    String(sg.category ?? sg.sub ?? PAIRINGS[i]?.sub ?? ""),
-                notes:  String(sg.description ?? sg.notes ?? PAIRINGS[i]?.notes ?? "Premium pairing"),
-                price:  sg.costCents != null ? Math.round(Number(sg.costCents)/100)
-                       : sg.price    != null ? Number(sg.price)
-                       : (PAIRINGS[i]?.price ?? 18),
-              };
-            }));
-          }
-        }
-      })
-      .catch(()=>{});
-
-    fetch(`/api/tabs/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        if(!d) return;
-        const rows: unknown[] = (d as {tabs?:unknown[]}).tabs ?? (Array.isArray(d)?d:[]);
-        if (rows.length > 0) {
-          setActiveTabs(rows.slice(0,6).map((t:unknown, i:number) => {
-            const tab = t as Record<string,unknown>;
-            return {
-              id:          String(tab.id ?? `tab_${i}`),
-              name:        String(tab.guestName ?? tab.name ?? `Table ${i+1}`),
-              server:      String(tab.serverName ?? tab.server ?? "Staff"),
-              tableNumber: String(tab.tableNumber ?? String(i+1)),
-              guests:      Number(tab.guestCount ?? tab.guests ?? 1),
-              items:       Array.isArray(tab.items) ? tab.items.map((it:unknown) => {
-                const item = it as Record<string,unknown>;
-                return { name:String(item.name??"Item"), qty:Number(item.qty??1), price:Number(item.price??0) };
-              }) : [],
-              total:       Number(tab.total ?? 0),
-              tax:         Number(tab.tax ?? 0),
-            };
-          }));
-          setSelTabId(String((rows[0] as Record<string,unknown>).id ?? "tab_0"));
-        }
-      })
-      .catch(()=>{});
-
-    // Environment current state
-    fetch(`/api/environment/${encodeURIComponent(vId)}`, { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{ if(d && typeof d === "object") { setEnvState(prev => ({ ...prev, ...d })); } })
-      .catch(()=>{});
-
-    // Environment 24h history for sparkline
-    fetch(`/api/environment/${encodeURIComponent(vId)}/history`, { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        const list: unknown[] = Array.isArray(d) ? d : ((d as {history?:unknown[]}).history ?? []);
-        if (list.length > 0) {
-          const temps = list.slice(0, 7).map((p:unknown) => {
-            const point = p as Record<string,unknown>;
-            const t = Number(point.temperature ?? point.temp ?? 72);
-            return Math.max(0, Math.min(36, 36 - ((t - 60) / 20) * 36));
-          });
-          setEnvHistory(temps);
-        }
-      })
-      .catch(()=>{});
-
-    // Events
-    fetch(`/api/events/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        const list: unknown[] = Array.isArray(d) ? d : ((d as {events?:unknown[]}).events ?? []);
-        if (list.length > 0) {
-          setLiveEvents(list.map((e:unknown) => {
-            const ev = e as Record<string,unknown>;
-            return { id:String(ev.id??""), name:String(ev.name??""), schedule:String(ev.schedule??ev.startTime??""), desc:String(ev.description??ev.desc??""), emoji:"🎶" };
+    fetch(`/api/pairing-engine/suggest`, { headers:hdr(token) }).then(r=>r.ok?r.json():null).then(d=>{
+      if(d && typeof d==="object") {
+        const rec = d as Record<string,unknown>;
+        const suggestions: unknown[] = Array.isArray(rec.suggestions)?rec.suggestions:Array.isArray(rec.recommendations)?rec.recommendations:[];
+        const item = (suggestions[0]??rec) as Record<string,unknown>;
+        if (item && item.name) {
+          setFeaturedCigar(prev=>({...prev, name:String(item.name??prev.name), body:String(item.body??item.wrapper??prev.body),
+            origin:String(item.origin??item.country??prev.origin), type:String(item.type??item.brand??prev.type),
+            description:String(item.description??item.flavorNotes??prev.description), strength:Number(item.strength??prev.strength),
+            rating:Number(item.rating??item.score??prev.rating),
+            price:item.costCents!=null?Math.round(Number(item.costCents)/100):item.price!=null?Number(item.price):prev.price,
+            imageUrl:item.imageUrl?String(item.imageUrl):prev.imageUrl,
           }));
         }
-      })
-      .catch(()=>{});
-
-    // Recent orders
-    fetch(`/api/orders/venue/${encodeURIComponent(vId)}?limit=20`, { headers:hdr(token) })
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        const list: unknown[] = Array.isArray(d) ? d : ((d as {orders?:unknown[]}).orders ?? []);
-        if (list.length > 0) {
-          setRecentOrders(list.map((o:unknown) => {
-            const order = o as Record<string,unknown>;
-            return {
-              id:          String(order.id ?? ""),
-              tableNumber: String(order.tableNumber ?? order.table ?? ""),
-              items:       Array.isArray(order.items) ? order.items.map((it:unknown) => {
-                const item = it as Record<string,unknown>;
-                return { name:String(item.name??""), qty:Number(item.qty??1), price:Number(item.price??0) };
-              }) : [],
-              total:       Number(order.total ?? 0),
-              status:      String(order.status ?? ""),
-              createdAt:   String(order.createdAt ?? order.created_at ?? ""),
-            };
+        if (suggestions.length>0) {
+          setLivePairings(suggestions.slice(0,3).map((s:unknown,i:number)=>{
+            const sg=s as Record<string,unknown>;
+            return { name:String(sg.name??PAIRINGS[i]?.name??"House Pairing"), sub:String(sg.category??sg.sub??PAIRINGS[i]?.sub??""),
+              notes:String(sg.description??sg.notes??PAIRINGS[i]?.notes??"Premium pairing"),
+              price:sg.costCents!=null?Math.round(Number(sg.costCents)/100):sg.price!=null?Number(sg.price):(PAIRINGS[i]?.price??18) };
           }));
         }
-      })
-      .catch(()=>{});
+      }
+    }).catch(()=>{});
+
+    fetch(`/api/tabs/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) }).then(r=>r.ok?r.json():null).then(d=>{
+      if(!d) return;
+      const rows:unknown[]=(d as {tabs?:unknown[]}).tabs??(Array.isArray(d)?d:[]);
+      if(rows.length>0){
+        setActiveTabs(rows.slice(0,6).map((t:unknown,i:number)=>{
+          const tab=t as Record<string,unknown>;
+          return { id:String(tab.id??`tab_${i}`), name:String(tab.guestName??tab.name??`Table ${i+1}`),
+            server:String(tab.serverName??tab.server??"Staff"), tableNumber:String(tab.tableNumber??String(i+1)),
+            guests:Number(tab.guestCount??tab.guests??1),
+            items:Array.isArray(tab.items)?tab.items.map((it:unknown)=>{const item=it as Record<string,unknown>;return{name:String(item.name??"Item"),qty:Number(item.qty??1),price:Number(item.price??0)};}):[],
+            total:Number(tab.total??0), tax:Number(tab.tax??0) };
+        }));
+        setSelTabId(String((rows[0] as Record<string,unknown>).id??"tab_0"));
+      }
+    }).catch(()=>{});
+
+    fetch(`/api/environment/${encodeURIComponent(vId)}`, { headers:hdr(token) }).then(r=>r.ok?r.json():null).then(d=>{ if(d&&typeof d==="object") setEnvState(prev=>({...prev,...d})); }).catch(()=>{});
+    fetch(`/api/events/venue/${encodeURIComponent(vId)}`, { headers:hdr(token) }).then(r=>r.ok?r.json():null).catch(()=>{});
+    fetch(`/api/orders/venue/${encodeURIComponent(vId)}?limit=20`, { headers:hdr(token) }).then(r=>r.ok?r.json():null).then(d=>{
+      const list:unknown[]=Array.isArray(d)?d:((d as {orders?:unknown[]}).orders??[]);
+      if(list.length>0){ setRecentOrders(list.map((o:unknown)=>{ const order=o as Record<string,unknown>; return { id:String(order.id??""), tableNumber:String(order.tableNumber??order.table??""), items:Array.isArray(order.items)?order.items.map((it:unknown)=>{const item=it as Record<string,unknown>;return{name:String(item.name??""),qty:Number(item.qty??1),price:Number(item.price??0)};}):[],total:Number(order.total??0),status:String(order.status??""),createdAt:String(order.createdAt??order.created_at??"") }; })); }
+    }).catch(()=>{});
 
     return () => {
-      eatEngine.stop();
-      unsubInv(); unsubEnv();
-      clearInterval(devicePoll);
-      socket.off("connect",          onConn);
-      socket.off("disconnect",       onDisconn);
-      socket.off("panel_visibility", onPV);
+      eatEngine.stop(); unsubInv(); unsubEnv(); clearInterval(devicePoll);
+      socket.off("connect",onConn); socket.off("disconnect",onDisconn); socket.off("panel_visibility",onPV);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Environment controls — debounced PATCH on slider change
   const envDebounce = useRef<ReturnType<typeof setTimeout>|null>(null);
   useEffect(() => {
     if(envDebounce.current) clearTimeout(envDebounce.current);
     envDebounce.current = setTimeout(() => {
-      const token = localStorage.getItem("axiom_token") ?? "";
-      const vId   = venueId;
-      fetch(`/api/environment/${encodeURIComponent(vId)}`, {
-        method: "PATCH",
-        headers: { "Content-Type":"application/json", ...(token ? { Authorization:`Bearer ${token}` } : {}) },
-        body:    JSON.stringify({ lighting, scent: scentPct, musicMode, scentMode }),
-      }).catch(()=>{});
+      const token = localStorage.getItem("axiom_token")??"";
+      fetch(`/api/environment/${encodeURIComponent(venueId)}`,{ method:"PATCH", headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})}, body:JSON.stringify({lighting,scent:scentPct,musicMode,scentMode}) }).catch(()=>{});
     }, 800);
     return () => { if(envDebounce.current) clearTimeout(envDebounce.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lighting, scentPct, musicMode, scentMode]);
+  }, [lighting,scentPct,musicMode,scentMode]);
 
-  // Preset change — immediate POST
   useEffect(() => {
     if(!envPreset) return;
-    const token = localStorage.getItem("axiom_token") ?? "";
-    const vId   = venueId;
-    fetch(`/api/environment/${encodeURIComponent(vId)}/preset`, {
-      method: "POST",
-      headers: { "Content-Type":"application/json", ...(token ? { Authorization:`Bearer ${token}` } : {}) },
-      body:    JSON.stringify({ preset: envPreset }),
-    }).catch(()=>{});
+    const token = localStorage.getItem("axiom_token")??"";
+    fetch(`/api/environment/${encodeURIComponent(venueId)}/preset`,{ method:"POST", headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})}, body:JSON.stringify({preset:envPreset}) }).catch(()=>{});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [envPreset]);
 
   const onTableMD = useCallback((e:React.MouseEvent, id:string|number) => {
     e.preventDefault();
-    const rect = floorRef.current?.getBoundingClientRect();
-    if(!rect) return;
-    const t = floorTables.find(t=>t.id===id);
-    if(!t) return;
-    dragOff.current = {
-      x: e.clientX - rect.left - (t.x/100)*rect.width,
-      y: e.clientY - rect.top  - (t.y/100)*rect.height,
-    };
+    const rect = floorRef.current?.getBoundingClientRect(); if(!rect) return;
+    const t = floorTables.find(t=>t.id===id); if(!t) return;
+    dragOff.current = { x:e.clientX-rect.left-(t.x/100)*rect.width, y:e.clientY-rect.top-(t.y/100)*rect.height };
     setDragging(id);
   }, [floorTables]);
-
   const onFloorMM = useCallback((e:React.MouseEvent) => {
-    if(!dragging || !floorRef.current) return;
+    if(!dragging||!floorRef.current) return;
     const rect = floorRef.current.getBoundingClientRect();
-    const x = Math.max(2, Math.min(88, ((e.clientX-rect.left-dragOff.current.x)/rect.width)*100));
-    const y = Math.max(2, Math.min(88, ((e.clientY-rect.top -dragOff.current.y)/rect.height)*100));
-    setFloorTables(prev => prev.map(t => t.id===dragging ? {...t, x, y} : t));
+    const x = Math.max(2,Math.min(88,((e.clientX-rect.left-dragOff.current.x)/rect.width)*100));
+    const y = Math.max(2,Math.min(88,((e.clientY-rect.top-dragOff.current.y)/rect.height)*100));
+    setFloorTables(prev=>prev.map(t=>t.id===dragging?{...t,x,y}:t));
   }, [dragging]);
-
   const onFloorMU = useCallback(() => {
-    if(dragging) {
-      const t = floorTables.find(t=>t.id===dragging);
-      if(t) {
-        const token = localStorage.getItem("axiom_token") ?? "";
-        fetch(`/api/staffFloor/table/${encodeURIComponent(String(dragging))}`, {
-          method:"PATCH",
-          headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-          body:JSON.stringify({x:t.x,y:t.y}),
-        }).catch(()=>{});
-      }
-      setDragging(null);
-    }
-  }, [dragging, floorTables]);
+    if(dragging){ const t=floorTables.find(t=>t.id===dragging); if(t){ const token=localStorage.getItem("axiom_token")??""; fetch(`/api/staffFloor/table/${encodeURIComponent(String(dragging))}`,{method:"PATCH",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({x:t.x,y:t.y})}).catch(()=>{}); } setDragging(null); }
+  }, [dragging,floorTables]);
 
-  const selectedTab = activeTabs.find(t=>t.id===selTabId) ?? activeTabs[0];
-  const shiftTotal  = activeTabs.reduce((s,t)=>s+t.total,0);
+  const selectedTab  = activeTabs.find(t=>t.id===selTabId)?? activeTabs[0];
 
   const handleAddCigar = useCallback(() => {
-    const token = localStorage.getItem("axiom_token") ?? "";
-    if(!selectedTab) return;
-    fetch(`/api/tabs/${selectedTab.id}/items`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ productName:featuredCigar.name, unitCents:Math.round(featuredCigar.price*100), quantity:1, craftType:"smoke" }),
-    }).catch(()=>{});
-  }, [selectedTab]);
-
+    const token=localStorage.getItem("axiom_token")??""; if(!selectedTab) return;
+    fetch(`/api/tabs/${selectedTab.id}/items`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({productName:featuredCigar.name,unitCents:Math.round(featuredCigar.price*100),quantity:1,craftType:"smoke"})}).catch(()=>{});
+  },[selectedTab,featuredCigar]);
   const handleAddPairing = useCallback(() => {
-    const token = localStorage.getItem("axiom_token") ?? "";
-    if(!selectedTab) return;
-    fetch(`/api/tabs/${selectedTab.id}/items`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ productName:"Premium Pairing Selection", unitCents:2800, quantity:1, craftType:"pour" }),
-    }).catch(()=>{});
-  }, [selectedTab]);
-
-  const handleAddFullExperience = useCallback(() => {
-    const token = localStorage.getItem("axiom_token") ?? "";
-    if(!selectedTab) return;
-    fetch(`/api/tabs/${selectedTab.id}/items`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ productName:"Full Cigar & Pairing Experience", unitCents:Math.round((featuredCigar.price+28)*100), quantity:1, craftType:"smoke" }),
-    }).catch(()=>{});
-  }, [selectedTab]);
-
-  const handleRoute = useCallback((action: string) => {
-    const token = localStorage.getItem("axiom_token") ?? "";
-    if(!selectedTab) return;
-    const dest = action.replace("Send to ","").toLowerCase();
-    fetch(`/api/tabs/${selectedTab.id}/route`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-      body:JSON.stringify({ destination: dest, items: selectedTab.items }),
-    }).catch(()=>{});
-  }, [selectedTab]);
-
+    const token=localStorage.getItem("axiom_token")??""; if(!selectedTab) return;
+    fetch(`/api/tabs/${selectedTab.id}/items`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({productName:"Premium Pairing Selection",unitCents:2800,quantity:1,craftType:"pour"})}).catch(()=>{});
+  },[selectedTab]);
+  const handleRoute = useCallback((dest:string) => {
+    const token=localStorage.getItem("axiom_token")??""; if(!selectedTab) return;
+    fetch(`/api/tabs/${selectedTab.id}/route`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({destination:dest,items:selectedTab.items})}).catch(()=>{});
+  },[selectedTab]);
   const handleCheckout = useCallback(async () => {
-    if(!selectedTab || !selectedTab.items.length) return;
-    const req: CheckoutRequest = {
-      venueId:     localStorage.getItem("axiom_venue_id") ?? "venue_01",
-      tableNumber: selectedTab.tableNumber,
-      items:       selectedTab.items.map(i=>({
-        productId:`item_${i.name.replace(/\s+/g,"_")}`,
-        name:i.name, qty:i.qty, price:i.price,
-      })),
-      successUrl: window.location.href,
-      cancelUrl:  window.location.href,
-    };
-    try {
-      const result = await eatEngine.checkout(req);
-      if(result.checkoutUrl && result.checkoutUrl.startsWith("http")) {
-        window.open(result.checkoutUrl, "_blank");
-      }
-    } catch { /* silent */ }
-  }, [selectedTab]);
+    if(!selectedTab||!selectedTab.items.length) return;
+    const req:CheckoutRequest={ venueId:localStorage.getItem("axiom_venue_id")??"venue_01", tableNumber:selectedTab.tableNumber, items:selectedTab.items.map(i=>({productId:`item_${i.name.replace(/\s+/g,"_")}`,name:i.name,qty:i.qty,price:i.price})), successUrl:window.location.href, cancelUrl:window.location.href };
+    try { const result=await eatEngine.checkout(req); if(result.checkoutUrl?.startsWith("http")) window.open(result.checkoutUrl,"_blank"); } catch { /* silent */ }
+  },[selectedTab]);
 
-  // ── Left sidebar ──────────────────────────────────────────────────────────
-  const renderLeft = () => (
-    <aside style={{ width:230, flexShrink:0, borderRight:`1px solid ${BORDER}`, display:"flex", flexDirection:"column", overflow:"hidden", background:CREAM }}>
-      <div style={{ flex:1, overflow:"auto", padding:"12px 10px 0" }}>
-        <SCard style={{ marginBottom:12 }}>
-          <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <span style={{ fontSize:12, fontWeight:900, letterSpacing:"0.14em", color:MED, textTransform:"uppercase" }}>Tablet & Device Status</span>
-              <button onClick={()=>{}} style={{ fontSize:11, color:AMBER, background:"none", border:"none", cursor:"pointer", fontWeight:700 }}>View All</button>
-            </div>
-            <div style={{ display:"flex", alignItems:"center", gap:6, marginTop:4 }}>
-              <Dot color={GREEN} />
-              <span style={{ fontSize:11, color:LIGHT }}>{devices.filter(d=>d.online).length} Active Devices</span>
-              <span style={{ marginLeft:"auto", fontSize:12, fontWeight:900, color:DARK }}>{devices.length} Total</span>
-            </div>
-          </div>
-          <div style={{ maxHeight:200, overflow:"auto" }}>
-            {devices.map(dev => (
-              <div key={dev.id} style={{ padding:"7px 12px", borderBottom:`1px solid rgba(180,140,80,0.09)`, display:"flex", alignItems:"center", gap:8 }}>
-                <div style={{ fontSize:16, opacity: dev.online ? 1 : 0.4 }}>📱</div>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between" }}>
-                    <span style={{ fontSize:22, fontWeight:700, color:DARK }}>{dev.name}</span>
-                    <span style={{ fontSize:22, color:LIGHT, fontFamily:"monospace" }}>{dev.id}</span>
-                  </div>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:3, gap:4 }}>
-                    <span style={{ fontSize:22, color:LIGHT, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:80 }}>{dev.room}</span>
-                    <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-                      <BattBar pct={dev.battery} />
-                      <span style={{ fontSize:22, color:LIGHT, fontWeight:700, minWidth:34, textAlign:"right" }}>{dev.signal * 25}%</span>
-                    </div>
-                  </div>
-                </div>
-                <div style={{ width:7, height:7, borderRadius:"50%", background:dev.online?GREEN:RED_CLR, flexShrink:0 }} />
-              </div>
-            ))}
-          </div>
-        </SCard>
+  void envState; void recentOrders; void wsConnected;
 
-        <SCard>
-          <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
-              <span style={{ fontSize:12, fontWeight:900, letterSpacing:"0.14em", color:MED, textTransform:"uppercase" }}>Active Tables</span>
-            </div>
-            <div style={{ display:"flex", gap:6 }}>
-              {(["Floor Plan","List View"] as const).map(v=>(
-                <button key={v} onClick={()=>setFloorView(v)}
-                  style={{ flex:1, padding:"5px 0", fontSize:11, fontWeight:700, cursor:"pointer", borderRadius:6, border:`1px solid ${floorView===v?AMBER:BORDER}`, background:floorView===v?"rgba(196,134,10,0.10)":CREAM, color:floorView===v?AMBER:MED }}>
-                  {v}
-                </button>
-              ))}
-            </div>
-          </div>
+  // ── RENDER ────────────────────────────────────────────────────────────────
+  const SEL = (s:React.CSSProperties): React.CSSProperties => s;
 
-          {floorView === "Floor Plan" ? (
-            <div ref={floorRef} onMouseMove={onFloorMM} onMouseUp={onFloorMU} onMouseLeave={onFloorMU}
-              style={{ position:"relative", height:240, margin:"8px", background:"#EDE6D8", borderRadius:8, overflow:"hidden", cursor:dragging?"grabbing":"default", border:`1px solid rgba(180,140,80,0.20)` }}>
-              <div style={{ position:"absolute", inset:8, border:"1px dashed rgba(180,140,80,0.30)", borderRadius:6, pointerEvents:"none" }} />
-              {floorTables.map(t=>(
-                <motion.div key={String(t.id)} onMouseDown={e=>onTableMD(e,t.id)} animate={{ scale:dragging===t.id?1.1:1 }}
-                  style={{ position:"absolute", left:`${t.x}%`, top:`${t.y}%`, transform:"translate(-50%,-50%)",
-                    width:t.vip?38:30, height:t.vip?38:30, borderRadius:t.vip?"10px":"50%",
-                    background: t.vip ? `linear-gradient(135deg,${GOLD},${AMBER})` : t.active ? `rgba(46,125,79,0.18)` : `rgba(180,140,80,0.15)`,
-                    border:`1.5px solid ${t.vip?GOLD:t.active?"rgba(46,125,79,0.6)":BORDER}`,
-                    display:"flex", alignItems:"center", justifyContent:"center",
-                    cursor:"grab", userSelect:"none", zIndex:dragging===t.id?10:1 }}>
-                  <span style={{ fontSize:t.vip?10:9, fontWeight:900, color:t.vip?ESPRESSO:t.active?GREEN:LIGHT, lineHeight:1 }}>
-                    {t.vip?"VIP":String(t.id)}
-                  </span>
-                  {t.active && t.guests>0 && (
-                    <div style={{ position:"absolute", top:-4, right:-4, background:GREEN, color:"white", fontSize:8, fontWeight:900, borderRadius:"50%", width:14, height:14, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                      {t.guests}
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ maxHeight:240, overflow:"auto" }}>
-              {floorTables.filter(t=>t.active).map(t=>(
-                <div key={String(t.id)} style={{ padding:"7px 12px", borderBottom:`1px solid rgba(180,140,80,0.09)`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                  <div>
-                    <span style={{ fontSize:12, fontWeight:700, color:DARK }}>Table {String(t.id)}</span>
-                    {t.vip && <span style={{ marginLeft:6, fontSize:10, color:GOLD, fontWeight:800, padding:"1px 6px", border:`1px solid ${GOLD}44`, borderRadius:4 }}>VIP</span>}
-                  </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                    <Dot color={GREEN} /><span style={{ fontSize:11, color:LIGHT }}>{t.guests} guests</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div style={{ padding:"6px 12px 8px", textAlign:"center" }}>
-            <span style={{ fontSize:10, color:LIGHT, letterSpacing:"0.06em" }}>Drag & Drop tables to reassign</span>
-          </div>
-        </SCard>
-      </div>
-    </aside>
-  );
-
-  // ── Pairing Engine ────────────────────────────────────────────────────────
-  const renderPairing = () => (
-    <div style={{ padding:"12px 14px 0", marginBottom:16 }}>
-      <SCard style={{ overflow:"hidden" }}>
-        <div style={{ padding:"10px 14px 0", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <span style={{ fontSize:13, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase" }}>Pairing Engine</span>
-          <div style={{ display:"flex", gap:0 }}>
-            {(["Cigar","Spirits","Food"] as const).map(c=>(
-              <button key={c} onClick={()=>setPairingCat(c)}
-                style={{ padding:"6px 16px", fontSize:13, fontWeight:700, cursor:"pointer", border:"none", borderBottom:pairingCat===c?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:pairingCat===c?AMBER:LIGHT }}>
-                {c}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div style={{ display:"flex", gap:0 }}>
-          <div style={{ flex:1, padding:"14px", borderRight:`1px solid ${BORDER}` }}>
-            <div style={{ display:"flex", gap:14 }}>
-              <div style={{ width:110, height:120, borderRadius:8, flexShrink:0, background:"linear-gradient(145deg,#3D1F0A 0%,#5C2D0E 45%,#2A1106 100%)", border:`1px solid rgba(180,140,80,0.25)`, overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
-                {featuredCigar.imageUrl ? (
-                  <img src={featuredCigar.imageUrl} alt={featuredCigar.name} style={{ width:"100%", height:"100%", objectFit:"cover", position:"absolute", inset:0 }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                ) : (
-                  <div style={{ position:"absolute", inset:0, background:"linear-gradient(135deg,rgba(212,175,55,0.18) 0%,rgba(180,100,20,0.30) 50%,rgba(30,12,4,0.80) 100%)", backdropFilter:"blur(2px)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                    <div style={{ width:48, height:48, borderRadius:8, border:`1px solid rgba(212,175,55,0.27)`, background:"rgba(212,175,55,0.10)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                      <div style={{ width:6, height:42, borderRadius:4, background:"linear-gradient(to bottom, #D4AF37, #C4860A88)", transform:"rotate(-8deg)" }} />
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div style={{ flex:1 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
-                  <span style={{ fontSize:11, padding:"2px 8px", borderRadius:10, background:`rgba(180,140,80,0.14)`, color:MED, fontWeight:700 }}>{featuredCigar.body}</span>
-                </div>
-                <div style={{ fontSize:18, fontWeight:900, color:DARK, lineHeight:1.2, marginBottom:2 }}>{featuredCigar.name}</div>
-                <div style={{ fontSize:13, color:LIGHT, marginBottom:10 }}>{featuredCigar.type} · {featuredCigar.origin}</div>
-                <p style={{ fontSize:13, color:MED, lineHeight:1.6, margin:"0 0 10px 0" }}>{featuredCigar.description}</p>
-                <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                    <span style={{ fontSize:12, color:LIGHT, fontWeight:700, width:64 }}>STRENGTH</span>
-                    <Strength v={featuredCigar.strength} />
-                  </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                    <span style={{ fontSize:12, color:LIGHT, fontWeight:700, width:64 }}>RATING</span>
-                    <Stars v={featuredCigar.rating} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div style={{ width:220, flexShrink:0 }}>
-            <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <span style={{ fontSize:11, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase" }}>Perfect Pairings</span>
-              <div style={{ display:"flex", gap:4 }}>
-                {["‹","›"].map(a=>(<button key={a} style={{ width:22, height:22, borderRadius:4, border:`1px solid ${BORDER}`, background:CREAM, color:DARK, cursor:"pointer", fontSize:13 }}>{a}</button>))}
-              </div>
-            </div>
-            <div style={{ padding:"8px" }}>
-              {livePairings.map((p,i)=>(
-                <div key={i} style={{ padding:"10px 10px", borderRadius:8, marginBottom:6, background:CREAM, border:`1px solid ${BORDER}` }}>
-                  <div style={{ fontSize:22, fontWeight:800, color:DARK, marginBottom:2 }}>{p.name}</div>
-                  <div style={{ fontSize:22, color:LIGHT, marginBottom:4 }}>{p.sub}</div>
-                  <div style={{ display:"flex", justifyContent:"space-between" }}>
-                    <span style={{ fontSize:22, color:MED }}>{p.notes}</span>
-                    <span style={{ fontSize:22, fontWeight:900, color:AMBER }}>${p.price}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div style={{ padding:"10px 14px", borderTop:`1px solid ${BORDER}`, display:"flex", gap:8 }}>
-          <motion.button whileTap={{ scale:0.96 }} onClick={handleAddCigar}
-            style={{ flex:1, minHeight:56, padding:"12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.40)`, background:"rgba(46,125,79,0.08)", color:GREEN, fontSize:22, fontWeight:800, cursor:"pointer" }}>
-            Add Cigar<br/><span style={{ fontSize:22, fontWeight:600 }}>${featuredCigar.price}.00</span>
-          </motion.button>
-          <motion.button whileTap={{ scale:0.96 }} onClick={handleAddPairing}
-            style={{ flex:1, minHeight:56, padding:"12px", borderRadius:8, border:`1px solid rgba(180,140,80,0.35)`, background:"rgba(180,140,80,0.08)", color:MED, fontSize:22, fontWeight:800, cursor:"pointer" }}>
-            Add Pairing<br/><span style={{ fontSize:22, fontWeight:600 }}>From $16.00</span>
-          </motion.button>
-          <motion.button whileTap={{ scale:0.96 }} onClick={handleAddFullExperience}
-            style={{ flex:2, minHeight:56, padding:"12px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${GOLD},${AMBER})`, color:ESPRESSO, fontSize:22, fontWeight:900, cursor:"pointer" }}>
-            Add Full Experience<br/><span style={{ fontSize:22 }}>$70.00</span>
-          </motion.button>
-        </div>
-      </SCard>
-    </div>
-  );
-
-  // ── Orders & Transactions ─────────────────────────────────────────────────
-  const renderOrders = () => (
-    <div style={{ padding:"0 14px 12px" }}>
-      <div style={{ display:"flex", gap:10 }}>
-        <SCard style={{ flex:1, overflow:"hidden" }}>
-          <div style={{ display:"flex", borderBottom:`1px solid ${BORDER}` }}>
-            {(["Active Tabs","Recent Orders","Payments"] as const).map(t=>(
-              <button key={t} onClick={()=>setTxnTab(t)}
-                style={{ flex:1, minHeight:56, padding:"10px 4px", fontSize:22, fontWeight:700, cursor:"pointer", border:"none", borderBottom:txnTab===t?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:txnTab===t?AMBER:LIGHT }}>
-                {t}{t==="Active Tabs"?` ${activeTabs.length}`:""}
-              </button>
-            ))}
-          </div>
-          {txnTab==="Active Tabs" && (
-            <div>
-              {selectedTab && (
-                <div style={{ padding:"10px 12px", borderBottom:`1px solid ${BORDER}` }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
-                    <div>
-                      <div style={{ fontSize:15, fontWeight:900, color:DARK }}>Table {selectedTab.tableNumber}</div>
-                      <div style={{ fontSize:12, color:LIGHT }}>{selectedTab.guests} Guests · {selectedTab.server}</div>
-                    </div>
-                    <div style={{ fontSize:18, fontWeight:900, color:AMBER }}>${selectedTab.total.toFixed(2)}</div>
-                  </div>
-                  {selectedTab.items.map((it,i)=>(
-                    <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"4px 0", borderBottom:`1px solid rgba(180,140,80,0.08)` }}>
-                      <div><span style={{ fontSize:12, color:DARK }}>{it.name}</span><span style={{ fontSize:11, color:LIGHT, marginLeft:6 }}>× {it.qty}</span></div>
-                      <span style={{ fontSize:13, fontWeight:700, color:MED }}>${(it.qty*it.price).toFixed(2)}</span>
-                    </div>
-                  ))}
-                  {selectedTab.items.length===0 && <div style={{ fontSize:12, color:LIGHT, padding:"8px 0", textAlign:"center" }}>No items yet</div>}
-                  {selectedTab.tax>0 && (
-                    <div style={{ display:"flex", justifyContent:"space-between", padding:"6px 0 0" }}>
-                      <span style={{ fontSize:12, color:LIGHT }}>Tax</span>
-                      <span style={{ fontSize:12, color:LIGHT }}>${selectedTab.tax.toFixed(2)}</span>
-                    </div>
-                  )}
-                </div>
-              )}
-              <div style={{ maxHeight:110, overflow:"auto" }}>
-                {activeTabs.map(t=>(
-                  <div key={t.id} onClick={()=>setSelTabId(t.id)}
-                    style={{ padding:"8px 12px", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", background:selTabId===t.id?`rgba(196,134,10,0.07)`:"transparent", borderLeft:`3px solid ${selTabId===t.id?AMBER:"transparent"}`, borderBottom:`1px solid rgba(180,140,80,0.08)` }}>
-                    <div>
-                      <div style={{ fontSize:13, fontWeight:700, color:DARK }}>{t.name}</div>
-                      <div style={{ fontSize:11, color:LIGHT }}>Table {t.tableNumber} · {t.guests} guests</div>
-                    </div>
-                    <span style={{ fontSize:14, fontWeight:900, color:AMBER }}>${t.total.toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {txnTab==="Recent Orders" && (
-            <div style={{ padding:"10px 12px" }}>
-              {recentOrders.length === 0 ? (
-                <div style={{ fontSize:12, color:LIGHT, textAlign:"center", padding:"20px 0" }}>No recent orders found.</div>
-              ) : (
-                recentOrders.map(o=>(
-                  <div key={o.id} style={{ padding:"8px 0", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                    <div>
-                      <div style={{ fontSize:12, fontWeight:800, color:DARK }}>Table {o.tableNumber}</div>
-                      <div style={{ fontSize:11, color:LIGHT }}>{o.items.length} item{o.items.length!==1?"s":""} · {o.createdAt ? new Date(o.createdAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : ""}</div>
-                    </div>
-                    <div style={{ textAlign:"right" }}>
-                      <div style={{ fontSize:13, fontWeight:900, color:AMBER }}>${o.total.toFixed(2)}</div>
-                      <div style={{ fontSize:10, color:LIGHT, textTransform:"uppercase", letterSpacing:"0.1em" }}>{o.status}</div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-          {txnTab==="Payments" && (
-            <div style={{ padding:"10px 12px" }}>
-              <div style={{ fontSize:12, color:LIGHT, textAlign:"center", padding:"20px 0" }}>Payment records loading…</div>
-            </div>
-          )}
-        </SCard>
-
-        <div style={{ width:200, display:"flex", flexDirection:"column", gap:8 }}>
-          <SCard style={{ padding:"10px 10px 8px" }}>
-            <div style={{ fontSize:11, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:8 }}>Route Order</div>
-            {["Send to Bar","Send to Kitchen","Send to Humidor"].map(a=>(
-              <motion.button key={a} whileTap={{ scale:0.96 }} onClick={()=>handleRoute(a)}
-                style={{ width:"100%", padding:"9px", marginBottom:6, borderRadius:7, border:`1px solid ${BORDER}`, background:CREAM, color:DARK, fontSize:12, fontWeight:700, cursor:"pointer", textAlign:"left" }}>
-                {a}
-              </motion.button>
-            ))}
-          </SCard>
-          <SCard style={{ padding:"10px" }}>
-            <div style={{ fontSize:11, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:8 }}>Payment</div>
-            <motion.button whileTap={{ scale:0.97 }} onClick={()=>void handleCheckout()}
-              style={{ width:"100%", padding:"12px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${GOLD},${AMBER})`, color:ESPRESSO, fontSize:14, fontWeight:900, cursor:"pointer", marginBottom:8 }}>
-              Pay Now<br/><span style={{ fontSize:12, fontWeight:700 }}>${selectedTab?.total.toFixed(2)??""}</span>
-            </motion.button>
-            <div style={{ display:"flex", justifyContent:"center", gap:6, flexWrap:"wrap" }}>
-              {["Apple Pay","Google Pay","QR","Tap"].map(m=>(<span key={m} style={{ fontSize:10, padding:"3px 7px", borderRadius:5, border:`1px solid ${BORDER}`, color:MED, fontWeight:600 }}>{m}</span>))}
-            </div>
-            <button style={{ width:"100%", marginTop:8, padding:"7px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:MED, fontSize:12, cursor:"pointer" }}>More Options</button>
-          </SCard>
-          <SCard style={{ padding:"10px" }}>
-            <div style={{ fontSize:11, color:LIGHT, marginBottom:4, textTransform:"uppercase", letterSpacing:"0.10em" }}>Shift Revenue</div>
-            <div style={{ fontSize:22, fontWeight:900, color:AMBER }}>${shiftTotal.toLocaleString()}</div>
-            <div style={{ fontSize:11, color:LIGHT }}>{activeTabs.length} active tabs</div>
-          </SCard>
-        </div>
-      </div>
-    </div>
-  );
-
-  // ── Center (tab-based) ────────────────────────────────────────────────────
-  const renderCenter = () => {
-    if (activeTab === "Assets") {
-      return (
-        <div style={{ padding:"12px 14px" }}>
-          <SCard style={{ overflow:"hidden" }}>
-            <div style={{ display:"flex", borderBottom:`1px solid ${BORDER}` }}>
-              {(INVENTORY_TABS as readonly string[]).map(t=>(
-                <button key={t} onClick={()=>setInvCat(t as typeof invCat)}
-                  style={{ flex:1, padding:"10px 4px", fontSize:12, fontWeight:700, cursor:"pointer", border:"none", borderBottom:invCat===t?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:invCat===t?AMBER:LIGHT }}>
-                  {t}
-                </button>
-              ))}
-            </div>
-            <div>
-              {INVENTORY_DATA[invCat].map((item,i)=>(
-                <div key={i} style={{ padding:"10px 14px", borderBottom:`1px solid rgba(180,140,80,0.09)`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                    <div style={{ width:36, height:36, borderRadius:6, background:"rgba(180,140,80,0.12)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>
-                      {invCat==="Humidor"?"🚬":invCat==="Bar"?"🥃":"🍽️"}
-                    </div>
-                    <div>
-                      <div style={{ fontSize:14, fontWeight:700, color:DARK }}>{item.name}</div>
-                      <span style={{ fontSize:11, padding:"2px 7px", borderRadius:8, background:item.status==="In Stock"?"rgba(46,125,79,0.10)":"rgba(196,134,10,0.12)", color:item.status==="In Stock"?GREEN:AMBER, fontWeight:700 }}>{item.status}</span>
-                    </div>
-                  </div>
-                  <div style={{ textAlign:"right" }}>
-                    <div style={{ fontSize:22, fontWeight:900, color:DARK }}>{item.qty}</div>
-                    <div style={{ fontSize:11, color:LIGHT }}>In Stock</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </SCard>
-        </div>
-      );
-    }
-    if (activeTab === "Transactions") {
-      if (panelVis.transaction === "hidden") return null;
-      return (
-        <div style={{ overflow:"auto", flex:1, opacity:panelVis.transaction === "muted" ? 0.45 : 1, pointerEvents:panelVis.transaction === "muted" ? "none" : "auto", transition:"opacity 0.3s" }}>
-          {renderOrders()}
-        </div>
-      );
-    }
-    if (activeTab === "Environment") {
-      return (
-        <div style={{ padding:"12px 14px" }}>
-          <SCard style={{ padding:"16px" }}>
-            <SectionHead title="Environment State" />
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
-              {[ {label:"Temperature",value:`${Math.round(envState.temperature)}°F`,color:AMBER}, {label:"Humidity",value:`${Math.round(envState.humidity)}%`,color:"#4AD9C8"}, {label:"Air Quality",value:envState.airQuality,color:GREEN} ].map(m=>(
-                <div key={m.label} style={{ padding:"14px", background:CREAM, borderRadius:8, border:`1px solid ${BORDER}`, textAlign:"center" }}>
-                  <div style={{ fontSize:28, fontWeight:900, color:m.color }}>{m.value}</div>
-                  <div style={{ fontSize:12, color:LIGHT, marginTop:4, textTransform:"uppercase", letterSpacing:"0.10em" }}>{m.label}</div>
-                </div>
-              ))}
-            </div>
-          </SCard>
-        </div>
-      );
-    }
-    // Default "Command Center"
-    return (
-      <div style={{ overflow:"auto", flex:1 }}>
-        {panelVis.asset !== "hidden" && (
-          <div style={{ position:"relative" }}>
-            {panelVis.asset === "muted" && (
-              <div style={{ position:"absolute", inset:0, zIndex:99, background:"rgba(240,235,224,0.72)", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:10, pointerEvents:"none" }}>
-                <span style={{ fontSize:20, fontWeight:900, color:AMBER, letterSpacing:"0.18em" }}>MUTED</span>
-              </div>
-            )}
-            {renderPairing()}
-          </div>
-        )}
-        {panelVis.transaction !== "hidden" && (
-          <div style={{ position:"relative" }}>
-            {panelVis.transaction === "muted" && (
-              <div style={{ position:"absolute", inset:0, zIndex:99, background:"rgba(240,235,224,0.72)", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:10, pointerEvents:"none" }}>
-                <span style={{ fontSize:20, fontWeight:900, color:AMBER, letterSpacing:"0.18em" }}>MUTED</span>
-              </div>
-            )}
-            <div style={{ padding:"0 14px", marginBottom:4 }}>
-              <div style={{ fontSize:13, fontWeight:900, color:MED, letterSpacing:"0.14em", textTransform:"uppercase", paddingBottom:8, borderBottom:`1px solid ${BORDER}`, marginBottom:8 }}>Orders & Transactions</div>
-            </div>
-            {renderOrders()}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // ── Right sidebar ─────────────────────────────────────────────────────────
-  const renderRight = () => (
-    <aside style={{ width:272, flexShrink:0, borderLeft:`1px solid ${BORDER}`, display:"flex", flexDirection:"column", overflow:"hidden", background:CREAM }}>
-      <div style={{ flex:1, overflow:"auto", padding:"12px 10px 0" }}>
-        {panelVis.environment !== "hidden" && (
-          <SCard style={{ marginBottom:12, position:"relative" }}>
-            {panelVis.environment === "muted" && (
-              <div style={{ position:"absolute", inset:0, zIndex:10, background:"rgba(240,235,224,0.70)", display:"flex", alignItems:"center", justifyContent:"center", borderRadius:10, pointerEvents:"none" }}>
-                <span style={{ fontSize:16, fontWeight:900, color:AMBER, letterSpacing:"0.18em" }}>MUTED</span>
-              </div>
-            )}
-            <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
-              <SectionHead title="Environment Controls" />
-              <div style={{ display:"flex", gap:6, alignItems:"center" }}>
-                <span style={{ fontSize:11, color:LIGHT }}>Lounge Preset</span>
-                <select value={envPreset} onChange={e=>setEnvPreset(e.target.value)} style={{ flex:1, fontSize:12, padding:"4px 8px", borderRadius:6, border:`1px solid ${BORDER}`, background:CARD, color:DARK, cursor:"pointer" }}>
-                  {PRESET_OPTIONS.map(p=><option key={p}>{p}</option>)}
-                </select>
-              </div>
-            </div>
-            <div style={{ padding:"10px 12px" }}>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
-                {[ {label:"Temperature",value:`${Math.round(envState.temperature)}°F`,icon:"🌡️"}, {label:"Humidity",value:`${Math.round(envState.humidity)}%`,icon:"💧"}, {label:"Air Quality",value:envState.airQuality,icon:"🌿"}, {label:"Noise Level",value:"Low",icon:"🔈"} ].map(m=>(
-                  <div key={m.label} style={{ padding:"8px 10px", background:CREAM, borderRadius:8, border:`1px solid ${BORDER}`, textAlign:"center" }}>
-                    <div style={{ fontSize:16, marginBottom:2 }}>{m.icon}</div>
-                    <div style={{ fontSize:15, fontWeight:900, color:DARK, lineHeight:1 }}>{m.value}</div>
-                    <div style={{ fontSize:10, color:LIGHT, marginTop:2, textTransform:"uppercase", letterSpacing:"0.08em" }}>{m.label}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ marginBottom:10 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                  <span style={{ fontSize:12, color:MED }}>💡 Lighting</span>
-                  <span style={{ fontSize:12, fontWeight:700, color:AMBER }}>{lighting}%</span>
-                </div>
-                <input type="range" min={0} max={100} value={lighting} onChange={e=>setLighting(Number(e.target.value))} style={{ width:"100%", accentColor:AMBER }} />
-              </div>
-              <div style={{ marginBottom:10 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <span style={{ fontSize:12, color:MED, whiteSpace:"nowrap" }}>🎵 Music</span>
-                  <select value={musicMode} onChange={e=>setMusicMode(e.target.value)} style={{ flex:1, fontSize:12, padding:"4px 8px", borderRadius:6, border:`1px solid ${BORDER}`, background:CARD, color:DARK }}>
-                    {MUSIC_OPTIONS.map(m=><option key={m}>{m}</option>)}
-                  </select>
-                </div>
-              </div>
-              <div style={{ marginBottom:10 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
-                  <span style={{ fontSize:12, color:MED, whiteSpace:"nowrap" }}>🌸 Scent</span>
-                  <select value={scentMode} onChange={e=>setScentMode(e.target.value)} style={{ flex:1, fontSize:12, padding:"4px 8px", borderRadius:6, border:`1px solid ${BORDER}`, background:CARD, color:DARK }}>
-                    {SCENT_OPTIONS.map(s=><option key={s}>{s}</option>)}
-                  </select>
-                  <span style={{ fontSize:12, fontWeight:700, color:AMBER }}>{scentPct}%</span>
-                </div>
-                <input type="range" min={0} max={100} value={scentPct} onChange={e=>setScentPct(Number(e.target.value))} style={{ width:"100%", accentColor:AMBER }} />
-              </div>
-              <button style={{ width:"100%", padding:"8px", borderRadius:8, border:`1px solid ${BORDER}`, background:CREAM, color:MED, fontSize:12, fontWeight:700, cursor:"pointer" }}>Advanced Controls</button>
-            </div>
-          </SCard>
-        )}
-
-        <SCard style={{ marginBottom:12, padding:"10px 12px" }}>
-          <SectionHead title="HVAC & Air Quality" />
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:6 }}><Dot color={GREEN} /><span style={{ fontSize:12, color:MED, fontWeight:700 }}>HVAC Status</span></div>
-            <span style={{ fontSize:12, fontWeight:800, color:GREEN, padding:"2px 8px", borderRadius:6, background:"rgba(46,125,79,0.12)", border:"1px solid rgba(46,125,79,0.30)" }}>Optimal</span>
-          </div>
-          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-            <div><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Current Temp</div><div style={{ fontSize:22, fontWeight:900, color:DARK }}>{Math.round(envState.temperature)}°F</div></div>
-            <div style={{ textAlign:"right" }}><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Humidity</div><div style={{ fontSize:22, fontWeight:900, color:DARK }}>{Math.round(envState.humidity)}%</div></div>
-          </div>
-          {/* Mini sparkline — live from /api/environment/:venueId/history */}
-          <div style={{ height:36, marginBottom:8 }}>
-            {(() => {
-              const pts = envHistory.length >= 2 ? envHistory : [28,22,25,18,20,15,17];
-              const xs  = pts.map((_,i) => Math.round((i / (pts.length - 1)) * 240));
-              const line = pts.map((y,i) => `${xs[i]},${y}`).join(" ");
-              const fill = line + ` ${xs[xs.length-1]},36 0,36`;
-              return (
-                <svg width="100%" height="36" viewBox="0 0 240 36" preserveAspectRatio="none">
-                  <polyline points={line} fill="none" stroke={AMBER} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <polyline points={fill} fill="rgba(196,134,10,0.07)" stroke="none" />
-                </svg>
-              );
-            })()}
-          </div>
-          <button style={{ width:"100%", padding:"7px", borderRadius:7, border:`1px solid ${BORDER}`, background:CREAM, color:MED, fontSize:12, fontWeight:700, cursor:"pointer" }}>View Full HVAC System</button>
-        </SCard>
-
-        <SCard style={{ marginBottom:12 }}>
-          <div style={{ padding:"10px 12px 8px", borderBottom:`1px solid ${BORDER}` }}>
-            <SectionHead title="Upcoming Events & Themes" action="View All" />
-          </div>
-          {/* Featured event — live from /api/events/venue/:venueId */}
-          {(()=>{ const evts = liveEvents.length > 0 ? liveEvents : STATIC_EVENTS; const ev0 = evts[0]; return (
-          <>
-          <div style={{ margin:"10px 10px 6px", borderRadius:8, overflow:"hidden", border:`1px solid ${BORDER}` }}>
-            <div style={{ height:64, background:`linear-gradient(135deg,#2B1506,#4A2010)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32 }}>{ev0.emoji}</div>
-            <div style={{ padding:"8px 10px", background:CARD }}>
-              <div style={{ fontSize:13, fontWeight:800, color:DARK, marginBottom:2 }}>{ev0.name}</div>
-              <div style={{ fontSize:11, color:AMBER, fontWeight:700, marginBottom:4 }}>{ev0.schedule}</div>
-              <p style={{ fontSize:11, color:LIGHT, margin:0, lineHeight:1.5 }}>{ev0.desc}</p>
-              <button style={{ marginTop:8, padding:"5px 12px", borderRadius:6, border:`1px solid ${AMBER}44`, background:"rgba(196,134,10,0.10)", color:AMBER, fontSize:11, fontWeight:700, cursor:"pointer" }}>See Details</button>
-            </div>
-          </div>
-          <div style={{ display:"flex", gap:6, padding:"0 10px 8px", flexWrap:"wrap" }}>
-            {evts.slice(1).map(e=>(
-              <div key={e.id} style={{ flex:"1 0 40px", padding:"8px 6px", borderRadius:8, background:CREAM, border:`1px solid ${BORDER}`, textAlign:"center", cursor:"pointer" }}>
-                <div style={{ fontSize:18, marginBottom:3 }}>{e.emoji}</div>
-                <div style={{ fontSize:9, color:MED, fontWeight:700, lineHeight:1.2 }}>{e.name}</div>
-              </div>
-            ))}
-          </div>
-          </>
-          );})()}
-          <div style={{ padding:"0 10px 10px" }}>
-            <button style={{ width:"100%", padding:"7px", borderRadius:7, border:`1px solid ${BORDER}`, background:CREAM, color:MED, fontSize:12, fontWeight:700, cursor:"pointer" }}>Manage Themes</button>
-          </div>
-        </SCard>
-      </div>
-    </aside>
-  );
-
-  // ── Root render ───────────────────────────────────────────────────────────
   return (
-    <div style={{ position:"absolute", inset:0, zIndex:10, background:CREAM, display:"flex", flexDirection:"column", overflow:"hidden", fontFamily:"'Inter','Helvetica Neue',sans-serif" }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100vh", background:PAGE_BG, fontFamily:"'Inter','Helvetica Neue',sans-serif", overflow:"hidden" }}>
 
-      <header style={{ height:64, flexShrink:0, background:ESPRESSO, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 16px", borderBottom:"1px solid rgba(180,140,80,0.18)", boxShadow:"0 2px 12px rgba(0,0,0,0.35)", zIndex:20 }}>
-        <div style={{ display:"flex", alignItems:"center", gap:0, overflow:"hidden" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10, paddingRight:20, borderRight:"1px solid rgba(180,140,80,0.25)", marginRight:8, flexShrink:0 }}>
-            <div style={{ width:36, height:36, borderRadius:8, background:`linear-gradient(135deg,${GOLD},${AMBER})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>⚜️</div>
-            <div>
-              <div style={{ fontSize:13, fontWeight:900, color:GOLD, letterSpacing:"0.18em", lineHeight:1 }}>E.A.T SYSTEM</div>
-              <div style={{ fontSize:9, color:"rgba(212,175,55,0.50)", letterSpacing:"0.10em", lineHeight:1.4 }}>ELEVATED ATMOSPHERE & TRANSACTIONS</div>
-            </div>
-          </div>
-          <div style={{ display:"flex", overflow:"hidden" }}>
-            {TOP_TABS.map(tab=>(
-              <button key={tab} onClick={()=>setActiveTab(tab)}
-                style={{ padding:"0 14px", height:64, border:"none", borderBottom:activeTab===tab?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:activeTab===tab?GOLD:"rgba(212,175,55,0.45)", fontSize:22, fontWeight:700, cursor:"pointer", letterSpacing:"0.06em", whiteSpace:"nowrap" }}>
-                {tab}
-              </button>
-            ))}
-          </div>
+      {/* ── TOP NAV ──────────────────────────────────────────────────────── */}
+      <header style={{ height:72, background:IVORY, borderBottom:`1px solid ${BORDER}`, display:"flex", alignItems:"center", padding:"0 20px", gap:0, flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,0.07)", zIndex:50 }}>
+
+        {/* Brand */}
+        <div style={{ width:220, flexShrink:0 }}>
+          <div style={{ fontSize:17, fontWeight:900, color:OBSID, letterSpacing:"0.04em", lineHeight:1 }}>E.A.T SYSTEM</div>
+          <div style={{ fontSize:9, fontWeight:600, color:TEXT3, letterSpacing:"0.18em", marginTop:2, textTransform:"uppercase" }}>Elevated Atmosphere &amp; Transactions</div>
         </div>
-        <div style={{ display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-            <Dot color={wsConnected?GREEN:"#666"} />
-            <span style={{ fontSize:11, fontWeight:700, color:wsConnected?GREEN:"#666", letterSpacing:"0.10em" }}>{wsConnected?"LIVE":"OFFLINE"}</span>
-          </div>
-          <div style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 12px", borderRadius:8, background:"rgba(255,255,255,0.06)", border:"1px solid rgba(180,140,80,0.20)" }}>
-            <div style={{ width:28, height:28, borderRadius:"50%", background:`linear-gradient(135deg,${GOLD},${AMBER})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, color:ESPRESSO, fontWeight:900 }}>GM</div>
-            <div>
-              <div style={{ fontSize:12, fontWeight:800, color:"rgba(255,255,255,0.88)" }}>Marcus C.</div>
-              <div style={{ fontSize:10, color:"rgba(212,175,55,0.55)", letterSpacing:"0.08em" }}>General Manager</div>
+
+        {/* Nav tabs */}
+        <nav style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:4 }}>
+          {TOP_TABS.map(tab => (
+            <motion.button key={tab} onClick={()=>setActiveTab(tab)} whileTap={{ scale:0.96 }}
+              style={SEL({ padding:"10px 18px", fontSize:13, fontWeight:500, letterSpacing:"0.03em", cursor:"pointer", borderRadius:4, border:"none", background:activeTab===tab?OBSID:"transparent", color:activeTab===tab?IVORY:TEXT3, transition:"all 0.12s cubic-bezier(0.25,0.46,0.45,0.94)", whiteSpace:"nowrap", minHeight:40 })}>
+              {tab}
+            </motion.button>
+          ))}
+        </nav>
+
+        {/* User + clock */}
+        <div style={{ width:220, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"flex-end", gap:12 }}>
+          <div style={{ textAlign:"right" }}>
+            <div style={{ fontSize:13, fontWeight:700, color:TEXT1, lineHeight:1 }}>Marcus C.</div>
+            <div style={{ fontSize:11, color:TEXT3, marginTop:2 }}>General Manager</div>
+            <div style={{ fontSize:10, color:GREEN, marginTop:3, display:"flex", alignItems:"center", justifyContent:"flex-end", gap:4 }}>
+              <div style={{ width:5, height:5, borderRadius:"50%", background:GREEN }} />
+              {clock}
             </div>
           </div>
-          {onBack && (
-            <button onClick={onBack} style={{ padding:"8px 14px", borderRadius:8, border:"1px solid rgba(180,140,80,0.30)", background:"rgba(255,255,255,0.05)", color:"rgba(212,175,55,0.65)", fontSize:12, fontWeight:700, cursor:"pointer" }}>
-              ← BACK
-            </button>
-          )}
+          <div style={{ width:38, height:38, borderRadius:"50%", background:`linear-gradient(135deg,${AMBER},${AMBER2})`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, overflow:"hidden" }}>
+            <img src={IMG("mentor_dominican.jpg")} alt="Marcus C." style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+          </div>
         </div>
       </header>
 
-      <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
-        {renderLeft()}
-        <main style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
-          {renderCenter()}
+      {/* ── MAIN CONTENT ─────────────────────────────────────────────────── */}
+      <div style={{ flex:1, display:"flex", overflow:"hidden", minHeight:0 }}>
+
+        {/* COL 1 — Active Task */}
+        <aside style={{ width:192, flexShrink:0, background:CARD_BG, borderRight:`1px solid ${BORDER}`, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+          <div style={{ flex:1, overflowY:"auto", padding:"12px 10px" }}>
+
+            {/* Active task card */}
+            <div style={{ marginBottom:10 }}>
+              <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:TEXT3, textTransform:"uppercase", marginBottom:6 }}>Active Task</div>
+              <div style={{ background:IVORY, border:`1px solid ${BORDER}`, borderRadius:8, padding:"10px 10px 8px" }}>
+                <div style={{ fontSize:12, fontWeight:700, color:TEXT1, marginBottom:8, lineHeight:1.4 }}>Add a celebratory unlock banner</div>
+                <div style={{ height:5, borderRadius:3, background:"rgba(0,0,0,0.08)", overflow:"hidden", marginBottom:5 }}>
+                  <div style={{ width:"75%", height:"100%", background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:3 }} />
+                </div>
+                <div style={{ fontSize:10, color:TEXT3, textAlign:"right" }}>75%</div>
+              </div>
+            </div>
+
+            {/* Activity log */}
+            <div style={{ display:"flex", flexDirection:"column", gap:5, marginBottom:10 }}>
+              {[
+                { text:"16 messages & 43 actions", color:TEXT3 },
+                { text:"Checkpoint made 2 minutes ago", color:TEXT3 },
+                { text:"Worked for 6 minutes", color:TEXT3 },
+              ].map((item,i)=>(
+                <div key={i} style={{ display:"flex", alignItems:"center", gap:7, padding:"5px 0" }}>
+                  <div style={{ width:14, height:14, borderRadius:3, background:`rgba(0,0,0,0.07)`, border:`1px solid ${BORDER}`, flexShrink:0 }} />
+                  <span style={{ fontSize:11, color:item.color, lineHeight:1.3 }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Preview block */}
+            <div style={{ background:IVORY, border:`1px solid ${BORDER}`, borderRadius:8, padding:"8px", marginBottom:10, overflow:"hidden" }}>
+              <div style={{ width:"100%", height:64, borderRadius:5, overflow:"hidden", background:`linear-gradient(135deg,#2C1A08,#4A2A10)`, marginBottom:6 }}>
+                <img src={IMG("cigar_hero.jpg")} alt="task preview" style={{ width:"100%", height:"100%", objectFit:"cover", opacity:0.8 }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+              </div>
+              <div style={{ fontSize:10, color:TEXT3 }}>Pasted-REWRITE-</div>
+              <div style={{ fontSize:10, color:TEXT3, marginTop:2 }}>Just now</div>
+            </div>
+
+            {/* Agent note */}
+            <div style={{ background:"rgba(0,0,0,0.03)", border:`1px solid ${BORDER}`, borderRadius:8, padding:"8px 10px", marginBottom:8 }}>
+              <div style={{ fontSize:11, color:TEXT2, lineHeight:1.55 }}>Planning EAT Console UI cleanup (6...<br />The EAT System is now visible — good.</div>
+              <div style={{ display:"flex", gap:4, marginTop:6 }}>
+                {["1","2","3","4","5"].map(n=>(
+                  <div key={n} style={{ width:20, height:20, borderRadius:4, background:`rgba(0,0,0,0.06)`, border:`1px solid ${BORDER}`, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                    <div style={{ width:8, height:8, borderRadius:1, background:TEXT3 }} />
+                  </div>
+                ))}
+                <span style={{ fontSize:10, color:TEXT3, marginLeft:"auto", alignSelf:"center" }}>5 actions</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Queue bar */}
+          <div style={{ borderTop:`1px solid ${BORDER}`, padding:"8px 10px" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
+              <div style={{ width:8, height:8, borderRadius:"50%", background:AMBER, flexShrink:0 }} />
+              <span style={{ fontSize:11, color:TEXT2, fontWeight:700 }}>Queue (1 item)</span>
+              <div style={{ width:14, height:14, borderRadius:"50%", border:`1px solid ${BORDER}`, marginLeft:"auto", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <div style={{ width:4, height:4, borderRadius:"50%", background:TEXT3 }} />
+              </div>
+            </div>
+            <div style={{ display:"flex", gap:4 }}>
+              <div style={{ flex:1, height:32, borderRadius:6, background:IVORY, border:`1px solid ${BORDER}` }} />
+              <div style={{ padding:"6px 12px", borderRadius:6, background:OBSID, color:IVORY, fontSize:11, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center" }}>Plan</div>
+            </div>
+          </div>
+        </aside>
+
+        {/* COL 2 — Devices + Tables */}
+        <aside style={{ width:210, flexShrink:0, background:CARD_BG, borderRight:`1px solid ${BORDER}`, display:"flex", flexDirection:"column", overflowY:"auto" }}>
+          <div style={{ padding:"12px 10px 0" }}>
+
+            {/* Device status */}
+            <div style={{ marginBottom:10 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+                <span style={{ fontSize:10, fontWeight:800, letterSpacing:"0.16em", color:TEXT3, textTransform:"uppercase" }}>Tablet & Device Status</span>
+                <button style={{ fontSize:11, color:AMBER2, background:"none", border:"none", cursor:"pointer", fontWeight:700, padding:0 }}>View All</button>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8 }}>
+                <PulseDot color={GREEN} />
+                <span style={{ fontSize:11, color:TEXT2 }}>{devices.filter(d=>d.online).length} Active Devices</span>
+                <span style={{ marginLeft:"auto", fontSize:12, fontWeight:800, color:TEXT1 }}>{devices.length} Total</span>
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", gap:1 }}>
+                {devices.slice(0,5).map(dev=>(
+                  <div key={dev.id} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 8px", borderRadius:6, background:IVORY, border:`1px solid ${BORDER}` }}>
+                    <div style={{ width:28, height:28, borderRadius:6, background:"rgba(0,0,0,0.06)", border:`1px solid ${BORDER}`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                      <div style={{ width:14, height:18, borderRadius:2, background:dev.online?"rgba(46,125,79,0.25)":"rgba(192,57,43,0.18)", border:`1.5px solid ${dev.online?GREEN:RED_CLR}` }} />
+                    </div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline" }}>
+                        <span style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{dev.name}</span>
+                        <span style={{ fontSize:10, color:TEXT3, fontFamily:"monospace" }}>{dev.zone}</span>
+                      </div>
+                      <BattBar pct={dev.battery} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Active tables */}
+            <div>
+              <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.16em", color:TEXT3, textTransform:"uppercase", marginBottom:6 }}>Active Tables</div>
+              <div style={{ display:"flex", gap:5, marginBottom:8 }}>
+                {(["Floor Plan","List View"] as const).map(v=>(
+                  <motion.button key={v} whileTap={{scale:0.96}} onClick={()=>setFloorView(v)}
+                    style={{ flex:1, padding:"6px 0", fontSize:11, fontWeight:700, cursor:"pointer", borderRadius:6, border:`1px solid ${floorView===v?AMBER:BORDER}`, background:floorView===v?`rgba(212,175,55,0.12)`:IVORY, color:floorView===v?AMBER2:TEXT2 }}>
+                    {v}
+                  </motion.button>
+                ))}
+              </div>
+
+              {floorView === "Floor Plan" ? (
+                <div ref={floorRef} onMouseMove={onFloorMM} onMouseUp={onFloorMU} onMouseLeave={onFloorMU}
+                  style={{ position:"relative", height:220, background:"#EDE8DA", borderRadius:8, overflow:"hidden", cursor:dragging?"grabbing":"default", border:`1px solid ${BORDER}` }}>
+                  <div style={{ position:"absolute", inset:8, border:"1px dashed rgba(180,140,80,0.30)", borderRadius:6, pointerEvents:"none" }} />
+                  {floorTables.map(t=>(
+                    <motion.div key={String(t.id)} onMouseDown={e=>onTableMD(e,t.id)} animate={{ scale:dragging===t.id?1.1:1 }}
+                      style={{ position:"absolute", left:`${t.x}%`, top:`${t.y}%`, transform:"translate(-50%,-50%)",
+                        width:t.vip?36:28, height:t.vip?36:28, borderRadius:t.vip?"8px":"50%",
+                        background:t.vip?`linear-gradient(135deg,${AMBER},${AMBER2})`:t.active?"rgba(46,125,79,0.20)":"rgba(180,140,80,0.18)",
+                        border:`1.5px solid ${t.vip?AMBER:t.active?"rgba(46,125,79,0.55)":BORDER}`,
+                        display:"flex", alignItems:"center", justifyContent:"center", cursor:"grab", userSelect:"none", zIndex:dragging===t.id?10:1 }}>
+                      <span style={{ fontSize:t.vip?9:8, fontWeight:900, color:t.vip?"#1A0C00":t.active?GREEN:TEXT3, lineHeight:1 }}>{t.vip?"VIP":String(t.id)}</span>
+                      {t.active && t.guests>0 && (
+                        <div style={{ position:"absolute", top:-4, right:-4, background:GREEN, color:"white", fontSize:7, fontWeight:900, borderRadius:"50%", width:13, height:13, display:"flex", alignItems:"center", justifyContent:"center" }}>{t.guests}</div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ maxHeight:220, overflowY:"auto" }}>
+                  {floorTables.filter(t=>t.active).map(t=>(
+                    <div key={String(t.id)} style={{ padding:"6px 8px", borderBottom:`1px solid ${BORDER}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                      <div>
+                        <span style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>Table {String(t.id)}</span>
+                        {t.vip && <span style={{ marginLeft:6, fontSize:9, color:AMBER, fontWeight:800, padding:"1px 5px", border:`1px solid ${AMBER}44`, borderRadius:3 }}>VIP</span>}
+                      </div>
+                      <span style={{ fontSize:11, color:TEXT3 }}>{t.guests} guests</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </aside>
+
+        {/* COL 3 — Main product + pairing */}
+        <main style={{ flex:1, overflowY:"auto", background:PAGE_BG, minWidth:0 }}>
+          <div style={{ padding:"12px 14px" }}>
+
+            {/* Hero image */}
+            <div style={{ position:"relative", borderRadius:10, overflow:"hidden", marginBottom:12, height:260, background:`linear-gradient(135deg,#1C0A02,#3A1A06)` }}>
+              <img src={featuredCigar.imageUrl || IMG("cigar_hero.jpg")} alt={featuredCigar.name}
+                style={{ width:"100%", height:"100%", objectFit:"cover", position:"absolute", inset:0, opacity:0.92 }}
+                onError={e=>{(e.target as HTMLImageElement).src=IMG("cigar_hero.jpg");}} />
+              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(0,0,0,0.10) 0%,rgba(0,0,0,0.55) 100%)" }} />
+              <div style={{ position:"absolute", top:12, left:12 }}>
+                <span style={{ fontSize:11, fontWeight:800, letterSpacing:"0.14em", textTransform:"uppercase", color:AMBER, background:"rgba(0,0,0,0.50)", padding:"4px 10px", borderRadius:4 }}>{featuredCigar.body}</span>
+              </div>
+            </div>
+
+            {/* Product details */}
+            <div style={{ marginBottom:12 }}>
+              <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1.2, marginBottom:3 }}>{featuredCigar.name}</div>
+              <div style={{ fontSize:13, color:TEXT3, marginBottom:8 }}>{featuredCigar.type} · {featuredCigar.origin}</div>
+              <p style={{ fontSize:13, color:TEXT2, lineHeight:1.6, margin:"0 0 12px 0" }}>{featuredCigar.description}</p>
+              <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:12 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:TEXT3, width:60, textTransform:"uppercase", letterSpacing:"0.10em" }}>Strength</span>
+                  <StrengthDots v={featuredCigar.strength} />
+                </div>
+                <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:TEXT3, width:60, textTransform:"uppercase", letterSpacing:"0.10em" }}>Rating</span>
+                  <RatingDots v={featuredCigar.rating} />
+                </div>
+              </div>
+            </div>
+
+            {/* Thumbnail row */}
+            <div style={{ display:"flex", gap:8, marginBottom:14 }}>
+              {[IMG("cigar_hero.jpg"), IMG("whiskey.png"), IMG("pour-1.jpg"), IMG("cigar1.png")].map((src,i)=>(
+                <div key={i} style={{ flex:1, height:72, borderRadius:7, overflow:"hidden", background:`linear-gradient(135deg,#2C1A08,#1A0C02)`, border:`2px solid ${i===0?AMBER:BORDER}`, cursor:"pointer" }}>
+                  <img src={src} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+                </div>
+              ))}
+            </div>
+
+            {/* Pairing suggestion */}
+            <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"12px 14px" }}>
+              <div style={{ fontSize:13, fontWeight:800, color:TEXT1, marginBottom:4, letterSpacing:"0.04em" }}>Pairing Suggestion</div>
+              <div style={{ fontSize:12, color:TEXT3, marginBottom:10 }}>Pairs exceptionally well with aged bourbon or a rich espresso.</div>
+              <div style={{ display:"flex", gap:10 }}>
+                {[
+                  { name:"Buffalo Trace Bourbon", tags:"Rich · Caramel · Vanilla", img:IMG("whiskey.png") },
+                  { name:"Espresso",               tags:"Bold · Aromatic · Smooth",  img:IMG("cigar2.png")  },
+                ].map((item,i)=>(
+                  <div key={i} style={{ flex:1, display:"flex", gap:8, alignItems:"center", background:IVORY, border:`1px solid ${BORDER}`, borderRadius:8, padding:"8px 10px" }}>
+                    <div style={{ width:44, height:44, borderRadius:6, overflow:"hidden", background:`linear-gradient(135deg,#2C1A08,#1A0C02)`, flexShrink:0 }}>
+                      <img src={item.img} alt={item.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{item.name}</div>
+                      <div style={{ fontSize:10, color:TEXT3 }}>{item.tags}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div style={{ display:"flex", gap:8, marginTop:12 }}>
+              <motion.button whileTap={{scale:0.96}} onClick={handleAddCigar}
+                style={{ flex:1, minHeight:48, padding:"10px 12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.35)`, background:"rgba(46,125,79,0.07)", color:GREEN, fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                Add Cigar — ${featuredCigar.price}
+              </motion.button>
+              <motion.button whileTap={{scale:0.96}} onClick={handleAddPairing}
+                style={{ flex:1, minHeight:48, padding:"10px 12px", borderRadius:8, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                Add Pairing — From $16
+              </motion.button>
+              <motion.button whileTap={{scale:0.96}} onClick={()=>void handleCheckout()}
+                style={{ flex:1, minHeight:48, padding:"10px 12px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${AMBER},${AMBER2})`, color:"#1A0C00", fontSize:13, fontWeight:900, cursor:"pointer" }}>
+                Checkout — ${selectedTab?.total.toFixed(2) ?? "0.00"}
+              </motion.button>
+            </div>
+          </div>
         </main>
-        {renderRight()}
+
+        {/* COL 4 — Perfect Pairings */}
+        <aside style={{ width:222, flexShrink:0, background:CARD_BG, borderLeft:`1px solid ${BORDER}`, overflowY:"auto" }}>
+          <div style={{ padding:"12px 12px 0" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+              <span style={{ fontSize:10, fontWeight:800, letterSpacing:"0.16em", color:TEXT3, textTransform:"uppercase" }}>Perfect Pairings</span>
+              <div style={{ display:"flex", gap:4 }}>
+                {["<",">"].map(a=>(
+                  <motion.button key={a} whileTap={{scale:0.94}} onClick={()=>setPairingIdx(i=>a==="<"?Math.max(0,i-1):Math.min(livePairings.length-1,i+1))}
+                    style={{ width:24, height:24, borderRadius:4, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, cursor:"pointer", fontSize:13, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                    {a}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              {livePairings.map((p,i)=>(
+                <div key={i} style={{ padding:"12px 10px", borderRadius:8, border:`1px solid ${i===pairingIdx?AMBER:BORDER}`, background:i===pairingIdx?`rgba(212,175,55,0.06)`:IVORY, cursor:"pointer" }} onClick={()=>setPairingIdx(i)}>
+                  <div style={{ fontSize:13, fontWeight:800, color:TEXT1, marginBottom:2, lineHeight:1.3 }}>{p.name}</div>
+                  <div style={{ fontSize:11, color:TEXT3, marginBottom:3 }}>{p.sub}</div>
+                  <div style={{ fontSize:11, color:TEXT2, marginBottom:6, lineHeight:1.4 }}>{p.notes}</div>
+                  <div style={{ display:"flex", justifyContent:"flex-end" }}>
+                    <span style={{ fontSize:17, fontWeight:900, color:AMBER2 }}>${p.price}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Tab selector */}
+            <div style={{ marginTop:14 }}>
+              <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.16em", color:TEXT3, textTransform:"uppercase", marginBottom:6 }}>Active Tabs</div>
+              {activeTabs.slice(0,4).map(t=>(
+                <div key={t.id} onClick={()=>setSelTabId(t.id)}
+                  style={{ padding:"8px 10px", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", background:selTabId===t.id?`rgba(212,175,55,0.08)`:"transparent", borderLeft:`3px solid ${selTabId===t.id?AMBER:"transparent"}`, borderBottom:`1px solid ${BORDER}`, borderRadius:selTabId===t.id?"0 6px 6px 0":"0" }}>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{t.name}</div>
+                    <div style={{ fontSize:10, color:TEXT3 }}>Table {t.tableNumber}</div>
+                  </div>
+                  <span style={{ fontSize:13, fontWeight:800, color:AMBER2 }}>${t.total.toFixed(0)}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Route buttons */}
+            <div style={{ marginTop:12, paddingBottom:12 }}>
+              {["bar","kitchen","humidor"].map(dest=>(
+                <motion.button key={dest} whileTap={{scale:0.96}} onClick={()=>handleRoute(dest)}
+                  style={{ width:"100%", padding:"9px 10px", marginBottom:5, borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, fontSize:12, fontWeight:700, cursor:"pointer", textAlign:"left", textTransform:"capitalize" }}>
+                  Send to {dest.charAt(0).toUpperCase()+dest.slice(1)}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* COL 5 — Environment Controls */}
+        <aside style={{ width:244, flexShrink:0, background:CARD_BG, borderLeft:`1px solid ${BORDER}`, overflowY:"auto" }}>
+          <div style={{ padding:"12px 12px 0" }}>
+
+            {/* Environment controls header */}
+            <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.16em", color:TEXT3, textTransform:"uppercase", marginBottom:8 }}>Environment Controls</div>
+
+            {/* Lounge preset */}
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+              <span style={{ fontSize:11, color:TEXT2, fontWeight:600 }}>Lounge Preset</span>
+              <select value={envPreset} onChange={e=>setEnvPreset(e.target.value)}
+                style={{ fontSize:11, color:TEXT1, fontWeight:700, background:IVORY, border:`1px solid ${BORDER}`, borderRadius:5, padding:"4px 8px", cursor:"pointer", maxWidth:120 }}>
+                {PRESET_OPTIONS.map(o=><option key={o}>{o}</option>)}
+              </select>
+            </div>
+
+            {/* Lounge image */}
+            <div style={{ width:"100%", height:80, borderRadius:8, overflow:"hidden", marginBottom:12, background:`linear-gradient(135deg,#2C1A08,#1A0C02)` }}>
+              <img src={IMG("cigar_hero.jpg")} alt="Cigar lounge" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+            </div>
+
+            {/* Lighting */}
+            <div style={{ marginBottom:12 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                <span style={{ fontSize:11, color:TEXT2, fontWeight:600 }}>Lighting</span>
+                <span style={{ fontSize:11, color:TEXT3, fontWeight:700 }}>{lighting}%</span>
+              </div>
+              <KineticSlider value={lighting} onChange={setLighting} />
+            </div>
+
+            {/* Music */}
+            <div style={{ marginBottom:12 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+                <span style={{ fontSize:11, color:TEXT2, fontWeight:600 }}>Music</span>
+              </div>
+              <select value={musicMode} onChange={e=>setMusicMode(e.target.value)}
+                style={{ width:"100%", fontSize:11, color:TEXT1, background:IVORY, border:`1px solid ${BORDER}`, borderRadius:5, padding:"6px 8px", cursor:"pointer" }}>
+                {MUSIC_OPTIONS.map(o=><option key={o}>{o}</option>)}
+              </select>
+            </div>
+
+            {/* Scent */}
+            <div style={{ marginBottom:12 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+                <span style={{ fontSize:11, color:TEXT2, fontWeight:600 }}>Scent</span>
+                <span style={{ fontSize:11, color:TEXT3, fontWeight:700 }}>{scentPct}%</span>
+              </div>
+              <select value={scentMode} onChange={e=>setScentMode(e.target.value)}
+                style={{ width:"100%", fontSize:11, color:TEXT1, background:IVORY, border:`1px solid ${BORDER}`, borderRadius:5, padding:"6px 8px", cursor:"pointer", marginBottom:6 }}>
+                {SCENT_OPTIONS.map(o=><option key={o}>{o}</option>)}
+              </select>
+              <KineticSlider value={scentPct} onChange={setScentPct} />
+            </div>
+
+            {/* Advanced controls */}
+            <motion.button whileTap={{scale:0.96}}
+              style={{ width:"100%", padding:"9px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, fontSize:12, fontWeight:700, cursor:"pointer", marginBottom:14 }}>
+              Advanced Controls
+            </motion.button>
+
+            {/* HVAC divider */}
+            <div style={{ height:1, background:BORDER, marginBottom:12 }} />
+
+            {/* HVAC */}
+            <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.16em", color:TEXT3, textTransform:"uppercase", marginBottom:8 }}>HVAC &amp; Air Quality</div>
+            <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                <span style={{ fontSize:11, color:TEXT3 }}>HVAC Status</span>
+                <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                  <div style={{ width:7, height:7, borderRadius:"50%", background:GREEN }} />
+                  <span style={{ fontSize:11, color:GREEN, fontWeight:700 }}>Optimal</span>
+                </div>
+              </div>
+              <div style={{ display:"flex", justifyContent:"space-between" }}>
+                <span style={{ fontSize:11, color:TEXT3 }}>Current Temp</span>
+                <span style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>70°F</span>
+              </div>
+              <div style={{ display:"flex", justifyContent:"space-between" }}>
+                <span style={{ fontSize:11, color:TEXT3 }}>Humidity</span>
+                <span style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>52%</span>
+              </div>
+            </div>
+
+          </div>
+        </aside>
       </div>
 
-      <footer style={{ height:56, flexShrink:0, background:ESPRESSO, display:"flex", alignItems:"center", padding:"0 20px", borderTop:"1px solid rgba(180,140,80,0.18)", zIndex:20 }}>
-        <div style={{ display:"flex", gap:0, flex:1, justifyContent:"center" }}>
-          {["Menu","Reservations","Events","Messages","Reports","Settings"].map((item,i)=>(
-            <button key={item} style={{ padding:"0 18px", height:56, border:"none", background:"transparent", color:"rgba(212,175,55,0.45)", fontSize:22, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
-              {["📋","📅","🎭","✉️","📊","⚙️"][i]} {item}
-            </button>
-          ))}
-        </div>
-        <div style={{ position:"absolute", left:"50%", transform:"translateX(-50%)" }}>
-          <div style={{ width:44, height:44, borderRadius:12, background:`linear-gradient(135deg,${GOLD},${AMBER})`, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 0 20px ${GOLD}44` }}>
-            <span style={{ fontSize:14, fontWeight:900, color:ESPRESSO }}>E.A.T</span>
-          </div>
-        </div>
+      {/* ── BOTTOM TAB BAR ───────────────────────────────────────────────── */}
+      <footer style={{ height:60, background:"#0F0A04", display:"flex", flexShrink:0, borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+        {BOT_NAV.map(nav=>(
+          <motion.div key={nav.label} whileTap={{scale:0.94}}
+            style={{ flex:1, position:"relative", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", overflow:"hidden" }}>
+            {/* Photo background */}
+            {nav.img && (
+              <img src={nav.img} alt="" style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", opacity:0.22 }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+            )}
+            <div style={{ position:"absolute", inset:0, background:nav.active?"rgba(212,175,55,0.12)":"rgba(0,0,0,0.20)" }} />
+            {nav.active && <div style={{ position:"absolute", top:0, left:"20%", right:"20%", height:2, background:AMBER, borderRadius:"0 0 2px 2px" }} />}
+            <span style={{ position:"relative", fontSize:10, fontWeight:700, letterSpacing:"0.14em", color:nav.active?AMBER:"rgba(255,255,255,0.55)", textTransform:"uppercase" }}>
+              {nav.label}
+            </span>
+          </motion.div>
+        ))}
       </footer>
+
     </div>
   );
 }

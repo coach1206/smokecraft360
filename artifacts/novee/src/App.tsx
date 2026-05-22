@@ -1170,7 +1170,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "smokecraft",        label: "SmokeCraft",     abbr: "SC",  targetPhase: "s1_demo",           staffOnly: false, isActive: (p) => SESSION_PHASES.has(p) },
   { id: "pairing",           label: "Pairing",        abbr: "PR",  targetPhase: "pairing_view",      staffOnly: false, isActive: (p) => p === "pairing_view" },
   { id: "profile",           label: "My Profile",     abbr: "ME",  targetPhase: "profile_view",      staffOnly: false, isActive: (p) => p === "profile_view" },
-  { id: "eat",               label: "E.A.T Intel",    abbr: "EAT", targetPhase: "eat_dashboard",     staffOnly: true,  pinLevel: "staff",      isActive: (p) => p === "eat_dashboard" },
+  { id: "eat",               label: "E.A.T Intel",    abbr: "EAT", targetPhase: "eat_dashboard",     staffOnly: true,  isActive: (p) => p === "eat_dashboard" },
   { id: "executive_command", label: "Command Center", abbr: "EXC", targetPhase: "executive_command", staffOnly: true,  pinLevel: "management", isActive: (p) => p === "executive_command" },
   { id: "lounge",            label: "Lounge",         abbr: "LG",  targetPhase: "lounge_view",       staffOnly: true,  isActive: (p) => p === "lounge_view" },
   { id: "settings",          label: "Settings",       abbr: "ST",  targetPhase: "settings_view",     staffOnly: true,  isActive: (p) => p === "settings_view" },
@@ -1224,7 +1224,7 @@ const RAIL_ITEMS = [
   { id: "crafthub",          label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub" as Phase,          pinLevel: undefined,               staffOnly: false, icon: "⊹", isActive: (p: string) => p === "crafthub" },
   { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
   { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,               staffOnly: false, icon: "◆", isActive: (p: string) => p === "pairing_view" },
-  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "staff" as PinRole,      staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
+  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: undefined,               staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
   { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, staffOnly: true,  icon: "⟡", isActive: (p: string) => p === "executive_command" },
   { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,               staffOnly: true,  icon: "◯", isActive: (p: string) => p === "lounge_view" },
   { id: "coach_help",        label: "Coach Help",  abbr: "CH",  targetPhase: "coach_help" as Phase,       pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => p === "coach_help" },
@@ -1657,7 +1657,8 @@ function FullBleedBackground() {
 function handlePointerDown() { playClick(); hapticClick(); }
 
 function OsShell() {
-  const { setPhase, resetProfile } = useGuest();
+  const { setPhase, resetProfile, profile } = useGuest();
+  const isEAT = profile.phase === "eat_dashboard";
   const { env: syncedEnv, updateEnv } = useVisualSync();
   const [eatFlags, setEatFlags]    = useState<EATModuleFlags>(DEFAULT_FLAGS);
 
@@ -1776,19 +1777,19 @@ function OsShell() {
           <LeftRail />
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
             <FullBleedBackground />
-            <SystemBar />
+            {!isEAT && <SystemBar />}
             {/* Content starts at top:44 so SystemBar (zIndex:50, height~38px) never clips or intercepts */}
-            <div style={{ position: "absolute", top: 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: isEAT ? 0 : 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
               <PhaseRouter eatFlags={eatFlags} onFlagsChange={setEatFlags} />
             </div>
           </div>
         </div>
 
         {/* E.A.T Intelligence Telemetry Bar */}
-        <EATTelemetryBar />
+        {!isEAT && <EATTelemetryBar />}
 
         {/* Bottom ticker + Day One 360 */}
-        <BottomBar />
+        {!isEAT && <BottomBar />}
 
         {/* PIN Gate Overlay */}
         <AnimatePresence>
