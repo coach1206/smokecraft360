@@ -1610,6 +1610,10 @@ function POSCommandHub() {
   const [humidor] = useState(145);
   const [kitchen, setKitchen] = useState(12);
   const [barPours, setBarPours] = useState(37);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [adminLog, setAdminLog] = useState("SYSTEM_NOMINAL — All subsystems online.");
+  const [adminBusy, setAdminBusy] = useState(false);
+
   useEffect(() => {
     const id = setInterval(() => {
       setKitchen(k => Math.min(20, Math.max(6, k + (Math.random() > 0.85 ? (Math.random() > 0.5 ? 1 : -1) : 0))));
@@ -1617,6 +1621,25 @@ function POSCommandHub() {
     }, 4800);
     return () => clearInterval(id);
   }, []);
+
+  async function sendOverride(action: string) {
+    setAdminBusy(true);
+    setAdminLog(`DISPATCHING: ${action}...`);
+    try {
+      const r = await fetch("/api/v1/admin/system-override", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action_directive: action, auth_token: "SOVEREIGN_360_AUTH" }),
+      });
+      const d = await r.json();
+      setAdminLog(d.success ? `DIRECTIVE_EXECUTED: ${action} | Sync broadcast complete.` : `ERR: ${(d as {error?: string}).error ?? "UNKNOWN"}`);
+    } catch {
+      setAdminLog("ERR_GATEWAY_TIMEOUT: Local mesh link failure.");
+    } finally {
+      setAdminBusy(false);
+    }
+  }
+
   const STATUS_COLORS = { occupied: "#32B45A", available: `${GOLD}50`, reserved: "#5BBFFF" } as const;
   const TABLES: { n: number; status: "occupied" | "available" | "reserved"; guests: number; items: number }[] = [
     { n: 1, status: "occupied",  guests: 4, items: 3 },
@@ -1633,57 +1656,165 @@ function POSCommandHub() {
     { label: "Bar Pour Level", value: String(barPours), unit: "POURS TONIGHT",   icon: "◆", color: "#5BBFFF" },
     { label: "Humidor Stock",  value: String(humidor),  unit: "PUROS REMAINING", icon: "◈", color: GOLD      },
   ];
+
+  const overrideActions = [
+    { key: "FORCE_HIGH_READABILITY",      label: "FORCE HIGH-READABILITY",      sub: "Upscales typography sizing patterns to 24pt base contrast", danger: false },
+    { key: "RE-CALIBRATE_ENVIRONMENT",    label: "RE-CALIBRATE ENVIRONMENT",    sub: "Resets room sensory matrices to absolute zero profiles",   danger: false },
+    { key: "RECONCILE_COMMERCE_ENTRIES",  label: "RECONCILE COMMERCE ENTRIES",  sub: "Forces full audit verification across open billing nodes",  danger: false },
+    { key: "RESET_ACTIVE_VENUE",          label: "HARD REBOOT SYSTEM RE-SYNC",  sub: "Purges local active system cache layers and refreshes viewport", danger: true },
+  ];
+
   return (
     <div style={{ position: "absolute", inset: 0, background: "#060402", display: "flex", flexDirection: "column", fontFamily: "'Inter',sans-serif", overflow: "hidden" }}>
       <div style={{ position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)", width: 900, height: 400, background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.09) 0%, transparent 60%)", pointerEvents: "none" }} />
-      <div style={{ flexShrink: 0, padding: "18px 32px 16px", borderBottom: "1px solid rgba(212,175,55,0.18)", display: "flex", alignItems: "center", gap: 20, background: "rgba(4,2,0,0.94)", backdropFilter: "blur(20px)" }}>
-        <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(212,175,55,0.16)", border: "1.5px solid rgba(212,175,55,0.55)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 16px rgba(212,175,55,0.20)" }}>
-          <span style={{ fontSize: 20, color: GOLD }}>⊞</span>
+
+      {/* Header */}
+      <div style={{ flexShrink: 0, padding: "14px 20px", borderBottom: "1px solid rgba(212,175,55,0.18)", display: "flex", alignItems: "center", gap: 14, background: "rgba(4,2,0,0.94)", backdropFilter: "blur(20px)", flexWrap: "wrap" }}>
+        <div style={{ width: 36, height: 36, flexShrink: 0, borderRadius: 9, background: "rgba(212,175,55,0.16)", border: "1.5px solid rgba(212,175,55,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: 18, color: GOLD }}>⊞</span>
         </div>
-        <div>
-          <div style={{ fontSize: 30, fontWeight: 900, color: CREW, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em", lineHeight: 1 }}>E.A.T. COMMAND HUB</div>
-          <div style={{ fontSize: 12, color: "rgba(253,251,247,0.35)", letterSpacing: "0.26em", textTransform: "uppercase", marginTop: 3 }}>Management Clearance · Live Floor</div>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: "clamp(18px, 4vw, 30px)", fontWeight: 900, color: CREW, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em", lineHeight: 1 }}>E.A.T. COMMAND HUB</div>
+          <div style={{ fontSize: 11, color: "rgba(253,251,247,0.35)", letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 2 }}>Management Clearance · Live Floor</div>
         </div>
         <div style={{ flex: 1 }} />
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", background: "rgba(50,180,90,0.10)", border: "1px solid rgba(50,180,90,0.30)", borderRadius: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: "rgba(50,180,90,0.10)", border: "1px solid rgba(50,180,90,0.30)", borderRadius: 8, flexShrink: 0 }}>
           <motion.div animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 1.8, repeat: Infinity }} style={{ width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#32B45A", letterSpacing: "0.12em" }}>FLOOR ACTIVE</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#32B45A", letterSpacing: "0.10em" }}>FLOOR ACTIVE</span>
         </div>
       </div>
-      <div style={{ flexShrink: 0, display: "grid", gridTemplateColumns: "repeat(3,1fr)", borderBottom: "1px solid rgba(212,175,55,0.16)" }}>
+
+      {/* Metrics strip — wraps on narrow screens */}
+      <div style={{ flexShrink: 0, display: "flex", flexWrap: "wrap", borderBottom: "1px solid rgba(212,175,55,0.16)" }}>
         {metrics.map((m, i) => (
-          <div key={m.label} style={{ padding: "16px 28px", borderLeft: i > 0 ? "1px solid rgba(212,175,55,0.14)" : "none", position: "relative", overflow: "hidden" }}>
+          <div key={m.label} style={{ flex: "1 1 120px", padding: "14px 20px", borderLeft: i > 0 ? "1px solid rgba(212,175,55,0.14)" : "none", position: "relative", overflow: "hidden" }}>
             {i === 2 && <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.07) 0%, transparent 60%)", pointerEvents: "none" }} />}
-            <div style={{ fontSize: 10, letterSpacing: "0.32em", color: "rgba(253,251,247,0.30)", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>{m.icon} {m.label}</div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-              <motion.span key={m.value} initial={{ opacity: 0.7, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} style={{ fontSize: 44, fontWeight: 900, color: m.color, fontFamily: "'Inter',sans-serif", lineHeight: 1, textShadow: `0 0 24px ${m.color}44` }}>{m.value}</motion.span>
-              <span style={{ fontSize: 10, letterSpacing: "0.22em", color: `${m.color}66`, fontWeight: 800, textTransform: "uppercase" }}>{m.unit}</span>
+            <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(253,251,247,0.30)", textTransform: "uppercase", marginBottom: 6, fontWeight: 700 }}>{m.icon} {m.label}</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              <motion.span key={m.value} initial={{ opacity: 0.7, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} style={{ fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 900, color: m.color, fontFamily: "'Inter',sans-serif", lineHeight: 1, textShadow: `0 0 24px ${m.color}44` }}>{m.value}</motion.span>
+              <span style={{ fontSize: 9, letterSpacing: "0.18em", color: `${m.color}66`, fontWeight: 800, textTransform: "uppercase" }}>{m.unit}</span>
             </div>
           </div>
         ))}
       </div>
-      <div style={{ flexShrink: 0, padding: "12px 28px 8px", display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ width: 2, height: 16, background: GOLD, borderRadius: 2 }} />
-        <span style={{ fontSize: 10, letterSpacing: "0.34em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>ACTIVE FLOOR LAYOUT</span>
+
+      {/* Floor label row */}
+      <div style={{ flexShrink: 0, padding: "10px 20px 6px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 2, height: 14, background: GOLD, borderRadius: 2 }} />
+        <span style={{ fontSize: 10, letterSpacing: "0.30em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>ACTIVE FLOOR LAYOUT</span>
         <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(212,175,55,0.22), transparent)" }} />
-        <span style={{ fontSize: 10, letterSpacing: "0.18em", color: "rgba(253,251,247,0.22)", textTransform: "uppercase" }}>{TABLES.filter(t => t.status === "occupied").length}/{TABLES.length} OCCUPIED</span>
+        <span style={{ fontSize: 10, letterSpacing: "0.14em", color: "rgba(253,251,247,0.22)", textTransform: "uppercase" }}>{TABLES.filter(t => t.status === "occupied").length}/{TABLES.length} OCCUPIED</span>
       </div>
-      <div style={{ flex: 1, padding: "0 20px 20px", display: "grid", gridTemplateColumns: "repeat(4,1fr)", gridTemplateRows: "repeat(2,1fr)", gap: 14, overflow: "hidden" }}>
+
+      {/* Table grid — responsive auto-fill */}
+      <div style={{ flex: 1, padding: "0 14px 14px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gridAutoRows: "1fr", gap: 12, overflowY: "auto" }}>
         {TABLES.map(table => (
           <motion.div key={table.n} whileTap={{ scale: 0.96 }}
-            style={{ background: table.status === "occupied" ? "rgba(50,180,90,0.07)" : table.status === "reserved" ? "rgba(91,191,255,0.05)" : "rgba(253,251,247,0.03)", border: `1.5px solid ${table.status === "occupied" ? "rgba(50,180,90,0.28)" : table.status === "reserved" ? "rgba(91,191,255,0.22)" : "rgba(212,175,55,0.14)"}`, borderRadius: 14, padding: "16px 18px", cursor: "pointer", display: "flex", flexDirection: "column", gap: 6, backdropFilter: "blur(8px)", position: "relative" }}>
+            style={{ background: table.status === "occupied" ? "rgba(50,180,90,0.07)" : table.status === "reserved" ? "rgba(91,191,255,0.05)" : "rgba(253,251,247,0.03)", border: `1.5px solid ${table.status === "occupied" ? "rgba(50,180,90,0.28)" : table.status === "reserved" ? "rgba(91,191,255,0.22)" : "rgba(212,175,55,0.14)"}`, borderRadius: 14, padding: "14px 16px", cursor: "pointer", display: "flex", flexDirection: "column", gap: 5, backdropFilter: "blur(8px)", position: "relative", minHeight: 100 }}>
             {table.status === "occupied" && (
               <motion.div animate={{ opacity: [1, 0.35, 1] }} transition={{ duration: 1.6, repeat: Infinity }}
                 style={{ position: "absolute", top: 10, right: 10, width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
             )}
-            <div style={{ fontSize: 11, letterSpacing: "0.26em", color: "rgba(253,251,247,0.28)", textTransform: "uppercase", fontWeight: 700 }}>TABLE</div>
-            <div style={{ fontSize: 44, fontWeight: 900, color: CREW, fontFamily: "'Cormorant Garamond',serif", lineHeight: 1 }}>{String(table.n).padStart(2, "0")}</div>
-            <div style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: STATUS_COLORS[table.status], fontWeight: 700 }}>
-              {table.status === "occupied" ? `${table.guests} GUESTS · ${table.items} ITEMS` : table.status === "reserved" ? "RESERVED" : "AVAILABLE"}
+            <div style={{ fontSize: 10, letterSpacing: "0.24em", color: "rgba(253,251,247,0.28)", textTransform: "uppercase", fontWeight: 700 }}>TABLE</div>
+            <div style={{ fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 900, color: CREW, fontFamily: "'Cormorant Garamond',serif", lineHeight: 1 }}>{String(table.n).padStart(2, "0")}</div>
+            <div style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: STATUS_COLORS[table.status], fontWeight: 700 }}>
+              {table.status === "occupied" ? `${table.guests}G · ${table.items}I` : table.status === "reserved" ? "RESERVED" : "AVAILABLE"}
             </div>
           </motion.div>
         ))}
       </div>
+
+      {/* Invisible 80×80 bottom-right admin trigger */}
+      <div
+        style={{ position: "absolute", bottom: 0, right: 0, width: 80, height: 80, zIndex: 9999, cursor: "pointer" }}
+        onClick={() => setShowAdmin(true)}
+        onTouchStart={() => setShowAdmin(true)}
+      />
+
+      {/* Admin Command Center overlay */}
+      {showAdmin && (
+        <motion.div
+          initial={{ y: "100%" }} animate={{ y: 0 }} transition={{ type: "tween", duration: 0.32, ease: [0.25, 1, 0.5, 1] }}
+          style={{ position: "fixed", inset: 0, background: "#F9F8F6", color: "#010101", zIndex: 10000, display: "flex", flexDirection: "column", fontFamily: "'Inter',sans-serif", overflowY: "auto" }}
+        >
+          {/* ACC Header */}
+          <div style={{ flexShrink: 0, padding: "28px 32px 20px", borderBottom: "1px solid rgba(1,1,1,0.10)", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+            <div>
+              <div style={{ fontSize: 11, fontFamily: "monospace", color: "#D4AF37", letterSpacing: "3px", textTransform: "uppercase", marginBottom: 4 }}>Sovereign Management Center</div>
+              <div style={{ fontSize: "clamp(20px, 4vw, 30px)", fontWeight: 800, color: "#010101", letterSpacing: "-0.01em" }}>Admin System Command Center</div>
+            </div>
+            <button
+              onClick={() => setShowAdmin(false)}
+              style={{ padding: "12px 22px", background: "#010101", color: "#F4F3EF", fontFamily: "monospace", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", border: "none", cursor: "pointer", borderRadius: 2, flexShrink: 0 }}
+            >
+              CLOSE COMMAND DRAWER
+            </button>
+          </div>
+
+          {/* ACC Body */}
+          <div style={{ flex: 1, padding: "24px 32px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 20, alignContent: "start" }}>
+
+            {/* Column 1 — Hardware Telemetry */}
+            <div style={{ background: "#F4F3EF", border: "1px solid rgba(44,44,48,0.10)", borderRadius: 4, padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em" }}>Kiosk Hardware Telemetry</div>
+              <div style={{ background: "linear-gradient(135deg,#2C1A08,#1A0C02)", borderRadius: 4, height: 80, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(212,175,55,0.6)", letterSpacing: "0.2em" }}>VIP LOUNGE · ZONE 4</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, fontFamily: "monospace", fontSize: 11, color: "#2C2C30" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(1,1,1,0.05)", paddingBottom: 8 }}>
+                  <span>MESH LAN SUITE LINK:</span>
+                  <span style={{ color: "#38A169", fontWeight: 700 }}>PORT 8443 ACTIVE</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(1,1,1,0.05)", paddingBottom: 8 }}>
+                  <span>TLS SECURITY PASS:</span>
+                  <span style={{ color: "#38A169", fontWeight: 700 }}>TLS 1.3 ENFORCED</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>HARDWARE ID LINK:</span>
+                  <span style={{ color: "#010101", fontWeight: 700 }}>KLO-TERMINAL-04B</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Column 2 — Tactical Overrides */}
+            <div style={{ background: "#F4F3EF", border: "1px solid rgba(44,44,48,0.10)", borderRadius: 4, padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <div style={{ fontSize: 11, fontFamily: "monospace", fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 4 }}>Tactical Override Panel</div>
+                <div style={{ fontSize: 11, color: "#8E8E93" }}>Direct pipeline control to override terminal instances instantly.</div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
+                {overrideActions.map(a => (
+                  <button key={a.key} disabled={adminBusy}
+                    onClick={() => sendOverride(a.key)}
+                    style={{
+                      background: a.danger ? "transparent" : "#010101",
+                      color: a.danger ? "#E53E3E" : "#F4F3EF",
+                      border: a.danger ? "1px solid #E53E3E" : "none",
+                      fontFamily: "monospace", fontSize: 11, fontWeight: 700, padding: "14px 16px",
+                      borderRadius: 2, cursor: adminBusy ? "not-allowed" : "pointer",
+                      textAlign: "left", opacity: adminBusy ? 0.6 : 1,
+                    }}
+                  >
+                    [{a.label}]
+                    <span style={{ display: "block", fontSize: 10, fontWeight: 400, marginTop: 4, color: a.danger ? "rgba(229,62,62,0.7)" : "#8E8E93", textTransform: "lowercase" }}>{a.sub}</span>
+                  </button>
+                ))}
+              </div>
+              {/* Console log */}
+              <div style={{ background: "#010101", color: "#38A169", padding: "12px 14px", borderRadius: 2, fontFamily: "monospace", fontSize: 11, border: "1px solid #2C2C30", minHeight: 72, overflowY: "auto" }}>
+                <span style={{ color: "#8E8E93", fontWeight: 700 }}>[SYSTEM LOG FEED CORE ACTIVE]</span>
+                <div style={{ marginTop: 6, lineHeight: 1.5 }}>{adminLog}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* ACC Footer */}
+          <div style={{ flexShrink: 0, padding: "14px 32px", borderTop: "1px solid rgba(1,1,1,0.10)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8, fontFamily: "monospace", fontSize: 11, color: "#8E8E93" }}>
+            <span>GATEWAY LINK STATUS: <span style={{ color: "#38A169", fontWeight: 700 }}>CONNECTED VIA VLAN 100 SECURE CORE</span></span>
+            <span>SECURE KERNEL VERSION: <span style={{ color: "#010101", fontWeight: 700 }}>v6.6.0-PROD</span></span>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

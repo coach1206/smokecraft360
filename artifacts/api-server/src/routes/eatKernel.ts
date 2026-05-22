@@ -331,6 +331,73 @@ eatKernelRouter.post("/v1/system/viewport-stabilization", (req: Request, res: Re
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 4b. ADMIN SYSTEM OVERRIDE — POST /api/v1/admin/system-override
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface SystemThemeState {
+  current_mode:       string;
+  base_background_hex: string;
+  primary_text_hex:   string;
+  accent_glow_hex:    string;
+}
+
+let systemThemeState: SystemThemeState = {
+  current_mode:        "IVORY_SOVEREIGN",
+  base_background_hex: "#F9F8F6",
+  primary_text_hex:    "#010101",
+  accent_glow_hex:     "#D4AF37",
+};
+
+const adminOverrideSchema = z.object({
+  action_directive: z.string().min(1).max(100),
+  auth_token:       z.string().min(1),
+});
+
+eatKernelRouter.post("/v1/admin/system-override", (req: Request, res: Response) => {
+  const parsed = adminOverrideSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ success: false, error: "ERR_INVALID_PAYLOAD", issues: parsed.error.issues });
+    return;
+  }
+
+  const { action_directive, auth_token } = parsed.data;
+
+  if (auth_token !== "SOVEREIGN_360_AUTH") {
+    res.status(403).json({
+      success: false,
+      error:   "ERR_AUTH_DENIED",
+      message: "Administrative validation parameters mismatch. Access locked.",
+    });
+    return;
+  }
+
+  logger.info({ action_directive }, "TACTICAL OVERRIDE EXECUTION: dispatching directive");
+
+  if (action_directive === "FORCE_HIGH_READABILITY") {
+    systemThemeState.current_mode = "HIGH_READABILITY_IVORY";
+  } else if (action_directive === "RESET_ACTIVE_VENUE") {
+    systemThemeState.current_mode                                    = "IVORY_SOVEREIGN";
+    environmentState.hardware_sliders.spatial_lux_level              = 4.5;
+    environmentState.hardware_sliders.scent_atomization_volume_pct   = 65.0;
+  } else if (action_directive === "RE-CALIBRATE_ENVIRONMENT") {
+    environmentState.climate.current_temp_fahrenheit = 70.0;
+    environmentState.climate.relative_humidity_pct   = 52.0;
+    environmentState.climate.air_exchange_cfm        = 420.0;
+    environmentState.climate.status                  = "OPTIMAL";
+  }
+
+  broadcast("ADMIN_DIRECTIVE_BROADCAST", {
+    directive:         action_directive,
+    theme_state:       systemThemeState,
+    environment_reset: environmentState,
+    origin_node:       "COMMAND_HUB_MASTER",
+    dispatched_at:     new Date().toISOString(),
+  });
+
+  res.json({ success: true, applied_directive: action_directive, theme_state: systemThemeState });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 5. VENUE EVENTS  — GET /api/events/venue/:venueId
 // ─────────────────────────────────────────────────────────────────────────────
 
