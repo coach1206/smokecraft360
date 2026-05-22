@@ -235,7 +235,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-export function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
+export function CraftGrid({ onSmokecraft, onEAT }: { onSmokecraft: () => void; onEAT?: () => void }) {
   const [, navigate] = useLocation();
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredEAT, setHoveredEAT] = useState<string | null>(null);
@@ -484,7 +484,7 @@ export function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
                 key={cmd.code}
                 onHoverStart={() => setHoveredEAT(cmd.code)}
                 onHoverEnd={() => setHoveredEAT(null)}
-                onClick={() => navigate(cmd.route)}
+                onClick={() => onEAT ? onEAT() : navigate(cmd.route)}
                 animate={{
                   background: isHov ? "rgba(212,175,55,0.16)" : "rgba(212,175,55,0.06)",
                   boxShadow: isHov ? "0 0 28px rgba(212,175,55,0.22)" : "0 0 0px transparent",
