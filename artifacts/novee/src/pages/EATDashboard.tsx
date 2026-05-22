@@ -240,11 +240,11 @@ function StrengthDots({ v, max=5 }: { v:number; max?:number }) {
 function KineticSlider({ value, onChange }: { value:number; onChange:(v:number)=>void }) {
   const pct = value;
   return (
-    <div style={{ position:"relative", height:12, borderRadius:6, background:"rgba(0,0,0,0.09)", cursor:"pointer", boxShadow:"inset 0 1px 2px rgba(0,0,0,0.10)" }}>
+    <div style={{ position:"relative", height:12, borderRadius:6, background:"#F4F3EF", cursor:"pointer", boxShadow:"inset 0 1px 3px rgba(0,0,0,0.12)" }}>
       <div style={{ position:"absolute", left:0, top:0, height:"100%", width:`${pct}%`, background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:6 }} />
       <input type="range" min={0} max={100} value={value} onChange={e=>onChange(Number(e.target.value))}
         style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0, cursor:"pointer", margin:0 }} />
-      <div style={{ position:"absolute", top:"50%", left:`${pct}%`, transform:"translate(-50%,-50%)", width:20, height:20, borderRadius:"50%", background:IVORY, border:"1.5px solid #2C2C30", boxShadow:"0 2px 6px rgba(0,0,0,0.20)", pointerEvents:"none" }} />
+      <div style={{ position:"absolute", top:"50%", left:`${pct}%`, transform:"translate(-50%,-50%)", width:28, height:28, borderRadius:"50%", background:IVORY, border:"1px solid #2C2C30", boxShadow:"0 3px 8px rgba(0,0,0,0.22)", pointerEvents:"none" }} />
     </div>
   );
 }
