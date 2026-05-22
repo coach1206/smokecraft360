@@ -1424,13 +1424,16 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           pointerEvents: isCommandCenterOpen ? "auto" : "none",
           transition:"opacity 0.2s ease" }} />
 
-      {/* Drawer panel — CSS translateY toggle, no mount/unmount */}
+      {/* Drawer panel — opacity+translate, always in viewport so WebKit pre-paints content */}
       <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:999999,
         background:"#0D0D0E", borderTop:"1px solid rgba(212,175,55,0.22)",
         borderRadius:"20px 20px 0 0", maxHeight:"72vh", overflow:"hidden",
         display:"flex", flexDirection:"column", boxShadow:"0 -8px 60px rgba(0,0,0,0.65)",
-        transform: isCommandCenterOpen ? "translateY(0)" : "translateY(100%)",
-        transition:"transform 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
+        opacity: isCommandCenterOpen ? 1 : 0,
+        transform: isCommandCenterOpen ? "translateY(0)" : "translateY(28px)",
+        pointerEvents: isCommandCenterOpen ? "auto" : "none",
+        willChange: "opacity, transform",
+        transition:"opacity 0.20s ease, transform 0.26s cubic-bezier(0.32,0.72,0,1)" }}>
 
         <div style={{ display:"flex", justifyContent:"center", padding:"14px 0 6px" }}>
           <div style={{ width:40, height:4, borderRadius:2, background:"rgba(255,255,255,0.15)" }} />

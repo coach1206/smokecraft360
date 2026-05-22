@@ -1,0 +1,45 @@
+=======================================================================
+REPLIT INTERCEPT ENGINE: ABSOLUTE SYNC & OPERATIONAL CONVERGENCE CODEX
+TARGET REPOSITORIES: BOTH SMOKECRAFT 360 AND NOVEE OS APPLICATIONS
+COMPILATION RULES: ZERO CODE-SPLITTING • MONOLITHIC IMPORT UNIFICATION
+DECK RENDERING ENGINE: UNIFIED DESIGN CONTINUITY MODEL (SMOKECRAFT PALETTE)
+=======================================================================
+
+The system layout is experiencing severe code divergence. SmokeCraft 360 and NOVEE OS are processing completely separate view components, resulting in mismatched layout colors, the absence of the ticket data logs on SmokeCraft, dead navigation rows at the base of the screens, and an immediate black screen crash when attempting to render the dynamic Admin Command drawer from the bottom-right corner.
+
+You must immediately execute an exhaustive code overhaul to synchronize BOTH applications into an identical, premium visual state machine. Pull all visual layouts out of lazy dynamic chunks and compile them inline as static assets within a flat, single-file framework to guarantee sub-200ms view instantiations and total execution stability on touchscreen kiosk glass.
+
+=======================================================================
+1. DEPLOY ABSOLUTE COLOR AND FUNCTIONAL CONTINUITY (THE SMOKECRAFT STANDARD)
+=======================================================================
+- Erase all discordant interface styles between the two apps. Standardize the background theme parameters across BOTH platforms to execute the exact premium SmokeCraft color palette: Charcoal Satin (#191919) and Smoked Chrome deep-dark containers accented by Honey Amber borders (#D4AF37).
+- Re-render the layout mechanics of BOTH systems to feature identical workspace elements:
+  * Force the complete 'Ticket Tapper' active asset/device tracking panel to mount cleanly on the left margin of BOTH platforms.
+  * Ensure the active table grid configuration diagram, the central recommendation engine panel, the right-hand environment metrics trackers, and the bottom horizontal menu options are structurally identical across both software platforms.
+
+=======================================================================
+2. ABSOLUTE ZERO-DELAY RE-ANCHORED DOUBLE CONTROL DECK (TOP MODULES)
+=======================================================================
+- Remove all global control options from the bottom viewport boundary. Restructure the primary system workspace navigation as two stacked horizontal blocks pinned directly to the absolute top of the screen framework:
+  * DECK LEVEL 1 (Global System Selector): Renders large, high-contrast, finger-padded touchscreen targets ([MENU] | [RESERVATIONS] | [EVENTS] | [E.A.T. SYSTEM] | [MESSAGES] | [REPORTS] | [SETTINGS]). The [E.A.T. SYSTEM] component must feature an active Honey Amber layout boundary highlight. Tapping any other target option must instantly unmount the E.A.T dashboard and render the selected layout interface container with zero software lag.
+  * DECK LEVEL 2 (Sensory Operational Sub-Tabs): Sits immediately below Level 1, utilizing an explicit layout rule ('gap: 32px; width: 100%; white-space: nowrap;') to completely kill the text overcrowding and vertical wrapping errors across all monitor configurations. Items displayed: [Command Center] | [Assets] | [Transactions] | [Pairing Engine] | [Analytics] | [Staff] | [Venue Intelligence].
+- HARDWIRE GLOBAL BACK NAVIGATION: Render an explicit, high-contrast '[ BACK ]' key on the absolute left flank of Deck Level 1 on EVERY sub-screen. Hardwire its touch event handler ('onTouchStart') to instantly pop the active viewport out of subsurface views and return the screen cleanly to the master dark luxury Craft Hub layout directory selection screen (SmokeCraft 360, PourCraft, BeerCraft, WineCraft).
+
+=======================================================================
+3. ELIMINATE BLACK SCREEN OVERLAY CRASHES (STATIC COMMAND HUB DIRECTIVE)
+=======================================================================
+- Completely delete any asynchronous code components or 'React.lazy()' modules parsing the Command Center panel drawer.
+- Build the entire 'AdminCommandCenter' container block inline as a native sibling element of your root viewport wrapper code to isolate it from application state drops.
+- Deploy an invisible 80px by 80px capacitive touch target hitbox (.command-center-trigger-envelope) pinned to the absolute bottom-right bounding box of the display frame:
+  ```css
+  .command-center-trigger-envelope {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 80px;
+      height: 80px;
+      z-index: 999999;
+      background: transparent;
+      pointer-events: auto;
+      cursor: pointer;
+  }

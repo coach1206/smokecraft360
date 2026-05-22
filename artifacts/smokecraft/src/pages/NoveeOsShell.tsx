@@ -19,8 +19,7 @@ const S2_TerroirMatrix = lazy(() => import("@/pages/S2_TerroirMatrix").then((m: 
 const S3_FormulationLab = lazy(() => import("@/pages/S3_FormulationLab").then((m: any) => ({ default: m.S3_FormulationLab || m.default || m })));
 const S4_DesignStudio = lazy(() => import("@/pages/S4_DesignStudio").then((m: any) => ({ default: m.S4_DesignStudio || m.default || m })));
 const ControlChamber = lazy(() => import("@/pages/ControlChamber").then((m: any) => ({ default: m.default || m })));
-const NoveeStaffPinGate = lazy(() => import("@/components/NoveeStaffPinGate").then(m => ({ default: m.NoveeStaffPinGate })));
-import type { PinRole } from "@/components/NoveeStaffPinGate";
+import { NoveeStaffPinGate, type PinRole } from "@/components/NoveeStaffPinGate";
 
 import { CraftGrid } from "@/pages/CraftEntryPoint";
 import { playClick } from "@/hooks/useNoveeAudio";
@@ -2058,14 +2057,12 @@ function OsShellContent() {
 
         <AnimatePresence>
           {pinGate && (
-            <Suspense fallback={<PhaseLoadingFallback />}>
-              <NoveeStaffPinGate
-                key={`pin-${pinGate.phase}`}
-                level={pinGate.level}
-                onSuccess={(role) => onPinSuccess(role, pinGate.phase)}
-                onCancel={() => setPinGate(null)}
-              />
-            </Suspense>
+            <NoveeStaffPinGate
+              key={`pin-${pinGate.phase}`}
+              level={pinGate.level}
+              onSuccess={(role) => onPinSuccess(role, pinGate.phase)}
+              onCancel={() => setPinGate(null)}
+            />
           )}
         </AnimatePresence>
       </div>
