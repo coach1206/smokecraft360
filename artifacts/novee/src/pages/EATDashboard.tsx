@@ -542,8 +542,8 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           {/* Left — Return button + brand */}
           <div style={{ width:210, flexShrink:0, display:"flex", alignItems:"center", gap:10, paddingLeft:14, borderRight:`1px solid ${BORDER}` }}>
             <motion.button whileTap={{scale:0.94}} onClick={()=>setPhase("crafthub")}
-              style={{ padding:"10px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:OBSID, cursor:"pointer", fontSize:10, fontWeight:900, letterSpacing:"0.12em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
-              Return to Craft Deck
+              style={{ padding:"10px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:OBSID, cursor:"pointer", fontSize:10, fontWeight:900, letterSpacing:"0.12em", textTransform:"uppercase", whiteSpace:"nowrap", fontFamily:"'Space Mono','Courier New',monospace" }}>
+              [ BACK ]
             </motion.button>
           </div>
 
@@ -1135,6 +1135,14 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                 />
                 {/* smoke/depth gradient */}
                 <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(0,0,0,0.04) 0%,rgba(8,4,0,0.48) 78%,rgba(8,4,0,0.72) 100%)", pointerEvents:"none" }} />
+                {/* volumetric smoke animation loop — 25% opacity drift */}
+                <motion.div
+                  animate={{ y:[0,-14,0], opacity:[0.22,0.28,0.22] }}
+                  transition={{ duration:9, repeat:Infinity, ease:"easeInOut" }}
+                  style={{ position:"absolute", inset:"-15%", zIndex:1, pointerEvents:"none",
+                    backgroundImage:`url(${IMG("smoke/smoke_urban.png")})`,
+                    backgroundSize:"cover", backgroundPosition:"center",
+                    mixBlendMode:"screen" as const }} />
                 {/* amber ambient glow at bottom */}
                 <div style={{ position:"absolute", bottom:0, left:0, right:0, height:90, background:"linear-gradient(to top,rgba(196,134,10,0.18),transparent)", pointerEvents:"none" }} />
                 {/* body badge */}
