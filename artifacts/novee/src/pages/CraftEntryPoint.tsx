@@ -17,10 +17,10 @@ type Stage = "boot" | "grid";
 type BootPhase = 1 | 2 | 3 | 4;
 
 const BOOT_PHASES: { phase: BootPhase; logo: string; label: string; sub: string; hold: number }[] = [
-  { phase: 1, logo: IMG("logo_profound.png"),  label: "PROFOUND INNOVATION", sub: "Software & Systems Development Company", hold: 1000 },
-  { phase: 2, logo: IMG("logo_novee_os.jpg"),  label: "NOVEE OS",            sub: "Intelligence That Elevates",              hold: 900  },
-  { phase: 3, logo: IMG("logo_craft_hub.jpg"), label: "CRAFT HUB",           sub: "Intro To Smoke Craft",                    hold: 800  },
-  { phase: 4, logo: IMG("logo_eat.png"),       label: "E.A.T. SYSTEM",       sub: "Environment · Asset · Transactions",      hold: 800  },
+  { phase: 1, logo: IMG("logo_profound.png"),  label: "PROFOUND INNOVATION", sub: "Software & Systems Development Company", hold: 320 },
+  { phase: 2, logo: IMG("logo_novee_os.jpg"),  label: "NOVEE OS",            sub: "Intelligence That Elevates",              hold: 280 },
+  { phase: 3, logo: IMG("logo_craft_hub.jpg"), label: "CRAFT HUB",           sub: "Intro To Smoke Craft",                    hold: 260 },
+  { phase: 4, logo: IMG("logo_eat.png"),       label: "E.A.T. SYSTEM",       sub: "Environment · Asset · Transactions",      hold: 260 },
 ];
 
 const TILES = [
@@ -91,7 +91,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         try { localStorage.setItem("craft_system_active", "1"); } catch {}
         onComplete();
       }
-    }, 600);
+    }, 180);
   }, [phase, onComplete]);
 
   useEffect(() => {
@@ -127,10 +127,10 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         {visible && (
           <motion.div
             key={`phase-${phase}`}
-            initial={{ opacity: 0, scale: 0.92, filter: "blur(14px)" }}
+            initial={{ opacity: 0, scale: 0.96, filter: "blur(6px)" }}
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, x: -60, filter: "blur(8px)" }}
-            transition={{ duration: 0.75, ease: EASE }}
+            exit={{ opacity: 0, x: -30, filter: "blur(4px)" }}
+            transition={{ duration: 0.18, ease: EASE }}
             style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28, zIndex: 2 }}
           >
             <motion.img
@@ -461,11 +461,11 @@ interface Props {
 
 export default function CraftEntryPoint({ onComplete }: Props) {
   const [stage, setStage] = useState<Stage>(() => {
-    try { return sessionStorage.getItem("craft_entry_done") === "1" ? "grid" : "boot"; } catch { return "boot"; }
+    try { return localStorage.getItem("craft_entry_done") === "1" ? "grid" : "boot"; } catch { return "boot"; }
   });
 
   function handleBootComplete() {
-    try { sessionStorage.setItem("craft_entry_done", "1"); } catch {}
+    try { localStorage.setItem("craft_entry_done", "1"); } catch {}
     setStage("grid");
   }
 
