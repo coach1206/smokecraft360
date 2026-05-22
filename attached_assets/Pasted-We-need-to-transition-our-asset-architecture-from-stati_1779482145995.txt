@@ -1,0 +1,31 @@
+We need to transition our asset architecture from static data files to a dynamic, multi-source Media and Content Management System. The venue needs to be able to manually upload custom venue photos, create live promotions, and automatically source official product media directly from third-party manufacturers and distributors. 
+
+Implement the following dynamic features and backend image pipelines:
+
+---
+
+### 1. MANUFACTURE & DISTRIBUTOR API MEDIA FETCH ER
+Build an automated media fetching service to eliminate broken or empty placeholder cards:
+* **API Integration Layer:** Implement a backend service layer (`/api/v1/assets/fetch-media`) that simulates or structures requests to global product databases, manufacturer media kit repositories, or distributor APIs.
+* **Auto-Sourcing Scraper Engine:** When a manager types in a standard universal UPC, SKU, or specific premium product name (e.g., "Padrón 1964 Anniversary Series" or "Macallan 12 Double Cask"), the system must automatically query the external source, extract the high-definition commercial product image, crop out whitespace background, and instantly save it to our server's asset registry.
+
+---
+
+### 2. VENUE MEDIA UPLOADER & ASSET INJECTION
+Give the venue manager full physical media control over their inventory:
+* **Drag-and-Drop File Engine:** Create an advanced media upload component inside the Command Center/Asset Modification modals. Managers must be able to drag-and-drop or select high-res files straight from their device (JPEG, PNG, WebP) to upload proprietary venue photos of food, drinks, and custom house-rolled selections.
+* **Database Image Mutation:** Ensure that when a new image file is uploaded, the backend updates the product's image URI field in our local SQL/NoSQL database instantly, triggering an immediate, seamless frontend refresh across all active staff monitors and guest-facing SmokeCraft tablets.
+
+---
+
+### 3. LIVE CAMPAIGN & FLASH SPECIALS CREATOR
+Build an intuitive marketing and menu intervention panel for the manager:
+* **The Promotion Canvas:** Add a "Create Live Special" portal inside the administrative Command Center. The manager must be able to:
+  * Select an item from the POS-synced menu or create a custom special.
+  * Upload a custom banner photo or pull an official product photo via the distributor engine.
+  * Enter promotional pricing, custom description tags, and active countdown duration (e.g., "Flash Special: 20% off for the next 45 minutes").
+* **E.A.T. Push Broadcaster:** Hitting "Launch Promotion" must save the record to a `live_promotions` collection and broadcast a payload via WebSockets to instantly overlay a gorgeous, touch-clickable, premium promotional card across all active guest interfaces.
+
+---
+
+Execute these upload routes, distributor scraping mock-services, and real-time state broadcasts immediately. Maintain the premium obsidian glass, smoked chrome, and gold accented luxury identity, formatting all images with deep shadow vignettes to ensure the text remains legible over the custom imagery.

@@ -307,6 +307,15 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [tabletMonitor, setTabletMonitor] = useState<null|{id:string;name:string;zone:string}>(null);
   const [analyticsSubTab, setAnalyticsSubTab] = useState<"overview"|"contest"|"vault"|"reconciliation">("overview");
   const [tableFilter, setTableFilter] = useState<string|null>(null);
+  const [posGatewayOpen, setPosGatewayOpen] = useState(false);
+  const [posForm, setPosForm] = useState<{provider:"Toast"|"Clover"|"Lightspeed"|"Custom";apiToken:string;webhookSecret:string;locationId:string}>({ provider:"Toast", apiToken:"", webhookSecret:"", locationId:"" });
+  const [posConnected, setPosConnected] = useState(false);
+  const [posSyncing, setPosSyncing] = useState(false);
+  const [txnSidePanel, setTxnSidePanel] = useState<null|{id:string;table:number;items:string;total:number;status:string;ago:string}>(null);
+  const [mapPulseTable, setMapPulseTable] = useState<string|null>(null);
+  const [eatScoreReason, setEatScoreReason] = useState("All venue zones nominal — baseline hospitality metrics stable");
+  const [pairingSelected, setPairingSelected] = useState<number|null>(null);
+  const [pairingRecalc, setPairingRecalc] = useState(false);
 
   // ── E.A.T. VI — Venue Intelligence state ───────────────────────────────────
   interface VIServiceSignal   { table:string; signal:string; urgency:"HIGH"|"MED"|"LOW" }
@@ -487,6 +496,21 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
     fetch(`/api/environment/${encodeURIComponent(venueId)}/preset`,{ method:"POST", headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})}, body:JSON.stringify({preset:envPreset}) }).catch(()=>{});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [envPreset]);
+
+  useEffect(()=>{
+    if(pairingSelected===null) return;
+    setPairingRecalc(true);
+    const t=setTimeout(()=>setPairingRecalc(false),900);
+    return ()=>clearTimeout(t);
+  },[pairingSelected]);
+
+  useEffect(()=>{
+    const openCt=activeTabs.length;
+    const highVal=activeTabs.filter(t=>t.total>200).length;
+    if(highVal>0) setEatScoreReason(`Score shifted — ${highVal} high-value tab${highVal>1?"s":""} awaiting attention in active sections`);
+    else if(openCt>3) setEatScoreReason(`${openCt} active tabs — elevated transaction velocity, response nominal`);
+    else setEatScoreReason("All venue zones nominal — baseline hospitality metrics stable");
+  },[activeTabs]);
 
   const onTableMD = useCallback((e:React.MouseEvent, id:string|number) => {
     e.preventDefault();
@@ -754,6 +778,10 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                       {t.active && t.guests>0 && (
                         <div style={{ position:"absolute", top:-4, right:-4, background:GREEN, color:"white", fontSize:7, fontWeight:900, borderRadius:"50%", width:13, height:13, display:"flex", alignItems:"center", justifyContent:"center" }}>{t.guests}</div>
                       )}
+                      {mapPulseTable===String(t.id) && (
+                        <motion.div animate={{ scale:[1,2.4,1], opacity:[1,0,0] }} transition={{ repeat:3, duration:1.1, ease:"easeOut" }}
+                          style={{ position:"absolute", inset:-3, borderRadius:"50%", border:`2px solid ${AMBER}`, pointerEvents:"none", zIndex:20 }} />
+                      )}
                     </motion.div>
                   ))}
                 </div>
@@ -790,6 +818,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:4 }}>Intelligence Score</div>
                   <div style={{ fontSize:40, fontWeight:900, lineHeight:1, color:viData.risk==="low"?GREEN:viData.risk==="medium"?AMBER2:RED_CLR }}>{Math.round(viData.score*100)}</div>
                   <div style={{ fontSize:10, color:TEXT3 }}>/ 100</div>
+                  <div style={{ fontSize:9, color:TEXT3, marginTop:5, maxWidth:170, lineHeight:1.4, textAlign:"right" as const }}>{eatScoreReason}</div>
                 </div>
               </div>
 
@@ -971,7 +1000,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   ))}
                 </div>
                 {TXN_LOG.map((t,i)=>(
-                  <div key={i} onClick={()=>{ setTableFilter(String(t.table)); setToastMsg(`Filtered to T-${t.table}`); setTimeout(()=>setToastMsg(null),1800); }}
+                  <div key={i} onClick={()=>{ setTableFilter(String(t.table)); setTxnSidePanel(t); setMapPulseTable(String(t.table)); setTimeout(()=>setMapPulseTable(null),4000); }}
                     style={{ display:"grid", gridTemplateColumns:"80px 50px 1fr 80px 80px 60px", padding:"10px 14px", borderBottom:i<TXN_LOG.length-1?`1px solid ${BORDER}`:"none", alignItems:"center", cursor:"pointer", background:tableFilter===String(t.table)?`rgba(212,175,55,0.05)`:"transparent", transition:"background 0.2s" }}>
                     <div style={{ fontSize:11, fontFamily:"monospace", color:TEXT3 }}>{t.id}</div>
                     <div style={{ fontSize:13, fontWeight:700, color:tableFilter===String(t.table)?AMBER2:TEXT1 }}>T-{t.table}</div>
@@ -1006,23 +1035,54 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   <div style={{ fontSize:20, fontWeight:900, color:GREEN }}>94%</div>
                 </div>
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
-                {PAIRING_RECS.map((p,i)=>(
-                  <div key={i} style={{ background:CARD_BG, border:`1px solid ${i===0?AMBER:BORDER}`, borderRadius:10, padding:"12px 14px", display:"flex", gap:10, alignItems:"center", cursor:"pointer", position:"relative", overflow:"hidden" }}>
-                    {i===0 && <div style={{ position:"absolute", top:0, right:0, fontSize:9, fontWeight:800, color:"#1A0C00", background:AMBER, padding:"4px 10px", borderRadius:"0 8px 0 6px", textTransform:"uppercase", letterSpacing:"0.10em" }}>Best Match</div>}
-                    <div style={{ width:44, height:44, borderRadius:8, overflow:"hidden", flexShrink:0, background:`linear-gradient(${p.gradient})` }}>
-                      <img src={p.img} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
-                    </div>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:2 }}>
-                        <div style={{ fontSize:13, fontWeight:800, color:TEXT1, lineHeight:1.3 }}>{p.name}</div>
-                        <div style={{ fontSize:15, fontWeight:900, color:AMBER2, flexShrink:0, marginLeft:6 }}>${p.price}</div>
-                      </div>
-                      <div style={{ fontSize:10, color:TEXT3, marginBottom:3 }}>{p.type} · <span style={{ color:i===0?AMBER2:TEXT2, fontWeight:700 }}>{p.match}% match</span></div>
-                      <div style={{ fontSize:11, color:TEXT2 }}>{p.notes}</div>
-                    </div>
+              {pairingSelected !== null && (
+                <div style={{ padding:"8px 12px", borderRadius:7, background:`rgba(212,175,55,0.08)`, border:`1px solid ${AMBER}44`, marginBottom:12, display:"flex", gap:8, alignItems:"center" }}>
+                  <motion.div animate={{ opacity:[1,0.35,1] }} transition={{ repeat:Infinity, duration:1.8 }}
+                    style={{ width:6, height:6, borderRadius:"50%", background:AMBER, flexShrink:0 }} />
+                  <div style={{ fontSize:11, fontWeight:700, color:AMBER2, flex:1 }}>
+                    Triple-Pairing Lock: {featuredCigar.name} + {PAIRING_RECS[pairingSelected].name}
                   </div>
-                ))}
+                  <motion.button whileTap={{scale:0.96}} onClick={()=>setPairingSelected(null)}
+                    style={{ fontSize:10, color:TEXT3, background:"transparent", border:"none", cursor:"pointer", fontWeight:700 }}>
+                    Clear
+                  </motion.button>
+                </div>
+              )}
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                {PAIRING_RECS.map((p,i)=>{
+                  const suppressed = ASSET_CATALOG.some(a=>a.name.toLowerCase()===p.name.toLowerCase()&&a.stock<a.min);
+                  const isSelected = pairingSelected===i;
+                  const isDimmed = pairingSelected!==null&&!isSelected&&pairingRecalc;
+                  const isBest = i===0&&!suppressed&&pairingSelected===null;
+                  return (
+                    <motion.div key={i} whileTap={{scale:suppressed?1:0.98}}
+                      onClick={()=>{ if(!suppressed) setPairingSelected(isSelected?null:i); }}
+                      animate={{ opacity: suppressed?0.45 : isDimmed?0.45 : 1 }}
+                      style={{ background:CARD_BG, border:`1px solid ${isSelected?AMBER:suppressed?"#EF444455":BORDER}`, borderRadius:10, padding:"12px 14px", display:"flex", gap:10, alignItems:"center", cursor:suppressed?"not-allowed":"pointer", position:"relative", overflow:"hidden", boxShadow:isSelected?`0 0 0 1px ${AMBER}44`:"none" }}>
+                      {isBest && <div style={{ position:"absolute", top:0, right:0, fontSize:9, fontWeight:800, color:"#1A0C00", background:AMBER, padding:"4px 10px", borderRadius:"0 8px 0 6px", textTransform:"uppercase" as const, letterSpacing:"0.10em" }}>Best Match</div>}
+                      {isSelected && <div style={{ position:"absolute", top:0, right:0, fontSize:9, fontWeight:800, color:"#1A0C00", background:AMBER2, padding:"4px 10px", borderRadius:"0 8px 0 6px", textTransform:"uppercase" as const, letterSpacing:"0.10em" }}>Anchored</div>}
+                      {suppressed && <div style={{ position:"absolute", top:0, right:0, fontSize:9, fontWeight:800, color:"white", background:"#EF4444", padding:"4px 10px", borderRadius:"0 8px 0 6px", textTransform:"uppercase" as const, letterSpacing:"0.08em" }}>Low Stock</div>}
+                      {isSelected && <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,${AMBER},${AMBER2})` }} />}
+                      {isDimmed && (
+                        <motion.div animate={{ opacity:[0.3,0.65,0.3] }} transition={{ repeat:Infinity, duration:0.9 }}
+                          style={{ position:"absolute", inset:0, background:"rgba(245,242,237,0.55)", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", zIndex:5 }}>
+                          <span style={{ fontSize:10, fontWeight:800, color:TEXT3, letterSpacing:"0.12em" }}>Recalculating...</span>
+                        </motion.div>
+                      )}
+                      <div style={{ width:44, height:44, borderRadius:8, overflow:"hidden", flexShrink:0, background:`linear-gradient(${p.gradient})` }}>
+                        <img src={p.img} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:2 }}>
+                          <div style={{ fontSize:13, fontWeight:800, color:suppressed?"#EF4444":TEXT1, lineHeight:1.3 }}>{p.name}</div>
+                          <div style={{ fontSize:15, fontWeight:900, color:AMBER2, flexShrink:0, marginLeft:6 }}>${p.price}</div>
+                        </div>
+                        <div style={{ fontSize:10, color:TEXT3, marginBottom:3 }}>{p.type} · <span style={{ color:isSelected?AMBER2:isBest?AMBER2:TEXT2, fontWeight:700 }}>{p.match}% match</span></div>
+                        <div style={{ fontSize:11, color:suppressed?"#EF4444":TEXT2 }}>{suppressed?"Suppressed — stock below minimum. Auto-elevating alternative.":p.notes}</div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -1912,17 +1972,17 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.18em", color:"rgba(255,255,255,0.35)", textTransform:"uppercase", marginBottom:10 }}>Quick Actions</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, marginBottom:18 }}>
             {([
-              { label:"Kill Switch",   tag:"[X]", desc:"Halt all transactions"  },
-              { label:"Force Sync",    tag:"[S]", desc:"Push config to devices" },
-              { label:"Broadcast",     tag:"[B]", desc:"Send staff message"      },
-              { label:"Panic Mode",    tag:"[!]", desc:"Lock down venue ops"     },
-              { label:"Vent Override", tag:"[V]", desc:"Open HVAC manual mode"  },
-              { label:"Dev Mode",      tag:"[D]", desc:"Debug overlay toggle"   },
-            ] as {label:string;tag:string;desc:string}[]).map(a=>(
-              <motion.button key={a.label} whileTap={{scale:0.95}}
-                style={{ padding:"12px 8px", borderRadius:10, border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.04)", cursor:"pointer", textAlign:"center" as const }}>
-                <div style={{ fontSize:11, fontWeight:900, color:"rgba(255,255,255,0.55)", marginBottom:4, fontFamily:"'Space Mono','Courier New',monospace", letterSpacing:"0.06em" }}>{a.tag}</div>
-                <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.85)", marginBottom:2 }}>{a.label}</div>
+              { label:"Kill Switch",   tag:"[X]", desc:"Halt all transactions",  action:()=>{ setToastMsg("Kill switch armed — confirm in 3s"); setTimeout(()=>setToastMsg(null),3000); } },
+              { label:"Force Sync",    tag:"[S]", desc:"Push config to devices", action:()=>{ setToastMsg("Forcing sync to all devices..."); setTimeout(()=>setToastMsg(null),2500); } },
+              { label:"Broadcast",     tag:"[B]", desc:"Push flash special",      action:()=>{ setIsCommandCenterOpen(false); setBroadcastModal(true); } },
+              { label:"POS Gateway",   tag:"[P]", desc:"Connect POS provider",   action:()=>{ setIsCommandCenterOpen(false); setPosGatewayOpen(true); } },
+              { label:"Vent Override", tag:"[V]", desc:"Open HVAC manual mode",  action:()=>{ setToastMsg("HVAC manual override active"); setTimeout(()=>setToastMsg(null),2500); } },
+              { label:"Dev Mode",      tag:"[D]", desc:"Debug overlay toggle",   action:()=>{ setToastMsg("Dev overlay toggled"); setTimeout(()=>setToastMsg(null),2000); } },
+            ] as {label:string;tag:string;desc:string;action:()=>void}[]).map(a=>(
+              <motion.button key={a.label} whileTap={{scale:0.95}} onClick={a.action}
+                style={{ padding:"12px 8px", borderRadius:10, border:`1px solid ${a.tag==="[P]"?"rgba(212,175,55,0.30)":"rgba(255,255,255,0.08)"}`, background:a.tag==="[P]"?"rgba(212,175,55,0.08)":"rgba(255,255,255,0.04)", cursor:"pointer", textAlign:"center" as const }}>
+                <div style={{ fontSize:11, fontWeight:900, color:a.tag==="[P]"?AMBER:"rgba(255,255,255,0.55)", marginBottom:4, fontFamily:"'Space Mono','Courier New',monospace", letterSpacing:"0.06em" }}>{a.tag}</div>
+                <div style={{ fontSize:11, fontWeight:800, color:a.tag==="[P]"?AMBER:"rgba(255,255,255,0.85)", marginBottom:2 }}>{a.label}</div>
                 <div style={{ fontSize:9, color:"rgba(255,255,255,0.35)", lineHeight:1.4 }}>{a.desc}</div>
               </motion.button>
             ))}
@@ -2206,6 +2266,179 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                 style={{ flex:1, padding:"10px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, fontSize:12, fontWeight:700, cursor:"pointer" }}>
                 Tap Item
               </motion.button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ── POS GATEWAY MODAL ─────────────────────────────────────────────── */}
+      {posGatewayOpen && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.72)", backdropFilter:"blur(10px)", zIndex:1500, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <motion.div initial={{ scale:0.92, opacity:0 }} animate={{ scale:1, opacity:1 }} transition={{ duration:0.22 }}
+            style={{ width:520, maxWidth:"94vw", background:"#0A0A0A", border:`1px solid ${AMBER}44`, borderRadius:14, overflow:"hidden", boxShadow:`0 0 60px rgba(212,175,55,0.15)` }}>
+            <div style={{ padding:"20px 24px 18px", borderBottom:`1px solid rgba(255,255,255,0.07)`, display:"flex", justifyContent:"space-between", alignItems:"center", background:`linear-gradient(135deg,rgba(212,175,55,0.06),rgba(0,0,0,0))` }}>
+              <div>
+                <div style={{ fontSize:10, letterSpacing:"0.28em", color:AMBER, textTransform:"uppercase", fontWeight:800, marginBottom:4 }}>E.A.T. SYSTEM</div>
+                <div style={{ fontSize:20, fontWeight:900, color:"rgba(255,255,255,0.92)", lineHeight:1 }}>POS Integration Gateway</div>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.40)", marginTop:4 }}>3-Way Sync — Asset · Environment · Transaction</div>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                {posConnected && (
+                  <div style={{ display:"flex", alignItems:"center", gap:6, padding:"4px 10px", borderRadius:20, border:`1px solid ${GREEN}55`, background:`rgba(46,125,79,0.15)` }}>
+                    <motion.div animate={{ opacity:[1,0.3,1] }} transition={{ repeat:Infinity, duration:1.6 }}
+                      style={{ width:6, height:6, borderRadius:"50%", background:GREEN }} />
+                    <span style={{ fontSize:9, color:GREEN, fontWeight:800, letterSpacing:"0.12em" }}>LIVE SYNC ACTIVE</span>
+                  </div>
+                )}
+                <motion.button whileTap={{scale:0.93}} onClick={()=>setPosGatewayOpen(false)}
+                  style={{ width:30, height:30, borderRadius:"50%", border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.05)", color:"rgba(255,255,255,0.60)", fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>×</motion.button>
+              </div>
+            </div>
+            <div style={{ padding:"20px 24px" }}>
+              <div style={{ marginBottom:18 }}>
+                <div style={{ fontSize:10, color:"rgba(255,255,255,0.40)", letterSpacing:"0.16em", textTransform:"uppercase" as const, fontWeight:700, marginBottom:8 }}>POS Provider</div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8 }}>
+                  {(["Toast","Clover","Lightspeed","Custom"] as const).map(p=>(
+                    <motion.button key={p} whileTap={{scale:0.96}} onClick={()=>setPosForm(f=>({...f,provider:p}))}
+                      style={{ padding:"10px 6px", borderRadius:8, border:`1px solid ${posForm.provider===p?AMBER:"rgba(255,255,255,0.10)"}`, background:posForm.provider===p?`rgba(212,175,55,0.12)`:"rgba(255,255,255,0.03)", color:posForm.provider===p?AMBER:"rgba(255,255,255,0.55)", fontSize:11, fontWeight:posForm.provider===p?800:600, cursor:"pointer", transition:"all 0.15s" }}>{p}</motion.button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:18 }}>
+                {([
+                  { key:"apiToken",      label:"API Access Token",  ph:"Bearer xxxxxxxxxxxxxxxx" },
+                  { key:"webhookSecret", label:"Webhook Secret Key", ph:"whsec_xxxxxxxxxxxxxxxx" },
+                  { key:"locationId",    label:"Location ID",        ph:"loc_xxxxxxxxxxxxxxxx"   },
+                ] as {key:"apiToken"|"webhookSecret"|"locationId";label:string;ph:string}[]).map(f=>(
+                  <div key={f.key} style={{ gridColumn:f.key==="locationId"?"1/-1":"auto" }}>
+                    <div style={{ fontSize:9, color:"rgba(255,255,255,0.40)", letterSpacing:"0.14em", textTransform:"uppercase" as const, fontWeight:700, marginBottom:5 }}>{f.label}</div>
+                    <input type="password" placeholder={f.ph} value={posForm[f.key]}
+                      onChange={e=>setPosForm(v=>({...v,[f.key]:e.target.value}))}
+                      style={{ width:"100%", padding:"10px 12px", borderRadius:7, border:`1px solid rgba(255,255,255,0.10)`, background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.80)", fontSize:12, fontFamily:"'Space Mono','Courier New',monospace", outline:"none", boxSizing:"border-box" as const }} />
+                  </div>
+                ))}
+              </div>
+              <div style={{ padding:"12px 14px", borderRadius:9, border:`1px solid rgba(255,255,255,0.06)`, background:"rgba(255,255,255,0.02)", marginBottom:18 }}>
+                <div style={{ fontSize:10, color:"rgba(255,255,255,0.40)", letterSpacing:"0.14em", textTransform:"uppercase" as const, fontWeight:700, marginBottom:10 }}>Auto-Sync Scope</div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
+                  {[
+                    { label:"Asset Pull",   sub:"Cigars · Spirits · SKUs"    },
+                    { label:"Live Tickets", sub:"Real-time tab events"        },
+                    { label:"Menu Mapping", sub:"Auto-categorization by SKU"  },
+                  ].map(s=>(
+                    <div key={s.label} style={{ padding:"8px 10px", borderRadius:7, border:`1px solid ${GREEN}44`, background:`rgba(46,125,79,0.08)` }}>
+                      <div style={{ fontSize:10, fontWeight:800, color:GREEN, marginBottom:2 }}>{s.label}</div>
+                      <div style={{ fontSize:9, color:"rgba(255,255,255,0.30)", lineHeight:1.4 }}>{s.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display:"flex", gap:10 }}>
+                <motion.button whileTap={{scale:0.96}} disabled={posSyncing}
+                  onClick={async()=>{
+                    setPosSyncing(true);
+                    await new Promise(r=>setTimeout(r,2200));
+                    setPosSyncing(false); setPosConnected(true);
+                    setToastMsg("POS handshake confirmed — menu sync complete");
+                    setTimeout(()=>setToastMsg(null),3000);
+                  }}
+                  style={{ flex:1, padding:"13px 0", borderRadius:9, border:`1px solid ${AMBER}`, background:posConnected?`rgba(46,125,79,0.20)`:`rgba(212,175,55,0.15)`, color:posConnected?GREEN:AMBER, fontSize:13, fontWeight:800, cursor:posSyncing?"wait":"pointer", position:"relative", overflow:"hidden" }}>
+                  {posSyncing ? (
+                    <span style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                      <motion.div animate={{ rotate:360 }} transition={{ repeat:Infinity, duration:0.8, ease:"linear" }}
+                        style={{ width:12, height:12, borderRadius:"50%", border:"2px solid transparent", borderTopColor:AMBER }} />
+                      Syncing Menu...
+                    </span>
+                  ) : posConnected ? "Reconnect & Re-Sync Menu" : "Test Connection & Sync Menu"}
+                  {!posSyncing && !posConnected && (
+                    <motion.div animate={{ opacity:[0,0.20,0], x:[-200,200] }} transition={{ repeat:Infinity, duration:2.5, ease:"linear" }}
+                      style={{ position:"absolute", inset:0, background:`linear-gradient(90deg,transparent,${AMBER},transparent)`, pointerEvents:"none" }} />
+                  )}
+                </motion.button>
+                <motion.button whileTap={{scale:0.96}} onClick={()=>setPosGatewayOpen(false)}
+                  style={{ padding:"13px 20px", borderRadius:9, border:"1px solid rgba(255,255,255,0.10)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.55)", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                  Close
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ── TRANSACTION SIDE PANEL ────────────────────────────────────────── */}
+      {txnSidePanel && (
+        <div style={{ position:"fixed", inset:0, zIndex:1200 }} onClick={()=>setTxnSidePanel(null)}>
+          <motion.div initial={{ x:"100%" }} animate={{ x:0 }} transition={{ type:"spring", stiffness:320, damping:36 }}
+            onClick={e=>e.stopPropagation()}
+            style={{ position:"absolute", top:0, right:0, bottom:0, width:360, maxWidth:"90vw", background:"#0D0D0D", border:`1px solid ${AMBER}33`, borderRight:"none", boxShadow:"-20px 0 60px rgba(0,0,0,0.60)", display:"flex", flexDirection:"column" }}>
+            <div style={{ padding:"18px 20px 16px", borderBottom:`1px solid rgba(255,255,255,0.07)`, background:`linear-gradient(135deg,rgba(212,175,55,0.06),rgba(0,0,0,0))` }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:4 }}>
+                <div>
+                  <div style={{ fontSize:10, letterSpacing:"0.24em", color:AMBER, textTransform:"uppercase" as const, fontWeight:800, marginBottom:4 }}>Ticket Detail</div>
+                  <div style={{ fontSize:22, fontWeight:900, color:"rgba(255,255,255,0.92)", lineHeight:1 }}>{txnSidePanel.id}</div>
+                </div>
+                <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                  <div style={{ padding:"3px 10px", borderRadius:20, fontSize:9, fontWeight:800, textTransform:"uppercase" as const, letterSpacing:"0.10em",
+                    color:txnSidePanel.status==="open"?GREEN:"rgba(255,255,255,0.40)",
+                    border:`1px solid ${txnSidePanel.status==="open"?`${GREEN}55`:"rgba(255,255,255,0.12)"}`,
+                    background:txnSidePanel.status==="open"?`rgba(46,125,79,0.12)`:"rgba(255,255,255,0.04)" }}>
+                    {txnSidePanel.status}
+                  </div>
+                  <motion.button whileTap={{scale:0.93}} onClick={()=>setTxnSidePanel(null)}
+                    style={{ width:28, height:28, borderRadius:"50%", border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.05)", color:"rgba(255,255,255,0.55)", fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>×</motion.button>
+                </div>
+              </div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.40)" }}>Table {txnSidePanel.table} · {txnSidePanel.ago} ago · Map pulse active</div>
+            </div>
+            <div style={{ padding:"16px 20px", flex:1, overflowY:"auto" }}>
+              <div style={{ fontSize:10, color:"rgba(255,255,255,0.35)", letterSpacing:"0.16em", textTransform:"uppercase" as const, fontWeight:700, marginBottom:10 }}>Order Items</div>
+              {txnSidePanel.items.split("+").map((item,i)=>(
+                <div key={i} style={{ padding:"10px 12px", borderRadius:8, border:`1px solid rgba(255,255,255,0.07)`, background:"rgba(255,255,255,0.03)", marginBottom:8, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.80)", lineHeight:1.3 }}>{item.trim()}</div>
+                    <div style={{ fontSize:9, color:"rgba(255,255,255,0.30)", marginTop:2 }}>SKU matched · Inventory synced</div>
+                  </div>
+                  <div style={{ fontSize:13, fontWeight:900, color:AMBER2 }}>
+                    ${ASSET_CATALOG.find(a=>item.toLowerCase().includes(a.name.split(" ")[0].toLowerCase()))?.price ?? "—"}
+                  </div>
+                </div>
+              ))}
+              <div style={{ padding:"10px 12px", borderRadius:8, border:`1px solid ${AMBER}33`, background:`rgba(212,175,55,0.06)`, display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:4 }}>
+                <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.55)", letterSpacing:"0.10em", textTransform:"uppercase" as const }}>Tab Total</div>
+                <div style={{ fontSize:20, fontWeight:900, color:AMBER2 }}>${txnSidePanel.total}</div>
+              </div>
+              <div style={{ marginTop:16, display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                {([
+                  { label:"Session Duration", val:txnSidePanel.ago },
+                  { label:"Table",            val:`T-${txnSidePanel.table}` },
+                  { label:"Pairing Status",   val:"3-way active" },
+                  { label:"Inventory",        val:"Reserved" },
+                ] as {label:string;val:string}[]).map(m=>(
+                  <div key={m.label} style={{ padding:"8px 10px", borderRadius:7, border:"1px solid rgba(255,255,255,0.06)", background:"rgba(255,255,255,0.02)" }}>
+                    <div style={{ fontSize:9, color:"rgba(255,255,255,0.30)", letterSpacing:"0.12em", textTransform:"uppercase" as const, fontWeight:700, marginBottom:3 }}>{m.label}</div>
+                    <div style={{ fontSize:13, fontWeight:800, color:"rgba(255,255,255,0.75)" }}>{m.val}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ padding:"14px 20px", borderTop:`1px solid rgba(255,255,255,0.07)`, display:"flex", flexDirection:"column", gap:8 }}>
+              <motion.button whileTap={{scale:0.97}}
+                onClick={()=>{ setTicketTapper(livePairings[0]); setTxnSidePanel(null); }}
+                style={{ width:"100%", padding:"11px", borderRadius:8, border:`1px solid ${AMBER}`, background:`rgba(212,175,55,0.12)`, color:AMBER, fontSize:12, fontWeight:800, cursor:"pointer", letterSpacing:"0.04em" }}>
+                Tap Item — Add to Ticket
+              </motion.button>
+              <div style={{ display:"flex", gap:8 }}>
+                <motion.button whileTap={{scale:0.97}}
+                  onClick={()=>{ setBroadcastModal(true); setTxnSidePanel(null); }}
+                  style={{ flex:1, padding:"10px", borderRadius:8, border:"1px solid rgba(255,255,255,0.10)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.60)", fontSize:11, fontWeight:700, cursor:"pointer" }}>
+                  Push Flash Special
+                </motion.button>
+                <motion.button whileTap={{scale:0.97}}
+                  onClick={()=>{ setToastMsg(`Tab ${txnSidePanel.id} closed`); setTimeout(()=>setToastMsg(null),2500); setTxnSidePanel(null); }}
+                  style={{ flex:1, padding:"10px", borderRadius:8, border:"1px solid rgba(239,68,68,0.35)", background:"rgba(239,68,68,0.08)", color:"#EF4444", fontSize:11, fontWeight:700, cursor:"pointer" }}>
+                  Close Tab
+                </motion.button>
+              </div>
             </div>
           </motion.div>
         </div>

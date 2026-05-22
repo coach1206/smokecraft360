@@ -1,0 +1,37 @@
+We are completely overhauling the architecture. Stop treating this project like a static UI mockup. This entire ecosystem—comprising SMOKECRAFT 360 (the consumer-facing ritual/pairing engine) and NOVEE OS (the back-office hospitality operating system running the E.A.T. Signal Engine)—must be 100% dynamic, interactive, deeply integrated, and optimized for physical touchscreens immediately.
+
+Implement the exact backend models, dynamic state architecture, external data pipelines, and responsive frontend touch layers detailed below:
+
+---
+
+### 1. POS INTEGRATION GATEWAY & DATA AUTOMATION
+Build a functional data integration layer to completely replace all static/mock transaction records:
+* **The Handshake (API Authentication):** Create a 'System Settings / E.A.T. Gateway' admin panel. Managers must be able to select a POS provider (Toast, Clover, Lightspeed), input Webhook Secret Keys, API Tokens, and Location IDs. Include a 'Test Connection & Sync Menu' action button with a pulsating gold light for 'Live Sync Active' status.
+* **The Asset & Menu Pull (The 'A' in E.A.T.):** Build a database normalization service that automatically imports the live POS menu database (whiskeys, wines, cigars) matching exact pricing and SKUs. Auto-categorize items into the Pairing Engine database under matching flavor profiles via keyword matching (e.g., 'Bourbon', specific cigar brands).
+* **The Live Ticket Webhook (The 'T' in E.A.T.):** Implement a live WebSocket/API webhook route (`/api/v1/pos/webhook`). When a transaction or item is entered on a physical bar POS terminal, this webhook must instantly spin up or update the corresponding active tab, calculate sensory pairings, and stream that data live to the 'Transactions' dashboard and the matching guest tablet.
+
+---
+
+### 2. DIGITAL MARKETING ENGINE & AUTOMATED DISTRIBUTOR MEDIA FETCHING
+Transition the media architecture away from broken assets or empty placeholders into an active content portal:
+* **Distributor API Media Fetcher:** Build an automated background fetch service (`/api/v1/assets/fetch-media`). When a manager registers a product name, UPC, or SKU, the system must query external manufacturer media kits or distributor databases, extract the high-definition product image, crop out white space backgrounds, and save it directly to the local asset registry.
+* **Venue Media Uploader:** Add a drag-and-drop file upload engine inside all asset modification modals. Managers must be able to upload custom venue photography (food, drinks, custom house-rolls) straight from their device, mutating the local database record and refreshing the UI instantly across all dashboards.
+* **Live Flash Specials Panel:** Build a 'Create Live Special' marketing portal inside the Command Center. Managers can select an item, set a promo price, attach a graphic, and input an active countdown timer (e.g., 'Flash Special: 20% off for 45 mins'). Hitting launch must use WebSockets to push a clickable, highly styled promo card as an overlay across all active SmokeCraft guest tablets.
+
+---
+
+### 3. TOTAL COMPONENT WIRING & GLOBAL STATE CROSS-TALK
+Break down the data siloes across all four main views (Venue Intelligence, Pairing Engine, Transactions, Command Center) so they act as a single brain:
+* **Floor Plan x Transaction Matrix:** The interactive visual table map and the transaction ledger must be live-linked. Clicking a table node on the map must instantly filter the active transactions, active guest tabs, and the command center viewport to that table's exact data. Clicking a transaction row (e.g., T-2846) must immediately pulse or highlight that exact table node on the floor plan.
+* **Active Tablet Monitoring:** Turn the 'Tablet & Device Status' panel into a live support hub. Clicking an active tablet (Tablets 01–05) must open an overlay showing exactly what that guest is interacting with inside SmokeCraft in real-time (e.g., 'Table 103 browsing pairing menu for 5 mins') so staff can deliver proactive service.
+* **Dynamic, Tiered Ritual Logic & Inventory Sync:** Selecting an item in the Pairing Engine (e.g., Blue Mountain Coffee) must cause the surrounding recommendation slots to instantly recalculate to compliment *both* the coffee and the anchor cigar simultaneously. If stock for an item (e.g., Buffalo Trace Bourbon) falls below an inventory threshold in the asset ledger, the engine must auto-suppress it from recommendations and elevate an alternative (e.g., Hennessy VSOP).
+* **The 'Ticket Tapper' Command Hub:** Turn the Command Center into a functional manager override terminal. Tapping a recommendation card, an order status, or hitting 'Checkout' must dynamically load that specific table's precise ticket summary contextually, allowing the manager to add items, modify text, apply custom overrides, or close out the tab instantly.
+
+---
+
+### 4. TACTILE TOUCHSCREEN INTERACTION & LUXURY UI RULES
+* **Physical Touch Dynamics:** Implement responsive touch event listeners (`onTouchStart`, `onTouchMove`, `onTouchEnd`) for all environmental control sliders (lighting, music, scent) so adjustments feel completely physical, fluid, and weighted on a tablet screen.
+* **Hit-Target Optimization:** Ensure every card, list item, node, and button is an explicitly interactive element with increased hit-target boundaries optimized for finger taps, responding instantly with subtle gold glows or deep obsidian depth shifts.
+* **Premium Animations:** Eliminate abrupt layout clips. Use smooth, hardware-accelerated transitions (like `framer-motion` or transition variables) for sliding panels, opening modals, and switching pairings. Format all product images with CSS 'object-fit: cover' and deep shadow vignettes to guarantee crisp text legibility over graphics.
+
+Execute all backend models, API routes, and frontend state rewrites in parallel to bring this entire integrated ecosystem to life.

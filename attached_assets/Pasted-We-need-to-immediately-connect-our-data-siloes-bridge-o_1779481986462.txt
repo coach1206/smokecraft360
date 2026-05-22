@@ -1,0 +1,38 @@
+We need to immediately connect our data siloes, bridge our backend architecture to an external Point of Sale (POS) system, and turn the current layout views into an interactive, fully functioning E.A.T. system. The visuals are perfect, but the structural "glue" and live data pipelines are missing. 
+
+Implement the exact functional architecture and POS data integration detailed below, ensuring all states flow dynamically across the frontend, backend database, and UI screens simultaneously:
+
+---
+
+### 1. THE MISSING POINT OF SALE (POS) INTEGRATION GATEWAY
+Build a dedicated "POS Integration Gateway" admin configuration terminal within NOVEE OS settings to handle external data connectivity using a 3-way synchronization architecture:
+* **The Handshake (API Authentication):** Create an administrative "System Settings" sub-view inside NOVEE OS where a manager can select their POS Provider (Toast, Clover, Lightspeed, or custom API), enter Webhook Secret Keys, API Access Tokens, and Location IDs. Include a high-end "Test Connection & Sync Menu" action button with a pulsating gold light for a "Live Sync Active" status indicator.
+* **The Asset & Menu Pull (The "A" in E.A.T.):** Build a data normalization service that pulls down the entire live menu database from the connected POS. It must automatically import the specific whiskeys, wines, and cigars, matching exact pricing and SKU numbers to ensure zero discrepancies. Map imported items straight to SmokeCraft sensory assets using keywords (e.g., if an item contains "Bourbon" or a specific cigar brand, auto-categorize it under its corresponding flavor profile tags in the Pairing Engine database).
+* **The Live Ticket Webhook (The "T" in E.A.T.):** Implement a live WebSocket/API webhook route (`/api/v1/pos/webhook`) that catches data packets from physical POS terminals in real-time. When a server opens a tab or enters an item at the bar, this webhook must instantly spin up or update the matching active tab, calculate pairing recommendations, and push that live data directly to the "Transactions" screen and the specific table's SmokeCraft guest tablet interface.
+
+---
+
+### 2. WIRETAPPING THE PHYSICAL SPACE: VENUE INTELLIGENCE (E.A.T. - ENVIRONMENT & ASSETS)
+The Venue Intelligence screen must actively manage the physical space and staff support, rather than acting as a static readout:
+* **Active Tablet Mirroring:** Turn the passive "Tablet & Device Status" panel into a live operational tool. Clicking any active tablet (Tablets 01–05) must open an overlay displaying exactly what that specific table is currently browsing or stuck on inside SmokeCraft (e.g., "Table 103 browsing pairing menu for 5 mins") so staff can provide proactive tableside assistance.
+* **Live Guest Consumption Mapping:** Link the visual Floor Plan directly to live guest consumption. Staff must be able to glance at a table node on the map and see an overlay showing exactly what that table is smoking, eating, and drinking at that exact moment (e.g., Table 103: Rocky Patel Vintage 1992 + Buffalo Trace Bourbon).
+* **The Intelligence Score Logic:** The E.A.T. V1 Hospitality Signal Engine score (e.g., 49/100) must dynamically recalculate based on live telemetry, clearly showing *why* it is shifting (e.g., "Score lowered due to delayed table service signals at VIP Section vs. high transaction volume").
+
+---
+
+### 3. ACTIVATING THE SENSORY BRAIN: THE PAIRING ENGINE (BEHAVIORAL INTELLIGENCE)
+The Pairing Engine is the predictive behavioral brain of the CraftHub ecosystem, handling the sensory data and guest experience algorithms:
+* **Dynamic, Tiered Ritual Logic:** Make the AI-Matched Recommendations fully interactive. Selecting an item (e.g., Blue Mountain Coffee) must instantly cause the other recommendation slots to recalculate and display items that compliment *both* the coffee and the anchor cigar (Rocky Patel Vintage 1992) simultaneously, creating a true triple-pairing ritual.
+* **Live Inventory-Asset Syncing:** Connect the Pairing Engine directly to live supply levels. If an asset (like Buffalo Trace Bourbon) falls below a specific inventory threshold in the main ledger, the engine must automatically suppress it from the "Best Match" tier and elevate an alternative spirit asset (like Hennessy VSOP) to protect stock levels seamlessly.
+
+---
+
+### 4. FORGING THE FINANCIAL HEARTBEAT: TRANSACTIONS (THE "T" IN E.A.T.)
+The Transactions screen acts as the financial heartbeat of the system, mapping cash flow directly to live guest behavior in real-time:
+* **Live Ticket Modifiers & Interactivity:** Clicking any individual order row (e.g., T-2846 for Table 12) must open an actionable side-panel detailing the precise product assets ordered, timestamps, and active session durations. 
+* **The "Ticket Tapper" Entry Point:** Add a high-end command overlay to the transaction rows. Staff must be able to tap an order's status or details to instantly manually override/add a custom ticket line item, push an immediate custom drink/cigar flash special directly to that specific table's SmokeCraft tablet, or close out the tab entirely.
+* **Map Link Synchronization:** Fully synchronize the transaction ledger with the visual floor plan map. Clicking a transaction row or table number in the ledger list must immediately pulse or highlight that exact table node on the lower-left map layout.
+
+---
+
+Execute these backend data relationships, external POS hookpoints, and frontend interaction models in parallel. Maintain our premium obsidian glass, smoked chrome, and gold accent aesthetic with ultra-smooth touchscreen transitions and highly responsive click/slider feedback across both SmokeCraft and NOVEE OS components.
