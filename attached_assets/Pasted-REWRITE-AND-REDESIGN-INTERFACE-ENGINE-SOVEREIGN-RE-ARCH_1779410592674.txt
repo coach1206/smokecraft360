@@ -1,0 +1,39 @@
+REWRITE AND REDESIGN INTERFACE ENGINE: SOVEREIGN RE-ARCHITECTURING LAYOUT
+
+CRITICAL BUG FIXES & VISUAL CLEANUP PROTOCOLS:
+1. OVERLAPPING TEXT BUG: In the top navigation bar, the words "Command Center", "Environment", "Assets", "Transactions", "Pairing Engine", "Analytics", and "Staff Cockpit" are overlapping and colliding. You must immediately resolve this layout bug. Give the nav links a distinct layout grid, flex wrap separation, or a clean distributed layout with horizontal spacing so text elements never collide.
+2. SIZING & SCALE REDUCTION: The current layout feels bloated and crowded. Reduce the base typographic scale by 15-20%. Increase padding boundaries around all containers to let the screen breathe. 
+3. PURGE LOGO TEXT GLYPHS: Remove the generic text block placeholder images (like the brown square with the generic symbol next to Rocky Patel). These look unfinished and unpolished. Replace all asset placeholders with clean container styles optimized to load high-resolution transparent product photography (.png / .webp) with smooth background rendering.
+4. BRAND PREMANENCE SYSTEM: Maintain the high-tech Honey Amber (#D4AF37) accent tones, True Obsidian (#010101) deep solid background, and Smoked Chrome (#121214) container bases, but enforce a clean luxury service design look.
+
+STRUCTURAL LAYOUT SPECIFICATIONS:
+
+HEADER ENGINE:
+- Fix the text layout overlap bug instantly.
+- Isolate the left badge ("E.A.T. SYSTEM: ELEVATED ATMOSPHERE & TRANSACTIONS") from the middle nav choices.
+- Structure middle navigation links cleanly using equal spacing padding: [Command Center] | [Pairing Engine] | [Analytics] | [Staff Cockpit].
+- Clear any text layering anomalies. Ensure the right-side profile badge ("Marcus C. General Manager") remains cleanly aligned on the right margin.
+
+LEFT BAR (TABLET & DEVICE STATUS / ACTIVE TABLES):
+- Shrink text elements inside the device connection tracking row to prevent crowding.
+- Use clean borders around the active layout map instead of blocky gray containers. 
+- Ensure active data nodes use fine monochrome formatting (e.g., SF Pro Mono) with clear letter spacing.
+
+CENTER CONSOLE (PAIRING ENGINE):
+- Replace the placeholder graphic box with a clean layout window optimized to render crisp alpha-channel product photography.
+- Format item text ("Rocky Patel Vintage 1992") using premium typography (Inter Display or equivalent).
+- Use thin, crisp lines for rating indicators and selection points instead of heavy shapes.
+
+RIGHT SIDEBAR (ENVIRONMENT CONTROLS & HVAC):
+- Tighten up slider tracks and status indicators so elements don't feel bunched up.
+- Enforce consistent line margins for data grids (Temperature, Humidity, Air Quality, Noise Level) to keep layouts square and clean.
+- Ensure advanced options are housed inside structured, minimal button boundaries.
+
+BOTTOM NAVIGATION BAR:
+- Clean up text links (Menu, Reservations, Events, E.A.T., Messages, Reports, Settings) so they align perfectly along a unified bottom grid baseline.
+- Maintain the highlighted status token for the active view, but ensure it utilizes clean padding margins.
+
+EXECUTION INSTRUCTIONS:
+- Do not add text symbols, non-standard font elements, or layout graphics.
+- Use explicit padding and margin adjustments to guarantee zero text collision across all screen sizes.
+- Ensure the interface layout looks like a high-end hospitality system ready for production.

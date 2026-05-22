@@ -621,14 +621,14 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
                 <div style={{ fontSize:16, opacity: dev.online ? 1 : 0.4 }}>📱</div>
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ display:"flex", justifyContent:"space-between" }}>
-                    <span style={{ fontSize:22, fontWeight:700, color:DARK }}>{dev.name}</span>
-                    <span style={{ fontSize:22, color:LIGHT, fontFamily:"monospace" }}>{dev.id}</span>
+                    <span style={{ fontSize:12, fontWeight:700, color:DARK }}>{dev.name}</span>
+                    <span style={{ fontSize:11, color:LIGHT, fontFamily:"'SF Mono','Fira Mono',monospace", letterSpacing:"0.04em" }}>{dev.id}</span>
                   </div>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:3, gap:4 }}>
-                    <span style={{ fontSize:22, color:LIGHT, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:80 }}>{dev.room}</span>
+                    <span style={{ fontSize:11, color:LIGHT, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:80 }}>{dev.room}</span>
                     <div style={{ display:"flex", alignItems:"center", gap:4 }}>
                       <BattBar pct={dev.battery} />
-                      <span style={{ fontSize:22, color:LIGHT, fontWeight:700, minWidth:34, textAlign:"right" }}>{dev.signal * 25}%</span>
+                      <span style={{ fontSize:11, color:LIGHT, fontWeight:700, minWidth:34, textAlign:"right" }}>{dev.signal * 25}%</span>
                     </div>
                   </div>
                 </div>
@@ -757,12 +757,12 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
             </div>
             <div style={{ padding:"8px" }}>
               {livePairings.map((p,i)=>(
-                <div key={i} style={{ padding:"10px 10px", borderRadius:8, marginBottom:6, background:CREAM, border:`1px solid ${BORDER}` }}>
-                  <div style={{ fontSize:22, fontWeight:800, color:DARK, marginBottom:2 }}>{p.name}</div>
-                  <div style={{ fontSize:22, color:LIGHT, marginBottom:4 }}>{p.sub}</div>
+                <div key={i} style={{ padding:"9px 10px", borderRadius:8, marginBottom:6, background:CREAM, border:`1px solid ${BORDER}` }}>
+                  <div style={{ fontSize:13, fontWeight:800, color:DARK, marginBottom:2 }}>{p.name}</div>
+                  <div style={{ fontSize:11, color:LIGHT, marginBottom:4 }}>{p.sub}</div>
                   <div style={{ display:"flex", justifyContent:"space-between" }}>
-                    <span style={{ fontSize:22, color:MED }}>{p.notes}</span>
-                    <span style={{ fontSize:22, fontWeight:900, color:AMBER }}>${p.price}</span>
+                    <span style={{ fontSize:11, color:MED }}>{p.notes}</span>
+                    <span style={{ fontSize:14, fontWeight:900, color:AMBER }}>${p.price}</span>
                   </div>
                 </div>
               ))}
@@ -771,16 +771,16 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
         </div>
         <div style={{ padding:"10px 14px", borderTop:`1px solid ${BORDER}`, display:"flex", gap:8 }}>
           <motion.button whileTap={{ scale:0.96 }} onClick={handleAddCigar}
-            style={{ flex:1, minHeight:56, padding:"12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.40)`, background:"rgba(46,125,79,0.08)", color:GREEN, fontSize:22, fontWeight:800, cursor:"pointer" }}>
-            Add Cigar<br/><span style={{ fontSize:22, fontWeight:600 }}>${featuredCigar.price}.00</span>
+            style={{ flex:1, minHeight:48, padding:"10px 12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.40)`, background:"rgba(46,125,79,0.08)", color:GREEN, fontSize:13, fontWeight:800, cursor:"pointer", letterSpacing:"0.06em" }}>
+            Add Cigar<br/><span style={{ fontSize:12, fontWeight:600 }}>${featuredCigar.price}.00</span>
           </motion.button>
           <motion.button whileTap={{ scale:0.96 }} onClick={handleAddPairing}
-            style={{ flex:1, minHeight:56, padding:"12px", borderRadius:8, border:`1px solid rgba(180,140,80,0.35)`, background:"rgba(180,140,80,0.08)", color:MED, fontSize:22, fontWeight:800, cursor:"pointer" }}>
-            Add Pairing<br/><span style={{ fontSize:22, fontWeight:600 }}>From $16.00</span>
+            style={{ flex:1, minHeight:48, padding:"10px 12px", borderRadius:8, border:`1px solid rgba(180,140,80,0.35)`, background:"rgba(180,140,80,0.08)", color:MED, fontSize:13, fontWeight:800, cursor:"pointer", letterSpacing:"0.06em" }}>
+            Add Pairing<br/><span style={{ fontSize:12, fontWeight:600 }}>From $16.00</span>
           </motion.button>
           <motion.button whileTap={{ scale:0.96 }} onClick={handleAddFullExperience}
-            style={{ flex:2, minHeight:56, padding:"12px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${GOLD},${AMBER})`, color:ESPRESSO, fontSize:22, fontWeight:900, cursor:"pointer" }}>
-            Add Full Experience<br/><span style={{ fontSize:22 }}>$70.00</span>
+            style={{ flex:2, minHeight:48, padding:"10px 12px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${GOLD},${AMBER})`, color:ESPRESSO, fontSize:14, fontWeight:900, cursor:"pointer", letterSpacing:"0.08em" }}>
+            Add Full Experience<br/><span style={{ fontSize:13 }}>$70.00</span>
           </motion.button>
         </div>
       </SCard>
@@ -795,7 +795,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
           <div style={{ display:"flex", borderBottom:`1px solid ${BORDER}` }}>
             {(["Active Tabs","Recent Orders","Payments"] as const).map(t=>(
               <button key={t} onClick={()=>setTxnTab(t)}
-                style={{ flex:1, minHeight:56, padding:"10px 4px", fontSize:22, fontWeight:700, cursor:"pointer", border:"none", borderBottom:txnTab===t?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:txnTab===t?AMBER:LIGHT }}>
+                style={{ flex:1, minHeight:44, padding:"8px 4px", fontSize:12, fontWeight:700, cursor:"pointer", border:"none", borderBottom:txnTab===t?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:txnTab===t?AMBER:LIGHT, letterSpacing:"0.06em" }}>
                 {t}{t==="Active Tabs"?` ${activeTabs.length}`:""}
               </button>
             ))}
@@ -890,7 +890,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
           </SCard>
           <SCard style={{ padding:"10px" }}>
             <div style={{ fontSize:11, color:LIGHT, marginBottom:4, textTransform:"uppercase", letterSpacing:"0.10em" }}>Shift Revenue</div>
-            <div style={{ fontSize:22, fontWeight:900, color:AMBER }}>${shiftTotal.toLocaleString()}</div>
+            <div style={{ fontSize:20, fontWeight:900, color:AMBER }}>${shiftTotal.toLocaleString()}</div>
             <div style={{ fontSize:11, color:LIGHT }}>{activeTabs.length} active tabs</div>
           </SCard>
         </div>
@@ -925,7 +925,7 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
                     </div>
                   </div>
                   <div style={{ textAlign:"right" }}>
-                    <div style={{ fontSize:22, fontWeight:900, color:DARK }}>{item.qty}</div>
+                    <div style={{ fontSize:18, fontWeight:900, color:DARK }}>{item.qty}</div>
                     <div style={{ fontSize:11, color:LIGHT }}>In Stock</div>
                   </div>
                 </div>
@@ -1057,8 +1057,8 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
             <span style={{ fontSize:12, fontWeight:800, color:GREEN, padding:"2px 8px", borderRadius:6, background:"rgba(46,125,79,0.12)", border:"1px solid rgba(46,125,79,0.30)" }}>Optimal</span>
           </div>
           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-            <div><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Current Temp</div><div style={{ fontSize:22, fontWeight:900, color:DARK }}>{Math.round(envState.temperature)}°F</div></div>
-            <div style={{ textAlign:"right" }}><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Humidity</div><div style={{ fontSize:22, fontWeight:900, color:DARK }}>{Math.round(envState.humidity)}%</div></div>
+            <div><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Current Temp</div><div style={{ fontSize:18, fontWeight:900, color:DARK }}>{Math.round(envState.temperature)}°F</div></div>
+            <div style={{ textAlign:"right" }}><div style={{ fontSize:11, color:LIGHT, marginBottom:2 }}>Humidity</div><div style={{ fontSize:18, fontWeight:900, color:DARK }}>{Math.round(envState.humidity)}%</div></div>
           </div>
           {/* Mini sparkline — live from /api/environment/:venueId/history */}
           <div style={{ height:36, marginBottom:8 }}>
@@ -1125,10 +1125,10 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
               <div style={{ fontSize:9, color:"rgba(212,175,55,0.50)", letterSpacing:"0.10em", lineHeight:1.4 }}>ELEVATED ATMOSPHERE & TRANSACTIONS</div>
             </div>
           </div>
-          <div style={{ display:"flex", overflow:"hidden" }}>
+          <div style={{ display:"flex", flex:1, overflow:"auto", scrollbarWidth:"none" }}>
             {TOP_TABS.map(tab=>(
               <button key={tab} onClick={()=>setActiveTab(tab)}
-                style={{ padding:"0 14px", height:64, border:"none", borderBottom:activeTab===tab?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:activeTab===tab?GOLD:"rgba(212,175,55,0.45)", fontSize:22, fontWeight:700, cursor:"pointer", letterSpacing:"0.06em", whiteSpace:"nowrap" }}>
+                style={{ padding:"0 12px", height:64, border:"none", flexShrink:0, borderBottom:activeTab===tab?`2px solid ${AMBER}`:"2px solid transparent", background:"transparent", color:activeTab===tab?GOLD:"rgba(212,175,55,0.45)", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:"0.06em", whiteSpace:"nowrap", transition:"color 0.15s" }}>
                 {tab}
               </button>
             ))}
@@ -1165,8 +1165,8 @@ export default function EATDashboard({ eatFlags: _eatFlags, onBack }: EATDashboa
       <footer style={{ height:56, flexShrink:0, background:ESPRESSO, display:"flex", alignItems:"center", padding:"0 20px", borderTop:"1px solid rgba(180,140,80,0.18)", zIndex:20 }}>
         <div style={{ display:"flex", gap:0, flex:1, justifyContent:"center" }}>
           {["Menu","Reservations","Events","Messages","Reports","Settings"].map((item,i)=>(
-            <button key={item} style={{ padding:"0 18px", height:56, border:"none", background:"transparent", color:"rgba(212,175,55,0.45)", fontSize:22, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
-              {["📋","📅","🎭","✉️","📊","⚙️"][i]} {item}
+            <button key={item} style={{ padding:"0 16px", height:56, border:"none", background:"transparent", color:"rgba(212,175,55,0.45)", fontSize:11, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:5, letterSpacing:"0.08em" }}>
+              <span style={{ fontSize:14 }}>{["📋","📅","🎭","✉️","📊","⚙️"][i]}</span> {item}
             </button>
           ))}
         </div>
