@@ -290,6 +290,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [pairingIdx, setPairingIdx] = useState(0);
   const [isCommandCenterOpen, setIsCommandCenterOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState<string|null>(null);
+  const [activeModule, setActiveModule] = useState<string>("E.A.T");
 
   // ── E.A.T. VI — Venue Intelligence state ───────────────────────────────────
   interface VIServiceSignal   { table:string; signal:string; urgency:"HIGH"|"MED"|"LOW" }
@@ -526,48 +527,81 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   return (
     <div style={{ display:"flex", flexDirection:"column", height:"100%", background:PAGE_BG, fontFamily:"'Inter','Helvetica Neue',sans-serif", overflow:"hidden" }}>
 
-      {/* ── TOP NAV ──────────────────────────────────────────────────────── */}
-      <header style={{ height:72, background:IVORY, borderBottom:`1px solid ${BORDER}`, display:"flex", alignItems:"center", padding:"0 20px", gap:0, flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,0.07)", zIndex:50 }}>
+      {/* ── DUAL-TIER TOP DECK ───────────────────────────────────────────── */}
+      <header style={{ flexShrink:0, zIndex:50 }}>
 
-        {/* Brand + Back */}
-        <div style={{ width:220, flexShrink:0, display:"flex", alignItems:"center", gap:10 }}>
-          <motion.button whileTap={{scale:0.94}} onClick={()=>setPhase("crafthub")}
-            style={{ padding:"7px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, cursor:"pointer", fontSize:11, fontWeight:800, letterSpacing:"0.10em", textTransform:"uppercase", flexShrink:0 }}>
-            Back
-          </motion.button>
-          <div>
-            <div style={{ fontSize:15, fontWeight:900, color:OBSID, letterSpacing:"0.04em", lineHeight:1 }}>E.A.T SYSTEM</div>
-            <div style={{ fontSize:9, fontWeight:600, color:TEXT3, letterSpacing:"0.18em", marginTop:2, textTransform:"uppercase" }}>Hospitality OS</div>
+        {/* ROW 1 — Global Module Selector (ivory, 72px) */}
+        <div style={{ height:72, background:"#F9F8F6", borderBottom:`1px solid ${BORDER}`, display:"flex", alignItems:"stretch", boxShadow:"0 1px 3px rgba(0,0,0,0.07)" }}>
+
+          {/* Left — Return button */}
+          <div style={{ width:210, flexShrink:0, display:"flex", alignItems:"center", gap:10, paddingLeft:14, borderRight:`1px solid ${BORDER}` }}>
+            <motion.button whileTap={{scale:0.94}} onClick={()=>setPhase("crafthub")}
+              style={{ padding:"10px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:OBSID, cursor:"pointer", fontSize:10, fontWeight:900, letterSpacing:"0.12em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+              Return to Craft Deck
+            </motion.button>
+          </div>
+
+          {/* Center — Module tabs */}
+          <nav style={{ flex:1, display:"flex", alignItems:"stretch" }}>
+            {(["MENU","RESERVATIONS","EVENTS","E.A.T. OVERLAY","MESSAGES","REPORTS","SETTINGS"] as const).map(m => {
+              const isEAT = m === "E.A.T. OVERLAY";
+              const isActive = isEAT ? activeModule === "E.A.T" : activeModule === m;
+              return (
+                <motion.button key={m} whileTap={{scale:0.97}}
+                  onClick={()=>setActiveModule(isEAT ? "E.A.T" : m)}
+                  style={{ flex:1, position:"relative", fontSize:10, fontWeight:isActive?900:600, letterSpacing:"0.10em", cursor:"pointer", border:"none", borderRight:`1px solid ${BORDER}`, background:isActive?"rgba(212,175,55,0.06)":"transparent", color:isActive?OBSID:TEXT3, textTransform:"uppercase", whiteSpace:"nowrap", padding:"0 4px", transition:"all 0.12s" }}>
+                  {m}
+                  {isActive && <div style={{ position:"absolute", bottom:0, left:"10%", right:"10%", height:3, background:isEAT?AMBER:OBSID, borderRadius:"3px 3px 0 0" }} />}
+                  {isEAT && <div style={{ position:"absolute", inset:4, border:`1.5px solid ${AMBER}`, borderRadius:4, opacity:isActive?0.55:0.18, pointerEvents:"none" }} />}
+                </motion.button>
+              );
+            })}
+          </nav>
+
+          {/* Right — User + clock */}
+          <div style={{ width:200, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"flex-end", gap:10, paddingRight:14, borderLeft:`1px solid ${BORDER}` }}>
+            <div style={{ textAlign:"right" }}>
+              <div style={{ fontSize:12, fontWeight:700, color:TEXT1, lineHeight:1 }}>Marcus C.</div>
+              <div style={{ fontSize:10, color:TEXT3, marginTop:2 }}>General Manager</div>
+              <div style={{ fontSize:10, color:GREEN, marginTop:2, display:"flex", alignItems:"center", justifyContent:"flex-end", gap:4 }}>
+                <div style={{ width:5, height:5, borderRadius:"50%", background:GREEN }} />
+                {clock}
+              </div>
+            </div>
+            <div style={{ width:36, height:36, borderRadius:"50%", background:`linear-gradient(135deg,${AMBER},${AMBER2})`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, overflow:"hidden" }}>
+              <img src={IMG("mentor_dominican.jpg")} alt="Marcus C." style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+            </div>
           </div>
         </div>
 
-        {/* Nav tabs */}
-        <nav style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:4 }}>
+        {/* ROW 2 — Subsurface Operations Nav (satin chrome, 52px) */}
+        <div style={{ height:52, background:"#121214", display:"flex", alignItems:"center", paddingLeft:14, paddingRight:14, borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
           {TOP_TABS.map(tab => (
-            <motion.button key={tab} onClick={()=>setActiveTab(tab)} whileTap={{ scale:0.96 }}
-              style={SEL({ padding:"10px 18px", fontSize:13, fontWeight:500, letterSpacing:"0.03em", cursor:"pointer", borderRadius:4, border:"none", background:activeTab===tab?OBSID:"transparent", color:activeTab===tab?IVORY:TEXT3, transition:"all 0.12s cubic-bezier(0.25,0.46,0.45,0.94)", whiteSpace:"nowrap", minHeight:40 })}>
+            <motion.button key={tab} whileTap={{scale:0.96}}
+              onClick={()=>{ setActiveModule("E.A.T"); setActiveTab(tab); }}
+              style={{ marginRight:32, fontSize:12, fontWeight:activeTab===tab?700:400, letterSpacing:"0.06em", cursor:"pointer", border:"none", background:"transparent", color:activeTab===tab?"#F5F5F7":"rgba(245,245,247,0.40)", whiteSpace:"nowrap", minHeight:52, position:"relative", transition:"color 0.12s", padding:0 }}>
               {tab}
+              {activeTab===tab && <div style={{ position:"absolute", bottom:0, left:0, right:0, height:2, background:AMBER, borderRadius:"2px 2px 0 0" }} />}
             </motion.button>
           ))}
-        </nav>
-
-        {/* User + clock */}
-        <div style={{ width:220, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"flex-end", gap:12 }}>
-          <div style={{ textAlign:"right" }}>
-            <div style={{ fontSize:13, fontWeight:700, color:TEXT1, lineHeight:1 }}>Marcus C.</div>
-            <div style={{ fontSize:11, color:TEXT3, marginTop:2 }}>General Manager</div>
-            <div style={{ fontSize:10, color:GREEN, marginTop:3, display:"flex", alignItems:"center", justifyContent:"flex-end", gap:4 }}>
-              <div style={{ width:5, height:5, borderRadius:"50%", background:GREEN }} />
-              {clock}
-            </div>
-          </div>
-          <div style={{ width:38, height:38, borderRadius:"50%", background:`linear-gradient(135deg,${AMBER},${AMBER2})`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, overflow:"hidden" }}>
-            <img src={IMG("mentor_dominican.jpg")} alt="Marcus C." style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
-          </div>
         </div>
       </header>
 
       {/* ── MAIN CONTENT ─────────────────────────────────────────────────── */}
+      {activeModule !== "E.A.T" ? (
+        <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", background:PAGE_BG }}>
+          <div style={{ textAlign:"center", padding:"40px 32px", maxWidth:500 }}>
+            <div style={{ fontSize:10, fontWeight:900, letterSpacing:"0.24em", color:TEXT3, textTransform:"uppercase", marginBottom:16 }}>Active Module</div>
+            <div style={{ fontSize:32, fontWeight:900, color:OBSID, letterSpacing:"0.04em", marginBottom:14 }}>{activeModule}</div>
+            <div style={{ width:56, height:3, background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:2, margin:"0 auto 20px" }} />
+            <div style={{ fontSize:13, color:TEXT3, marginBottom:32, lineHeight:1.7 }}>This module interface is being configured.<br />Full interactive layout loading shortly.</div>
+            <motion.button whileTap={{scale:0.96}} onClick={()=>setActiveModule("E.A.T")}
+              style={{ padding:"12px 28px", borderRadius:8, border:"none", background:OBSID, color:"#F9F8F6", fontSize:11, fontWeight:900, letterSpacing:"0.14em", textTransform:"uppercase", cursor:"pointer" }}>
+              Return to E.A.T. Overlay
+            </motion.button>
+          </div>
+        </div>
+      ) : (
       <div style={{ flex:1, display:"flex", overflow:"hidden", minHeight:0 }}>
 
         {/* COL 1 — Active Task */}
@@ -1300,24 +1334,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           </div>
         </aside>
       </div>
-
-      {/* ── BOTTOM TAB BAR ───────────────────────────────────────────────── */}
-      <footer style={{ height:60, background:"#0F0A04", display:"flex", flexShrink:0, borderTop:"1px solid rgba(255,255,255,0.06)" }}>
-        {BOT_NAV.map(nav=>(
-          <motion.div key={nav.label} whileTap={{scale:0.94}}
-            style={{ flex:1, position:"relative", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", overflow:"hidden" }}>
-            {/* Photo background */}
-            {nav.img && (
-              <img src={nav.img} alt="" style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", opacity:0.22 }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
-            )}
-            <div style={{ position:"absolute", inset:0, background:nav.active?"rgba(212,175,55,0.12)":"rgba(0,0,0,0.20)" }} />
-            {nav.active && <div style={{ position:"absolute", top:0, left:"20%", right:"20%", height:2, background:AMBER, borderRadius:"0 0 2px 2px" }} />}
-            <span style={{ position:"relative", fontSize:10, fontWeight:700, letterSpacing:"0.14em", color:nav.active?AMBER:"rgba(255,255,255,0.55)", textTransform:"uppercase" }}>
-              {nav.label}
-            </span>
-          </motion.div>
-        ))}
-      </footer>
+      )}
 
       {/* ── LIGHTING DIM OVERLAY ─────────────────────────────────────────── */}
       {lighting < 95 && (
@@ -1328,7 +1345,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
       <AnimatePresence>
         {toastMsg && (
           <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:20}} transition={{duration:0.22}}
-            style={{ position:"fixed", bottom:76, left:"50%", transform:"translateX(-50%)", background:"#0D0D0E", border:`1px solid ${AMBER}`, borderRadius:10, padding:"12px 22px", fontSize:13, fontWeight:700, color:IVORY, zIndex:1000, whiteSpace:"nowrap", boxShadow:"0 4px 24px rgba(0,0,0,0.45)", letterSpacing:"0.02em" }}>
+            style={{ position:"fixed", bottom:20, left:"50%", transform:"translateX(-50%)", background:"#0D0D0E", border:`1px solid ${AMBER}`, borderRadius:10, padding:"12px 22px", fontSize:13, fontWeight:700, color:IVORY, zIndex:1000, whiteSpace:"nowrap", boxShadow:"0 4px 24px rgba(0,0,0,0.45)", letterSpacing:"0.02em" }}>
             {toastMsg}
           </motion.div>
         )}

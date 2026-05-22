@@ -1,0 +1,237 @@
+/**
+ * =======================================================================
+ * NOVEE OS & SMOKECRAFT 360 — UNIFIED DEEP HARDWARE INTEGRATION KERNEL
+ * DUAL-TIER TOP DECK ROUTING ENGINE · ENVIRONMENT • ASSET • TRANSACTION
+ * VERSION: 7.5.0-RELEASE (PRODUCTION) · ZERO-GLYPH REPLIT ARCHITECTURE
+ * =======================================================================
+ */
+
+const express = require('express');
+const cors = require('cors');
+const http = require('http');
+const WebSocket = require('ws');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// Global Middleware Configuration
+app.use(cors());
+app.use(express.json());
+
+/**
+ * -----------------------------------------------------------------------
+ * RE-ANCHORED DUAL-TIER ARCHITECTURE GLOBAL STATES (IVORY & OBSIDIAN)
+ * -----------------------------------------------------------------------
+ */
+
+// Track active application modules globally across the top tier navigation row
+let appModuleRoutingState = {
+    active_module: "E.A.T._OVERLAY", // Options: MENU, RESERVATIONS, EVENTS, E.A.T._OVERLAY, MESSAGES, REPORTS, SETTINGS
+    active_sub_tab: "Command Center" // Options: Command Center, Assets, Transactions, Pairing Engine, Analytics, Staff, Venue Intelligence
+};
+
+let environmentState = {
+    target_zone: "VIP_LOUNGE_4",
+    active_preset: "Smokecraft Ivory Minimalist",
+    climate: {
+        current_temp_fahrenheit: 70.0,
+        relative_humidity_pct: 52.0, // Hardwired to match absolute touchscreen layout target
+        air_exchange_cfm: 420.0,
+        status: "OPTIMAL"
+    },
+    hardware_sliders: {
+        spatial_lux_level: 4.5,
+        scent_atomization_volume_pct: 65.0
+    }
+};
+
+let assetVaultInventory = [
+    { sku: "SKU-N92-0482", name: "Padrón 1926 Serie Exclusive", location: "Vault Alpha 4B", weight: "14.2g", status: "NOMINAL" },
+    { sku: "SKU-RPV-1992", name: "Rocky Patel Vintage 1992", location: "Vault Beta 1A", weight: "15.1g", status: "NOMINAL" },
+    { sku: "SKU-OPX-0085", name: "Opus X Double Corona", location: "Vault Gamma 2C", weight: "16.5g", status: "LOCKED" }
+];
+
+let transactionTelemetry = {
+    station_valuation_total: 248.75, // Fixed to match absolute screen checkout target
+    active_ledger: [
+        { item_id: 1, designation: "Rocky Patel Vintage 1992", category: "Cigar", price: 42.00, status: "Checked Out" },
+        { item_id: 2, designation: "Buffalo Trace Single Barrel Bourbon", category: "Pour", price: 28.00, status: "Dispensed" }
+    ],
+    pos_gateway: {
+        api_port: 8443,
+        tls_version: "TLS 1.3 Enforced Link",
+        gateway_sync_status: "CONNECTED"
+    }
+};
+
+let systemThemeState = {
+    current_mode: "IVORY_SOVEREIGN",
+    base_background_hex: "#F9F8F6",
+    primary_text_hex: "#010101",
+    accent_glow_hex: "#D4AF37"
+};
+
+/**
+ * -----------------------------------------------------------------------
+ * UNIFIED MESH WEBSOCKET REAL-TIME BROADCAST ENGINE
+ * -----------------------------------------------------------------------
+ */
+function broadcastSyncUpdate(channel, payload) {
+    const serializedPacket = JSON.stringify({
+        channel,
+        dispatched_at: new Date().toISOString(),
+        payload
+    });
+    
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(serializedPacket);
+        }
+    });
+}
+
+// Handle real-time touch device socket sync routines
+wss.on('connection', (ws) => {
+    console.log('[VEE SYNC ACTIVE] Touchscreen kiosk attached to secure data core loop.');
+    
+    // Transmit complete current hardware data states instantly to client on connection initialization
+    ws.send(JSON.stringify({ channel: 'INIT_ROUTING', payload: appModuleRoutingState }));
+    ws.send(JSON.stringify({ channel: 'INIT_ENVIRONMENT', payload: environmentState }));
+    ws.send(JSON.stringify({ channel: 'INIT_ASSET', payload: assetVaultInventory }));
+    ws.send(JSON.stringify({ channel: 'INIT_TRANSACTION', payload: transactionTelemetry }));
+    ws.send(JSON.stringify({ channel: 'INIT_THEME', payload: systemThemeState }));
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * 1. DUAL-TIER MODULE SWITCHING ENDPOINTS (TOP TIER ROUTING)
+ * -----------------------------------------------------------------------
+ */
+app.get('/api/v1/routing', (req, res) => {
+    res.status(200).json({ success: true, data: appModuleRoutingState });
+});
+
+app.post('/api/v1/routing/switch-module', (req, res) => {
+    const { target_module, target_sub_tab } = req.body;
+
+    if (target_module) appModuleRoutingState.active_module = target_module;
+    if (target_sub_tab) appModuleRoutingState.active_sub_tab = target_sub_tab;
+
+    // Instantly notify front-end code to unmount old screens and load the fresh layout views
+    broadcastSyncUpdate('GLOBAL_ROUTING_MUTATION', appModuleRoutingState);
+
+    res.status(200).json({ success: true, current_routing: appModuleRoutingState });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * 2. [ ENVIRONMENT MODULE ] — SPATIAL SLIDERS & TELEMETRY
+ * -----------------------------------------------------------------------
+ */
+app.post('/api/v1/environment/configure', (req, res) => {
+    const { target_temp, target_humidity, spatial_lux, scent_volume } = req.body;
+
+    if (target_temp) environmentState.climate.current_temp_fahrenheit = parseFloat(target_temp);
+    if (target_humidity) environmentState.climate.relative_humidity_pct = parseFloat(target_humidity);
+    if (spatial_lux) environmentState.hardware_sliders.spatial_lux_level = parseFloat(spatial_lux);
+    if (scent_volume) environmentState.hardware_sliders.scent_atomization_volume_pct = parseFloat(scent_volume);
+
+    // Dynamic broadcast loop lets all sliders mirror values in real-time
+    broadcastSyncUpdate('ENVIRONMENT_ALTERATION', environmentState);
+
+    res.status(200).json({ success: true, data: environmentState });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * 3. [ ASSET INVENTORY MODULE ] — LIVE VAULT LEDGER DATA
+ * -----------------------------------------------------------------------
+ */
+app.get('/api/v1/assets', (req, res) => {
+    res.status(200).json({ success: true, data: assetVaultInventory });
+});
+
+app.post('/api/v1/assets/vault-override', (req, res) => {
+    const { asset_sku, target_disposition } = req.body;
+
+    const matchedAsset = assetVaultInventory.find(item => item.sku === asset_sku);
+    if (!matchedAsset) return res.status(404).json({ success: false, error: "ERR_SKU_MISMATCH" });
+
+    matchedAsset.status = target_disposition;
+    broadcastSyncUpdate('ASSET_VAULT_MUTATION', assetVaultInventory);
+
+    res.status(200).json({ success: true, data: matchedAsset });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * 4. [ TRANSACTION MODULE ] — LINE ITEM INJECTION ESCOW
+ * -----------------------------------------------------------------------
+ */
+app.post('/api/v1/transactions/append', (req, res) => {
+    const { designation, price } = req.body;
+
+    const newLineItem = {
+        item_id: transactionTelemetry.active_ledger.length + 1,
+        designation,
+        category: "Curation Stack",
+        price: parseFloat(price),
+        status: "Checked Out"
+    };
+
+    transactionTelemetry.active_ledger.push(newLineItem);
+    transactionTelemetry.station_valuation_total += parseFloat(price);
+
+    broadcastSyncUpdate('TRANSACTION_ALTERATION', transactionTelemetry);
+    res.status(201).json({ success: true, data: transactionTelemetry });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * 5. [ ADMIN MASTER HUB OVERLAY INTERCEPT ENDPOINT ]
+ * -----------------------------------------------------------------------
+ */
+app.post('/api/v1/admin/system-override', (req, res) => {
+    const { action_directive, auth_token } = req.body;
+
+    if (!auth_token || auth_token !== "SOVEREIGN_360_AUTH") {
+        return res.status(403).json({ success: false, error: "ERR_AUTH_DENIED" });
+    }
+
+    console.log(`[TACTICAL COMMAND OVERRIDE] Dispatching sequence: ${action_directive}`);
+
+    if (action_directive === "FORCE_HIGH_READABILITY") {
+        systemThemeState.current_mode = "HIGH_READABILITY_IVORY";
+    } else if (action_directive === "RESET_ACTIVE_VENUE") {
+        systemThemeState.current_mode = "IVORY_SOVEREIGN";
+        environmentState.hardware_sliders.spatial_lux_level = 4.5;
+        environmentState.hardware_sliders.scent_atomization_volume_pct = 65.0;
+        appModuleRoutingState.active_module = "E.A.T._OVERLAY";
+        appModuleRoutingState.active_sub_tab = "Command Center";
+    }
+
+    // Direct global broadcast pipeline to update front-end rendering engines dynamically
+    broadcastSyncUpdate('ADMIN_DIRECTIVE_BROADCAST', {
+        directive: action_directive,
+        theme_state: systemThemeState,
+        environment_reset: environmentState,
+        routing_reset: appModuleRoutingState
+    });
+
+    res.status(200).json({ success: true, applied_directive: action_directive });
+});
+
+/**
+ * -----------------------------------------------------------------------
+ * SERVER START LAUNCH BOUNDARY
+ * -----------------------------------------------------------------------
+ */
+const PORT = process.env.PORT || 8443;
+server.listen(PORT, () => {
+    console.log(`=======================================================================`);
+    console.log(` NOVEE OS UNIFIED PLATFORM SYSTEM ENGINE ONLINE RUNNING ON PORT ${PORT}`);
+    console.log(` LINKED DIRECTLY TO DUAL-TIER TOP DECK ROUTING SPECIFICATIONS`);
+    console.log(` ZERO-GLYPH AND TRANSPARENT RASTER ASSET ENGINE ACTIVE`);
+    console.log(`=======================================================================`);
+});
