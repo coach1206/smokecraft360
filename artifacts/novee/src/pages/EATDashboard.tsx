@@ -4,7 +4,7 @@
  * ZERO GLYPH / ZERO EMOJI mandate enforced throughout
  */
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { socket } from "@/lib/socket";
 import { useGuest } from "@/context/GuestProfileContext";
 import {

@@ -1,0 +1,38 @@
+=======================================================================
+FINAL COMPREHENSIVE REBUILD DIRECTIVE: AUTOMATED VISUAL EXPERIENCE ENGINE
+PRODUCTION INTERFACE STACK: NOVEE OS + SMOKECRAFT 360 UNIFIED DECK
+DEPLOYMENT MATRIX · VERSION 8.0.0-PROD · FULL PLATFORM INTEGRATION CONSOLE
+=======================================================================
+
+You are to execute an absolute end-to-end architectural code rewrite across BOTH the SmokeCraft 360 and NOVEE OS codebases simultaneously. This directive unifies the application state machines, replaces all placeholder graphics with high-resolution assets, wires up every physical touchscreen control loop, deploys global back navigation, and structures a dual-tier top control deck. 
+
+All character symbols, generic placeholder boxes, text overlapping anomalies, and icon emojis must be completely stripped from production viewport memory.
+
+=======================================================================
+1. DEPLOY DUAL-TIER TOP DECK ARCHITECTURE (GLOBAL NAVIGATION OVERRIDE)
+=======================================================================
+- Modify root layout framework files in both apps to completely strip the navigation matrix away from the bottom viewport baseline.
+- Re-render the global menu parameters inside a clean, high-end, full-width top deck framework structured as two distinct, stacked horizontal rows:
+
+A. ROW LEVEL 1: THE GLOBAL MODULE SELECTOR (The Old Bottom Nav Mapped to Top)
+   - Background Color: Solid Premium Ivory (#F9F8F6) | Text elements: True Obsidian (#010101).
+   - Display horizontal text options explicitly padded for touchscreen hand mechanics (72px touch boundaries):
+     [MENU] | [RESERVATIONS] | [EVENTS] | [E.A.T. OVERLAY] | [MESSAGES] | [REPORTS] | [SETTINGS]
+   - The [E.A.T. OVERLAY] component button must feature an active accent boundary ring. Tapping any other module option must instantly clear the E.A.T dashboard view state and route the application viewport cleanly to the selected layout section (e.g., mounting the interactive digital craft menu layout).
+
+B. ROW LEVEL 2: THE SUBSURFACE OPERATIONS NAV HEADER
+   - Render this row immediately below Row Level 1. Background color: Satin Chrome (#121214) | Text: Smoked White (#F5F5F7).
+   - Links must be cleanly separated with an explicit 'gap: 32px;' to guarantee zero text collision bugs:
+     [Command Center] | [Assets] | [Transactions] | [Pairing Engine] | [Analytics] | [Staff] | [Venue Intelligence]
+   - Tie these choices directly to an inner state manager ('activeSubTab', 'setActiveSubTab'). Touching a tab option must update the active layout instance immediately with no screen freezes, clearing the center panel and mounting its unique layout container cleanly:
+     * [Command Center]: Renders the primary triple-image portrait luxury console view.
+     * [Assets]: Loads a live, high-contrast tabular 'Real-Time Vault Inventory Ledger' grid sorting real data columns: SKU numbers, product tags, storage vaults, and mass deltas.
+     * [Transactions]: Renders the structural commerce billing ledger, displaying itemized checkout lists, running open invoices, and active POS gateway links via Port 8443.
+     * [Pairing Engine]: Loads the active Media CMS upload control view and AI canvas prompt synthesis layout panels.
+     * [Analytics / Staff / Venue Intelligence]: Renders actual responsive data feeds tracking room decibel ranges, connected tablet battery logs, and active session duration tracks.
+
+=======================================================================
+2. IMPLEMENT SECURE GLOBAL BACK-BUTTON NAVIGATION SYSTEM
+=======================================================================
+- Build a prominent, clean, high-contrast '[ BACK ]' or '[ RETURN TO CRAFT DECK ]' action target box directly inside the upper left corner boundary of the primary Row Level 1 header deck on ALL views.
+- Hardwire the touch listener hooks ('onTouchStart' / 'onClick') to instantly pop the active routing layer out of the sub-system views
