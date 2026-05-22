@@ -29,10 +29,13 @@ export const trackEvent = async (event: AnalyticsEvent) => {
   const storageKey = sessionType === "live" ? LIVE_STORAGE_KEY : DEBUG_STORAGE_KEY;
 
   // Save to sessionStorage
-  const existingRaw = sessionStorage.getItem(storageKey);
-  const events = existingRaw ? JSON.parse(existingRaw) : [];
+  let events: AnalyticsEvent[] = [];
+  try {
+    const existingRaw = sessionStorage.getItem(storageKey);
+    events = existingRaw ? JSON.parse(existingRaw) : [];
+  } catch { /* storage blocked — Safari private mode */ }
   events.push(event);
-  sessionStorage.setItem(storageKey, JSON.stringify(events));
+  try { sessionStorage.setItem(storageKey, JSON.stringify(events)); } catch { /* storage blocked */ }
 
   // If live, POST to API
   if (sessionType === "live") {
@@ -50,8 +53,10 @@ export const trackEvent = async (event: AnalyticsEvent) => {
 
 export const getSessionAnalytics = (sessionType: SessionType): AnalyticsEvent[] => {
   const storageKey = sessionType === "live" ? LIVE_STORAGE_KEY : DEBUG_STORAGE_KEY;
-  const raw = sessionStorage.getItem(storageKey);
-  return raw ? JSON.parse(raw) : [];
+  try {
+    const raw = sessionStorage.getItem(storageKey);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
 };
 
 export interface ManufacturerReport {

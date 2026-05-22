@@ -78,5 +78,5 @@ function getAllEntries(): LeaderboardEntry[] {
 }
 
 function saveEntries(entries: LeaderboardEntry[]): void {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch { /* storage blocked */ }
 }
