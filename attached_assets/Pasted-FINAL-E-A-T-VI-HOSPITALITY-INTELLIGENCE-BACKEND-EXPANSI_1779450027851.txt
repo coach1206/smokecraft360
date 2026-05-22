@@ -1,0 +1,354 @@
+FINAL — E.A.T VI HOSPITALITY INTELLIGENCE BACKEND EXPANSION
+
+EXECUTE FULL BACKEND EXPANSION FOR:
+E.A.T VI — Venue Intelligence for Hospitality
+
+DO NOT CREATE MOCKS.
+DO NOT CREATE PLACEHOLDERS.
+ALL SYSTEMS MUST BE REAL, WIRED, AND OPERATIONAL.
+
+====================================================
+MISSING / REQUIRED
+====================================================
+
+BUILD THESE MISSING SYSTEMS:
+
+1. Dedicated E.A.T VI Intelligence Layer
+2. Hospitality Intelligence Recommendation Engine
+3. Predictive Occupancy + Table Turnover Engine
+4. Staff Deployment Intelligence
+5. Guest Attention Monitoring
+6. Venue Intelligence Dashboard APIs
+7. VI Branding + Unified Intelligence Layer
+8. Operational Recommendation Stream
+9. Revenue Momentum Intelligence
+10. Live Venue Awareness Layer
+
+====================================================
+FAILURE PREVENTION CHECKLIST
+====================================================
+
+- NO duplicate routes
+- NO duplicate DB indexes
+- NO dead workers
+- NO mock telemetry
+- NO frontend-only logic
+- ALL workers boot in app.ts
+- ALL routes auth protected
+- ALL services typed
+- ALL DB writes audited
+- ALL realtime channels wired
+- ALL intelligence loops replay-safe
+- ALL orchestration actions idempotent
+- ALL recommendation engines persist state
+- ALL sockets namespace-isolated
+- ALL telemetry distributed-safe
+- ALL workers cluster-aware
+- ALL APIs production-safe
+- ALL environment failures handled gracefully
+
+====================================================
+BUILD:
+server/venueIntelligence/
+====================================================
+
+CREATE:
+
+- venueIntelligenceEngine.ts
+- hospitalityRecommendationEngine.ts
+- predictiveOccupancyEngine.ts
+- tableTurnoverForecasting.ts
+- guestAttentionEngine.ts
+- staffDeploymentEngine.ts
+- serviceFlowIntelligence.ts
+- revenueMomentumEngine.ts
+- venueBehaviorEngine.ts
+- environmentalInfluenceEngine.ts
+- venueAwarenessEngine.ts
+- operationalPressureEngine.ts
+- loungeMomentumEngine.ts
+- pairingConversionEngine.ts
+- floorIntelligenceEngine.ts
+
+====================================================
+DATABASE TABLES
+====================================================
+
+CREATE:
+
+venue_intelligence_snapshots
+hospitality_recommendations
+table_turnover_predictions
+guest_attention_events
+staff_deployment_scores
+service_flow_events
+venue_revenue_momentum
+venue_behavior_patterns
+environmental_influence_scores
+venue_awareness_scores
+operational_pressure_scores
+lounge_momentum_events
+pairing_conversion_metrics
+floor_intelligence_events
+
+REQUIRE:
+
+- drizzle schemas
+- indexes
+- timestamps
+- venue_id scoping
+- replay-safe persistence
+- audit trails
+- distributed-safe writes
+
+====================================================
+HOSPITALITY RECOMMENDATION ENGINE
+====================================================
+
+BUILD REAL LOGIC:
+
+Generate live recommendations from:
+- table wait time
+- bartender pressure
+- kitchen pacing
+- lounge energy
+- inventory depletion
+- guest engagement
+- pairing trends
+- occupancy density
+- VIP activity
+- environmental conditions
+
+EXAMPLES:
+
+- “Deploy second bartender to west lounge.”
+- “Rotate bourbon pairing prompts near leather seating.”
+- “High-value guests inactive for 18 minutes.”
+- “Kitchen pacing slowing premium cigar conversions.”
+- “Inventory pressure rising on allocated bourbon.”
+
+====================================================
+PREDICTIVE OCCUPANCY ENGINE
+====================================================
+
+BUILD:
+
+- active occupancy tracking
+- session duration modeling
+- guest departure forecasting
+- table turnover prediction
+- pacing intelligence
+- seating pressure
+- wait-time prediction
+- crowd flow analysis
+
+CREATE:
+
+predictOccupancy()
+predictDepartureRisk()
+forecastTableTurnover()
+calculateVenueDensity()
+
+====================================================
+GUEST ATTENTION ENGINE
+====================================================
+
+TRACK:
+
+- inactive guests
+- unattended tables
+- stalled sessions
+- delayed service
+- guest engagement decline
+- pairing abandonment
+- premium guest neglect
+
+GENERATE:
+
+attention scores
+priority alerts
+floor prompts
+
+====================================================
+STAFF DEPLOYMENT ENGINE
+====================================================
+
+BUILD REALTIME STAFF ORCHESTRATION:
+
+Analyze:
+- bartender load
+- section pressure
+- kitchen pressure
+- service pacing
+- table density
+- VIP demand
+- queue buildup
+
+OUTPUT:
+
+- staffing recommendations
+- section balancing
+- operational alerts
+- deployment heatmaps
+
+====================================================
+VENUE MOMENTUM ENGINE
+====================================================
+
+TRACK:
+
+- energy shifts
+- spending acceleration
+- pairing velocity
+- environmental influence
+- crowd momentum
+- operational pacing
+- premium conversion intensity
+
+CREATE:
+
+venueMomentumScore
+revenuePressureScore
+engagementVelocityScore
+
+====================================================
+REALTIME TELEMETRY
+====================================================
+
+PUBLISH OVER:
+pgPubSub + websocketRooms
+
+CHANNELS:
+
+venue-intelligence
+hospitality-recommendations
+occupancy-predictions
+staff-alerts
+guest-attention
+revenue-momentum
+operational-pressure
+floor-intelligence
+
+====================================================
+ROUTES
+====================================================
+
+CREATE:
+
+server/routes/venueIntelligence.ts
+
+ENDPOINTS:
+
+/api/venue-intelligence/overview
+/api/venue-intelligence/recommendations
+/api/venue-intelligence/occupancy
+/api/venue-intelligence/turnover
+/api/venue-intelligence/attention
+/api/venue-intelligence/staff
+/api/venue-intelligence/momentum
+/api/venue-intelligence/environment
+/api/venue-intelligence/pressure
+/api/venue-intelligence/floor
+/api/venue-intelligence/live
+
+ALL:
+- auth protected
+- role scoped
+- venue scoped
+- realtime enabled
+
+====================================================
+WORKERS
+====================================================
+
+CREATE:
+
+venueIntelligenceWorker.ts
+
+RUN EVERY:
+- 15s realtime evaluation
+- 1m predictive forecasting
+- 5m behavioral learning
+- 15m environmental recalibration
+
+====================================================
+APP.TS BOOT
+====================================================
+
+WIRE:
+
+startVenueIntelligenceWorker()
+startVenueAwarenessEngine()
+startOperationalPressureEngine()
+startHospitalityRecommendationEngine()
+
+ENSURE:
+- startup safe
+- cluster aware
+- replay safe
+- distributed-safe
+
+====================================================
+COMMAND CENTER EXPANSION
+====================================================
+
+ADD NEW “E.A.T VI” PANEL
+
+DISPLAY:
+
+- live venue intelligence
+- table turnover forecasts
+- guest attention alerts
+- staff deployment heatmaps
+- occupancy forecasting
+- revenue momentum
+- environmental influence
+- lounge momentum
+- operational pressure
+- pairing conversion velocity
+
+STYLE:
+- premium war-room look
+- cinematic telemetry
+- realtime updates
+- animated operational maps
+- intelligence overlays
+
+====================================================
+VI BRANDING
+====================================================
+
+ALL NEW MODULES MUST USE:
+
+E.A.T VI
+Venue Intelligence for Hospitality
+
+REPLACE:
+generic “analytics” wording
+
+USE:
+- Venue Intelligence
+- Lounge Intelligence
+- Operational Momentum
+- Environmental Influence
+- Guest Awareness
+- Hospitality Intelligence
+
+====================================================
+FINAL TARGET
+====================================================
+
+E.A.T VI MUST BECOME:
+
+- the venue intelligence layer
+- the operational awareness layer
+- the hospitality recommendation layer
+- the predictive occupancy layer
+- the environmental behavior layer
+- the guest engagement layer
+- the realtime venue cognition layer
+
+THIS IS NOT ANALYTICS.
+
+THIS IS:
+LIVE VENUE INTELLIGENCE.

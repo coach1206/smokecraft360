@@ -10,6 +10,7 @@ import { loadBrandPartnerStore }               from "./services/brandPartnerStor
 import { reconcileActiveTournamentScores }     from "./lib/tournamentSync";
 import { startTelemetryDigestWorker }          from "./workers/telemetryDigestWorker";
 import { startSniperNetwork }                  from "./workers/sniperNetworkWorker";
+import { startVenueIntelligenceWorker }        from "./workers/venueIntelligenceWorker";
 import { bootKernelProviders }                from "./core/providers/kernelProviderBoot";
 
 // ── Required environment variable guard ───────────────────────────────────────
@@ -990,6 +991,187 @@ try {
   logger.warn({ err }, "Intelligence supplemental table provisioning failed — supply/orchestrator/neural routes may be unavailable");
 }
 
+// ── E.A.T. VI — Venue Intelligence table provisioning ────────────────────────
+try {
+  const viPool = (await import("@workspace/db")).pool;
+  const viSql = `
+    CREATE TABLE IF NOT EXISTS venue_intelligence_snapshots (
+      id                    BIGSERIAL PRIMARY KEY,
+      venue_id              TEXT        NOT NULL,
+      overall_score         NUMERIC(4,3),
+      risk_level            TEXT,
+      engagement_level      TEXT,
+      active_sessions       INT         DEFAULT 0,
+      operational_pressure  NUMERIC(4,3),
+      revenue_momentum      NUMERIC(4,3),
+      lounge_momentum       NUMERIC(4,3),
+      floor_load            NUMERIC(4,3),
+      environmental_fit     NUMERIC(4,3),
+      revenue_signal        TEXT,
+      orchestration_status  TEXT,
+      payload               JSONB,
+      created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS vis_venue_idx ON venue_intelligence_snapshots (venue_id);
+    CREATE INDEX IF NOT EXISTS vis_created_idx ON venue_intelligence_snapshots (created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS hospitality_recommendations (
+      id                    BIGSERIAL PRIMARY KEY,
+      venue_id              TEXT        NOT NULL,
+      category              TEXT        NOT NULL,
+      priority              TEXT        NOT NULL,
+      recommendation_text   TEXT        NOT NULL,
+      action_code           TEXT,
+      created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS hr_venue_idx ON hospitality_recommendations (venue_id);
+    CREATE INDEX IF NOT EXISTS hr_created_idx ON hospitality_recommendations (created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS table_turnover_predictions (
+      id                    BIGSERIAL PRIMARY KEY,
+      venue_id              TEXT        NOT NULL,
+      table_ref             TEXT        NOT NULL,
+      forecast_text         TEXT,
+      eta_minutes           INT,
+      risk_level            TEXT,
+      created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS ttp_venue_idx ON table_turnover_predictions (venue_id);
+
+    CREATE TABLE IF NOT EXISTS guest_attention_events (
+      id                    BIGSERIAL PRIMARY KEY,
+      venue_id              TEXT        NOT NULL,
+      guest_ref             TEXT,
+      issue                 TEXT,
+      minutes_inactive      INT         DEFAULT 0,
+      priority              TEXT,
+      created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS gae_venue_idx ON guest_attention_events (venue_id);
+    CREATE INDEX IF NOT EXISTS gae_created_idx ON guest_attention_events (created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS staff_deployment_scores (
+      id                    BIGSERIAL PRIMARY KEY,
+      venue_id              TEXT        NOT NULL,
+      overall_load          NUMERIC(4,3),
+      main_floor_load       NUMERIC(4,3),
+      bar_area_load         NUMERIC(4,3),
+      vip_section_load      NUMERIC(4,3),
+      humidor_bar_load      NUMERIC(4,3),
+      created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS sds_venue_idx ON staff_deployment_scores (venue_id);
+
+    CREATE TABLE IF NOT EXISTS service_flow_events (
+      id                    BIGSERIAL PRIMARY KEY,
+      venue_id              TEXT        NOT NULL,
+      avg_fulfillment_min   NUMERIC(6,2),
+      bottleneck            TEXT,
+      pacing_score          NUMERIC(4,3),
+      stall_count           INT         DEFAULT 0,
+      flow_signal           TEXT,
+      created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS sfe_venue_idx ON service_flow_events (venue_id);
+
+    CREATE TABLE IF NOT EXISTS venue_revenue_momentum (
+      id                         BIGSERIAL PRIMARY KEY,
+      venue_id                   TEXT        NOT NULL,
+      venue_momentum_score       NUMERIC(4,3),
+      revenue_pressure_score     NUMERIC(4,3),
+      engagement_velocity_score  NUMERIC(4,3),
+      trend                      TEXT,
+      revenue_window             TEXT,
+      created_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS vrm_venue_idx ON venue_revenue_momentum (venue_id);
+
+    CREATE TABLE IF NOT EXISTS venue_behavior_patterns (
+      id             BIGSERIAL PRIMARY KEY,
+      venue_id       TEXT        NOT NULL,
+      pattern_type   TEXT        NOT NULL,
+      confidence     NUMERIC(4,3),
+      description    TEXT,
+      created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS vbp_venue_idx ON venue_behavior_patterns (venue_id);
+
+    CREATE TABLE IF NOT EXISTS environmental_influence_scores (
+      id              BIGSERIAL PRIMARY KEY,
+      venue_id        TEXT        NOT NULL,
+      influence_score NUMERIC(4,3),
+      time_fit        NUMERIC(4,3),
+      day_fit         NUMERIC(4,3),
+      scene_fit       NUMERIC(4,3),
+      hour_of_day     INT,
+      day_of_week     INT,
+      created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS eis_venue_idx ON environmental_influence_scores (venue_id);
+
+    CREATE TABLE IF NOT EXISTS venue_awareness_scores (
+      id                   BIGSERIAL PRIMARY KEY,
+      venue_id             TEXT        NOT NULL,
+      overall_score        NUMERIC(4,3),
+      risk_level           TEXT,
+      behavior_pattern     TEXT,
+      service_bottleneck   TEXT,
+      pairing_conversion   NUMERIC(4,3),
+      created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS vas_venue_idx ON venue_awareness_scores (venue_id);
+
+    CREATE TABLE IF NOT EXISTS operational_pressure_scores (
+      id               BIGSERIAL PRIMARY KEY,
+      venue_id         TEXT        NOT NULL,
+      pressure_score   NUMERIC(4,3),
+      queue_depth      INT         DEFAULT 0,
+      open_tabs        INT         DEFAULT 0,
+      inventory_stress NUMERIC(4,3),
+      created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS ops_venue_idx ON operational_pressure_scores (venue_id);
+
+    CREATE TABLE IF NOT EXISTS lounge_momentum_events (
+      id               BIGSERIAL PRIMARY KEY,
+      venue_id         TEXT        NOT NULL,
+      momentum_score   NUMERIC(4,3),
+      event_count      INT         DEFAULT 0,
+      avg_dwell_minutes NUMERIC(6,2),
+      created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS lme_venue_idx ON lounge_momentum_events (venue_id);
+
+    CREATE TABLE IF NOT EXISTS pairing_conversion_metrics (
+      id                       BIGSERIAL PRIMARY KEY,
+      venue_id                 TEXT        NOT NULL,
+      overall_conversion_rate  NUMERIC(5,4),
+      total_exposures          INT         DEFAULT 0,
+      total_conversions        INT         DEFAULT 0,
+      recommended_action       TEXT,
+      created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS pcm_venue_idx ON pairing_conversion_metrics (venue_id);
+
+    CREATE TABLE IF NOT EXISTS floor_intelligence_events (
+      id                BIGSERIAL PRIMARY KEY,
+      venue_id          TEXT        NOT NULL,
+      floor_load        NUMERIC(4,3),
+      open_tabs         INT         DEFAULT 0,
+      order_velocity    INT         DEFAULT 0,
+      inventory_stress  NUMERIC(4,3),
+      created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS fie_venue_idx ON floor_intelligence_events (venue_id);
+  `;
+  for (const stmt of viSql.split(";").map(s => s.trim()).filter(Boolean)) {
+    await viPool.query(stmt);
+  }
+  logger.info("E.A.T. VI tables provisioned: venue_intelligence_snapshots + 13 sub-engine tables");
+} catch (err) {
+  logger.warn({ err }, "E.A.T. VI table provisioning failed — Venue Intelligence layer may be degraded");
+}
+
 // ── Users table migration — add telemetry_digest_opt_out if missing ───────────
 try {
   const { db: migDb } = await import("@workspace/db");
@@ -1052,5 +1234,6 @@ httpServer.listen(port, (err?: Error) => {
   }
   logger.info({ port }, "Server listening (HTTP + Socket.io)");
   startTelemetryDigestWorker();
+  startVenueIntelligenceWorker();
   void startSniperNetwork();
 });
