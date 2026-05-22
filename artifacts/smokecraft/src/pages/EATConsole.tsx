@@ -1165,28 +1165,6 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
       return renderOrders();
     }
 
-    if (activeTab === "Environment") {
-      return (
-        <div style={{ flex:1, padding:"10px 12px", overflow:"auto" }}>
-          <GlassPanel style={{ padding:"16px" }}>
-            <SHead title="Environment State" />
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
-              {[
-                { label:"Temperature", value:`${Math.round(envState.temperature)}°F`, color:AMBER },
-                { label:"Humidity",    value:`${Math.round(envState.humidity)}%`,     color:"#4AD9C8" },
-                { label:"Air Quality", value:envState.airQuality,                     color:GREEN },
-              ].map(m=>(
-                <div key={m.label} style={{ padding:"14px", background:"rgba(255,255,255,0.04)", borderRadius:8, border:`1px solid ${BORDER_W}`, textAlign:"center" }}>
-                  <div style={{ fontSize:26, fontWeight:900, color:m.color }}>{m.value}</div>
-                  <div style={{ fontSize:11, color:TEXT_DIM, marginTop:4, textTransform:"uppercase", letterSpacing:"0.10em" }}>{m.label}</div>
-                </div>
-              ))}
-            </div>
-          </GlassPanel>
-        </div>
-      );
-    }
-
     // Default: Command Center
     return (
       <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
