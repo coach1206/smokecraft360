@@ -282,19 +282,26 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
     if (activeTab !== "Venue Intelligence") return;
     setViFetching(true);
     const vid = venueId;
-    Promise.all([
-      fetch(`/api/intelligence/venue/${encodeURIComponent(vid)}`).then(r=>r.ok?r.json():null).catch(()=>null),
-      fetch(`/api/intelligence/engagement/${encodeURIComponent(vid)}`).then(r=>r.ok?r.json():null).catch(()=>null),
-    ]).then(([venue, eng]) => {
-      setViData(prev => ({
-        ...prev,
-        score: (venue?.score?.composite_score ?? venue?.score?.score_composite ?? prev.score),
-        risk:  (venue?.score?.risk_level ?? prev.risk),
-        engagementLevel: (eng?.level ?? eng?.engagement_level ?? prev.engagementLevel),
-        activeSessions:  (eng?.active_sessions ?? prev.activeSessions),
-        lastSync: new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"}),
-      }));
-    }).finally(() => setViFetching(false));
+    fetch(`/api/intelligence/hospitality/${encodeURIComponent(vid)}`)
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null)
+      .then((h: Record<string,unknown> | null) => {
+        if (!h) return;
+        setViData(prev => ({
+          ...prev,
+          score:             typeof h.score === "number"            ? h.score             : prev.score,
+          risk:              typeof h.risk  === "string"            ? h.risk              : prev.risk,
+          activeSessions:    typeof h.activeSessions === "number"   ? h.activeSessions    : prev.activeSessions,
+          engagementLevel:   typeof h.engagementLevel === "string"  ? h.engagementLevel   : prev.engagementLevel,
+          serviceSignals:    Array.isArray(h.serviceSignals)  && h.serviceSignals.length  ? h.serviceSignals  as typeof prev.serviceSignals  : prev.serviceSignals,
+          staffDeployment:   Array.isArray(h.staffDeployment) && h.staffDeployment.length ? h.staffDeployment as typeof prev.staffDeployment : prev.staffDeployment,
+          occupancyForecast: Array.isArray(h.occupancyForecast) && h.occupancyForecast.length ? h.occupancyForecast as typeof prev.occupancyForecast : prev.occupancyForecast,
+          orchestrationStatus: typeof h.orchestrationStatus === "string" ? h.orchestrationStatus : prev.orchestrationStatus,
+          revenueSignal:     typeof h.revenueSignal === "string"    ? h.revenueSignal     : prev.revenueSignal,
+          lastSync:          new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"}),
+        }));
+      })
+      .finally(() => setViFetching(false));
   }, [activeTab, venueId]);
 
   function activateVIScene(sceneName: string) {
