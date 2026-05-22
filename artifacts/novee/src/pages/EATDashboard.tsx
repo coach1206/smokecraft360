@@ -318,6 +318,8 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [broadcastFileDrag, setBroadcastFileDrag]     = useState(false);
   const [productEditImg, setProductEditImg]           = useState<string|null>(null);
   const [productEditFileDrag, setProductEditFileDrag] = useState(false);
+  const [ticketTapperQty, setTicketTapperQty]         = useState(1);
+  const [ticketTapperNotes, setTicketTapperNotes]     = useState("");
   const [activeBroadcast, setActiveBroadcast] = useState<null|{product:string;price:string;message:string;expiresAt:number}>(null);
   const [ticketTapper, setTicketTapper] = useState<null|{name:string;sub:string;price:number;notes:string}>(null);
   const [productEditModal, setProductEditModal] = useState(false);

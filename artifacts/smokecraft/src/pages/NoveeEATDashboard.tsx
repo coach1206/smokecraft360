@@ -318,6 +318,8 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [broadcastFileDrag, setBroadcastFileDrag]     = useState(false);
   const [productEditImg, setProductEditImg]           = useState<string|null>(null);
   const [productEditFileDrag, setProductEditFileDrag] = useState(false);
+  const [ticketTapperQty, setTicketTapperQty]         = useState(1);
+  const [ticketTapperNotes, setTicketTapperNotes]     = useState("");
   const [activeBroadcast, setActiveBroadcast] = useState<null|{product:string;price:string;message:string;expiresAt:number}>(null);
   const [ticketTapper, setTicketTapper] = useState<null|{name:string;sub:string;price:number;notes:string}>(null);
   const [productEditModal, setProductEditModal] = useState(false);
@@ -2202,36 +2204,76 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
       {ticketTapper && (
         <div style={{ position:"fixed", inset:0, zIndex:9998, background:"rgba(0,0,0,0.74)", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
           <motion.div initial={{scale:0.92,opacity:0}} animate={{scale:1,opacity:1}}
-            style={{ background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:16, padding:"28px 32px", width:"100%", maxWidth:460, boxShadow:"0 24px 60px rgba(0,0,0,0.40)" }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, fontWeight:800, textTransform:"uppercase" as const, marginBottom:5 }}>TICKET TAPPER</div>
-                <div style={{ fontSize:20, fontWeight:900, color:TEXT1 }}>{ticketTapper.name}</div>
-                <div style={{ fontSize:12, color:TEXT3, marginTop:3 }}>{ticketTapper.notes} · <span style={{ color:AMBER2, fontWeight:800 }}>${ticketTapper.price}</span></div>
+            style={{ background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:16, padding:"28px 28px 24px", width:"100%", maxWidth:480, boxShadow:"0 24px 60px rgba(0,0,0,0.40)", maxHeight:"90vh", overflowY:"auto" as const }}>
+            {/* Header row */}
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:18 }}>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, fontWeight:800, textTransform:"uppercase" as const, marginBottom:4 }}>TICKET TAPPER</div>
+                <div style={{ fontSize:20, fontWeight:900, color:TEXT1, whiteSpace:"nowrap" as const, overflow:"hidden", textOverflow:"ellipsis" }}>{ticketTapper.name}</div>
+                <div style={{ fontSize:12, color:TEXT3, marginTop:2 }}>{ticketTapper.notes} · <span style={{ color:AMBER2, fontWeight:800 }}>${ticketTapper.price} ea.</span></div>
               </div>
-              <motion.button whileTap={{scale:0.95}} onClick={()=>setTicketTapper(null)}
-                style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:TEXT3, fontSize:12, fontWeight:700, cursor:"pointer" }}>
-                Close
+              {/* Gold X close */}
+              <motion.button whileTap={{scale:0.88}} onClick={()=>{ setTicketTapper(null); setTicketTapperQty(1); setTicketTapperNotes(""); }}
+                style={{ width:36, height:36, borderRadius:"50%", border:`1.5px solid ${AMBER}`, background:"rgba(212,175,55,0.10)", color:AMBER, fontSize:16, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginLeft:12 }}>
+                ✕
               </motion.button>
             </div>
-            <div style={{ fontSize:11, fontWeight:800, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.12em", marginBottom:10 }}>Add to Which Tab?</div>
+            {/* Quantity row */}
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, padding:"10px 14px", borderRadius:8, background:IVORY, border:`1px solid ${BORDER}` }}>
+              <span style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", flex:1 }}>Quantity</span>
+              <motion.button whileTap={{scale:0.92}} onClick={()=>setTicketTapperQty(q=>Math.max(1,q-1))}
+                style={{ width:30, height:30, borderRadius:"50%", border:`1px solid ${BORDER}`, background:"#F4F0EA", color:TEXT1, fontSize:18, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", lineHeight:1 }}>
+                −
+              </motion.button>
+              <span style={{ fontSize:18, fontWeight:900, color:TEXT1, minWidth:26, textAlign:"center" as const }}>{ticketTapperQty}</span>
+              <motion.button whileTap={{scale:0.92}} onClick={()=>setTicketTapperQty(q=>q+1)}
+                style={{ width:30, height:30, borderRadius:"50%", border:`1px solid ${AMBER}`, background:`rgba(212,175,55,0.12)`, color:AMBER2, fontSize:18, fontWeight:900, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", lineHeight:1 }}>
+                +
+              </motion.button>
+              <span style={{ fontSize:13, fontWeight:700, color:AMBER2, marginLeft:6 }}>${(ticketTapper.price * ticketTapperQty).toFixed(0)}</span>
+            </div>
+            {/* Custom notes */}
+            <div style={{ marginBottom:14 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Cutting / Lighting Notes</div>
+              <input value={ticketTapperNotes} onChange={e=>setTicketTapperNotes(e.target.value)}
+                placeholder="e.g. Guillotine cut, cedar spill lighting, no punch"
+                style={{ width:"100%", padding:"10px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:12, fontWeight:500, outline:"none", boxSizing:"border-box" as const }} />
+            </div>
+            {/* Tab list */}
+            <div style={{ fontSize:11, fontWeight:800, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.12em", marginBottom:10 }}>Select Tab</div>
             <div style={{ display:"flex", flexDirection:"column" as const, gap:8 }}>
               {activeTabs.map(t=>(
-                <motion.button key={t.id} whileTap={{scale:0.97}}
-                  onClick={()=>{
-                    const token=localStorage.getItem("axiom_token")??"";
-                    fetch(`/api/tabs/${t.id}/items`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({productName:ticketTapper.name,unitCents:Math.round(ticketTapper.price*100),quantity:1,craftType:ticketTapper.sub})}).catch(()=>{});
-                    setToastMsg(`${ticketTapper.name} added to ${t.name}`);
-                    setTimeout(()=>setToastMsg(null),2400);
-                    setTicketTapper(null);
-                  }}
-                  style={{ padding:"12px 16px", borderRadius:8, border:`1px solid ${BORDER}`, background:IVORY, cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                  <div style={{ textAlign:"left" as const }}>
+                <div key={t.id} style={{ padding:"11px 14px", borderRadius:8, border:`1px solid ${BORDER}`, background:IVORY, display:"flex", justifyContent:"space-between", alignItems:"center", gap:8 }}>
+                  <div style={{ flex:1, minWidth:0, textAlign:"left" as const }}>
                     <div style={{ fontSize:13, fontWeight:800, color:TEXT1 }}>{t.name}</div>
-                    <div style={{ fontSize:11, color:TEXT3 }}>Table {t.tableNumber} · {t.items.length} items · ${t.total.toFixed(0)}</div>
+                    <div style={{ fontSize:11, color:TEXT3 }}>T-{t.tableNumber} · {t.items.length} items · <span style={{ color:AMBER2, fontWeight:800 }}>${t.total.toFixed(0)}</span></div>
                   </div>
-                  <span style={{ fontSize:13, fontWeight:700, color:AMBER2 }}>Add +</span>
-                </motion.button>
+                  <div style={{ display:"flex", gap:6, flexShrink:0 }}>
+                    {/* Remove last item */}
+                    <motion.button whileTap={{scale:0.92}} onClick={()=>{
+                        const unitPrice = ticketTapper!.price;
+                        setActiveTabs(prev=>prev.map(tab=>tab.id===t.id?{ ...tab, total:Math.max(0,tab.total-unitPrice), items:tab.items.slice(0,-1) }:tab));
+                        setToastMsg(`Removed from ${t.name} · −$${unitPrice}`);
+                        setTimeout(()=>setToastMsg(null),2200);
+                      }}
+                      style={{ padding:"8px 12px", borderRadius:7, border:"1px solid rgba(239,68,68,0.40)", background:"rgba(239,68,68,0.07)", color:"#EF4444", fontSize:15, fontWeight:900, cursor:"pointer", lineHeight:1 }}>
+                      −
+                    </motion.button>
+                    {/* Add to tab */}
+                    <motion.button whileTap={{scale:0.95}} onClick={()=>{
+                        const token=localStorage.getItem("axiom_token")??"";
+                        const totalAdd = ticketTapper!.price * ticketTapperQty;
+                        fetch(`/api/tabs/${t.id}/items`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({productName:ticketTapper!.name,unitCents:Math.round(ticketTapper!.price*100),quantity:ticketTapperQty,craftType:ticketTapper!.sub,notes:ticketTapperNotes})}).catch(()=>{});
+                        setActiveTabs(prev=>prev.map(tab=>tab.id===t.id?{ ...tab, total:tab.total+totalAdd, items:[...tab.items,...Array(ticketTapperQty).fill({name:ticketTapper!.name,price:ticketTapper!.price})] }:tab));
+                        setToastMsg(`${ticketTapperQty>1?ticketTapperQty+"× ":""}${ticketTapper!.name} → ${t.name} · +$${totalAdd.toFixed(0)}`);
+                        setTimeout(()=>setToastMsg(null),2600);
+                        setTicketTapper(null); setTicketTapperQty(1); setTicketTapperNotes("");
+                      }}
+                      style={{ padding:"8px 14px", borderRadius:7, border:`1px solid ${AMBER}`, background:`rgba(212,175,55,0.13)`, color:AMBER2, fontSize:13, fontWeight:900, cursor:"pointer" }}>
+                      Add +
+                    </motion.button>
+                  </div>
+                </div>
               ))}
             </div>
           </motion.div>
