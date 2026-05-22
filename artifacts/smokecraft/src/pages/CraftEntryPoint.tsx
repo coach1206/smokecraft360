@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
 const NoveeOsShell = lazy(() => import("@/pages/NoveeOsShell"));
@@ -7,6 +8,12 @@ const BASE = import.meta.env.BASE_URL;
 const IMG  = (n: string) => `${BASE}images/${n}`;
 const GOLD = "#D4AF37";
 const EASE: [number,number,number,number] = [0.22, 1, 0.36, 1];
+
+const EAT_CMDS = [
+  { code: "ENVIRONMENT", label: "Ambience & Lighting",  route: "/environment" },
+  { code: "ASSET VAULT",  label: "Inventory Ledger",     route: "/inventory"   },
+  { code: "TRANSACTION",  label: "Sommelier Up-Sell",    route: "/transaction"  },
+] as const;
 
 type Stage = "boot" | "grid" | "journey";
 type BootPhase = 1 | 2 | 3 | 4;
@@ -226,7 +233,9 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
 }
 
 export function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
+  const [, navigate] = useLocation();
   const [hovered, setHovered] = useState<string | null>(null);
+  const [hoveredEAT, setHoveredEAT] = useState<string | null>(null);
   const [imgIndices, setImgIndices] = useState<Record<string, number>>(() =>
     Object.fromEntries(TILES.map(t => [t.id, 0]))
   );
@@ -434,24 +443,79 @@ export function CraftGrid({ onSmokecraft }: { onSmokecraft: () => void }) {
       </div>
 
       {/* Footer */}
+      {/* ── E.A.T. Command Bar ── */}
       <div style={{
-        flexShrink: 0, padding: "12px 48px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        borderTop: "1px solid rgba(212,175,55,0.07)",
-        background: "rgba(0,0,0,0.50)",
+        flexShrink: 0,
+        padding: "0 48px",
+        display: "flex", alignItems: "stretch",
+        borderTop: "1px solid rgba(212,175,55,0.22)",
+        background: "rgba(0,0,0,0.82)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        minHeight: 72,
+        gap: 0,
+        zIndex: 10,
+        position: "relative",
       }}>
-        <img src={IMG("logo_profound.png")} alt="Profound Innovation" style={{ height: 28, width: "auto", filter: "drop-shadow(0 0 8px rgba(212,175,55,0.30))" }} />
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <motion.div
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 1.8, repeat: Infinity }}
-            style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }}
-          />
-          <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}55`, textTransform: "uppercase" }}>
-            System Active
-          </span>
+        {/* Left: EAT logo + status */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, paddingRight: 36, borderRight: "1px solid rgba(212,175,55,0.12)", marginRight: 0, flexShrink: 0 }}>
+          <img src={IMG("logo_eat.png")} alt="E.A.T System" style={{ height: 30, width: "auto", filter: "drop-shadow(0 0 8px rgba(212,175,55,0.40))" }} />
+          <div>
+            <p style={{ margin: 0, fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.32em", color: `${GOLD}55`, textTransform: "uppercase" }}>
+              ENVIRONMENT · ASSET · TRANSACTION
+            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+              <motion.div animate={{ opacity: [1, 0.25, 1] }} transition={{ duration: 1.6, repeat: Infinity }}
+                style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
+              <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.24em", color: "#32B45Acc", textTransform: "uppercase" }}>REVENUE ENGINE ACTIVE</span>
+            </div>
+          </div>
         </div>
-        <img src={IMG("logo_eat.png")} alt="E.A.T System" style={{ height: 28, width: "auto", filter: "drop-shadow(0 0 8px rgba(212,175,55,0.30))" }} />
+
+        {/* Center: 3 command badges */}
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 14 }}>
+          {EAT_CMDS.map((cmd) => {
+            const isHov = hoveredEAT === cmd.code;
+            return (
+              <motion.button
+                key={cmd.code}
+                onHoverStart={() => setHoveredEAT(cmd.code)}
+                onHoverEnd={() => setHoveredEAT(null)}
+                onClick={() => navigate(cmd.route)}
+                animate={{
+                  background: isHov ? "rgba(212,175,55,0.16)" : "rgba(212,175,55,0.06)",
+                  boxShadow: isHov ? "0 0 28px rgba(212,175,55,0.22)" : "0 0 0px transparent",
+                }}
+                whileTap={{ scale: 0.96 }}
+                style={{
+                  border: `1px solid ${isHov ? "rgba(212,175,55,0.70)" : "rgba(212,175,55,0.35)"}`,
+                  borderRadius: 10,
+                  padding: "10px 28px",
+                  cursor: "pointer",
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                  minWidth: 148,
+                  fontFamily: "inherit",
+                  touchAction: "manipulation",
+                  transition: "border-color 0.2s",
+                }}
+              >
+                <span style={{ color: GOLD, fontSize: 18, fontWeight: 900, letterSpacing: "0.09em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                  [ {cmd.code} ]
+                </span>
+                <span style={{ color: "rgba(240,228,196,0.42)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                  {cmd.label}
+                </span>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Right: Profound logo + live pulse */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, paddingLeft: 36, borderLeft: "1px solid rgba(212,175,55,0.12)", flexShrink: 0 }}>
+          <img src={IMG("logo_profound.png")} alt="Profound Innovation" style={{ height: 26, width: "auto", filter: "drop-shadow(0 0 6px rgba(212,175,55,0.25))", opacity: 0.75 }} />
+          <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2.2, repeat: Infinity }}
+            style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
+        </div>
       </div>
     </div>
   );

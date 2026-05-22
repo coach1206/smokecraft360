@@ -1563,7 +1563,12 @@ function POSCommandHub() {
 
 function CraftHubWrapper() {
   const { setPhase } = useGuest();
-  return <CraftGrid onSmokecraft={() => setPhase("s1_demo")} />;
+  return (
+    <CraftGrid
+      onSmokecraft={() => setPhase("s1_demo")}
+      onEAT={() => setPhase("eat_dashboard")}
+    />
+  );
 }
 
 function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; onFlagsChange: (f: EATModuleFlags) => void }) {
