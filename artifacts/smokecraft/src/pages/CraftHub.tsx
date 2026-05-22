@@ -1495,11 +1495,65 @@ function CraftHubInner() {
       {/* ── Floating particles ── */}
       <AmbientParticles />
 
+      {/* ── Left Vertical Obsidian Navigation Rail ── */}
+      <nav style={{
+        position:             "absolute",
+        left:                 0,
+        top:                  0,
+        bottom:               0,
+        zIndex:               20,
+        width:                64,
+        display:              "flex",
+        flexDirection:        "column",
+        alignItems:           "center",
+        justifyContent:       "center",
+        gap:                  10,
+        background:           "rgba(0,0,0,0.78)",
+        backdropFilter:       "blur(22px)",
+        WebkitBackdropFilter: "blur(22px)",
+        borderRight:          "1px solid rgba(212,175,55,0.18)",
+        pointerEvents:        "auto",
+      }}>
+        {([
+          { id: "HUB", route: "/craft-hub"        },
+          { id: "SC",  route: "/master-blender"   },
+          { id: "PR",  route: "/pairing"          },
+          { id: "CH",  route: "/coach"            },
+        ] as Array<{ id: string; route: string }>).map(item => (
+          <motion.button
+            key={item.id}
+            whileTap={{ scale: 0.88, boxShadow: `0 0 22px rgba(212,175,55,0.40)` }}
+            onClick={() => { playTactile(); navigate(item.route); }}
+            style={{
+              width:          50,
+              height:         50,
+              borderRadius:   10,
+              border:         "1px solid rgba(212,175,55,0.28)",
+              background:     "rgba(212,175,55,0.06)",
+              color:          C.gold,
+              fontSize:       12,
+              fontWeight:     900,
+              letterSpacing:  "0.12em",
+              cursor:         "pointer",
+              display:        "flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              touchAction:    "manipulation",
+              fontFamily:     "inherit",
+              flexShrink:     0,
+              transition:     "background 0.15s, box-shadow 0.15s",
+            }}
+          >
+            {item.id}
+          </motion.button>
+        ))}
+      </nav>
+
       {/* ── Top OS header — 3-Zone E.A.T. Command Bar ── */}
       <header style={{
         position:       "absolute",
         top:            0,
-        left:           0,
+        left:           64,
         right:          0,
         zIndex:         10,
         display:        "flex",
@@ -1675,7 +1729,7 @@ function CraftHubInner() {
       </header>
 
       {/* ── AI intelligence status bar — floating strip below header ── */}
-      <div style={{ position: "absolute", top: 90, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", top: 90, left: 64, right: 0, zIndex: 10, pointerEvents: "none" }}>
         <IntelStatusBar />
       </div>
 
@@ -1685,7 +1739,7 @@ function CraftHubInner() {
           position:      "absolute",
           top:           140,
           bottom:        48,
-          left:          0,
+          left:          64,
           right:         0,
           display:       "flex",
           flexDirection: "column",
