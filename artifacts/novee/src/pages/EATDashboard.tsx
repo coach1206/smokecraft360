@@ -34,7 +34,7 @@ const CARD_BG = "#FAFAF6";
 
 // ── Navigation ────────────────────────────────────────────────────────────────
 const TOP_TABS = [
-  "Command Center","Assets","Transactions","Pairing Engine","Analytics","Staff",
+  "Command Center","Assets","Transactions","Pairing Engine","Analytics","Staff","Venue Intelligence",
 ] as const;
 type TopTab = (typeof TOP_TABS)[number];
 
@@ -45,6 +45,7 @@ const EAT_TAB_SLUG_MAP: Record<string, TopTab> = {
   "pairing-engine": "Pairing Engine",
   "analytics":      "Analytics",
   "staff":          "Staff",
+  "venue-intelligence": "Venue Intelligence",
 };
 
 function eatTabToSlug(tab: TopTab): string {
@@ -242,6 +243,67 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [scentMode, setScentMode]   = useState(SCENT_OPTIONS[0]);
   const [scentPct, setScentPct]     = useState(40);
   const [pairingIdx, setPairingIdx] = useState(0);
+
+  // ── E.A.T. VI — Venue Intelligence state ───────────────────────────────────
+  interface VIServiceSignal   { table:string; signal:string; urgency:"HIGH"|"MED"|"LOW" }
+  interface VIStaffDeployment { zone:string; action:string; priority:"URGENT"|"STANDARD"|"NOMINAL" }
+  interface VIOccupancy       { table:string; forecast:string; eta:string }
+  interface VIData {
+    score:number; risk:string; activeSessions:number; engagementLevel:string;
+    serviceSignals:VIServiceSignal[]; staffDeployment:VIStaffDeployment[];
+    occupancyForecast:VIOccupancy[]; activeScene:string; sceneOptions:string[];
+    orchestrationStatus:string; revenueSignal:string; lastSync:string;
+  }
+  const VI_DEFAULTS: VIData = {
+    score:0.485, risk:"high", activeSessions:4, engagementLevel:"BUILDING",
+    serviceSignals:[
+      { table:"Table 4",  signal:"Guests flagged — 40 min no order",    urgency:"HIGH" },
+      { table:"VIP 1",    signal:"Upsell window open — 82% taste match", urgency:"MED"  },
+      { table:"Table 2",  signal:"Check-in recommended soon",            urgency:"LOW"  },
+    ],
+    staffDeployment:[
+      { zone:"Main Lounge",  action:"Deploy server — 3 tables unattended", priority:"URGENT"   },
+      { zone:"VIP Section",  action:"Sommelier recommended for new party",  priority:"STANDARD" },
+      { zone:"Humidor Bar",  action:"Maintain current coverage",            priority:"NOMINAL"  },
+    ],
+    occupancyForecast:[
+      { table:"Table 1", forecast:"Departure likely",       eta:"~15 min" },
+      { table:"Table 3", forecast:"Extended stay expected",  eta:">60 min" },
+      { table:"Table 6", forecast:"Turnover imminent",       eta:"~8 min"  },
+    ],
+    activeScene:"Smokecraft Dimmed Lounge",
+    sceneOptions:["Deep Lounge","VIP Reserve","Bright Service","Closing Ritual"],
+    orchestrationStatus:"ACTIVE", revenueSignal:"UPSELL WINDOW", lastSync:"just now",
+  };
+  const [viData, setViData]         = useState<VIData>(VI_DEFAULTS);
+  const [viFetching, setViFetching] = useState(false);
+
+  useEffect(() => {
+    if (activeTab !== "Venue Intelligence") return;
+    setViFetching(true);
+    const vid = venueId;
+    Promise.all([
+      fetch(`/api/intelligence/venue/${encodeURIComponent(vid)}`).then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch(`/api/intelligence/engagement/${encodeURIComponent(vid)}`).then(r=>r.ok?r.json():null).catch(()=>null),
+    ]).then(([venue, eng]) => {
+      setViData(prev => ({
+        ...prev,
+        score: (venue?.score?.composite_score ?? venue?.score?.score_composite ?? prev.score),
+        risk:  (venue?.score?.risk_level ?? prev.risk),
+        engagementLevel: (eng?.level ?? eng?.engagement_level ?? prev.engagementLevel),
+        activeSessions:  (eng?.active_sessions ?? prev.activeSessions),
+        lastSync: new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"}),
+      }));
+    }).finally(() => setViFetching(false));
+  }, [activeTab, venueId]);
+
+  function activateVIScene(sceneName: string) {
+    setViData(prev => ({ ...prev, activeScene: sceneName }));
+    fetch("/api/intelligence/scene", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ venueId, sceneId: sceneName.toLowerCase().replace(/\s+/g,"_"), triggeredBy:"eat_vi_panel" }),
+    }).catch(()=>{});
+  }
   const [clock, setClock] = useState(() => {
     const d = new Date();
     return d.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"}).toUpperCase() + " | " + d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
@@ -594,8 +656,125 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
           </div>
         </aside>
 
-        {/* COL 3 — Main product + pairing */}
+        {/* COL 3 — Main product + pairing / E.A.T. VI Panel */}
         <main style={{ flex:1, overflowY:"auto", background:PAGE_BG, minWidth:0 }}>
+          {activeTab === "Venue Intelligence" ? (
+            <div style={{ padding:"16px 14px" }}>
+
+              {/* VI Header */}
+              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16 }}>
+                <div>
+                  <div style={{ fontSize:10, letterSpacing:"0.28em", color:TEXT3, textTransform:"uppercase", fontWeight:800, marginBottom:4 }}>E.A.T. VI</div>
+                  <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1, marginBottom:3 }}>Venue Intelligence</div>
+                  <div style={{ fontSize:11, color:TEXT3 }}>Hospitality Signal Engine{viFetching?" · Syncing...":" · Live"}</div>
+                </div>
+                <div style={{ textAlign:"right" }}>
+                  <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:4 }}>Intelligence Score</div>
+                  <div style={{ fontSize:40, fontWeight:900, lineHeight:1, color:viData.risk==="low"?GREEN:viData.risk==="medium"?AMBER2:RED_CLR }}>{Math.round(viData.score*100)}</div>
+                  <div style={{ fontSize:10, color:TEXT3 }}>/ 100</div>
+                </div>
+              </div>
+
+              {/* Metric row */}
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:14 }}>
+                {([
+                  { label:"Awareness Score", value:`${Math.round(viData.score*100)}`, sub:viData.risk.toUpperCase(), color:viData.risk==="high"?RED_CLR:viData.risk==="medium"?AMBER2:GREEN },
+                  { label:"Active Sessions",  value:String(viData.activeSessions),     sub:"FLOOR NOW",              color:GREEN  },
+                  { label:"Engagement Level", value:viData.engagementLevel,            sub:"MOMENTUM",               color:AMBER2 },
+                ] as {label:string;value:string;sub:string;color:string}[]).map(m=>(
+                  <div key={m.label} style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px" }}>
+                    <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:6 }}>{m.label}</div>
+                    <div style={{ fontSize:26, fontWeight:900, color:m.color, lineHeight:1, marginBottom:2 }}>{m.value}</div>
+                    <div style={{ fontSize:9, color:m.color, letterSpacing:"0.14em", fontWeight:700 }}>{m.sub}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Signal grid */}
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:14 }}>
+
+                {/* Table Service Signals */}
+                <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                  <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:8 }}>Table Service Signals</div>
+                  {viData.serviceSignals.map((s,i)=>(
+                    <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"6px 0", borderBottom:i<viData.serviceSignals.length-1?`1px solid ${BORDER}`:"none" }}>
+                      <div>
+                        <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{s.table}</div>
+                        <div style={{ fontSize:10, color:TEXT3, lineHeight:1.4 }}>{s.signal}</div>
+                      </div>
+                      <span style={{ flexShrink:0, marginLeft:8, fontSize:10, fontWeight:800, color:s.urgency==="HIGH"?RED_CLR:s.urgency==="MED"?AMBER2:GREEN, padding:"2px 8px", border:`1px solid ${s.urgency==="HIGH"?RED_CLR:s.urgency==="MED"?AMBER2:GREEN}66`, borderRadius:4 }}>{s.urgency}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Staff Deployment */}
+                <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                  <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:8 }}>Staff Deployment</div>
+                  {viData.staffDeployment.map((d,i)=>(
+                    <div key={i} style={{ padding:"6px 0", borderBottom:i<viData.staffDeployment.length-1?`1px solid ${BORDER}`:"none" }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:2 }}>
+                        <span style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{d.zone}</span>
+                        <span style={{ fontSize:10, fontWeight:800, color:d.priority==="URGENT"?RED_CLR:d.priority==="STANDARD"?AMBER2:GREEN }}>{d.priority}</span>
+                      </div>
+                      <div style={{ fontSize:10, color:TEXT3 }}>{d.action}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Predictive Occupancy */}
+                <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                  <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:8 }}>Predictive Occupancy</div>
+                  {viData.occupancyForecast.map((o,i)=>(
+                    <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"5px 0", borderBottom:i<viData.occupancyForecast.length-1?`1px solid ${BORDER}`:"none" }}>
+                      <div>
+                        <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{o.table}</div>
+                        <div style={{ fontSize:10, color:TEXT3 }}>{o.forecast}</div>
+                      </div>
+                      <div style={{ fontSize:12, fontWeight:800, color:AMBER2 }}>{o.eta}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Ambient Scene Engine */}
+                <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:8, padding:"12px 14px" }}>
+                  <div style={{ fontSize:10, color:TEXT3, letterSpacing:"0.14em", textTransform:"uppercase", fontWeight:700, marginBottom:8 }}>Ambient Scene Engine</div>
+                  <div style={{ marginBottom:10 }}>
+                    <div style={{ fontSize:13, fontWeight:800, color:TEXT1, marginBottom:2 }}>{viData.activeScene}</div>
+                    <div style={{ fontSize:10, color:TEXT3 }}>Active ambient configuration</div>
+                  </div>
+                  <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                    {viData.sceneOptions.map(s=>(
+                      <motion.button key={s} whileTap={{scale:0.96}} onClick={()=>activateVIScene(s)}
+                        style={{ padding:"5px 10px", fontSize:10, fontWeight:700, borderRadius:5, border:`1px solid ${viData.activeScene===s?AMBER:BORDER}`, background:viData.activeScene===s?`rgba(212,175,55,0.10)`:IVORY, color:viData.activeScene===s?AMBER2:TEXT2, cursor:"pointer" }}>
+                        {s}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Digital Twin status bar */}
+              <div style={{ background:OBSID, borderRadius:8, padding:"14px 18px", display:"flex", gap:24, flexWrap:"wrap", alignItems:"center" }}>
+                <div>
+                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.38)", letterSpacing:"0.18em", textTransform:"uppercase", marginBottom:3 }}>Digital Twin</div>
+                  <div style={{ fontSize:12, fontWeight:800, color:AMBER }}>SYNCHRONIZED</div>
+                </div>
+                <div>
+                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.38)", letterSpacing:"0.18em", textTransform:"uppercase", marginBottom:3 }}>Orchestration</div>
+                  <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.85)" }}>{viData.orchestrationStatus}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.38)", letterSpacing:"0.18em", textTransform:"uppercase", marginBottom:3 }}>Revenue Signal</div>
+                  <div style={{ fontSize:12, fontWeight:800, color:GREEN }}>{viData.revenueSignal}</div>
+                </div>
+                <div style={{ marginLeft:"auto" }}>
+                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.38)", letterSpacing:"0.18em", textTransform:"uppercase", marginBottom:3 }}>Last Sync</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.65)" }}>{viData.lastSync}</div>
+                </div>
+              </div>
+
+            </div>
+          ) : (
           <div style={{ padding:"12px 14px" }}>
 
             {/* Hero image */}
@@ -673,6 +852,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
               </motion.button>
             </div>
           </div>
+          )}
         </main>
 
         {/* COL 4 — Perfect Pairings */}
