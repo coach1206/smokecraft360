@@ -1114,69 +1114,112 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
 
           {/* ── COMMAND CENTER ────────────────────────────────────────────── */}
           {activeTab === "Command Center" && (
-          <div style={{ padding:"12px 14px" }}>
+          <div style={{ padding:"12px 14px", display:"flex", flexDirection:"column", gap:12 }}>
 
-            {/* Hero image */}
-            <div style={{ position:"relative", borderRadius:10, overflow:"hidden", marginBottom:12, height:260, background:`linear-gradient(135deg,#1C0A02,#3A1A06)` }}>
-              <img src={featuredCigar.imageUrl || IMG("cigar_hero.jpg")} alt={featuredCigar.name}
-                style={{ width:"100%", height:"100%", objectFit:"cover", position:"absolute", inset:0, opacity:0.92 }}
-                onError={e=>{(e.target as HTMLImageElement).src=IMG("cigar_hero.jpg");}} />
-              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(0,0,0,0.10) 0%,rgba(0,0,0,0.55) 100%)" }} />
-              <div style={{ position:"absolute", top:12, left:12 }}>
-                <span style={{ fontSize:11, fontWeight:800, letterSpacing:"0.14em", textTransform:"uppercase", color:AMBER, background:"rgba(0,0,0,0.50)", padding:"4px 10px", borderRadius:4 }}>{featuredCigar.body}</span>
+            {/* ── TRIPLE-IMAGE HERO PAIRING MATRIX ─────────────────────────── */}
+            <div style={{ display:"flex", gap:14, minHeight:340 }}>
+
+              {/* LEFT PANEL — portrait image canvas */}
+              <div style={{ flex:"0 0 48%", position:"relative", borderRadius:12, overflow:"hidden", background:"#0D0600", boxShadow:"0 4px 28px rgba(0,0,0,0.32)" }}>
+                <img
+                  src={featuredCigar.imageUrl || IMG("cigar_hero.jpg")}
+                  alt={featuredCigar.name}
+                  style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center top", position:"absolute", inset:0, opacity:0.95 }}
+                  onError={e=>{ (e.target as HTMLImageElement).src = IMG("cigar_hero.jpg"); }}
+                />
+                {/* smoke/depth gradient */}
+                <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(0,0,0,0.04) 0%,rgba(8,4,0,0.48) 78%,rgba(8,4,0,0.72) 100%)", pointerEvents:"none" }} />
+                {/* amber ambient glow at bottom */}
+                <div style={{ position:"absolute", bottom:0, left:0, right:0, height:90, background:"linear-gradient(to top,rgba(196,134,10,0.18),transparent)", pointerEvents:"none" }} />
+                {/* body badge */}
+                <div style={{ position:"absolute", top:12, left:12 }}>
+                  <span style={{ fontSize:10, fontWeight:900, letterSpacing:"0.18em", textTransform:"uppercase", color:AMBER, background:"rgba(0,0,0,0.58)", border:`1px solid rgba(212,175,55,0.35)`, padding:"4px 10px", borderRadius:4, backdropFilter:"blur(4px)" }}>
+                    {featuredCigar.body}
+                  </span>
+                </div>
+                {/* featured label overlay bottom-left */}
+                <div style={{ position:"absolute", bottom:14, left:14 }}>
+                  <div style={{ fontSize:9, letterSpacing:"0.22em", textTransform:"uppercase", color:"rgba(240,232,212,0.60)", fontWeight:700, marginBottom:3 }}>FEATURED SELECTION</div>
+                  <div style={{ fontSize:15, fontWeight:900, color:"#F0E8D4", lineHeight:1.2, textShadow:"0 2px 8px rgba(0,0,0,0.70)" }}>{featuredCigar.name}</div>
+                </div>
+              </div>
+
+              {/* RIGHT PANEL — product specification block */}
+              <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+
+                {/* Header */}
+                <div>
+                  <div style={{ fontSize:9, letterSpacing:"0.26em", textTransform:"uppercase", color:TEXT3, fontWeight:800, marginBottom:5 }}>PRODUCT SPECIFICATION</div>
+                  <div style={{ fontSize:20, fontWeight:900, color:TEXT1, lineHeight:1.18, marginBottom:4 }}>{featuredCigar.name}</div>
+                  <div style={{ fontSize:12, color:TEXT2, fontWeight:600, marginBottom:10, letterSpacing:"0.04em" }}>
+                    {featuredCigar.type} &middot; Honduras / Nicaragua Wrapper
+                  </div>
+                  <p style={{ fontSize:12, color:TEXT2, lineHeight:1.65, margin:"0 0 12px 0" }}>
+                    {featuredCigar.description || "Silky dark cocoa and robust espresso open the palate, deepening into black pepper and seasoned leather with a long, creamy finish."}
+                  </p>
+                </div>
+
+                {/* Strength / Rating dots */}
+                <div style={{ display:"flex", flexDirection:"column", gap:7, marginBottom:12 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <span style={{ fontSize:10, fontWeight:700, color:TEXT3, width:58, textTransform:"uppercase", letterSpacing:"0.10em", flexShrink:0 }}>Strength</span>
+                    <StrengthDots v={featuredCigar.strength} />
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <span style={{ fontSize:10, fontWeight:700, color:TEXT3, width:58, textTransform:"uppercase", letterSpacing:"0.10em", flexShrink:0 }}>Rating</span>
+                    <RatingDots v={featuredCigar.rating} />
+                  </div>
+                </div>
+
+                {/* 94 / 100 evaluation badge */}
+                <div style={{ background:OBSID, border:`1px solid ${AMBER}`, borderRadius:8, padding:"10px 14px", marginBottom:12 }}>
+                  <div style={{ fontFamily:"'Space Mono','Courier New',monospace", fontSize:22, fontWeight:700, color:AMBER, letterSpacing:"0.06em", lineHeight:1 }}>
+                    94 / 100
+                  </div>
+                  <div style={{ fontFamily:"'Space Mono','Courier New',monospace", fontSize:9, fontWeight:700, letterSpacing:"0.22em", color:"rgba(212,175,55,0.70)", textTransform:"uppercase", marginTop:4 }}>
+                    POINT EVALUATION
+                  </div>
+                </div>
+
+                {/* Quick pairing chips */}
+                <div style={{ display:"flex", gap:6 }}>
+                  {[
+                    { label:"Buffalo Trace", sub:"Bourbon" },
+                    { label:"Blue Mountain", sub:"Coffee"  },
+                  ].map((c,i)=>(
+                    <div key={i} style={{ flex:1, background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:7, padding:"7px 8px" }}>
+                      <div style={{ fontSize:11, fontWeight:700, color:TEXT1 }}>{c.label}</div>
+                      <div style={{ fontSize:9, color:TEXT3, textTransform:"uppercase", letterSpacing:"0.10em" }}>{c.sub}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Product details */}
-            <div style={{ marginBottom:12 }}>
-              <div style={{ fontSize:22, fontWeight:900, color:TEXT1, lineHeight:1.2, marginBottom:3 }}>{featuredCigar.name}</div>
-              <div style={{ fontSize:13, color:TEXT3, marginBottom:8 }}>{featuredCigar.type} · {featuredCigar.origin}</div>
-              <p style={{ fontSize:13, color:TEXT2, lineHeight:1.6, margin:"0 0 12px 0" }}>{featuredCigar.description}</p>
-              <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:12 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:TEXT3, width:60, textTransform:"uppercase", letterSpacing:"0.10em" }}>Strength</span>
-                  <StrengthDots v={featuredCigar.strength} />
-                </div>
-                <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:TEXT3, width:60, textTransform:"uppercase", letterSpacing:"0.10em" }}>Rating</span>
-                  <RatingDots v={featuredCigar.rating} />
-                </div>
-              </div>
-            </div>
-
-            {/* Thumbnail row */}
-            <div style={{ display:"flex", gap:8, marginBottom:14 }}>
-              {[IMG("cigar_hero.jpg"), IMG("whiskey.png"), IMG("pour-1.jpg"), IMG("cigar1.png")].map((src,i)=>(
-                <div key={i} style={{ flex:1, height:72, borderRadius:7, overflow:"hidden", background:`linear-gradient(135deg,#2C1A08,#1A0C02)`, border:`2px solid ${i===0?AMBER:BORDER}`, cursor:"pointer" }}>
-                  <img src={src} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
+            {/* ── BOTTOM THUMBNAIL PREVIEW STRIP ────────────────────────────── */}
+            <div style={{ display:"flex", gap:10 }}>
+              {[
+                { src:IMG("lounge_bg.jpg"),      label:"LOUNGE SEATING",   sub:"Luxury leather seating"   },
+                { src:IMG("pour-1.jpg"),          label:"SPIRIT SERVICE",   sub:"Premium pour selection"   },
+                { src:IMG("cigar1.png"),          label:"HUMIDOR RESERVE",  sub:"Tobacconist selection"    },
+              ].map((card,i)=>(
+                <div key={i} style={{ flex:1, borderRadius:9, overflow:"hidden", background:`linear-gradient(135deg,#1C0A02,#0D0600)`, border:`1.5px solid ${BORDER}`, cursor:"pointer", position:"relative", height:92 }}>
+                  <img src={card.src} alt={card.label} style={{ width:"100%", height:"100%", objectFit:"cover", position:"absolute", inset:0, opacity:0.82 }}
+                    onError={e=>{
+                      (e.target as HTMLImageElement).style.display="none";
+                    }}
+                  />
+                  <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.62) 0%,rgba(0,0,0,0.08) 60%)", pointerEvents:"none" }} />
+                  <div style={{ position:"absolute", bottom:8, left:9, right:9 }}>
+                    <div style={{ fontSize:9, fontWeight:900, letterSpacing:"0.16em", color:"rgba(240,232,212,0.95)", textTransform:"uppercase", lineHeight:1 }}>{card.label}</div>
+                    <div style={{ fontSize:8, color:"rgba(240,232,212,0.55)", marginTop:2 }}>{card.sub}</div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Pairing suggestion */}
-            <div style={{ background:CARD_BG, border:`1px solid ${BORDER}`, borderRadius:10, padding:"12px 14px" }}>
-              <div style={{ fontSize:13, fontWeight:800, color:TEXT1, marginBottom:4, letterSpacing:"0.04em" }}>Pairing Suggestion</div>
-              <div style={{ fontSize:12, color:TEXT3, marginBottom:10 }}>Pairs exceptionally well with aged bourbon or a rich espresso.</div>
-              <div style={{ display:"flex", gap:10 }}>
-                {[
-                  { name:"Buffalo Trace Bourbon", tags:"Rich · Caramel · Vanilla", img:IMG("whiskey.png") },
-                  { name:"Espresso",               tags:"Bold · Aromatic · Smooth",  img:IMG("cigar2.png")  },
-                ].map((item,i)=>(
-                  <div key={i} style={{ flex:1, display:"flex", gap:8, alignItems:"center", background:IVORY, border:`1px solid ${BORDER}`, borderRadius:8, padding:"8px 10px" }}>
-                    <div style={{ width:44, height:44, borderRadius:6, overflow:"hidden", background:`linear-gradient(135deg,#2C1A08,#1A0C02)`, flexShrink:0 }}>
-                      <img src={item.img} alt={item.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none";}} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize:12, fontWeight:700, color:TEXT1 }}>{item.name}</div>
-                      <div style={{ fontSize:10, color:TEXT3 }}>{item.tags}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div style={{ display:"flex", gap:8, marginTop:12 }}>
+            {/* ── ACTION BUTTONS ─────────────────────────────────────────────── */}
+            <div style={{ display:"flex", gap:8 }}>
               <motion.button whileTap={{scale:0.96}} onClick={handleAddCigar}
                 style={{ flex:1, minHeight:48, padding:"10px 12px", borderRadius:8, border:`1px solid rgba(46,125,79,0.35)`, background:"rgba(46,125,79,0.07)", color:GREEN, fontSize:13, fontWeight:700, cursor:"pointer" }}>
                 Add Cigar — ${featuredCigar.price}

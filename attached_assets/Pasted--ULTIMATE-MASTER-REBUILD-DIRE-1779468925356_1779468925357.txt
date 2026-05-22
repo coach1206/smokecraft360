@@ -1,0 +1,56 @@
+=======================================================================
+ULTIMATE MASTER REBUILD DIRECTIVE: UNIFIED VISUAL EXPERIENCE CORE
+PRODUCTION STACK: NOVEE OS + SMOKECRAFT 360 DUAL-TIER PLATFORM
+VERSION: 9.0.0-PROD · ABSOLUTE LAYOUT, SCROLL, AND PLUMBING OVERRIDE
+=======================================================================
+
+You are to execute an immediate, comprehensive code override across BOTH the SmokeCraft 360 and NOVEE OS codebases simultaneously. This directive permanently flattens lazy-load layout chunks, eliminates the 386KB MasterBlender.tsx file size bloat, corrects parent container vertical layout clipping, restores the premium 3-column cinematic portrait layout matrix, and live-wires all touchscreen navigation channels, sliders, back keys, and hidden admin drawers.
+
+All generic placeholder images (purple flowers), character emojis, low-fidelity layout boxes, and text collision bugs must be completely purged from system memory.
+
+=======================================================================
+1. FIX HEIGHT OVERFLOW CLIPPING & MAIN SCROLLBAR HOOKS
+=======================================================================
+- Locate the root configuration layers and phase routers wrapping the E.A.T dashboard view.
+- Change 'height: 100vh;' to 'height: 100%;' on the dashboard root div container so it fills its parent boundary correctly instead of pushing below the viewport edge and getting clipped by the parent's 'overflow: hidden;'.
+- Set 'min-height: 0;' and 'flex: 1 1 0%;' on the main content panel wrapper. Ensure '<main className="overflow-y-auto">' is completely cleared to process standard scrolling mechanics on touchscreen glass.
+
+=======================================================================
+2. DECOUPLE MONOLITHIC MASTERBLENDER.TSX FILE BLOAT
+=======================================================================
+- Break down the 386KB 'MasterBlender.tsx' file to eliminate the 45-second cold-load delay on the kiosk screen.
+- Extract all heavy inline configuration data, massive hardcoded data matrices, and raw visual canvas presets out of the core rendering file and relocate them into standalone data modules (e.g., 'blenderPresets.ts', 'sensoryMatrixData.ts').
+- Reference them via clean import structures so the core parsing footprint drops below 50KB, allowing immediate, sub-500ms view initialization.
+
+=======================================================================
+3. LOCK DOWN DUAL-TIER TOP NAVIGATION DECK ARCHITECTURE
+=======================================================================
+- Strip out all navigation rows from the absolute bottom of the viewport window. Render the global menu options at the absolute top of the root bundle layout, split cleanly into two stacked horizontal tiers:
+  * TIER 1 (Global Module Selector): [MENU] | [RESERVATIONS] | [EVENTS] | [E.A.T. OVERLAY] | [MESSAGES] | [REPORTS] | [SETTINGS] stylized in solid Premium Ivory (#F9F8F6) and True Obsidian (#010101). The [E.A.T. OVERLAY] block must feature an active accent ring. Tapping any other item must cleanly unmount the E.A.T system and route to that module.
+  * TIER 2 (Sensory Sub-Nav Row): Mounted immediately beneath Tier 1. Background color: Satin Chrome (#121214) | Text: Smoked White (#F5F5F7). Display options: [Command Center] | [Assets] | [Transactions] | [Pairing Engine] | [Analytics] | [Staff] | [Venue Intelligence]. Apply an explicit 'gap: 32px;' to prevent all text collision and vertical stacking bugs.
+- Hardwire an explicit state tracking framework ('activeSubTab', 'setActiveSubTab') to change center layout panels instantly when touched.
+
+=======================================================================
+4. RESTORE THE TRIPLE-IMAGE HERO PAIRING MATRIX (CENTER PANEL)
+=======================================================================
+- Force the central workspace view container to render your premium 12-column visual core:
+  * COLUMNS 1–6 (The Primary Display Spot): A tall, portrait-oriented high-resolution layout frame running cinematic portrait photography of a premium lit cigar resting on an obsidian tray next to a crystal glass of dark bourbon with an active, volumetric smoke overlay loop asset (.webp or .gif). 
+  * COLUMNS 7–12 (Product Specifications & Evaluation): Render clean text data fields to the right of the image container: 'Rocky Patel Vintage 1992', 'Maduro · Honduras / Nicaragua Wrapper', and a bold descriptive tasting notes block. Render a clear monospace text card displaying '94 / 100 POINT EVALUATION' for the rating score.
+- Position a balanced horizontal preview strip directly under the hero pairing matrix containing 3 smaller preview cards loaded with real venue photography (luxury lounge interior, alternative spirit pour close-ups, and detailed humidor leaf storage).
+
+=======================================================================
+5. WIRE THE COMMAND CENTER DRAWER & SOVEREIGN BACK NAVIGATION
+=======================================================================
+- Inject an explicit '[ BACK ]' target key directly into the top-left area of Tier 1. Hardwire its touch handlers ('onTouchStart') to instantly pop the active routing layer out of subsurface options and return the user to the main dark luxury Craft Hub dashboard selection deck.
+- Inject an invisible touch hitbox (.command-center-trigger-envelope) as a direct child of the root layout wrapper. Force its properties to: 'position: fixed; bottom: 0; right: 0; width: 80px; height: 80px; z-index: 999999;'.
+- Map its 'onTouchStart' event to immediately slide up the Admin Command Center overlay pane. Every tactical option inside the hub ([FORCE HIGH-READABILITY], [RESET ACTIVE VENUE]) must emit active state modifications to the core engine.
+
+=======================================================================
+6. PLUMB ALL TOUCH CHANNELS, SLIDERS, AND CHECKOUT LOOPS
+=======================================================================
+- Hardwire the right-side panel custom sliders (Lighting, Scent). Interacting with the elevated ivory thumb node must calculate and render responsive, updated numeric percentages on screen in real-time and pass state updates to the server engine.
+- Map the circular floor plan seating maps. Tapping a table circle must update the right-side account dashboard panel to load that specific table's open ticket ledger, item list, and session timer logs.
+- Make all transaction bar keys fully live: tapping [Add Cigar - $42] or [Add Pairing] must dynamically insert line items into the checkout basket array, and tapping [Checkout - $248.75] must trigger a secure POS payment loop simulation via Port 8443 before resetting values back to idle.
+
+EXECUTION CONSTRAINT:
+Do not utilize dynamic chunk splitting or lazy loading routes that fall back onto stale browser caches. Every feature must be fully compiled, live, responsive to physical touchscreen hand mechanics, and operating with absolute fluid stability on BOTH SmokeCraft 360 and NOVEE OS.

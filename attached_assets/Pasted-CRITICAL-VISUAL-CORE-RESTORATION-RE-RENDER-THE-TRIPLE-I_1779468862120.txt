@@ -1,0 +1,28 @@
+CRITICAL VISUAL CORE RESTORATION: RE-RENDER THE TRIPLE-IMAGE HERO PAIRING MATRIX IN THE CENTER CONSOLE
+
+During the last core file stabilization patch, the central E.A.T. module workspace accidentally dropped its premium visual architecture and reverted to a layout without your real high-resolution assets. You must immediately restore the 3-column cinematic portrait layout directly inside BOTH the SmokeCraft 360 and NOVEE OS codebases while keeping the new top-tier navigation architecture completely intact.
+
+=======================================================================
+1. RESTORE THE TRIPLE-IMAGE HERO PAIRING MATRIX (CENTER VIEW)
+=======================================================================
+- Modify the main workspace view container to render a vertically dominant 12-column layout grid:
+  * COLUMN NODES 1–6 (The Primary Display Spot): Must render a tall, portrait-oriented high-resolution canvas container. The background image must be mapped to premium portrait photography of a lit cigar resting on an obsidian tray next to a crystal glass of dark bourbon with an active, volumetric smoke overlay loop effect (.gif or video interleave). No generic placeholder flowers or empty white boxes are allowed.
+  * COLUMN NODES 7–12 (Product Specifications & Evaluation): Position detailed text data fields to the right of the primary image box, tracking clean typography: 'Rocky Patel Vintage 1992', 'Maduro · Honduras / Nicaragua Wrapper', and a clear description paragraph detailing notes of dark cocoa and robust espresso. Display a clean, high-contrast monospace text container reading '94 / 100 POINT EVALUATION' for the rating.
+
+=======================================================================
+2. RESTORE THE BOTTOM THUMBNAIL PREVIEW STRIP
+=======================================================================
+- Position a balanced horizontal preview row directly beneath the main focus hero matrix.
+- This row must contain 3 smaller, high-fidelity asset preview cards loaded with real venue images: one showing alternative luxury lounge leather seating setups, one showing a close-up spirit pour, and one showing detailed tobacconist humidor selections.
+
+=======================================================================
+3. LOCK IN COMPLETE HARDWARE WIREUP STABILITY
+=======================================================================
+- Ensure all previously wired systems are fully preserved and linked into this restored layout view:
+  * The top-tier dual navigation deck must handle module and sub-tab transitions instantly.
+  * The horizontal environment sliders (Lighting, Scent) must dynamically update on-screen numeric percentages when touched.
+  * The bottom transactional points ([Add Cigar - $42], [Add Pairing], [Checkout]) must register state updates on the server.js instance seamlessly.
+  * The invisible 80px by 80px capacitive touch hitbox (.command-center-trigger-envelope) must remain fixed to the absolute bottom-right corner to call up the Admin Command drawer smoothly.
+
+EXECUTION ENFORCEMENT:
+Maintain the premium Ivory & Obsidian light-mode visual design. Do not allow any character emojis, text overlaps, or placeholder graphics to break the layout. Deliver a pristine, fully interactive touchscreen experience built for immediate local kiosk execution across BOTH applications.
