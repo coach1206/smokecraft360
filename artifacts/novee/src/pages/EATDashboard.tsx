@@ -238,13 +238,27 @@ function StrengthDots({ v, max=5 }: { v:number; max?:number }) {
 }
 
 function KineticSlider({ value, onChange }: { value:number; onChange:(v:number)=>void }) {
-  const pct = value;
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(false);
+  const calc = (cx:number) => {
+    if(!trackRef.current) return value;
+    const r = trackRef.current.getBoundingClientRect();
+    return Math.round(Math.max(0,Math.min(100,((cx-r.left)/r.width)*100)));
+  };
   return (
-    <div style={{ position:"relative", height:12, borderRadius:6, background:"#F4F3EF", cursor:"pointer", boxShadow:"inset 0 1px 3px rgba(0,0,0,0.12)" }}>
-      <div style={{ position:"absolute", left:0, top:0, height:"100%", width:`${pct}%`, background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:6 }} />
-      <input type="range" min={0} max={100} value={value} onChange={e=>onChange(Number(e.target.value))}
-        style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0, cursor:"pointer", margin:0 }} />
-      <div style={{ position:"absolute", top:"50%", left:`${pct}%`, transform:"translate(-50%,-50%)", width:28, height:28, borderRadius:"50%", background:IVORY, border:"1px solid #2C2C30", boxShadow:"0 3px 8px rgba(0,0,0,0.22)", pointerEvents:"none" }} />
+    <div ref={trackRef}
+      onPointerDown={e=>{ (e.target as Element).setPointerCapture(e.pointerId); setActive(true); onChange(calc(e.clientX)); }}
+      onPointerMove={e=>{ if(!e.buttons) return; onChange(calc(e.clientX)); }}
+      onPointerUp={()=>setActive(false)} onPointerCancel={()=>setActive(false)}
+      onTouchStart={e=>{ e.stopPropagation(); setActive(true); if(e.touches[0]) onChange(calc(e.touches[0].clientX)); }}
+      onTouchMove={e=>{ e.stopPropagation(); if(e.touches[0]) onChange(calc(e.touches[0].clientX)); }}
+      onTouchEnd={()=>setActive(false)}
+      style={{ position:"relative", height:18, borderRadius:9, background:"#F4F3EF", cursor:active?"grabbing":"pointer",
+        boxShadow:active?`0 0 0 3px ${AMBER}55, inset 0 1px 3px rgba(0,0,0,0.12)`:"inset 0 1px 3px rgba(0,0,0,0.12)",
+        touchAction:"none", userSelect:"none" as const, transition:"box-shadow 0.18s" }}>
+      <div style={{ position:"absolute", left:0, top:0, height:"100%", width:`${value}%`, background:`linear-gradient(90deg,${AMBER},${AMBER2})`, borderRadius:9, pointerEvents:"none" }} />
+      <motion.div animate={{ scale:active?1.28:1, boxShadow:active?`0 0 14px ${AMBER}88, 0 3px 8px rgba(0,0,0,0.22)`:"0 3px 8px rgba(0,0,0,0.22)" }} transition={{ type:"spring", stiffness:480, damping:26 }}
+        style={{ position:"absolute", top:"50%", left:`${value}%`, transform:"translate(-50%,-50%)", width:30, height:30, borderRadius:"50%", background:IVORY, border:`2px solid ${active?AMBER:"#2C2C30"}`, pointerEvents:"none" }} />
     </div>
   );
 }
@@ -300,6 +314,10 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
   const [delegateTarget, setDelegateTarget] = useState<number|null>(null);
   const [broadcastModal, setBroadcastModal] = useState(false);
   const [broadcastForm, setBroadcastForm] = useState({ product:"", price:"", message:"", timer:30 });
+  const [broadcastPreviewImg, setBroadcastPreviewImg] = useState<string|null>(null);
+  const [broadcastFileDrag, setBroadcastFileDrag]     = useState(false);
+  const [productEditImg, setProductEditImg]           = useState<string|null>(null);
+  const [productEditFileDrag, setProductEditFileDrag] = useState(false);
   const [activeBroadcast, setActiveBroadcast] = useState<null|{product:string;price:string;message:string;expiresAt:number}>(null);
   const [ticketTapper, setTicketTapper] = useState<null|{name:string;sub:string;price:number;notes:string}>(null);
   const [productEditModal, setProductEditModal] = useState(false);
@@ -773,7 +791,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   style={{ position:"relative", height:220, background:"#EDE8DA", borderRadius:8, overflow:"hidden", cursor:dragging?"grabbing":"default", border:`1px solid ${BORDER}` }}>
                   <div style={{ position:"absolute", inset:8, border:"1px dashed rgba(180,140,80,0.30)", borderRadius:6, pointerEvents:"none" }} />
                   {floorTables.map(t=>(
-                    <motion.div key={String(t.id)} onMouseDown={e=>onTableMD(e,t.id)} animate={{ scale:dragging===t.id?1.1:1 }}
+                    <motion.div key={String(t.id)} onMouseDown={e=>onTableMD(e,t.id)} animate={{ scale:dragging===t.id?1.1:1 }} whileTap={{ filter:"drop-shadow(0 0 10px rgba(212,175,55,0.88))", scale:1.18 }}
                       style={{ position:"absolute", left:`${t.x}%`, top:`${t.y}%`, transform:"translate(-50%,-50%)",
                         width:t.vip?36:28, height:t.vip?36:28, borderRadius:t.vip?"8px":"50%",
                         background:t.vip?`linear-gradient(135deg,${AMBER},${AMBER2})`:t.active?"rgba(46,125,79,0.20)":"rgba(180,140,80,0.18)",
@@ -1005,7 +1023,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   ))}
                 </div>
                 {TXN_LOG.map((t,i)=>(
-                  <div key={i} onClick={()=>{ setTableFilter(String(t.table)); setTxnSidePanel(t); setMapPulseTable(String(t.table)); setTimeout(()=>setMapPulseTable(null),4000); }}
+                  <motion.div key={i} whileTap={{ boxShadow:`0 0 0 2px ${AMBER}66`, borderRadius:4 }} onClick={()=>{ setTableFilter(String(t.table)); setTxnSidePanel(t); setMapPulseTable(String(t.table)); setTimeout(()=>setMapPulseTable(null),4000); }}
                     style={{ display:"grid", gridTemplateColumns:"80px 50px 1fr 80px 80px 60px", padding:"10px 14px", borderBottom:i<TXN_LOG.length-1?`1px solid ${BORDER}`:"none", alignItems:"center", cursor:"pointer", background:tableFilter===String(t.table)?`rgba(212,175,55,0.05)`:"transparent", transition:"background 0.2s" }}>
                     <div style={{ fontSize:11, fontFamily:"monospace", color:TEXT3 }}>{t.id}</div>
                     <div style={{ fontSize:13, fontWeight:700, color:tableFilter===String(t.table)?AMBER2:TEXT1 }}>T-{t.table}</div>
@@ -1013,7 +1031,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                     <div style={{ fontSize:13, fontWeight:800, color:AMBER2 }}>${t.total}</div>
                     <div><span style={{ fontSize:10, fontWeight:800, color:t.status==="open"?GREEN:TEXT3, border:`1px solid ${t.status==="open"?GREEN+"66":BORDER}`, padding:"2px 8px", borderRadius:4, textTransform:"uppercase" }}>{t.status}</span></div>
                     <div style={{ fontSize:11, color:TEXT3 }}>{t.ago}</div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -2068,25 +2086,77 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
       {broadcastModal && (
         <div style={{ position:"fixed", inset:0, zIndex:9998, background:"rgba(0,0,0,0.74)", display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
           <motion.div initial={{scale:0.92,opacity:0}} animate={{scale:1,opacity:1}}
-            style={{ background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:16, padding:"28px 32px", width:"100%", maxWidth:520, boxShadow:"0 24px 60px rgba(0,0,0,0.40)" }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:22 }}>
+            style={{ background:CARD_BG, border:`1px solid ${AMBER}`, borderRadius:16, padding:"28px 32px", width:"100%", maxWidth:560, boxShadow:"0 24px 60px rgba(0,0,0,0.40)", maxHeight:"90vh", overflowY:"auto" as const }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
               <div>
                 <div style={{ fontSize:10, letterSpacing:"0.22em", color:TEXT3, fontWeight:800, textTransform:"uppercase" as const, marginBottom:5 }}>COMMAND CENTER</div>
-                <div style={{ fontSize:22, fontWeight:900, color:TEXT1 }}>Push Broadcaster</div>
-                <div style={{ fontSize:12, color:TEXT3, marginTop:3 }}>Inject a flash special to all active guest tablets</div>
+                <div style={{ fontSize:22, fontWeight:900, color:TEXT1 }}>Live Flash Specials Creator</div>
+                <div style={{ fontSize:12, color:TEXT3, marginTop:3 }}>Build a special · upload media · push to all guest tablets</div>
               </div>
-              <motion.button whileTap={{scale:0.95}} onClick={()=>setBroadcastModal(false)}
-                style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:TEXT3, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+              <motion.button whileTap={{scale:0.95}} onClick={()=>{ setBroadcastModal(false); setBroadcastPreviewImg(null); setBroadcastFileDrag(false); }}
+                style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${BORDER}`, background:"transparent", color:TEXT3, fontSize:12, fontWeight:700, cursor:"pointer", flexShrink:0 }}>
                 Close
               </motion.button>
             </div>
-            <div style={{ display:"flex", flexDirection:"column" as const, gap:14 }}>
-              <div>
-                <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Flash Product</div>
-                <input value={broadcastForm.product} onChange={e=>setBroadcastForm(f=>({...f,product:e.target.value}))}
-                  placeholder="e.g. Padron 1926 Anniversary"
-                  style={{ width:"100%", padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:13, fontWeight:600, outline:"none", boxSizing:"border-box" as const }} />
+            {/* ── Quick-pick from inventory ── */}
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:8 }}>Quick-Pick from Inventory</div>
+              <div style={{ display:"flex", flexWrap:"wrap" as const, gap:6 }}>
+                {ASSET_CATALOG.filter(a=>a.stock>=(a.min||0)).slice(0,6).map(a=>(
+                  <motion.button key={a.name} whileTap={{scale:0.95}}
+                    onClick={()=>{ setBroadcastForm(f=>({...f,product:a.name,price:String(a.price)})); if((a as {img?:string}).img) setBroadcastPreviewImg((a as {img?:string}).img!); }}
+                    style={{ padding:"7px 13px", borderRadius:7, border:`1px solid ${broadcastForm.product===a.name?AMBER:BORDER}`, background:broadcastForm.product===a.name?`rgba(212,175,55,0.13)`:IVORY, color:broadcastForm.product===a.name?AMBER2:TEXT2, fontSize:11, fontWeight:700, cursor:"pointer" }}>
+                    {a.name.split(" ").slice(0,3).join(" ")}
+                  </motion.button>
+                ))}
               </div>
+            </div>
+            {/* ── SKU / UPC media fetch ── */}
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Product Name / SKU / UPC</div>
+              <div style={{ display:"flex", gap:8 }}>
+                <input value={broadcastForm.product} onChange={e=>setBroadcastForm(f=>({...f,product:e.target.value}))}
+                  placeholder="e.g. Padron 1926 Anniversary or UPC 0-12345-67890"
+                  style={{ flex:1, padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:13, fontWeight:600, outline:"none", boxSizing:"border-box" as const }} />
+                <motion.button whileTap={{scale:0.95}} onClick={()=>{
+                    const q = broadcastForm.product.toLowerCase();
+                    const match = [...ASSET_CATALOG,...PAIRING_RECS].find(a=>a.name.toLowerCase().includes(q));
+                    const img = match && (match as {img?:string}).img;
+                    if(img){ setBroadcastPreviewImg(img); setToastMsg("Media found — preview loaded"); setTimeout(()=>setToastMsg(null),2000); }
+                    else { setToastMsg("No local media match — try uploading manually"); setTimeout(()=>setToastMsg(null),2500); }
+                  }}
+                  style={{ padding:"11px 16px", borderRadius:7, border:`1px solid ${AMBER}`, background:`rgba(212,175,55,0.10)`, color:AMBER2, fontSize:11, fontWeight:900, cursor:"pointer", whiteSpace:"nowrap" as const }}>
+                  Fetch Media
+                </motion.button>
+              </div>
+            </div>
+            {/* ── Drag-drop banner image ── */}
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Banner Image</div>
+              <div
+                onDragOver={e=>{ e.preventDefault(); setBroadcastFileDrag(true); }}
+                onDragLeave={()=>setBroadcastFileDrag(false)}
+                onDrop={e=>{ e.preventDefault(); setBroadcastFileDrag(false); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith("image/")){const rd=new FileReader();rd.onload=ev=>setBroadcastPreviewImg(ev.target?.result as string);rd.readAsDataURL(f);} }}
+                style={{ position:"relative", height:broadcastPreviewImg?108:60, borderRadius:8, border:`2px dashed ${broadcastFileDrag?AMBER:BORDER}`, background:broadcastFileDrag?`rgba(212,175,55,0.07)`:IVORY, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", transition:"all 0.22s", cursor:"pointer" }}>
+                {broadcastPreviewImg
+                  ? <img src={broadcastPreviewImg} style={{ width:"100%", height:"100%", objectFit:"cover" as const }} alt="preview" onError={()=>setBroadcastPreviewImg(null)} />
+                  : <div style={{ textAlign:"center" as const }}>
+                      <div style={{ fontSize:11, fontWeight:700, color:TEXT3, marginBottom:3 }}>Drag & drop banner image here</div>
+                      <label style={{ fontSize:10, color:AMBER2, fontWeight:800, cursor:"pointer", textDecoration:"underline" }}>
+                        or browse to upload
+                        <input type="file" accept="image/*" style={{ display:"none" }} onChange={e=>{ const f=e.target.files?.[0]; if(f){const rd=new FileReader();rd.onload=ev=>setBroadcastPreviewImg(ev.target?.result as string);rd.readAsDataURL(f);} }} />
+                      </label>
+                    </div>
+                }
+                {broadcastPreviewImg && (
+                  <motion.button whileTap={{scale:0.95}} onClick={()=>setBroadcastPreviewImg(null)}
+                    style={{ position:"absolute", top:6, right:6, padding:"3px 8px", borderRadius:4, border:"none", background:"rgba(0,0,0,0.55)", color:"white", fontSize:10, fontWeight:800, cursor:"pointer" }}>
+                    ✕
+                  </motion.button>
+                )}
+              </div>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column" as const, gap:14 }}>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
                 <div>
                   <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Flash Price</div>
@@ -2117,6 +2187,7 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   const expiresAt = Date.now() + broadcastForm.timer * 60 * 1000;
                   setActiveBroadcast({ product:broadcastForm.product, price:broadcastForm.price, message:broadcastForm.message, expiresAt });
                   setBroadcastModal(false);
+                  setBroadcastPreviewImg(null);
                   setBroadcastForm({ product:"", price:"", message:"", timer:30 });
                   setToastMsg(`Broadcast LIVE — ${broadcastForm.product}`);
                   setTimeout(()=>setToastMsg(null),3000);
@@ -2186,6 +2257,32 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
               </motion.button>
             </div>
             <div style={{ display:"flex", flexDirection:"column" as const, gap:14 }}>
+              {/* ── Product photo upload ── */}
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Product Photo</div>
+                <div
+                  onDragOver={e=>{ e.preventDefault(); setProductEditFileDrag(true); }}
+                  onDragLeave={()=>setProductEditFileDrag(false)}
+                  onDrop={e=>{ e.preventDefault(); setProductEditFileDrag(false); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith("image/")){const rd=new FileReader();rd.onload=ev=>{setProductEditImg(ev.target?.result as string);setFeaturedCigar(fc=>({...fc,imageUrl:ev.target?.result as string}));};rd.readAsDataURL(f);} }}
+                  style={{ position:"relative", height:productEditImg?110:58, borderRadius:8, border:`2px dashed ${productEditFileDrag?AMBER:BORDER}`, background:productEditFileDrag?`rgba(212,175,55,0.07)`:IVORY, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", transition:"all 0.22s", cursor:"pointer" }}>
+                  {productEditImg
+                    ? <img src={productEditImg} style={{ width:"100%", height:"100%", objectFit:"cover" as const }} alt="product" onError={()=>setProductEditImg(null)} />
+                    : <div style={{ textAlign:"center" as const }}>
+                        <div style={{ fontSize:11, fontWeight:700, color:TEXT3, marginBottom:2 }}>Drag & drop product photo here</div>
+                        <label style={{ fontSize:10, color:AMBER2, fontWeight:800, cursor:"pointer", textDecoration:"underline" }}>
+                          or browse to upload
+                          <input type="file" accept="image/*" style={{ display:"none" }} onChange={e=>{ const f=e.target.files?.[0]; if(f){const rd=new FileReader();rd.onload=ev=>{setProductEditImg(ev.target?.result as string);setFeaturedCigar(fc=>({...fc,imageUrl:ev.target?.result as string}));};rd.readAsDataURL(f);} }} />
+                        </label>
+                      </div>
+                  }
+                  {productEditImg && (
+                    <motion.button whileTap={{scale:0.95}} onClick={()=>{ setProductEditImg(null); setFeaturedCigar(fc=>({...fc,imageUrl:""})); }}
+                      style={{ position:"absolute", top:6, right:6, padding:"3px 8px", borderRadius:4, border:"none", background:"rgba(0,0,0,0.55)", color:"white", fontSize:10, fontWeight:800, cursor:"pointer" }}>
+                      ✕
+                    </motion.button>
+                  )}
+                </div>
+              </div>
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:TEXT3, textTransform:"uppercase" as const, letterSpacing:"0.10em", marginBottom:6 }}>Product Name</div>
                 <input value={productEditForm.name} onChange={e=>setProductEditForm(f=>({...f,name:e.target.value}))}
@@ -2202,13 +2299,14 @@ export default function EATDashboard({ eatFlags: _eatFlags }: EATDashboardProps)
                   style={{ width:"100%", padding:"11px 13px", borderRadius:7, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT1, fontSize:12, fontWeight:500, outline:"none", boxSizing:"border-box" as const, resize:"none" as const, lineHeight:1.55 }} />
               </div>
               <div style={{ display:"flex", gap:10, marginTop:4 }}>
-                <motion.button whileTap={{scale:0.96}} onClick={()=>setProductEditModal(false)}
+                <motion.button whileTap={{scale:0.96}} onClick={()=>{ setProductEditModal(false); setProductEditImg(null); }}
                   style={{ flex:1, padding:"12px", borderRadius:8, border:`1px solid ${BORDER}`, background:IVORY, color:TEXT2, fontSize:13, fontWeight:700, cursor:"pointer" }}>
                   Cancel
                 </motion.button>
                 <motion.button whileTap={{scale:0.97}} onClick={()=>{
-                    setFeaturedCigar(fc=>({...fc, name:productEditForm.name, price:Number(productEditForm.price)||fc.price, description:productEditForm.description}));
+                    setFeaturedCigar(fc=>({...fc, name:productEditForm.name, price:Number(productEditForm.price)||fc.price, description:productEditForm.description, ...(productEditImg?{imageUrl:productEditImg}:{}) }));
                     setProductEditModal(false);
+                    setProductEditImg(null);
                     setToastMsg("Product updated");
                     setTimeout(()=>setToastMsg(null),2200);
                   }}

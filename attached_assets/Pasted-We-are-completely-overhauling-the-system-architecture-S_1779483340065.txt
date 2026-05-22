@@ -1,0 +1,73 @@
+We are completely overhauling the system architecture. Stop treating this project like a static UI mockup. This entire ecosystem—comprising SMOKECRAFT 360 (the consumer-facing luxury ritual/pairing engine) and NOVEE OS (the back-office hospitality operating system running the E.A.T. Signal Engine)—must be 100% dynamic, fully interactive, deeply integrated, and optimized for physical touchscreens immediately.
+
+Implement the exact backend data models, external POS hookpoints, media ingestion pipelines, safety mechanics, and interactive frontend touch layers detailed below to resolve our current layout bugs and data siloes:
+
+---
+
+### 1. THE POINT OF SALE (POS) INTEGRATION GATEWAY & LIFECYCLE
+Build a dedicated 'POS Integration Gateway' admin configuration terminal within NOVEE OS settings to handle external data connectivity using a 3-way synchronization architecture:
+* **The Handshake (API Authentication):** Create an administrative 'System Settings / POS Gateway' sub-view inside NOVEE OS (accessible via a gold-highlighted '[P] POS Gateway' button in the Command Center Quick Actions). Managers must be able to select a POS Provider (Toast / Clover / Lightspeed / Custom) and input Credential Fields (API Access Token, Webhook Secret Key, Location ID). The 'Test Connection & Sync Menu' button must trigger a kinetic shimmer-light sweep and an active loading spinner during authentication, transitioning to a pulsing green 'LIVE SYNC ACTIVE' indicator light upon completion.
+* **The Asset & Menu Pull (The 'A' in E.A.T.):** Build a data normalization service that automatically pulls down and imports the live POS menu database (whiskeys, wines, cigars) matching exact pricing and SKUs. Display an 'Auto-Sync Scope' terminal panel showing active progress meters for Asset Pull, Live Tickets, and Menu Mapping coverage. Automatically map imported items straight to SmokeCraft sensory assets using keywords (e.g., if an item contains 'Bourbon' or a specific cigar brand, auto-categorize it under its corresponding flavor profile tags in the Pairing Engine database).
+* **The Live Ticket Webhook (The 'T' in E.A.T.):** Implement a live WebSocket/API webhook route (`/api/v1/pos/webhook`) that catches data packets from physical POS terminals in real-time. When a server opens a tab or enters an item at the bar, this webhook must instantly spin up or update the matching active tab, calculate pairing recommendations, and push that live data directly to the 'Transactions' screen and the specific table's SmokeCraft guest tablet interface.
+
+---
+
+### 2. DYNAMIC MEDIA LOGISTICS & AUTOMATED DISTRIBUTOR FETCHING
+Transition the media architecture away from broken assets or empty placeholders into an active content portal:
+* **MANUFACTURE & DISTRIBUTOR API MEDIA FETCHER:** Build an automated background media fetching service (`/api/v1/assets/fetch-media`) to eliminate broken or empty placeholder cards. When a manager types in a standard universal UPC, SKU, or specific premium product name (e.g., "Padrón 1964 Anniversary Series" or "Macallan 12 Double Cask"), the system must automatically query the external source/media kit repositories, extract the high-definition commercial product image, crop out whitespace backgrounds, and instantly save it to our server's asset registry.
+* **VENUE MEDIA UPLOADER & ASSET INJECTION:** Give the venue manager full physical media control over their inventory. Create an advanced drag-and-drop media upload component inside the Command Center/Asset Modification modals. Managers must be able to drag-and-drop or select high-res files straight from their device (JPEG, PNG, WebP) to upload proprietary venue photos of food, drinks, and custom house-rolled selections. Ensure that when a new image file is uploaded, the backend updates the product's image URI field in our local database instantly, triggering an immediate, seamless frontend refresh across all active staff monitors and guest-facing SmokeCraft tablets.
+* **LIVE CAMPAIGN & FLASH SPECIALS CREATOR:** Build an intuitive marketing and menu intervention panel for the manager. Add a 'Create Live Special' portal inside the administrative Command Center (accessible via '[B] Broadcast' Quick Action). The manager must be able to select an item from the POS-synced menu or create a custom special, upload a custom banner photo or pull an official product photo via the distributor engine, and enter promotional pricing, custom description tags, and active countdown duration (e.g., "Flash Special: 20% off for the next 45 minutes"). Hitting 'Launch Promotion' must save the record to a `live_promotions` collection and broadcast a payload via WebSockets to instantly overlay a gorgeous, touch-clickable, premium promotional card across all active guest interfaces.
+* **LOCAL MEDIA IMAGE MAPPING:** Update the product database files and frontend components to reference local image assets correctly:
+  1. Update the Rocky Patel Vintage 1992 main feature card, humidor listings, and pairing slots to use the uploaded cigar image paths.
+  2. Update Buffalo Trace, Remy Martin XO, Hennessy VSOP, and all cocktail menu items to map directly to our uploaded spirits image paths.
+  3. Update the coffee, espresso, and dark chocolate truffle cards to pull the correct culinary image assets from our project folder.
+  Ensure all images use a CSS 'object-fit: cover' property inside our premium obsidian glass frames so they do not stretch, maintaining a pristine, high-end look.
+
+---
+
+### 3. INTERACTIVE TICKET TAPPER & TRANSACTION SAFETY VALVE (DELETE FUNCTION)
+* **The Structural Fix:** Ensure the Ticket Tapper modal functions as a true transactional engine linking live assets directly to open customer accounts.
+* **The Safety Valve (Delete Mechanic):** Add a sleek, interactive 'Delete' or minus ('-') button immediately adjacent to the 'Add +' option on every single guest row inside the Ticket Tapper modal so servers can instantly fix mistakes.
+* **Live Ticket State Sync:** Tapping 'Add +' or 'Delete' must instantly update that specific record's balance in our global database and refresh the 'Active Tabs' sidebar panel total in the background in real-time (e.g., adding a $42 cigar immediately changes John D.'s tab readout from $249 to $291; deleting it drops it back immediately). Replace the button text with a fluid gold animation effect on successful mutation.
+* **Quantity & Custom Modifiers:** Add a sleek quantity incrementer counter next to the product price inside the modal, along with a 'Custom Notes' touch-target so staff can input specific cutting, lighting, or presentation preferences.
+* **Luxury UI Polish:** Fix the 'Close' button in the top right. Replace the generic grey box with a minimalist gold 'X' icon asset, ensuring the entire modal container adheres to our obsidian glass and smoked chrome aesthetic with fluid slide-in scaling.
+
+---
+
+### 4. CORE ARCHITECTURAL & NAVIGATION RESTORATION
+* **Fix the Deleted Views Bug:** Ensure that the sub-navigation header inside the Command Center dashboard ('Overview', 'Kitchen', 'Humidor', 'Bar') functions as a completely non-destructive tab swapper. Do not delete, overwrite, or drop layout code blocks when toggling views. All four operational contexts must retain their full UI layouts, structures, and reactive data layers natively.
+* **Unified Analytical Syncing:** Eliminate fabricated or hardcoded placeholder counts. All data metrics inside the center views must strictly map to the live state arrays (e.g., the 'Open Bar Tabs' metric box count must dynamically calculate using our active tabs ledger array length: if 3 tabs are running in the sidebar, the metric card must read exactly 3 Open Tabs).
+
+---
+
+### 5. PAIRING ENGINE — DYNAMIC TRIPLE-PAIRING & INVENTORY SUPPRESSION
+The Pairing Engine must act as the predictive behavioral brain of the ecosystem, handling sensory data and guest experience algorithms dynamically:
+* **The Triple-Pairing Lock:** Clicking or tapping any recommendation card on the pairing grid must instantly anchor it as the triple-pairing lock point. Fire a gold notification banner: 'Triple-Pairing Lock: Rocky Patel Vintage 1992 + [Selected Item Name]'. 
+* **Recalculation Animatics:** All other unanchored product cards must simultaneously trigger a 'Recalculating...' shimmer overlay animation lasting exactly 900ms before rendering newly calculated complementary triple-pairings.
+* **Luxury Asset Suppression (Fix UI Text/Layout Crash):** Integrate the Humidor and Bar stock levels directly into this view. If an asset hits a critical inventory threshold (e.g., Remy Martin XO at stock 3, min 4), do not dump raw overlapping text onto the card. Render a clean red 'Low Stock' badge, apply a smooth glass-blur fade transition, suppress the card from the guest view, and auto-elevate the next viable fully-stocked alternative (like Hennessy VSOP) seamlessly into its layout slot without ruining layout boundaries.
+
+---
+
+### 6. TRANSACTION SIDE PANEL & FLOOR PLAN PULSE SYNC
+The Transactions view must act as the financial heartbeat of the system, mapping cash flow directly to live guest behavior in real-time:
+* **Spring-Animated Panel:** Clicking or tapping any individual row within the Transactions ledger must trigger a fluid, spring-animated panel sliding out from the right edge of the screen. 
+* **Ticket Data Ledger:** Provide a granular line-item breakdown with SKU-matched pricing pulled directly from the asset catalog. Display active session metadata: session duration, table number, pairing lock status, and active inventory reservations.
+* **Contextual Action Bar:** Embed a physical command array: 'Tap Item — Add to Ticket' (opens Ticket Tapper modal) | 'Push Flash Special' (opens Broadcast canvas) | 'Close Tab' (closes transaction session, saves to database, and fires success toast).
+* **Map Pulse Synchronization:** Tapping a transaction row or table identifier must simultaneously trigger a 3-repeat gold pulsing ring animation directly on the matching Table Node on the visual floor plan map layout. The pulse must automatically clear after exactly 4 seconds.
+
+---
+
+### 7. WIRETAPPING THE PHYSICAL SPACE & REASONING TERMINALS
+The Venue Intelligence screen must actively manage physical venue optimization and staff support:
+* **Active Tablet Mirroring:** Turn the passive 'Tablet & Device Status' panel into a live operational tool. Clicking any active tablet (Tablets 01–05) must open an overlay displaying exactly what that specific table is currently browsing or stuck on inside SmokeCraft in real-time so staff can provide proactive tableside assistance.
+* **Live Guest Consumption Mapping:** Link the visual Floor Plan directly to live guest consumption. Staff must be able to glance at a table node on the map and see an overlay showing exactly what that table is smoking, eating, and drinking at that exact moment.
+* **Intelligence Score Dynamic Reasoning:** The E.A.T. V1 Intelligence Score (e.g., 49/100) cannot be a static placeholder. Add a live reasoning text box immediately below the score container (e.g., 'Score shifted — 2 high-value tabs awaiting attention'). This text and the numerical score must dynamically recalculate every single time the active tab list, kitchen orders, humidor stats, or bar transaction data changes.
+* **Kitchen, Humidor, & Bar Ops Synchronization:** Ensure that changing an order state in Kitchen Operations (e.g., moving an item from 'Cooking' to 'Ready'), updating humidor climate metrics, or tracking a bar pour status automatically triggers a WebSocket state sync event that alters components globally, updating the Table Node color on the Floor Plan map to notify floor staff in real-time without requiring a page reload.
+
+---
+
+### 8. TACTILE TOUCHSCREEN INTERACTION & LUXURY UI RULES
+* **Wired Quick Action Triggers:** Ensure the action matrix is fully active: '[B]' key or button opens the Live Flash Specials creator modal; '[P]' key or button opens the gold-highlighted POS configuration gateway; '[S]', '[V]', or '[D]' keys/buttons fire immediate contextual toast feedback alerts on screen.
+* **Physical Touch Dynamics:** Apply hardware-accelerated touch event listeners (`onTouchStart`, `onTouchMove`, `onTouchEnd`) to all environment control sliders (lighting, music, scent) so they respond with fluid physical resistance on tablet screens.
+* **Hit-Target Calibration:** Enforce expanded interactive tap-boundaries on all cards, floor map nodes, and ledger rows, generating an instantaneous gold glow or obsidian depth shift upon finger contact.
+* Ensure all data synchronization flows continuously via a single root state provider. Maintain our strict luxury aesthetic: obsidian glass cards, smoked chrome containers, gold accents, and deep shadow text vignettes.
