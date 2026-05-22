@@ -14,12 +14,16 @@ const CHANNEL_NAME  = "novee-env-sync";
 const STORAGE_KEY   = "novee_env_state";
 const FALLBACK_ID   = "00000000-0000-0000-0000-000000000001";
 
+function safeGet(key: string): string | null {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+
+function safeSet(key: string, value: string): void {
+  try { localStorage.setItem(key, value); } catch { /* storage blocked */ }
+}
+
 function getVenueId(): string {
-  return (
-    localStorage.getItem("smokecraft_venue") ??
-    localStorage.getItem("novee_venue") ??
-    FALLBACK_ID
-  );
+  return safeGet("smokecraft_venue") ?? safeGet("novee_venue") ?? FALLBACK_ID;
 }
 
 export function useVisualSync() {
@@ -29,7 +33,7 @@ export function useVisualSync() {
   useEffect(() => {
     const venueId = getVenueId();
 
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = safeGet(STORAGE_KEY);
     if (stored) {
       try { setEnv(JSON.parse(stored)); } catch {}
     }
@@ -40,7 +44,7 @@ export function useVisualSync() {
         if (d.state) {
           const s = d.state as SyncedEnvState;
           setEnv(s);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+          safeSet(STORAGE_KEY, JSON.stringify(s));
         }
       })
       .catch(() => {});
@@ -51,7 +55,7 @@ export function useVisualSync() {
       ch.onmessage = (e: MessageEvent<SyncedEnvState>) => {
         if (e.data) {
           setEnv(e.data);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(e.data));
+          safeSet(STORAGE_KEY, JSON.stringify(e.data));
         }
       };
     }
@@ -71,7 +75,7 @@ export function useVisualSync() {
 
   const updateEnv = useCallback((next: SyncedEnvState) => {
     setEnv(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    safeSet(STORAGE_KEY, JSON.stringify(next));
     channelRef.current?.postMessage(next);
   }, []);
 

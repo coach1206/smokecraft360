@@ -48,16 +48,17 @@ const STORAGE_KEY_PREFIX = "novee_fake_competitors_";
 
 export function injectToLeaderboard(competitors: FakeCompetitor[], venueId: string): void {
   const key = STORAGE_KEY_PREFIX + venueId;
-  const existingRaw = sessionStorage.getItem(key);
   let existing: FakeCompetitor[] = [];
+  let existingRaw: string | null = null;
+  try { existingRaw = sessionStorage.getItem(key); } catch { /* storage blocked */ }
   try {
     if (existingRaw) existing = JSON.parse(existingRaw);
   } catch {}
   
   const combined = [...existing, ...competitors];
-  sessionStorage.setItem(key, JSON.stringify(combined));
+  try { sessionStorage.setItem(key, JSON.stringify(combined)); } catch { /* storage blocked */ }
 }
 
 export function clearFakeCompetitors(venueId: string): void {
-  sessionStorage.removeItem(STORAGE_KEY_PREFIX + venueId);
+  try { sessionStorage.removeItem(STORAGE_KEY_PREFIX + venueId); } catch { /* storage blocked */ }
 }
