@@ -1,0 +1,33 @@
+CRITICAL DESIGN REJECTION: This layout is completely unacceptable. You have built a flat, generic desktop spreadsheet instead of the cinematic, premium touchscreen interface specified in our design specs (POS3.png). You must completely scrap these flat grey boxes, thin rows, and generic text layouts immediately. Re-code the CSS and HTML structures from scratch to mirror our luxury design language.
+
+Execute these strict visual adjustments across the StaffTerminal component right now:
+
+---
+
+### 1. FORCE THE CINEMATIC THEME (NO MORE GREY BOXES)
+* **Chassis Background:** Set to a solid, ultra-deep True Obsidian (#020202). Remove all default light grey or washed-out container backgrounds.
+* **Obsidian Glass Cards:** Every single station monitor and table container must be a rich, translucent glass panel: `background: "rgba(16, 16, 16, 0.85)"`, with a heavy hardware-accelerated backdrop blur: `backdrop-filter: "blur(25px)"`.
+* **Hairline Borders:** Wrap every card container in a razor-thin 1px border using Liquid Warm Gold (#D4AF37) or deep Smoked Chrome (#2A2A2A).
+
+---
+
+### 2. RE-ARCHITECT THE 3-COLUMN METRICS (MATCH POS3.png PIXEL-FOR-PIXEL)
+* **COLUMN 1: REAL-TIME TELEMETRY**
+  - STATION 1 (HUMIDOR): The number '145' must be a massive, glowing Amber-Gold numeric readout (#E6A11D). Right next to it, embed the high-res photographic container showing our leaf-wrapped premium cigar box setup.
+  - STATION 2 (BAR METRICS): Render the premium bottle asset graphic right next to the active pour counter. Fix the low stock alert so it renders as a thick, premium red asset container bar with no layout clipping.
+* **COLUMN 2: HIGH-SPEED TICKET OVERVIEW**
+  - Table Rows: Do not stretch them across the whole screen. They must be compact, vertically stacked obsidian glass blocks.
+  - Ticket Tapper Targets: Ensure every single table row features the wide, solid gold touchscreen action bar layout: '[ 🎟️ OPEN TICKET TAPPER ★ ]' with an explicit 58px touch height boundary.
+* **COLUMN 3: ACTIVE LEDGER**
+  - Match the sleek billing sidebar layout from POS3.png exactly. Use deep amber-gold text colors for item quantities, true white text for brand names, and place the circular gold delete crosses (✕) neatly on the right edge.
+  - Process Payment Button: Make it a prominent, high-contrast gold-gradient action container bar at the bottom.
+
+---
+
+### 3. RESTORE THE LOWER INSIGHTS PANEL & SYSTEM FOOTER
+* Beneath the three main layout columns, you must mount the **Staff on Floor** avatar strip (showing circular staff profile images), the **Venue Insights** analytics matrix ($2,847/hour counters), and the **System Status** grid indicators (Humidor/Bar/Kitchen network optimization icons) exactly as formatted in the footer area of POS3.png.
+
+---
+
+### 4. EVIDENCE OF COMPLIANCE
+* Do not give me text summaries or say this is complete until you have physically updated the CSS styles and JSX elements to look identical to the cinematic design theme. Auto-save the files and update the preview canvas layout now.
