@@ -313,7 +313,9 @@ function DraggableCard({ item, ge, isUnderlayOpen, onDragStart, onDragUpdate, on
       </AnimatePresence>
 
       {/* Drag card */}
-      <motion.div drag dragElastic={0.10} dragMomentum={false}
+      <motion.div drag dragElastic={0.06} dragMomentum={false}
+        dragConstraints={{ left: -160, right: 160, top: -55, bottom: 55 }}
+        dragTransition={{ bounceStiffness: 500, bounceDamping: 32 }}
         onDragStart={onDragStart}
         onDrag={(_, info) => onDragUpdate({ x: info.offset.x, y: info.offset.y })}
         onDragEnd={() => { x.set(0); y.set(0); onDragEnd(); }}

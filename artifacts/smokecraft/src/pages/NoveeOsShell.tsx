@@ -1342,6 +1342,51 @@ function SystemBar() {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+
+        {/* ── Section jump rail — visible only during active SmokeCraft session ── */}
+        {inSession && (
+          <div style={{ display: "flex", alignItems: "center", gap: 3, marginRight: 4, padding: "2px 8px", background: "rgba(255,255,255,0.03)", borderRadius: 6, border: "1px solid rgba(212,175,55,0.12)" }}>
+            <span style={{ fontSize: 7, letterSpacing: "0.22em", color: "rgba(212,175,55,0.30)", fontWeight: 700, fontFamily: "'Inter',sans-serif", marginRight: 4 }}>JUMP</span>
+            {([
+              { label: "S1", phase: "s1_demo"       as Phase, tip: "Session 1 — Ritual" },
+              { label: "S2", phase: "s2_terroir"    as Phase, tip: "Session 2 — Terroir" },
+              { label: "S3", phase: "s3_spiritquiz" as Phase, tip: "Session 3 — Sensory" },
+              { label: "S4", phase: "s4_vitola"     as Phase, tip: "Session 4 — Reserve" },
+            ] as Array<{ label: string; phase: Phase; tip: string }>).map(s => {
+              const active = (
+                (s.label === "S1" && S1_PHASES.has(phase)) ||
+                (s.label === "S2" && S2_PHASES.has(phase)) ||
+                (s.label === "S3" && S3_PHASES.has(phase)) ||
+                (s.label === "S4" && S4_PHASES.has(phase))
+              );
+              return (
+                <motion.button key={s.label} type="button"
+                  onPointerDown={() => navigate(s.phase)}
+                  onClick={() => navigate(s.phase)}
+                  whileTap={{ scale: 0.88 }}
+                  title={s.tip}
+                  style={{
+                    width: 28, height: 22,
+                    borderRadius: 4,
+                    border: `1px solid ${active ? GOLD + "88" : "rgba(212,175,55,0.18)"}`,
+                    background: active ? `rgba(212,175,55,0.20)` : "rgba(255,255,255,0.03)",
+                    cursor: "pointer",
+                    fontSize: 8,
+                    fontWeight: 900,
+                    letterSpacing: "0.12em",
+                    color: active ? GOLD : `${GOLD}44`,
+                    fontFamily: "'Inter',sans-serif",
+                    boxShadow: active ? `0 0 8px rgba(212,175,55,0.28)` : "none",
+                    transition: "all 0.18s",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                  {s.label}
+                </motion.button>
+              );
+            })}
+          </div>
+        )}
+
         <motion.button type="button"
           onPointerDown={() => { if (inSession) resetBlend(); else navigate("crafthub"); }}
           onClick={() => { if (inSession) resetBlend(); else navigate("crafthub"); }}
