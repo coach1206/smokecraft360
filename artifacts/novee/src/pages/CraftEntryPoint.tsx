@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StaffPinGate } from "@/components/StaffPinGate";
 import { Router } from "wouter";
 
-const DeveloperGate = lazy(() => import("@/pages/DeveloperGate"));
+const DeveloperGate   = lazy(() => import("@/pages/DeveloperGate"));
+const StaffTerminal   = lazy(() => import("@/pages/StaffTerminal"));
 
 const EAT_CMDS = [
   { code: "ENVIRONMENT", label: "Ambience & Lighting",  key: "environment" as const },
@@ -347,7 +348,8 @@ export function CraftGrid({
 }) {
   const [hoveredEAT, setHoveredEAT] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
-  const [showDevGate, setShowDevGate] = useState(false);
+  const [showDevGate,       setShowDevGate]       = useState(false);
+  const [showStaffTerminal, setShowStaffTerminal] = useState(false);
   const [imgIndices, setImgIndices] = useState<Record<string, number>>(() =>
     Object.fromEntries(TILES.map(t => [t.id, 0]))
   );
@@ -426,7 +428,11 @@ export function CraftGrid({
                 key={tile.id}
                 onHoverStart={() => setHovered(tile.id)}
                 onHoverEnd={() => setHovered(null)}
-                onClick={() => tile.id === "developer" ? setShowDevGate(true) : onSmokecraft()}
+                onClick={() =>
+                  tile.id === "developer" ? setShowDevGate(true) :
+                  tile.id === "pos"       ? setShowStaffTerminal(true) :
+                  onSmokecraft()
+                }
                 whileTap={{ scale: 0.98 }}
                 style={{
                   position: "relative", border: "none", padding: 0,
@@ -676,6 +682,22 @@ export function CraftGrid({
       </div>
       {/* ── end inner column ── */}
       </div>
+
+      {/* ── Staff Terminal Overlay ── */}
+      <AnimatePresence>
+        {showStaffTerminal && (
+          <motion.div key="staffterminal-overlay"
+            style={{ position: "fixed", inset: 0, zIndex: 10002 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}>
+            <Router base="">
+              <Suspense fallback={null}>
+                <StaffTerminal onBack={() => setShowStaffTerminal(false)} />
+              </Suspense>
+            </Router>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Developer Gate Overlay ── */}
       <AnimatePresence>

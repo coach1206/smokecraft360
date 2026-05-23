@@ -1,0 +1,29 @@
+CRITICAL COMPILER RE-ENGINEERING: The application is currently rendering a completely blank, black screen. You have successfully updated the background data schemas and routing variables, but the actual visible UI has collapsed. Stop relying on automated terminal status checks—your conditional rendering logic is actively blocking the interface from displaying or a silent JavaScript import error is crashing the DOM. Fix this view blackout immediately.
+
+Execute this precise root-level layout overhaul to bring the visual layers online:
+
+---
+
+### 1. THE ABSOLUTE BACKSTOP FALLBACK (App.jsx / Main Routing Engine)
+* Inspect the root conditional return block immediately. If 'isAdminView === false' and 'currentStage' is unassigned, initializing, or defaulting, DO NOT return an empty div, null, or a blank black canvas. Force-render the Stage 1 Cinematic Boot Sequence or the Stage 2 CraftHub Selection Grid as the permanent, unbreakable fallback screen.
+* Wrap the main view chassis in a standard React Error Boundary. If any newly introduced sub-component (like the new automated multi-tenant context hooks or the updated administrative telemetry bars) triggers a type error, catch it instantly and render our core Obsidian Glass container panel instead of letting the frame drop to absolute black.
+
+---
+
+### 2. FORCE-RENDER THE PURIFIED GUEST EXPERIENCE CANVAS
+Stop processing hidden states in isolation and paint the visible code onto the customer preview:
+* **The Immersive Header:** Ensure the True White 'SMOKECRAFT 360' or 'NOVEE OS' branding text string asset is actively mounted and rendering in the top-left edge container.
+* **The Center Workspace Mat:** Force-mount our precise 4-Tile Tactical Selection Grid (CraftHub) utilizing its deep layered Obsidian Glass panel wrappers, brushed titanium hairline borders, and the live luxury lifestyle asset imagery carousel.
+* **The Ambient Navigation Bottom Bar:** Render the updated bottom bar layout containing the three discovery pillars: 'AI SOMMELIER · IMMERSIVE DISCOVERY · YOUR RESERVE' utilizing high-end cream typography with a glowing gold live engine pulse dot.
+
+---
+
+### 3. COMPLETE RE-VERIFICATION SYSTEM LOGS & ACTIONS
+* Scan every project script import statement across the workspace. Verify that 'HighVelocityPOSTerminal', 'CraftHub', and 'MasterOperations' match exact case-sensitive file path characters.
+* Ensure all touchscreen hardware-accelerated event listeners (onTouchStart, onTouchEnd) are completely active across the elements to eliminate mobile browser latency.
+
+---
+
+### 4. MANDATORY VISUAL INSPECTION RULE
+* Before you reply to me or claim this task is complete, read the live application preview logs and check the root DOM layout structure to verify that active HTML layout components are actually rendering visible objects on the screen. 
+* If the preview layout remains blank, black, or broken, do not output text promises—rewrite the core layout return paths immediately until the obsidian interface is fully visible on screen.

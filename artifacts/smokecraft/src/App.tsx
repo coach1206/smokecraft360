@@ -69,6 +69,7 @@ const GoldenBoxPage         = lazy(() => import('@/pages/GoldenBoxPage'));
 const DevConsole            = lazy(() => import('@/pages/DevConsole'));
 const CentralCommand        = lazy(() => import('@/pages/CentralCommand'));
 const PosMode               = lazy(() => import('@/pages/PosMode'));
+const StaffTerminal         = lazy(() => import('@/pages/StaffTerminal'));
 const PinLogin              = lazy(() => import('@/pages/PinLogin'));
 const Axiom360              = lazy(() => import('@/pages/Axiom360'));
 const StaffModule           = lazy(() => import('@/pages/StaffModule'));
@@ -1175,7 +1176,7 @@ export default function App() {
             </Suspense>
           </Route>
           <Route path="/pos">
-            <SubPageProviders><PosMode /></SubPageProviders>
+            <SubPageProviders><StaffTerminal /></SubPageProviders>
           </Route>
           <Route path="/pin-login">
             <SubPageProviders><PinLogin /></SubPageProviders>
