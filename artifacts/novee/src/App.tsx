@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GuestProfileProvider, useGuest } from "@/context/GuestProfileContext";
 import type { Phase } from "@/context/GuestProfileContext";
 import { LicenseProvider } from "@/contexts/LicenseContext";
+import { ThemeConfigProvider } from "@/contexts/ThemeConfigContext";
 import UpgradePage from "@/pages/UpgradePage";
 import UpgradeRequired from "@/pages/UpgradeRequired";
 import GoldenBoxPage from "@/pages/GoldenBoxPage";
@@ -447,7 +448,7 @@ const ENERGY_STATES = ["quiet_reserve","social_warmth","elevated_lounge","peak_e
 const MOOD_PRESETS = [
   { id: "social_warmth",       label: "Jazz Mode",    icon: "🎷", desc: "Warm, soulful atmosphere"   },
   { id: "peak_energy",         label: "Sports Mode",  icon: "🏈", desc: "High energy, lively crowd"  },
-  { id: "vip_session",         label: "VIP Mode",     icon: "✨", desc: "Private reserve experience" },
+  { id: "vip_session",         label: "VIP Mode",     icon: "", desc: "Private reserve experience" },
   { id: "event_atmosphere",    label: "Event Mode",   icon: "🎉", desc: "Special occasion setting"   },
   { id: "late_night_reserve",  label: "After Hours",  icon: "🌙", desc: "Deep night, intimate glow"  },
   { id: "quiet_reserve",       label: "Opening",      icon: "🌅", desc: "Soft morning atmosphere"    },
@@ -1973,6 +1974,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <LicenseProvider>
+      <ThemeConfigProvider>
       <GuestProfileProvider>
         <AnimatePresence mode="wait">
           {!bootDone ? (
@@ -1992,6 +1994,7 @@ export default function App() {
           )}
         </AnimatePresence>
       </GuestProfileProvider>
+      </ThemeConfigProvider>
       </LicenseProvider>
     </QueryClientProvider>
   );

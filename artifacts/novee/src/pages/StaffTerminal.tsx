@@ -10,6 +10,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
+import { useThemeConfig } from "@/contexts/ThemeConfigContext";
 
 // ── Design Tokens ─────────────────────────────────────────────────────────────
 const C = {
@@ -556,6 +557,7 @@ function NavRail({ onBack, isAdminView, isSupervisorView, onOpenPinGate }: {
   isSupervisorView: boolean;
   onOpenPinGate: (target: "supervisor" | "admin") => void;
 }) {
+  const { operationalMode, setSeniorMode, setRushMode, setStandardMode } = useThemeConfig();
   const items = [
     { icon:P.house,    sub:"Hub",         active:true,  fn:onBack },
     { icon:P.leaf,     sub:"SC\nSmoke",   active:false, fn:undefined },
@@ -571,6 +573,24 @@ function NavRail({ onBack, isAdminView, isSupervisorView, onOpenPinGate }: {
           <span style={{ fontFamily:C.mono, fontSize:7, color:item.active?C.gold:C.muted, letterSpacing:"0.10em", textAlign:"center", whiteSpace:"pre-line", lineHeight:1.3 }}>{item.sub}</span>
         </motion.button>
       ))}
+
+      {/* ── Operational Mode Toggle: STD / SEN / RSH ── */}
+      <div style={{ display:"flex", flexDirection:"column", gap:3, padding:"6px 0 4px", borderTop:`1px solid ${C.chrome}22`, borderBottom:`1px solid ${C.chrome}22`, width:"100%", alignItems:"center" }}>
+        {([
+          { label:"STD", mode:"standard" as const, fn:setStandardMode, color:C.muted   },
+          { label:"SEN", mode:"senior"   as const, fn:setSeniorMode,   color:"#4ade80" },
+          { label:"RSH", mode:"rush"     as const, fn:setRushMode,     color:C.amber   },
+        ]).map(({ label, mode, fn, color }) => (
+          <motion.button key={mode} whileTap={{scale:0.91}} {...T} onClick={fn}
+            style={{ width:52, minHeight:30, borderRadius:6, cursor:"pointer",
+              background: operationalMode === mode ? `${color}22` : "transparent",
+              border:`1px solid ${operationalMode === mode ? color : C.chrome}`,
+              display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <span style={{ fontFamily:C.mono, fontSize:7, color:operationalMode===mode?color:C.muted, letterSpacing:"0.10em", fontWeight:900 }}>{label}</span>
+          </motion.button>
+        ))}
+      </div>
+
       <div style={{ flex:1 }} />
       {/* ── Security Gate Buttons ── */}
       <motion.button whileTap={{scale:0.91}} {...T}
@@ -1066,7 +1086,7 @@ function UpsellModal({ table, onAccept, onDecline }: {
           boxShadow:`0 0 60px ${C.goldGlo}` }}>
         <div style={{ height:4, background:`linear-gradient(90deg,${C.gold},#A67C00,${C.gold})` }} />
         <div style={{ padding:"28px 32px" }}>
-          <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.30em", marginBottom:8 }}>⭐ PREMIUM UPGRADE AVAILABLE</div>
+          <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.30em", marginBottom:8 }}> PREMIUM UPGRADE AVAILABLE</div>
           <div style={{ fontSize:28, fontWeight:900, color:C.white, marginBottom:8 }}>Add a Premier Pairing?</div>
           <div style={{ fontSize:18, color:C.muted, lineHeight:1.7, marginBottom:22 }}>
             Elevate Table {table.id}'s experience with a curated{" "}

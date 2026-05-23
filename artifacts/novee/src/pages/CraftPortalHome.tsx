@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGuest } from "@/context/GuestProfileContext";
 import { hapticMilestone } from "@/hooks/useHaptic";
@@ -79,6 +79,13 @@ const MENTOR_PORTFOLIO = [
 const GOLD = "#D4AF37";
 const IMG  = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
+const HERO_POOL: Record<string, string[]> = {
+  smoke: [IMG("cigar_hero.png"), IMG("scenes/craft-hub.jpg"), IMG("scenes/smoke-lounge-1.jpg")],
+  pour:  [IMG("scenes/spirits-bar.jpg"), IMG("scenes/craft-hub.jpg")],
+  beer:  [IMG("scenes/brew-taproom.jpg"), IMG("scenes/craft-hub.jpg")],
+  vape:  [IMG("scenes/vape-lounge.jpg"), IMG("scenes/craft-hub.jpg")],
+};
+
 function playTactile() {
   try {
     const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
@@ -127,6 +134,10 @@ const MENTOR = {
 export default function CraftPortalHome() {
   const { setPhase, updateProfile, profile } = useGuest();
   const [activeCraft,    setActiveCraft]    = useState("smoke");
+  const [heroIdx,        setHeroIdx]        = useState(0);
+  const heroTimer   = useRef<ReturnType<typeof setInterval> | null>(null);
+  const swipeHeroX  = useRef(0);
+  const heroPool    = HERO_POOL[activeCraft] ?? HERO_POOL.smoke!;
   const [showReturn,     setShowReturn]     = useState(false);
   const [retLast,        setRetLast]        = useState("");
   const [retPin,         setRetPin]         = useState("");
@@ -140,10 +151,18 @@ export default function CraftPortalHome() {
 
   useEffect(() => {
     const cp = restoreSession();
-    if (cp) {
-      setCheckpoint(cp);
-    }
+    if (cp) { setCheckpoint(cp); }
   }, []);
+
+  useEffect(() => {
+    setHeroIdx(0);
+    if (heroTimer.current) clearInterval(heroTimer.current);
+    heroTimer.current = setInterval(() => {
+      setHeroIdx(i => (i + 1) % (HERO_POOL[activeCraft]?.length ?? 1));
+    }, 5500);
+    return () => { if (heroTimer.current) clearInterval(heroTimer.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCraft]);
 
   function handleRestore() {
     if (checkpoint) {
@@ -173,12 +192,47 @@ export default function CraftPortalHome() {
     <div style={{ width: "100%", height: "100%", display: "flex", overflow: "hidden", background: "#040200", fontFamily: "'Inter',-apple-system,sans-serif", position: "relative" }}>
 
       {/* ══════════ FULL-BLEED HERO ══════════ */}
-      <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+      <div
+        style={{ flex: 1, position: "relative", overflow: "hidden", touchAction: "pan-y" }}
+        onPointerDown={(e) => { swipeHeroX.current = e.clientX; }}
+        onPointerUp={(e) => {
+          const dx = e.clientX - swipeHeroX.current;
+          if (Math.abs(dx) > 44) {
+            const pool = HERO_POOL[activeCraft] ?? HERO_POOL.smoke!;
+            setHeroIdx(i => dx < 0 ? (i + 1) % pool.length : (i - 1 + pool.length) % pool.length);
+            if (heroTimer.current) clearInterval(heroTimer.current);
+            heroTimer.current = setInterval(() => setHeroIdx(i => (i + 1) % pool.length), 5500);
+          }
+        }}
+      >
+        {/* Rotating hero carousel */}
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={`${activeCraft}-${heroIdx}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            style={{ position: "absolute", inset: 0 }}
+          >
+            <img src={heroPool[heroIdx]} alt=""
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 36%" }}
+              onError={e => { (e.target as HTMLImageElement).style.opacity = "0"; }} />
+          </motion.div>
+        </AnimatePresence>
 
-        {/* Cinematic cigar hero */}
-        <img src={IMG("cigar_hero.png")} alt=""
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 36%" }}
-          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+        {/* Scene progress dots — top right of hero */}
+        {heroPool.length > 1 && (
+          <div style={{ position: "absolute", top: 14, right: 18, zIndex: 15, display: "flex", gap: 5, alignItems: "center", pointerEvents: "none" }}>
+            {heroPool.map((_, i) => (
+              <motion.div key={i}
+                animate={{ width: i === heroIdx ? 20 : 6, opacity: i === heroIdx ? 1 : 0.35 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                style={{ height: 4, borderRadius: 3, background: GOLD }}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Obsidian glass preparation mat overlay */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(120deg, rgba(4,2,0,0.22) 0%, rgba(4,2,0,0.40) 48%, rgba(4,2,0,0.10) 100%)" }} />

@@ -448,7 +448,7 @@ const MOOD_OPTIONS = [
   { id: "chill",   label: "Chill Mode",   icon: "☀️" },
   { id: "deep",    label: "Deep Session", icon: "🌙" },
   { id: "premium", label: "Premium",      icon: "✦"  },
-  { id: "social",  label: "Social",       icon: "🎭" },
+  { id: "social",  label: "Social",       icon: "" },
 ];
 
 // ── CraftCard — premium genre-isolated portal tile ───────────────────────────
@@ -467,15 +467,22 @@ function CraftCard({
   const pool      = TILE_BG[mod.id] ?? TILE_BG.smoke!;
   const [sceneIdx, setSceneIdx] = useState(0);
   const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const swipeX    = useRef(0);
   const genre     = GENRE[mod.id as keyof typeof GENRE] ?? GENRE.smoke;
   const fallback  = TILE_FALLBACK[mod.id] ?? TILE_FALLBACK.smoke!;
 
-  useEffect(() => {
+  const resetTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setSceneIdx(i => (i + 1) % pool.length);
       setImgError(false);
     }, 5500);
+  };
+
+  useEffect(() => {
+    resetTimer();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool.length]);
 
   return (
@@ -486,15 +493,25 @@ function CraftCard({
         minHeight:               0,
         overflow:                "hidden",
         cursor:                  "pointer",
-        touchAction:             "manipulation",
+        touchAction:             "pan-y",
         userSelect:              "none",
         WebkitTapHighlightColor: "transparent",
         background:              "#000000",
       }}
       animate={{ scale: pressed ? 0.985 : 1 }}
       transition={{ duration: 0.12, ease: "easeOut" }}
-      onPointerDown={() => { setPressed(true); playTactile(); }}
-      onPointerUp={() => { setPressed(false); onTrigger(); }}
+      onPointerDown={(e) => { setPressed(true); swipeX.current = e.clientX; playTactile(); }}
+      onPointerUp={(e) => {
+        setPressed(false);
+        const dx = e.clientX - swipeX.current;
+        if (Math.abs(dx) > 44) {
+          setSceneIdx(i => dx < 0 ? (i + 1) % pool.length : (i - 1 + pool.length) % pool.length);
+          setImgError(false);
+          resetTimer();
+        } else {
+          onTrigger();
+        }
+      }}
       onPointerLeave={() => setPressed(false)}
       onPointerCancel={() => setPressed(false)}
     >

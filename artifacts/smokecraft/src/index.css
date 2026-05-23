@@ -995,3 +995,21 @@ button, [role="button"] {
   .animate-novee-flicker { animation: novee-flicker 8s ease-in-out infinite; }
   .animate-novee-ember   { animation: novee-ember-breathe 3s ease-in-out infinite; }
 }
+
+/* ── ThemeConfig: operational mode CSS hooks ──────────────────────────────── */
+:root {
+  --theme-font-scale:     1;
+  --theme-touch-scale:    1;
+  --theme-anim-intensity: full;
+  --theme-contrast-mode:  standard;
+}
+html[data-operational-mode="senior"] button,
+html[data-operational-mode="senior"] [role="button"] {
+  min-height: calc(44px * var(--theme-touch-scale)) !important;
+}
+html[data-operational-mode="rush"] *,
+html[data-operational-mode="rush"] *::before,
+html[data-operational-mode="rush"] *::after {
+  animation-duration:   0.12s !important;
+  transition-duration:  0.08s !important;
+}

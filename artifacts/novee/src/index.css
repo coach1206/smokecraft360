@@ -826,3 +826,21 @@ body::after {
   100% { opacity: 0.18; transform: scale(1.00) translate(0%, 0%); }
 }
 .ax-mentor-drift { animation: ax-mentor-drift 8s ease-in-out infinite; }
+
+/* ── ThemeConfig: operational mode CSS hooks ──────────────────────────────── */
+:root {
+  --theme-font-scale:     1;
+  --theme-touch-scale:    1;
+  --theme-anim-intensity: full;
+  --theme-contrast-mode:  standard;
+}
+html[data-operational-mode="senior"] button,
+html[data-operational-mode="senior"] [role="button"] {
+  min-height: calc(44px * var(--theme-touch-scale)) !important;
+}
+html[data-operational-mode="rush"] *,
+html[data-operational-mode="rush"] *::before,
+html[data-operational-mode="rush"] *::after {
+  animation-duration:   0.12s !important;
+  transition-duration:  0.08s !important;
+}

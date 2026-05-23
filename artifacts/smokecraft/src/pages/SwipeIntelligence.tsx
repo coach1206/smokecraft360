@@ -1253,7 +1253,7 @@ const CRAFT_LABELS: Record<string, string> = {
 const TASTE_CLUSTERS = [
   {
     name: "Smoky Seekers",
-    emoji: "🔥",
+    emoji: "",
     color: "#e85d26",
     description: "Prefer bold, smoke-forward profiles",
     tags: ["smoky", "bold", "peat", "peated", "earthy", "cedar"],

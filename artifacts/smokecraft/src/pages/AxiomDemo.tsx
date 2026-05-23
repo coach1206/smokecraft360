@@ -89,7 +89,7 @@ const STEP_DURATION_MS = 6000;
 // ── Craft tiles (Step 1) ──────────────────────────────────────────────────────
 
 const CRAFTS = [
-  { id: "smoke", label: "SmokeCraft", emoji: "🔥", accent: "#D48B00" },
+  { id: "smoke", label: "SmokeCraft", emoji: "", accent: "#D48B00" },
   { id: "pour",  label: "PourCraft",  emoji: "🥃", accent: "#8b5cf6" },
   { id: "brew",  label: "BrewCraft",  emoji: "🍺", accent: "#16a34a" },
   { id: "vape",  label: "VapeCraft",  emoji: "💨", accent: "#0891b2" },

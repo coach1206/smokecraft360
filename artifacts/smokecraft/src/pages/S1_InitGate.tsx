@@ -636,7 +636,7 @@ export function S1_InitGate() {
                   marginTop: "auto", background: "rgba(212,175,55,0.07)",
                   border: "1px solid rgba(212,175,55,0.22)", borderRadius: 10, padding: "14px 16px",
                 }}>
-                  <div style={{ fontSize: 11, letterSpacing: "0.36em", color: `${GOLD}90`, fontWeight: 800, marginBottom: 8, textTransform: "uppercase" }}>💡 Tip</div>
+                  <div style={{ fontSize: 11, letterSpacing: "0.36em", color: `${GOLD}90`, fontWeight: 800, marginBottom: 8, textTransform: "uppercase" }}> Tip</div>
                   <p style={{ fontSize: 15, color: "rgba(240,232,212,0.55)", lineHeight: 1.55, margin: 0 }}>
                     The better your decisions, the higher you climb.
                   </p>
@@ -663,7 +663,7 @@ export function S1_InitGate() {
                     {
                       num: 1, name: "Novice", sub: "The Beginning",
                       xp: "0 – 999 XP", color: "#C8322A", glow: "rgba(200,50,42,0.28)",
-                      badge: "🔥", desc: "You're learning the basics. Every decision builds your foundation.",
+                      badge: "", desc: "You're learning the basics. Every decision builds your foundation.",
                       skills: ["Learn cigar basics", "Identify simple flavors", "Complete intro challenges"],
                     },
                     {
@@ -675,7 +675,7 @@ export function S1_InitGate() {
                     {
                       num: 3, name: "Connoisseur", sub: "Refined & Focused",
                       xp: "5,000 – 14,999 XP", color: "#9B59B6", glow: "rgba(155,89,182,0.28)",
-                      badge: "💎", desc: "You appreciate complexity. You see what others overlook.",
+                      badge: "", desc: "You appreciate complexity. You see what others overlook.",
                       skills: ["Identify flavor transitions", "Know aging & construction", "Compete at a higher level"],
                     },
                     {
@@ -783,7 +783,7 @@ export function S1_InitGate() {
                   <div>
                     <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(240,232,212,0.32)", textTransform: "uppercase", marginBottom: 8 }}>Earn Badges</div>
                     <div style={{ display: "flex", gap: 8 }}>
-                      {["🔥","🕯","💎","♛"].map((b, i) => (
+                      {["","🕯","","♛"].map((b, i) => (
                         <div key={i} style={{
                           width: 36, height: 36, borderRadius: "50%", fontSize: 18,
                           display: "flex", alignItems: "center", justifyContent: "center",
@@ -813,7 +813,7 @@ export function S1_InitGate() {
                       boxShadow: `0 0 28px rgba(212,175,55,0.35), 0 6px 20px rgba(0,0,0,0.60)`,
                       whiteSpace: "nowrap",
                     }}>
-                    📊 View Leaderboard
+                     View Leaderboard
                   </motion.button>
                 </div>
               </div>
@@ -895,7 +895,7 @@ export function S1_InitGate() {
                 </div>
                 {[
                   { icon: "◎", label: "Score Points", body: "Complete challenges, tasting rounds, mentor quizzes, and pairing decisions to earn XP." },
-                  { icon: "📈", label: "Climb the Ranks", body: "Advance through the four official SmokeCraft stages and prove your mastery." },
+                  { icon: "", label: "Climb the Ranks", body: "Advance through the four official SmokeCraft stages and prove your mastery." },
                   { icon: "⬡", label: "Earn Badges", body: "Unlock exclusive achievement badges that represent your knowledge, skill, and prestige." },
                   { icon: "⬡", label: "Unlock Rewards", body: "Higher ranks unlock rare blends, VIP experiences, exclusive events, and premium gear." },
                   { icon: "⚠", label: "Penalties", body: "Poor decisions and incorrect selections may reduce your points. Not every move earns respect." },
@@ -918,9 +918,9 @@ export function S1_InitGate() {
                   <div style={{ flex: 1, height: 1, background: `${GOLD}22` }} />
                 </div>
                 {[
-                  { badge: "🔥", name: "Novice",       sub: "The Beginning",      xp: "0 – 999 XP",          color: "#C8322A", desc: "Learn cigar basics, flavor recognition, and foundational pairing techniques." },
+                  { badge: "", name: "Novice",       sub: "The Beginning",      xp: "0 – 999 XP",          color: "#C8322A", desc: "Learn cigar basics, flavor recognition, and foundational pairing techniques." },
                   { badge: "🕯", name: "Enthusiast",   sub: "Fueled by Passion",  xp: "1,000 – 4,999 XP",   color: GOLD,      desc: "Understand regions, wrappers, construction, and pairing synergy." },
-                  { badge: "💎", name: "Connoisseur",  sub: "Refined & Focused",  xp: "5,000 – 14,999 XP",  color: "#9B59B6", desc: "Recognize flavor transitions, aging, fermentation, and advanced blend structure." },
+                  { badge: "", name: "Connoisseur",  sub: "Refined & Focused",  xp: "5,000 – 14,999 XP",  color: "#9B59B6", desc: "Recognize flavor transitions, aging, fermentation, and advanced blend structure." },
                   { badge: "♛",  name: "Aficionado",  sub: "The Ultimate Status", xp: "15,000+ XP",          color: "#D4820A", desc: "Master sensory analysis, pairing intelligence, cigar culture, and strategic competition." },
                 ].map(t => (
                   <div key={t.name} style={{
@@ -954,7 +954,7 @@ export function S1_InitGate() {
                 borderRadius: 12, padding: "14px 18px",
                 display: "flex", gap: 14, alignItems: "center",
               }}>
-                <span style={{ fontSize: 28, flexShrink: 0 }}>🏆</span>
+                <span style={{ fontSize: 28, flexShrink: 0 }}></span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: GOLD, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>The Golden Box Prize</div>
                   <div style={{ fontSize: 13, color: "rgba(240,232,212,0.45)", lineHeight: 1.55 }}>
@@ -1014,7 +1014,7 @@ export function S1_InitGate() {
                 </div>
                 {/* Badges */}
                 <div style={{ padding: "16px 24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⭐</div>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}></div>
                   <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(240,232,212,0.35)", textTransform: "uppercase" }}>Badges</div>
                 </div>
                 {/* Spacer + CTA */}
@@ -1048,16 +1048,16 @@ export function S1_InitGate() {
 
                 {/* Rows */}
                 {[
-                  { rank: 1,  handle: "TheCigarLion",   real: "Alex Martinez",      xp: 18750, tier: "Aficionado",  badge: "♛",  tColor: "#D4820A", badges: ["♛","💎","🔥"], extra: "+3" },
-                  { rank: 2,  handle: "Aficionado_D",   real: "Darnell Washington", xp: 16420, tier: "Connoisseur", badge: "💎", tColor: "#9B59B6", badges: ["💎","🕯","🔥"], extra: "+2" },
-                  { rank: 3,  handle: "SmoothDraws",    real: "Marcus Tate",         xp: 14980, tier: "Connoisseur", badge: "💎", tColor: "#9B59B6", badges: ["💎","🕯","🔥"], extra: "+4" },
-                  { rank: 4,  handle: "Ash&Oak",        real: "Brandon Hill",        xp: 13250, tier: "Connoisseur", badge: "💎", tColor: "#9B59B6", badges: ["💎","🕯"],       extra: "+1" },
-                  { rank: 5,  handle: "LeafScholar",    real: "Jasmine Cole",        xp: 12760, tier: "Connoisseur", badge: "💎", tColor: "#9B59B6", badges: ["♛","💎"],       extra: "+2" },
-                  { rank: 6,  handle: "BourbonLeaf",    real: "Tyler Bennett",       xp: 10850, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛","🔥"],       extra: "+1" },
-                  { rank: 7,  handle: "CigarSensei",    real: "Ethan Reynolds",      xp:  9430, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["💎","🔥"],       extra: "+2" },
-                  { rank: 8,  handle: "PuffProfessor",  real: "Daniel Cooper",       xp:  8910, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["🔥","⭐"],       extra: "+1" },
-                  { rank: 9,  handle: "VintageVisions", real: "Robert King",         xp:  7650, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛","🔥"],       extra: "+2" },
-                  { rank: 10, handle: "CedarRoomKing",  real: "Kevin Brooks",        xp:  6980, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["🔥"],            extra: "+1" },
+                  { rank: 1,  handle: "TheCigarLion",   real: "Alex Martinez",      xp: 18750, tier: "Aficionado",  badge: "♛",  tColor: "#D4820A", badges: ["♛","",""], extra: "+3" },
+                  { rank: 2,  handle: "Aficionado_D",   real: "Darnell Washington", xp: 16420, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯",""], extra: "+2" },
+                  { rank: 3,  handle: "SmoothDraws",    real: "Marcus Tate",         xp: 14980, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯",""], extra: "+4" },
+                  { rank: 4,  handle: "Ash&Oak",        real: "Brandon Hill",        xp: 13250, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯"],       extra: "+1" },
+                  { rank: 5,  handle: "LeafScholar",    real: "Jasmine Cole",        xp: 12760, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["♛",""],       extra: "+2" },
+                  { rank: 6,  handle: "BourbonLeaf",    real: "Tyler Bennett",       xp: 10850, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛",""],       extra: "+1" },
+                  { rank: 7,  handle: "CigarSensei",    real: "Ethan Reynolds",      xp:  9430, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["",""],       extra: "+2" },
+                  { rank: 8,  handle: "PuffProfessor",  real: "Daniel Cooper",       xp:  8910, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["",""],       extra: "+1" },
+                  { rank: 9,  handle: "VintageVisions", real: "Robert King",         xp:  7650, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛",""],       extra: "+2" },
+                  { rank: 10, handle: "CedarRoomKing",  real: "Kevin Brooks",        xp:  6980, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: [""],            extra: "+1" },
                 ].map((row, i) => {
                   const isTop3 = row.rank <= 3;
                   const rankColor = row.rank === 1 ? GOLD : row.rank === 2 ? "#C0C0C0" : row.rank === 3 ? "#CD7F32" : "rgba(240,232,212,0.30)";
@@ -1223,7 +1223,7 @@ export function S1_InitGate() {
           const FLAVOR_ICONS: Record<string, {sym:string;label:string}[]> = {
             criollo:     [{sym:"🌍",label:"EARTH"},{sym:"🌿",label:"CEDAR"},{sym:"🍫",label:"COCOA"},{sym:"🌶",label:"PEPPER"}],
             corojo:      [{sym:"🌶",label:"PEPPER"},{sym:"🌿",label:"CEDAR"},{sym:"⚡",label:"SPICE"},{sym:"🌳",label:"OAK"}],
-            connecticut: [{sym:"🥛",label:"CREAM"},{sym:"🌾",label:"HAY"},{sym:"✨",label:"VANILLA"},{sym:"🌸",label:"FLORAL"}],
+            connecticut: [{sym:"🥛",label:"CREAM"},{sym:"🌾",label:"HAY"},{sym:"",label:"VANILLA"},{sym:"🌸",label:"FLORAL"}],
           };
           const RADAR_VALS: Record<string,number[]> = {
             criollo:     [90,60,20,15,30,75,80,85],
@@ -1426,7 +1426,7 @@ export function S1_InitGate() {
                 {/* Smoke Density */}
                 <div style={{ marginBottom: 16 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 7 }}>
-                    <span style={{ fontSize: 13 }}>🔥</span>
+                    <span style={{ fontSize: 13 }}></span>
                     <span style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>Smoke Density</span>
                   </div>
                   <div style={{ height: 7, background: "rgba(255,255,255,0.07)", borderRadius: 4, overflow: "hidden" }}>

@@ -59,7 +59,7 @@ const STRENGTH_LABELS = ["Mild", "Medium-Mild", "Medium", "Medium-Full", "Full"]
 type FlavorDir = "sweet" | "bold" | "spicy" | "creamy" | "earthy" | "floral";
 const FLAVOR_DIRS: { id: FlavorDir; emoji: string; label: string }[] = [
   { id: "sweet",  emoji: "🍯", label: "Sweet"  },
-  { id: "bold",   emoji: "🔥", label: "Bold"   },
+  { id: "bold",   emoji: "", label: "Bold"   },
   { id: "spicy",  emoji: "🌶", label: "Spicy"  },
   { id: "creamy", emoji: "🥛", label: "Creamy" },
   { id: "earthy", emoji: "🌿", label: "Earthy" },

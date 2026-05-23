@@ -96,7 +96,7 @@ export default function Leaderboard({ accentColor }: { accentColor: string }) {
               fontSize: 10, fontWeight: 800, minWidth: 16, textAlign: "center",
               color: RANK_COLORS[i] ?? "rgba(26,26,27,0.40)",
             }}>
-              {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
+              {i === 0 ? "" : i === 1 ? "" : i === 2 ? "" : `#${i + 1}`}
             </span>
             <span style={{ fontSize: 11, color: "rgba(26,26,27,0.82)", flex: 1, fontWeight: i === 0 ? 700 : 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {entry.name}

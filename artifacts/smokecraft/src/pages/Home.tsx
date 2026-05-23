@@ -191,7 +191,7 @@ const SMOKE_PLAYGROUND_CONFIG: PlaygroundConfig = {
     { id: "crown",    label: "Crown ♛"   },
     { id: "crest",    label: "Crest ❧"   },
     { id: "initials", label: "Initials"  },
-    { id: "flame",    label: "Flame 🔥"  },
+    { id: "flame",    label: "Flame "  },
     { id: "leaf",     label: "Leaf 🌿"   },
   ],
   colorSwatches: [

@@ -468,8 +468,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           "Elite blend. Feature-worthy."
         );
         setRankMessage(
-          rawScore > 75 ? "🔥 You're near the top. Push harder."      :
-          rawScore > 65 ? "✨ You're close to a feature-worthy build." :
+          rawScore > 75 ? " You're near the top. Push harder."      :
+          rawScore > 65 ? " You're close to a feature-worthy build." :
           rawScore < 30 ? "⚠️ You're falling behind."                 : null
         );
         setShowScoreOverlay(true);
@@ -673,9 +673,9 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             fontSize: 12, color: "rgba(26,26,27,0.82)",
             letterSpacing: "0.04em",
           }}>
-            <span>🔥 <strong style={{ color: config.theme.accent }}>{intelStrip.trend}</strong></span>
+            <span> <strong style={{ color: config.theme.accent }}>{intelStrip.trend}</strong></span>
             <span style={{ opacity: 0.35 }}>·</span>
-            <span>🏆 <strong style={{ color: "#1A1A1B" }}>{intelStrip.topCreator}</strong></span>
+            <span> <strong style={{ color: "#1A1A1B" }}>{intelStrip.topCreator}</strong></span>
           </div>
         </div>
       )}
@@ -1268,7 +1268,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 maxWidth: 420,
               }}
             >
-              <div style={{ fontSize: 44, marginBottom: 14 }}>⚗️</div>
+              <div style={{ fontSize: 44, marginBottom: 14 }}>️</div>
               <h2 style={{
                 fontFamily: "var(--app-font-serif, Georgia, serif)",
                 fontSize: 26, color: "#1A1A1B", margin: "0 0 10px",

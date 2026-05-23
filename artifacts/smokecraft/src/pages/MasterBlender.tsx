@@ -4910,7 +4910,7 @@ function GatewayMovement2Gate({
           initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           style={{ textAlign: "center" as const, marginBottom: 28 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>⚗️</div>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>️</div>
           <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.38em",
             textTransform: "uppercase" as const, marginBottom: 6 }}>
             MOVEMENT II COMPLETE

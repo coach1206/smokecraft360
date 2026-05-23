@@ -101,7 +101,7 @@ export default function ControlChamber() {
             { id: "phases", label: "PHASE CONTROL", icon: "⌘" },
             { id: "modes", label: "DEMO MODES", icon: "⎔" },
             { id: "competitors", label: "COMPETITORS", icon: "⌬" },
-            { id: "analytics", label: "ANALYTICS", icon: "📊" },
+            { id: "analytics", label: "ANALYTICS", icon: "" },
             { id: "mentors", label: "MENTOR OVERRIDE", icon: "◈" },
           ].map((tab) => (
             <button

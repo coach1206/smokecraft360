@@ -421,19 +421,19 @@ function LeaderboardPanel({
           <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
             {tournament.prizeFirst && (
               <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)" }}>
-                <span style={{ fontSize: 10 }}>🥇</span>
+                <span style={{ fontSize: 10 }}></span>
                 <span style={{ fontSize: 11, color: "#D48B00", fontWeight: 600 }}>{tournament.prizeFirst}</span>
               </div>
             )}
             {tournament.prizeSecond && (
               <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, background: "rgba(156,163,175,0.08)", border: "1px solid rgba(156,163,175,0.2)" }}>
-                <span style={{ fontSize: 10 }}>🥈</span>
+                <span style={{ fontSize: 10 }}></span>
                 <span style={{ fontSize: 11, color: "#9ca3af", fontWeight: 600 }}>{tournament.prizeSecond}</span>
               </div>
             )}
             {tournament.prizeThird && (
               <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, background: "rgba(184,115,51,0.08)", border: "1px solid rgba(184,115,51,0.2)" }}>
-                <span style={{ fontSize: 10 }}>🥉</span>
+                <span style={{ fontSize: 10 }}></span>
                 <span style={{ fontSize: 11, color: "#b87333", fontWeight: 600 }}>{tournament.prizeThird}</span>
               </div>
             )}
@@ -824,7 +824,7 @@ function CreateTournamentModal({
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {(["prizeFirst", "prizeSecond", "prizeThird"] as const).map((key, i) => (
                 <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 14, flexShrink: 0 }}>{["🥇", "🥈", "🥉"][i]}</span>
+                  <span style={{ fontSize: 14, flexShrink: 0 }}>{["", "", ""][i]}</span>
                   <input
                     value={form[key]}
                     onChange={e => set(key, e.target.value)}
@@ -1259,7 +1259,7 @@ export default function CompetitionModule() {
 
     function onSpawned(payload: { type: string; title: string }) {
       const name = payload.title || (TYPE_META[payload.type as TournamentType]?.label ?? payload.type);
-      showToast(`🏆 "${name}" has started — enter now!`);
+      showToast(` "${name}" has started — enter now!`);
       loadTournamentsRef.current();
     }
 
@@ -1273,7 +1273,7 @@ export default function CompetitionModule() {
       // Only show the notification to the user whose rank actually changed.
       if (payload.userId !== userRef.current?.id) return;
 
-      const rankLabel = payload.newRank === 1 ? "#1 🏆" : `#${payload.newRank}`;
+      const rankLabel = payload.newRank === 1 ? "#1 " : `#${payload.newRank}`;
       const direction = payload.oldRank === null
         ? ""
         : payload.newRank < payload.oldRank
@@ -1607,7 +1607,7 @@ export default function CompetitionModule() {
                 <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid rgba(212,139,0,0.18)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 22 }}>🏆</span>
+                      <span style={{ fontSize: 22 }}></span>
                       <div>
                         <div style={{ fontSize: 17, fontWeight: 800, color: "#D48B00" }}>Legend Series</div>
                         <div style={{ fontSize: 11, color: "rgba(26,26,27,0.45)" }}>Grand · Multi-craft · All venues</div>
@@ -1637,9 +1637,9 @@ export default function CompetitionModule() {
                     Live Leaderboard
                   </div>
                   {[
-                    { rank: 1, name: "Marcus R.",   venue: "The Vault",       pts: 2847, craft: "smoke", badge: "🥇" },
-                    { rank: 2, name: "Sofia M.",    venue: "Oak & Ember",     pts: 2341, craft: "pour",  badge: "🥈" },
-                    { rank: 3, name: "Omar K.",     venue: "The Reserve",     pts: 1998, craft: "smoke", badge: "🥉" },
+                    { rank: 1, name: "Marcus R.",   venue: "The Vault",       pts: 2847, craft: "smoke", badge: "" },
+                    { rank: 2, name: "Sofia M.",    venue: "Oak & Ember",     pts: 2341, craft: "pour",  badge: "" },
+                    { rank: 3, name: "Omar K.",     venue: "The Reserve",     pts: 1998, craft: "smoke", badge: "" },
                     { rank: 4, name: "Jade T.",     venue: "Velvet Room",     pts: 1654, craft: "brew",  badge: "4" },
                     { rank: 5, name: "Theo B.",     venue: "The Vault",       pts: 1102, craft: "pour",  badge: "5" },
                   ].map((entry) => (
@@ -1689,7 +1689,7 @@ export default function CompetitionModule() {
                     fontSize: 10, fontWeight: 700, color: "rgba(212,139,0,0.6)",
                     textTransform: "uppercase", letterSpacing: "0.2em",
                   }}>
-                    ⭐ Featured
+                     Featured
                   </div>
                   {featured.map((t, i) => (
                     <motion.div key={t.id} transition={{ delay: i * 0.05 }}>

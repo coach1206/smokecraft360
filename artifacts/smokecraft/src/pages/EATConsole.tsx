@@ -123,10 +123,10 @@ type PanelVis = "on"|"muted"|"hidden";
 const BOT_NAV = [
   { label:"MENU",         icon:"📋", img:IMG("lounge_bg.jpg")      },
   { label:"RESERVATIONS", icon:"📅", img:IMG("lounge-bg.png")      },
-  { label:"EVENTS",       icon:"🎭", img:IMG("cigar_hero.jpg")     },
+  { label:"EVENTS",       icon:"", img:IMG("cigar_hero.jpg")     },
   { label:"E.A.T",        icon:"",   img:"",          eat:true      },
   { label:"MESSAGES",     icon:"✉️", img:IMG("lounge_bg.jpg")      },
-  { label:"REPORTS",      icon:"📊", img:IMG("pourcraft-card.jpg") },
+  { label:"REPORTS",      icon:"", img:IMG("pourcraft-card.jpg") },
   { label:"SETTINGS",     icon:"⚙️", img:IMG("cigar_hero.png")     },
 ] as const;
 
@@ -1033,7 +1033,7 @@ export default function EATConsole({ defaultTab: _defaultTab }: { defaultTab?: s
               {/* Lighting */}
               <div style={{ marginBottom:10 }}>
                 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                  <span style={{ fontSize:11, color:TEXT_SEC, display:"flex", alignItems:"center", gap:4 }}>💡 Lighting</span>
+                  <span style={{ fontSize:11, color:TEXT_SEC, display:"flex", alignItems:"center", gap:4 }}> Lighting</span>
                   <span style={{ fontSize:11, fontWeight:700, color:GOLD }}>{lighting}%</span>
                 </div>
                 <input type="range" min={0} max={100} value={lighting}

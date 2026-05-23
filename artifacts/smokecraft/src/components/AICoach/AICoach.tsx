@@ -43,7 +43,7 @@ export interface AICoachProps {
 const MAX_SPEAK = 160;
 
 const CRAFT_GLYPH: Record<CraftType, string> = {
-  smoke: "🎯",
+  smoke: "",
   brew:  "🍺",
   pour:  "🥃",
   vape:  "💨",

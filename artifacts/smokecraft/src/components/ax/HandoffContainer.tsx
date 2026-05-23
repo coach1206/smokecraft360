@@ -1573,7 +1573,7 @@ function StaffPanel({
 
           {/* Quick nav — fat-finger */}
           {[
-            { label: "📊 Analytics Dashboard", route: "/analytics" },
+            { label: " Analytics Dashboard", route: "/analytics" },
             { label: "💳 Open Tab Manager",    route: "/tabs" },
           ].map(btn => (
             <button key={btn.label}

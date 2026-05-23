@@ -631,7 +631,7 @@ function Scene8({ onComplete, accent }: { onComplete: () => void; accent: string
             onClick={handleEnter}
             style={{ marginTop: 28, width: 148, height: 148, borderRadius: "50%", background: `radial-gradient(circle, ${accent}18 0%, transparent 70%)`, border: `1px solid ${accent}55`, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: `0 0 44px ${accent}20`, zIndex: 10 }}>
             <motion.span animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2.2, repeat: Infinity }} style={{ fontSize: 26 }}>
-              🔥
+              
             </motion.span>
             <span style={{ fontFamily: C.mono, fontSize: 8, color: accent, letterSpacing: "0.2em" }}>ENTER THE SMOKE</span>
           </motion.button>

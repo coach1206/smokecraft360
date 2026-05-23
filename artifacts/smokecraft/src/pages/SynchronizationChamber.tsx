@@ -351,7 +351,7 @@ export default function SynchronizationChamber() {
                   transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
                   style={{ fontSize: 28 }}
                 >
-                  🔥
+                  
                 </motion.div>
                 <span style={{ fontSize: 9, color: accent, fontFamily: C.mono, letterSpacing: "0.22em", textTransform: "uppercase" }}>
                   ENTER THE SMOKE

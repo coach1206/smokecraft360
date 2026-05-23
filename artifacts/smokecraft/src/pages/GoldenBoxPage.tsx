@@ -353,7 +353,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
           ))}
           {/* TIP */}
           <div style={{ marginTop: "auto", padding: "12px 10px", borderRadius: 8, background: `rgba(212,175,55,0.06)`, border: `1px solid ${GOLD}22` }}>
-            <div style={{ fontSize: 10, fontWeight: 900, color: GOLD, letterSpacing: "0.24em", marginBottom: 5 }}>💡 TIP</div>
+            <div style={{ fontSize: 10, fontWeight: 900, color: GOLD, letterSpacing: "0.24em", marginBottom: 5 }}> TIP</div>
             <div style={{ fontSize: 10, color: "rgba(240,232,212,0.50)", lineHeight: 1.55 }}>The better your decisions, the higher you climb.</div>
           </div>
         </div>
@@ -476,7 +476,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
           <div style={{ display: "flex", gap: 4 }}>
             {LEVELS.slice(0, 4).map(lv => (
               <div key={lv.id} style={{ width: 26, height: 26, borderRadius: "50%", border: `1px solid ${xp >= lv.xpMin ? lv.color + "66" : "rgba(212,175,55,0.15)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, opacity: xp >= lv.xpMin ? 1 : 0.30 }}>
-                {["\uD83D\uDD25","🕯️","💎","👑"][LEVELS.indexOf(lv)]}
+                {["\uD83D\uDD25","🕯️","","👑"][LEVELS.indexOf(lv)]}
               </div>
             ))}
           </div>
@@ -503,7 +503,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
             boxShadow: `0 0 20px ${GOLD}44`,
           }}
         >
-          📊 VIEW LEADERBOARD
+           VIEW LEADERBOARD
         </motion.button>
       </div>
 

@@ -9,6 +9,7 @@ import { CommandCenterProvider }     from '@/contexts/CommandCenterContext';
 import { PosProvider }               from '@/contexts/PosContext';
 import { VenueProvider }             from '@/contexts/VenueContext';
 import { ThemeProvider }             from '@/contexts/ThemeContext';
+import { ThemeConfigProvider }       from '@/contexts/ThemeConfigContext';
 import { EngagementProvider }        from '@/contexts/EngagementContext';
 import { PreferenceProvider }        from '@/contexts/PreferenceContext';
 import { UserProfileProvider }       from '@/contexts/UserProfileContext';
@@ -223,6 +224,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
         <LicenseProvider>
           <VenueProvider>
             <KernelModeProvider>
+            <ThemeConfigProvider>
             <ThemeProvider venueId={venueId}>
               <KioskModeProvider>
                 <CommandCenterProvider>
@@ -280,6 +282,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                 </CommandCenterProvider>
               </KioskModeProvider>
             </ThemeProvider>
+            </ThemeConfigProvider>
             </KernelModeProvider>
           </VenueProvider>
         </LicenseProvider>

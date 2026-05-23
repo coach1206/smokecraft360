@@ -57,13 +57,13 @@ const C = {
 
 const SECTION_META: Record<string, { color: string; emoji: string }> = {
   system_health:     { color: "#2563eb", emoji: "🔵" },
-  inventory:         { color: "#16a34a", emoji: "📦" },
+  inventory:         { color: "#16a34a", emoji: "" },
   venue_settings:    { color: "#D48B00", emoji: "🏛️" },
   experience_controls: { color: "#8b5cf6", emoji: "🎛️" },
-  demo_mode:         { color: "#0891b2", emoji: "🎬" },
+  demo_mode:         { color: "#0891b2", emoji: "" },
   staff_access:      { color: "#ea580c", emoji: "👥" },
   order_flow:        { color: "#16a34a", emoji: "🛒" },
-  analytics:         { color: "#D48B00", emoji: "📊" },
+  analytics:         { color: "#D48B00", emoji: "" },
   sound_assets:      { color: "#8b5cf6", emoji: "🔊" },
   performance_mode:  { color: "#2563eb", emoji: "⚡" },
 };
