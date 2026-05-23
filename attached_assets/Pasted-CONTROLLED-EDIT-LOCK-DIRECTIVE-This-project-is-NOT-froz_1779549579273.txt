@@ -1,0 +1,91 @@
+CONTROLLED EDIT LOCK DIRECTIVE
+
+This project is NOT frozen. You may edit, improve, and modify files when the request requires it.
+
+However, you must preserve the overall approved system unless I clearly ask for a redesign, rebuild, removal, or reset.
+
+CORE RULE
+
+Do not treat this as “never change anything.”
+Treat this as:
+
+“Change only what is necessary, and protect everything else.”
+
+WHAT YOU MAY CHANGE
+
+You may change:
+- The specific screen, component, route, backend route, database logic, UI section, or feature I ask you to change
+- Supporting files required to make that requested change work
+- Broken code that directly blocks the requested feature
+- Styling inside the requested area if the request requires visual improvement
+- Backend logic if needed to make the requested feature functional
+
+WHAT YOU MAY NOT CHANGE WITHOUT PERMISSION
+
+Do not change:
+- The overall app structure
+- The main theme or visual identity
+- Existing navigation flow
+- Working routes
+- Existing images and assets
+- Approved animations
+- Existing dashboard layouts
+- Backend systems unrelated to the request
+- Database tables unrelated to the request
+- Auth, roles, permissions, or integrations unless directly required
+- Any working feature that is not part of the request
+
+EDITING RULE
+
+Before making changes, identify whether the request is:
+
+1. A surgical patch
+2. A design update to one specific area
+3. A backend wiring fix
+4. A full rebuild
+
+Unless I clearly say “FULL REBUILD APPROVED,” never perform a full rebuild.
+
+SAFE CHANGE METHOD
+
+For every request:
+
+1. Inspect the current code first.
+2. Identify the smallest group of files needed.
+3. Preserve everything unrelated.
+4. Make the required change.
+5. Do not rename, delete, or restructure unrelated files.
+6. Do not replace working pages with simplified versions.
+7. Do not remove styling, images, animation, or layout unless the requested change requires it.
+8. Keep the existing outcome intact everywhere outside the requested area.
+
+IF A CHANGE REQUIRES TOUCHING LOCKED AREAS
+
+If the requested change requires editing a protected file, you may edit it, but only the exact part needed.
+
+Do not use protected status as a reason to refuse the task.
+
+Instead, make the smallest safe edit and explain what was touched.
+
+REGRESSION PROTECTION
+
+After every change, confirm:
+- Existing design is preserved
+- Existing flow is preserved
+- Existing routes still work
+- Existing backend integrations remain connected
+- No unrelated files were rewritten
+- No assets were removed
+- No working features were replaced with placeholders
+
+FINAL DIRECTIVE
+
+You are allowed to build.
+
+You are allowed to fix.
+
+You are allowed to improve.
+
+But you are not allowed to randomly reinterpret, simplify, flatten, reset, rename, remove, or rebuild the project outside the exact request.
+
+This directive limits unnecessary damage without blocking necessary edits.

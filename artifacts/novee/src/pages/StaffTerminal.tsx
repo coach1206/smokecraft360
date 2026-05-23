@@ -731,8 +731,8 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
         <div style={{ flex:1 }}>
-          <div style={{ fontSize:18, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>REAL-TIME TELEMETRY</div>
-          <div style={{ fontSize:12, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>E.A.T. CORE STATION MONITORS</div>
+          <div style={{ fontSize:32, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>REAL-TIME TELEMETRY</div>
+          <div style={{ fontSize:20, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>E.A.T. CORE STATION MONITORS</div>
         </div>
       </div>
       <div style={{ display:"flex", gap:5, flexShrink:0 }}>
@@ -1181,8 +1181,8 @@ function TicketsCol({ state, revenue, onSelect, onUpdate, onAddTable }: {
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={2} />
         <div>
-          <div style={{ fontSize:18, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>HIGH-SPEED TICKET OVERVIEW</div>
-          <div style={{ fontSize:12, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>ACTIVE LOUNGE TABLES & QUEUES</div>
+          <div style={{ fontSize:32, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>HIGH-SPEED TICKET OVERVIEW</div>
+          <div style={{ fontSize:20, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>ACTIVE LOUNGE TABLES & QUEUES</div>
         </div>
       </div>
       <div style={{ display:"flex", gap:12, marginBottom:8, flexShrink:0, alignItems:"center", overflowX:"auto", overflowY:"hidden", whiteSpace:"nowrap" }}>
@@ -1196,11 +1196,11 @@ function TicketsCol({ state, revenue, onSelect, onUpdate, onAddTable }: {
         style={{ height:58, width:"100%", marginBottom:10, flexShrink:0,
           background:`linear-gradient(135deg,rgba(212,175,55,0.18),rgba(212,175,55,0.08))`,
           border:`2px solid ${C.gold}`, borderRadius:8, color:C.gold,
-          fontSize:18, fontWeight:900, letterSpacing:"0.10em", fontFamily:C.sans,
+          fontSize:24, fontWeight:900, letterSpacing:"0.10em", fontFamily:C.sans,
           display:"flex", alignItems:"center", justifyContent:"center", gap:10,
           cursor:"pointer", boxShadow:`0 0 22px ${C.goldGlo}`,
           textTransform:"uppercase" as const }}>
-        <Icon d={P.addUser} size={18} color={C.gold} />
+        <Icon d={P.addUser} size={22} color={C.gold} />
         ➕ OPEN NEW TICKET / TABLE
       </motion.button>
       <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", gap:7 }}>
@@ -1217,8 +1217,8 @@ function TicketsCol({ state, revenue, onSelect, onUpdate, onAddTable }: {
           { l:"TOTAL TAB VALUE", v:`$${revenue.totalFloorRevenue.toFixed(2)}` },
         ].map((s,i) => (
           <div key={s.l} style={{ padding:"9px 10px", textAlign:"center", borderRight:i<3?`1px solid ${C.chrome}`:"none" }}>
-            <div style={{ fontSize:18, fontWeight:900, color:C.amber }}>{s.v}</div>
-            <div style={{ fontSize:14, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase", marginTop:3 }}>{s.l}</div>
+            <div style={{ fontSize:26, fontWeight:900, color:C.amber }}>{s.v}</div>
+            <div style={{ fontSize:20, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase", marginTop:3 }}>{s.l}</div>
           </div>
         ))}
       </div>
