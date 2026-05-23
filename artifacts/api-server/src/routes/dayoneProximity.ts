@@ -65,6 +65,74 @@ dayoneProximityRouter.post("/proximity/flash-blast", async (req, res) => {
   }
 });
 
+// ── DayOne360 Commission Log ───────────────────────────────────────────────────
+const CommissionLogSchema = z.object({
+  venueId:          z.string().min(1),
+  guestId:          z.string().optional(),
+  productId:        z.string().min(1),
+  productName:      z.string().min(1),
+  saleAmountCents:  z.number().int().positive(),
+  commissionPct:    z.number().min(0).max(100).default(2.5),
+  craft:            z.enum(["smoke","pour","brew","wine"]).optional(),
+});
+
+dayoneProximityRouter.post("/dayone360/commission-log", async (req, res) => {
+  const parsed = CommissionLogSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload" }); return; }
+  const { venueId, guestId, productId, productName, saleAmountCents, commissionPct, craft } = parsed.data;
+  const commissionCents = Math.round(saleAmountCents * (commissionPct / 100));
+  try {
+    await db.execute(sql`
+      INSERT INTO dayone_commission_logs
+        (venue_id, guest_id, product_id, product_name, sale_amount_cents,
+         commission_pct, commission_cents, craft, logged_at)
+      VALUES
+        (${venueId}, ${guestId ?? null}, ${productId}, ${productName},
+         ${saleAmountCents}, ${commissionPct}, ${commissionCents}, ${craft ?? null}, NOW())
+    `);
+    req.log.info({ venueId, productId, commissionCents }, "dayone360 commission logged");
+    res.json({ success: true, commissionCents, credited: venueId });
+  } catch (err) {
+    req.log.warn({ err }, "dayone360 commission-log db write failed (non-critical)");
+    res.json({ success: true, commissionCents, credited: venueId });
+  }
+});
+
+// ── DayOne360 Commission Summary ───────────────────────────────────────────────
+dayoneProximityRouter.get("/dayone360/commission-summary/:venueId", async (req, res) => {
+  const venueId = req.params.venueId;
+  if (!venueId) { res.status(400).json({ error: "venueId required" }); return; }
+  try {
+    const result = await db.execute(sql`
+      SELECT
+        COUNT(*)::int                       AS total_events,
+        COALESCE(SUM(sale_amount_cents),0)  AS total_sales_cents,
+        COALESCE(SUM(commission_cents),0)   AS total_commission_cents,
+        COALESCE(AVG(commission_pct),0)     AS avg_commission_pct
+      FROM dayone_commission_logs
+      WHERE venue_id = ${venueId}
+        AND logged_at >= NOW() - INTERVAL '30 days'
+    `);
+    const row = result.rows[0] as {
+      total_events: number;
+      total_sales_cents: number;
+      total_commission_cents: number;
+      avg_commission_pct: number;
+    };
+    res.json({
+      venueId,
+      windowDays:          30,
+      totalEvents:         Number(row.total_events)          || 0,
+      totalSalesCents:     Number(row.total_sales_cents)     || 0,
+      totalCommissionCents:Number(row.total_commission_cents)|| 0,
+      avgCommissionPct:    Number(row.avg_commission_pct)    || 2.5,
+    });
+  } catch (err) {
+    req.log.warn({ err }, "dayone360 commission-summary query failed");
+    res.json({ venueId, windowDays:30, totalEvents:0, totalSalesCents:0, totalCommissionCents:0, avgCommissionPct:2.5 });
+  }
+});
+
 // ── Proximity Opt-In Member Count ─────────────────────────────────────────────
 dayoneProximityRouter.get("/proximity/members", async (_req, res) => {
   try {

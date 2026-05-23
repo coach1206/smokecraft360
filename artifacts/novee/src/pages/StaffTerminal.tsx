@@ -217,6 +217,22 @@ const api = {
       });
     } catch { /* non-critical */ }
   },
+  logCommission: async (payload: { venueId: string; productId: string; productName: string; saleAmountCents: number; craft?: "smoke"|"pour"|"brew"|"wine" }): Promise<void> => {
+    try {
+      await fetch("/api/dayone360/commission-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...payload, commissionPct: 2.5 }),
+      });
+    } catch { /* non-critical */ }
+  },
+  commissionSummary: async (venueId: string): Promise<{ totalEvents: number; totalSalesCents: number; totalCommissionCents: number; avgCommissionPct: number } | null> => {
+    try {
+      const r = await fetch(`/api/dayone360/commission-summary/${venueId}`);
+      if (!r.ok) return null;
+      return await r.json() as { totalEvents: number; totalSalesCents: number; totalCommissionCents: number; avgCommissionPct: number };
+    } catch { return null; }
+  },
   proximityFlashBlast: async (payload: { venueId: string; promoCode: string; message: string }): Promise<{ eligibleCount: number; message: string } | null> => {
     try {
       const r = await fetch("/api/proximity/flash-blast", {
@@ -579,6 +595,67 @@ function NavRail({ onBack, isAdminView, isSupervisorView, onOpenPinGate }: {
 // ── Column 1: Telemetry ───────────────────────────────────────────────────────
 type KQItem = { id: string; tableId: number; itemName: string; qty: number; status: "pending"|"ready"; elapsed: string };
 
+// ── T007: ProximityFlash Supervisor Card ─────────────────────────────────────
+function ProximityFlashCard() {
+  const [summary, setSummary] = useState<{ totalEvents:number; totalSalesCents:number; totalCommissionCents:number } | null>(null);
+  const [members, setMembers] = useState(0);
+  const [blasting, setBlasting] = useState(false);
+  const [blastMsg, setBlastMsg] = useState("");
+
+  useEffect(() => {
+    const load = () => {
+      api.commissionSummary("tenant_profound_001").then(s => { if (s) setSummary(s); });
+      fetch("/api/proximity/members").then(r=>r.json()).then((d:{optedInCount:number})=>setMembers(d.optedInCount||0)).catch(()=>{});
+    };
+    load();
+    const t = setInterval(load, 30_000);
+    return () => clearInterval(t);
+  }, []);
+
+  const blast = async () => {
+    if (blasting) return;
+    setBlasting(true);
+    const r = await api.proximityFlashBlast({ venueId:"tenant_profound_001", promoCode:`SUP${Date.now().toString().slice(-4)}`, message:"Supervisor offer: exclusive pairing tonight." });
+    setBlastMsg(r?.message ?? "Blast sent.");
+    setBlasting(false);
+    setTimeout(() => setBlastMsg(""), 6_000);
+  };
+
+  return (
+    <motion.div initial={{ opacity:0, x:40 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:40 }}
+      style={{ position:"fixed", bottom:168, right:16, zIndex:1800, width:232,
+        background:"rgba(3,3,5,0.97)", border:`1px solid ${C.gold}`, borderRadius:12,
+        boxShadow:`0 0 40px ${C.gold}33`, overflow:"hidden" }}>
+      <div style={{ height:3, background:`linear-gradient(90deg,${C.gold},#A67C00,${C.gold})` }} />
+      <div style={{ padding:"10px 13px 12px" }}>
+        <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.30em", marginBottom:6 }}>DAYONE360 · COMMISSION FEED</div>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:8 }}>
+          <div style={{ background:"rgba(212,175,55,0.07)", border:`1px solid ${C.gold}30`, borderRadius:7, padding:"7px 9px", textAlign:"center" }}>
+            <div style={{ fontSize:18, fontWeight:900, color:C.amber }}>${((summary?.totalCommissionCents ?? 0)/100).toFixed(2)}</div>
+            <div style={{ fontSize:9, color:C.muted, letterSpacing:"0.16em" }}>30D COMMISSION</div>
+          </div>
+          <div style={{ background:"rgba(212,175,55,0.07)", border:`1px solid ${C.gold}30`, borderRadius:7, padding:"7px 9px", textAlign:"center" }}>
+            <div style={{ fontSize:18, fontWeight:900, color:C.white }}>{summary?.totalEvents ?? 0}</div>
+            <div style={{ fontSize:9, color:C.muted, letterSpacing:"0.16em" }}>EVENTS</div>
+          </div>
+        </div>
+        <div style={{ fontSize:11, color:C.muted, marginBottom:8 }}><span style={{ color:C.green, fontWeight:700 }}>{members}</span> opted-in members in 5mi radius</div>
+        {blastMsg ? (
+          <div style={{ fontSize:11, color:C.green, fontWeight:700, textAlign:"center", padding:"6px 0" }}>{blastMsg}</div>
+        ) : (
+          <motion.button whileTap={{ scale:0.96 }} {...T} onClick={blast}
+            style={{ width:"100%", height:36, borderRadius:7, cursor:"pointer",
+              background: blasting ? "rgba(212,175,55,0.12)" : `linear-gradient(135deg,${C.gold},#A67C00)`,
+              border:`1px solid ${C.gold}`, color: blasting ? C.gold : "#000",
+              fontSize:11, fontWeight:900, letterSpacing:"0.16em", fontFamily:C.sans }}>
+            {blasting ? "DISPATCHING..." : "⚡ PROXIMITY BLAST"}
+          </motion.button>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, onOpenReservations, onGenerateOrder, activeTables }: {
   tel: VenueState["telemetry"];
   thresh: ReturnType<typeof useThresholds>;
@@ -626,7 +703,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <Icon d={icon} size={20} color={C.amber} />
       <div>
         <div style={{ fontSize:20, fontWeight:800, color:C.white }}>{val}</div>
-        <div style={{ fontSize:12, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase" }}>{label}</div>
+        <div style={{ fontSize:18, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase" }}>{label}</div>
       </div>
     </div>
   );
@@ -662,7 +739,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <div style={panel({ borderTop:`2px solid ${C.gold}`, flexShrink:0 })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
           <Icon d={P.leaf} size={14} color={C.gold} />
-          <span style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 1: HUMIDOR</span>
+          <span style={{ fontSize:18, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 1: HUMIDOR</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", minHeight:100 }}>
           <div style={{ padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
@@ -672,7 +749,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
               style={{ fontSize:56, fontWeight:900, color:C.amber, lineHeight:1 }}>
               {h.purosRemaining}
             </motion.div>
-            <div style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.16em", marginTop:4 }}>PUROS REMAINING</div>
+            <div style={{ fontSize:16, fontWeight:700, color:C.muted, letterSpacing:"0.16em", marginTop:4 }}>PUROS REMAINING</div>
           </div>
           <div style={{ background:`url(${IMG("cedar_box.png")}) center/cover no-repeat,linear-gradient(135deg,#3D2510,#0F0A06)`, borderLeft:`1px solid ${C.chrome}` }} />
         </div>
@@ -701,7 +778,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <div style={panel({ borderTop:"2px solid #3A6BC4", flexShrink:0 })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
           <Icon d={P.cocktail} size={14} color={C.blue} />
-          <span style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 2: BAR METRICS</span>
+          <span style={{ fontSize:18, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 2: BAR METRICS</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr auto", alignItems:"center", padding:"10px 12px", gap:10 }}>
           <div>
@@ -717,17 +794,17 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
             <div key={a.item} style={{ display:"flex", alignItems:"center", gap:8, background:C.redLo, borderTop:`1px solid ${C.red}44`, padding:"8px 12px" }}>
               <Icon d={P.warn} size={13} color={C.redHi} />
               <div style={{ flex:1 }}>
-                <div style={{ fontSize:10, fontWeight:800, color:C.redHi, letterSpacing:"0.14em" }}>LOW STOCK — {a.currentVolumePct}%</div>
-                <div style={{ fontSize:12, fontWeight:700, color:C.white }}>{a.item}</div>
-                <div style={{ fontSize:9, color:C.muted }}>{a.category}</div>
+                <div style={{ fontSize:16, fontWeight:800, color:C.redHi, letterSpacing:"0.14em" }}>LOW STOCK — {a.currentVolumePct}%</div>
+                <div style={{ fontSize:16, fontWeight:700, color:C.white }}>{a.item}</div>
+                <div style={{ fontSize:12, color:C.muted }}>{a.category}</div>
               </div>
               <motion.button whileTap={{scale:0.93}} {...T}
                 onTouchStart={e => { T.onTouchStart(e); fireOrder(pid, 6, a.item); }}
                 onClick={() => fireOrder(pid, 6, a.item)}
-                style={{ height:30, padding:"0 10px", borderRadius:5, cursor:"pointer", flexShrink:0,
+                style={{ height:58, padding:"0 14px", borderRadius:5, cursor:"pointer", flexShrink:0,
                   background:flashed?`rgba(39,174,96,0.18)`:`linear-gradient(135deg,${C.amber},#A0620F)`,
                   border:`1px solid ${flashed?C.green:C.amber}`,
-                  color:flashed?C.green:"#000", fontSize:9, fontWeight:900,
+                  color:flashed?C.green:"#000", fontSize:14, fontWeight:900,
                   letterSpacing:"0.1em", fontFamily:C.sans }}>
                 {flashed ? "ORDERED" : "GEN ORDER"}
               </motion.button>
@@ -740,7 +817,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <div style={panel({ borderTop:"2px solid #7B5EA7", flex:1, display:"flex", flexDirection:"column" })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
           <Icon d={P.utensils} size={14} color={C.purple} />
-          <span style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 3: KITCHEN LINE</span>
+          <span style={{ fontSize:18, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 3: KITCHEN LINE</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, padding:"10px 12px" }}>
           {[{val:k.pendingOrders,label:"PENDING ORDERS",color:C.amber},{val:k.readyOrders,label:"READY ORDERS",color:C.green}].map(m => (
@@ -753,7 +830,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
         <motion.button whileTap={{scale:0.97}} {...T}
           onTouchStart={e => { T.onTouchStart(e); setIsKitchenModalOpen(true); }}
           onClick={() => setIsKitchenModalOpen(true)}
-          style={{ marginTop:"auto", width:"100%", height:58, background:"rgba(123,94,167,0.18)", border:"none", borderTop:"2px solid rgba(123,94,167,0.45)", color:C.purple, fontSize:15, fontWeight:900, letterSpacing:"0.18em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+          style={{ marginTop:"auto", width:"100%", height:58, background:"rgba(123,94,167,0.18)", border:"none", borderTop:"2px solid rgba(123,94,167,0.45)", color:C.purple, fontSize:18, fontWeight:900, letterSpacing:"0.18em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
           <Icon d={P.list} size={20} color={C.purple} />
           VIEW KITCHEN QUEUE ➔
         </motion.button>
@@ -1043,24 +1120,24 @@ function TableCard({ table, isActive, onSelect, onTap }: {
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:3 }}>
               <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                <span style={{ fontSize:18, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
+                <span style={{ fontSize:22, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
                 {isVip ? <VIP /> : <span style={{ fontSize:11, color:C.muted }}>{table.zone}</span>}
               </div>
               <div style={{ textAlign:"right" }}>
                 <div style={{ fontSize:18, fontWeight:700, color:C.amber }}>{elapsed}</div>
-                <div style={{ fontSize:10, color:C.muted, letterSpacing:"0.12em" }}>TIME ACTIVE</div>
+                <div style={{ fontSize:14, color:C.muted, letterSpacing:"0.12em" }}>TIME ACTIVE</div>
               </div>
             </div>
             <div style={{ fontSize:18, color:C.muted }}>Guest: {table.guest}</div>
           </div>
           <div>
-            <div style={{ fontSize:9, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" }}>CURRENT TAB</div>
+            <div style={{ fontSize:16, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" }}>CURRENT TAB</div>
             <div style={{ fontSize:22, fontWeight:900, color:C.amber, lineHeight:1.1 }}>${cur.toFixed(2)}</div>
           </div>
         </div>
       </div>
       <motion.button whileTap={{scale:0.98}} {...T} onClick={e=>{e.stopPropagation();onTap();}}
-        style={{ width:"100%", height:44, background:`linear-gradient(90deg,rgba(212,175,55,0.18),rgba(212,175,55,0.09))`, border:"none", borderTop:`1px solid ${C.gold}44`, color:C.gold, fontSize:13, fontWeight:900, letterSpacing:"0.12em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+        style={{ width:"100%", height:58, background:`linear-gradient(90deg,rgba(212,175,55,0.18),rgba(212,175,55,0.09))`, border:"none", borderTop:`1px solid ${C.gold}44`, color:C.gold, fontSize:16, fontWeight:900, letterSpacing:"0.12em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
         <Icon d={P.star} size={13} color={C.gold} />
         OPEN TICKET TAPPER
         <Icon d={P.star} size={13} color={C.gold} />
@@ -1091,7 +1168,7 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
       <div style={{ display:"flex", gap:5, marginBottom:8, flexShrink:0, alignItems:"center" }}>
         {FILTER_TABS.map(t => (
           <motion.button key={t} whileTap={{scale:0.95}} onClick={()=>setFilter(t)}
-            style={{ height:26, padding:"0 9px", borderRadius:5, cursor:"pointer", background:filter===t?`linear-gradient(135deg,${C.gold},#A67C00)`:"rgba(255,255,255,0.04)", border:`1px solid ${filter===t?C.gold:C.chrome}`, color:filter===t?"#000":C.muted, fontSize:9, fontWeight:800, letterSpacing:"0.12em", fontFamily:C.sans, whiteSpace:"nowrap" }}>{t}</motion.button>
+            style={{ height:48, padding:"0 12px", borderRadius:5, cursor:"pointer", background:filter===t?`linear-gradient(135deg,${C.gold},#A67C00)`:"rgba(255,255,255,0.04)", border:`1px solid ${filter===t?C.gold:C.chrome}`, color:filter===t?"#000":C.muted, fontSize:16, fontWeight:800, letterSpacing:"0.12em", fontFamily:C.sans, whiteSpace:"nowrap" }}>{t}</motion.button>
         ))}
         <div style={{ marginLeft:"auto" }}><Icon d={P.filter} size={16} color={C.muted} /></div>
       </div>
@@ -1109,8 +1186,8 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
           { l:"TOTAL TAB VALUE", v:`$${revenue.totalFloorRevenue.toFixed(2)}` },
         ].map((s,i) => (
           <div key={s.l} style={{ padding:"9px 10px", textAlign:"center", borderRight:i<3?`1px solid ${C.chrome}`:"none" }}>
-            <div style={{ fontSize:15, fontWeight:900, color:C.amber }}>{s.v}</div>
-            <div style={{ fontSize:8, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase", marginTop:3 }}>{s.l}</div>
+            <div style={{ fontSize:18, fontWeight:900, color:C.amber }}>{s.v}</div>
+            <div style={{ fontSize:14, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase", marginTop:3 }}>{s.l}</div>
           </div>
         ))}
       </div>
@@ -1155,18 +1232,18 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
       <div style={panel({ borderTop:`2px solid ${C.gold}`, padding:"11px 13px", marginBottom:8, flexShrink:0 })}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
           <div style={{ display:"flex", alignItems:"center", gap:7 }}>
-            <span style={{ fontSize:15, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
+            <span style={{ fontSize:24, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
             {isVip && <VIP />}
           </div>
           <div style={{ textAlign:"right" }}>
-            <div style={{ fontSize:9, color:C.muted, letterSpacing:"0.18em" }}>BALANCE</div>
+            <div style={{ fontSize:14, color:C.muted, letterSpacing:"0.18em" }}>BALANCE</div>
             <motion.div animate={{color:[C.amber,"#FFD700",C.amber]}} transition={{duration:2.4,repeat:Infinity}}
-              style={{ fontSize:22, fontWeight:900 }}>${total.toFixed(2)}</motion.div>
+              style={{ fontSize:28, fontWeight:900 }}>${total.toFixed(2)}</motion.div>
           </div>
         </div>
-        <div style={{ fontSize:11, color:C.muted, marginTop:4 }}>{table.guest} · {table.zone}</div>
+        <div style={{ fontSize:18, color:C.muted, marginTop:4 }}>{table.guest} · {table.zone}</div>
       </div>
-      <div style={{ fontSize:9, fontFamily:C.mono, color:C.muted, letterSpacing:"0.24em", marginBottom:5, paddingLeft:2, flexShrink:0 }}>LINE ITEMS</div>
+      <div style={{ fontSize:14, fontFamily:C.mono, color:C.muted, letterSpacing:"0.24em", marginBottom:5, paddingLeft:2, flexShrink:0 }}>LINE ITEMS</div>
       <div style={{ ...panel(), flex:1, overflowY:"auto", marginBottom:7 }}>
         <AnimatePresence>
           {table.items.length===0 && (
@@ -1177,14 +1254,14 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
             <motion.div key={item.id} layout initial={{opacity:0,x:10}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-10,height:0}}
               style={{ display:"flex", alignItems:"center", gap:9, padding:"10px 12px", borderBottom:idx<table.items.length-1?`1px solid ${C.chrome}`:"none" }}>
               <div style={{ width:38,height:38,borderRadius:6,flexShrink:0,border:`1px solid ${C.chrome}`,background:item.img?`url(${item.img}) center/cover,#1A1A1A`:"linear-gradient(135deg,#2A1810,#111)" }} />
-              <div style={{ width:30,height:30,borderRadius:"50%",flexShrink:0,background:`linear-gradient(135deg,${C.gold},#A67C00)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,color:"#000" }}>{item.qty}x</div>
+              <div style={{ width:38,height:38,borderRadius:"50%",flexShrink:0,background:`linear-gradient(135deg,${C.gold},#A67C00)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:900,color:"#000" }}>{item.qty}x</div>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:18, fontWeight:700, color:C.white, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.name}</div>
-                <div style={{ fontSize:13, color:C.muted, fontStyle:"italic" }}>{item.category}</div>
+                <div style={{ fontSize:20, fontWeight:700, color:C.white, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.name}</div>
+                <div style={{ fontSize:16, color:C.muted, fontStyle:"italic" }}>{item.category}</div>
               </div>
-              <div style={{ fontSize:18, fontWeight:700, color:C.white, minWidth:50, textAlign:"right" }}>${item.price.toFixed(2)}</div>
+              <div style={{ fontSize:20, fontWeight:700, color:C.white, minWidth:50, textAlign:"right" }}>${item.price.toFixed(2)}</div>
               <motion.button whileTap={{scale:0.84}} {...T} onClick={()=>onRemove(table.id,item.id)}
-                style={{ width:26,height:26,borderRadius:"50%",background:C.goldDim,border:`1px solid ${C.gold}44`,color:C.gold,fontSize:14,lineHeight:"24px",textAlign:"center",cursor:"pointer",flexShrink:0 }}>×</motion.button>
+                style={{ width:32,height:32,borderRadius:"50%",background:C.goldDim,border:`1px solid ${C.gold}44`,color:C.gold,fontSize:16,lineHeight:"30px",textAlign:"center",cursor:"pointer",flexShrink:0 }}>×</motion.button>
             </motion.div>
           ))}
         </AnimatePresence>
@@ -1195,16 +1272,16 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
       <div style={panel({ padding:"13px 13px 0", flexShrink:0 })}>
         {[{l:"SUBTOTAL",v:subtotal},{l:"TAX",v:tax}].map(r => (
           <div key={r.l} style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-            <span style={{ fontSize:12, color:C.muted, letterSpacing:"0.14em" }}>{r.l}</span>
-            <span style={{ fontSize:12, color:C.white }}>${r.v.toFixed(2)}</span>
+            <span style={{ fontSize:18, color:C.muted, letterSpacing:"0.14em" }}>{r.l}</span>
+            <span style={{ fontSize:18, color:C.white }}>${r.v.toFixed(2)}</span>
           </div>
         ))}
         <div style={{ display:"flex", justifyContent:"space-between", padding:"9px 0 11px", borderTop:`1px solid ${C.chrome}` }}>
-          <span style={{ fontSize:18, fontWeight:900, color:C.white }}>TOTAL</span>
-          <span style={{ fontSize:26, fontWeight:900, color:C.amber, textShadow:`0 0 16px ${C.goldGlo}` }}>${total.toFixed(2)}</span>
+          <span style={{ fontSize:26, fontWeight:900, color:C.white }}>TOTAL</span>
+          <span style={{ fontSize:32, fontWeight:900, color:C.amber, textShadow:`0 0 16px ${C.goldGlo}` }}>${total.toFixed(2)}</span>
         </div>
         <motion.button whileTap={{scale:0.97}} {...T}
-          style={{ width:"100%",height:42,marginBottom:8,background:"rgba(255,255,255,0.04)",border:`1px solid ${C.chrome}`,borderRadius:8,color:C.cream,fontSize:12,fontWeight:800,letterSpacing:"0.14em",cursor:"pointer",fontFamily:C.sans,display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
+          style={{ width:"100%",height:52,marginBottom:8,background:"rgba(255,255,255,0.04)",border:`1px solid ${C.chrome}`,borderRadius:8,color:C.cream,fontSize:20,fontWeight:800,letterSpacing:"0.14em",cursor:"pointer",fontFamily:C.sans,display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
           <Icon d={P.receipt} size={14} color={C.cream} />
           VIEW FULL LEDGER
           <span style={{ color:C.gold }}>›</span>
@@ -1213,7 +1290,7 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
           onTouchStart={e => { T.onTouchStart(e); onProcessPayment(table); }}
           onTouchEnd={T.onTouchEnd}
           onClick={()=>onProcessPayment(table)}
-          style={{ width:"100%",height:52,marginBottom:12,background:`linear-gradient(135deg,${C.gold},#A67C00)`,border:"none",borderRadius:8,color:"#000",fontSize:14,fontWeight:900,letterSpacing:"0.10em",cursor:"pointer",fontFamily:C.sans,boxShadow:`0 0 24px ${C.goldGlo}`,display:"flex",alignItems:"center",justifyContent:"center",gap:10 }}>
+          style={{ width:"100%",height:60,marginBottom:12,background:`linear-gradient(135deg,${C.gold},#A67C00)`,border:"none",borderRadius:8,color:"#000",fontSize:20,fontWeight:900,letterSpacing:"0.10em",cursor:"pointer",fontFamily:C.sans,boxShadow:`0 0 24px ${C.goldGlo}`,display:"flex",alignItems:"center",justifyContent:"center",gap:10 }}>
           <Icon d={P.credit} size={17} color="#000" />
           PROCESS PAYMENT
         </motion.button>
@@ -1257,8 +1334,8 @@ function Footer({ revenue, providers, paymentState }: {
                 </div>
                 <div style={{ position:"absolute",bottom:1,right:1,width:8,height:8,borderRadius:"50%",background:s.dot,border:`1.5px solid ${C.dark}` }} />
               </div>
-              <div style={{ fontSize:12, color:C.cream, textAlign:"center", lineHeight:1.2, maxWidth:48, fontWeight:700 }}>{s.name}</div>
-              <div style={{ fontSize:10, color:C.muted, textAlign:"center" }}>{s.role}</div>
+              <div style={{ fontSize:16, color:C.cream, textAlign:"center", lineHeight:1.2, maxWidth:56, fontWeight:700 }}>{s.name}</div>
+              <div style={{ fontSize:12, color:C.muted, textAlign:"center" }}>{s.role}</div>
             </div>
           ))}
         </div>
@@ -1274,7 +1351,7 @@ function Footer({ revenue, providers, paymentState }: {
           ].map(m => (
             <div key={m.l}>
               <div style={{ fontSize:24, fontWeight:900, color:m.c, lineHeight:1 }}>{m.v}</div>
-              <div style={{ fontSize:10, color:C.muted, letterSpacing:"0.12em", textTransform:"uppercase", margin:"4px 0 2px" }}>{m.l}</div>
+              <div style={{ fontSize:16, color:C.muted, letterSpacing:"0.12em", textTransform:"uppercase", margin:"4px 0 2px" }}>{m.l}</div>
               <div style={{ fontSize:10, color:m.c }}>{m.s}</div>
             </div>
           ))}
@@ -1300,11 +1377,11 @@ function Footer({ revenue, providers, paymentState }: {
             const name = prov.displayName.replace(" POS","");
             return (
               <div key={prov.provider} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
-                <div style={{ width:32,height:32,borderRadius:6,background:`${col}18`,border:`1px solid ${col}40`,display:"flex",alignItems:"center",justifyContent:"center" }}>
-                  <Icon d={P.pos} size={16} color={col} />
+                <div style={{ width:40,height:40,borderRadius:7,background:`${col}18`,border:`1px solid ${col}40`,display:"flex",alignItems:"center",justifyContent:"center" }}>
+                  <Icon d={P.pos} size={20} color={col} />
                 </div>
-                <div style={{ fontSize:8, color:col, fontWeight:700, textAlign:"center", lineHeight:1.1 }}>{name}</div>
-                <div style={{ fontSize:7, color:C.muted, textAlign:"center" }}>
+                <div style={{ fontSize:14, color:col, fontWeight:700, textAlign:"center", lineHeight:1.1 }}>{name}</div>
+                <div style={{ fontSize:14, color:C.muted, textAlign:"center", fontWeight:700 }}>
                   {prov.capabilities.supportsInventorySync ? "SYNC" : "ORDER"}
                 </div>
               </div>
@@ -2731,6 +2808,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
             onZoneDynamics={() => setShowZoneDynamics(true)}
           />
         )}
+        {isSupervisorView && <ProximityFlashCard key="prox-flash" />}
       </AnimatePresence>
       {isAdminView && (
         <div style={{ position:"fixed", top:12, right:16, zIndex:1200, display:"flex", gap:8 }}>
