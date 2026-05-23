@@ -1,0 +1,44 @@
+CRITICAL UI/UX CONVERGENCE MANDATE: FORCE DIRECT RE-LINKING OF COMPILED SOCKET/OPENAI ENDPOINTS TO FRONTEND INTERFACE SHELLS (ABSOLUTE VISUAL ALIGNMENT • ZERO STUBS)
+
+====================================================================
+1. REASON FOR THIS DIRECTIVE (FRONT-END RENDER DISCONNECT)
+====================================================================
+The backend execution environment, Socket.io namespaces via 'getIO', and type validations are exiting successfully. However, the front-end user interface is failing to render the operational design framework. Emojis and unstyled system icons are still littering the elements, the 4-tile selection grid is completely broken/stuck on old static slides, the side tiles are non-responsive, and the E.A.T. Command Hub views remain pitch black. You are ordered to perform an immediate, destructive code-level sync across all client-side rendering files.
+
+====================================================================
+2. PURGE NAVIGATION CLUTTER & FORCE THE 4-TILE EXPERIENTIAL MATRIX
+====================================================================
+- Complete Header Cleanse: Open the main layout header components. Permanently delete the text-tag shortcut buttons for 'HUB CRAFTHUB', 'SC SMOKECRAFT', 'PR PAIRING', and 'CH COACH HELP' from the top bar display footprint. The Left Vertical Obsidian Navigation Rail is the absolute, singular routing driver for NOVEE OS. 
+- Fix the Launcher Logic: Ensure clicking 'Hub' on the left rail cleanly unmounts any sub-view and loads the comprehensive 4-Tile Tactical Grid Matrix (Path: '/craft-hub'). It must NEVER default to a loose 3-slide loop or auto-route into SmokeCraft.
+- Build Touch Carousel Ambient Backgrounds: Every card in the 4-tile grid must maintain a minimum physical touch footprint of 58px by 58px and run an automated background array that cross-fades gracefully every 6 seconds using 'object-fit: cover' with strict aspect ratios. Injected assets must feature cinematic, human-centered luxury social compositions capturing real private club culture and energy:
+  * TILE 1: 'SMOKECRAFT 360' (ACTIVE) -> Rotates between cinematic photos of refined crowds enjoying premium cigar lounge atmospheres in deep leather tufted chairs under warm, low-profile ambient lighting. Listening to 'onTouchStart' on this tile must be the singular active mechanism that boots into the ritual onboarding journey.
+  * TILE 2: 'POURCRAFT 360' (COMING SOON) -> Rotates between focused master mixologists crafting elite spirits behind a glowing crystal bar surface and elegant nightlife crowds. (Affix a brushed bronze 'COMING SOON' overlay tag).
+  * TILE 3: 'BEERCRAFT 360' (COMING SOON) -> High-vibe stylish groups interacting under twilight string-lighting on a luxury rooftop social brewery deck. (Affix a 'COMING SOON' tag).
+  * TILE 4: 'WINECRAFT 360' (COMING SOON) -> Intimate, refined date-night scenes inside stone-walled private wine lounges as a sommelier pours a vintage reserve selection. (Affix a 'COMING SOON' tag).
+
+====================================================================
+3. ENERGIZE SIDE TILES INTO ACTIVE TELEMETRY DOCK MODULES
+====================================================================
+Tear down the dead, static display cards on the right-hand panel of the terminal interface shell. Hard-code 4 touchscreen-responsive operational monitoring modules wrapped inside layered Obsidian Glass panels, styled with rich Cream (#FFFDD0 / #FDFBF7) and liquid metallic Warm Gold outlines:
+- MODULE 1: E.A.T. TELEMETRY STATUS -> Renders "E.A.T. SYSTEM" and a live tracking subtitle showing "DATA INTEGRATION CHASSIS ONLINE". TAPPING this card must instantly interrupt the terminal view to launch the oversized 4-digit numeric Staff PIN pad modal overlay window directly on top of the glass canvas.
+- MODULE 2: REVENUE VELOCITY MULTIPLIER -> Communicates natively with the backend pos-router to track current lounge tab activity metrics. Displays "VENUE VELOCITY: HIGH" and high-contrast gold outline typography reading "3x MULTIPLIER ACTIVE". Tapping instantly pulls up the interactive floor seating grid map.
+- MODULE 3: HUMIDOR REAL-TIME COUNTDOWN -> Interfaces directly with the server-side inventory cache file to display "HUMIDOR STATUS" and an ultra-bold numeric tracking value reading exactly "145 PUROS REMAINING". Tapping flushes the canvas space and loads the 'Your Reserve' studio workspace context.
+- MODULE 4: WEBSOCKET NETWORK HANDSHAKE -> Evaluates Socket.io synchronization loops to render "NETWORK SYNC" and "SOCKET REVERSE-TUNNEL CONNECTED". Tapping pulls up a mini dashboard layout tracking live 'themeConfig' parameters.
+
+====================================================================
+4. UNBRICK REVENUE TERMINAL SELECTION & TOTAL VISUAL ENGAGEMENT
+====================================================================
+- Fix Blank PIN Transitions: Re-wire the click/touch event handlers for the 'E.A.T System' rail node and the bottom-corner 'OPEN COMMAND CENTER >' button. Securely anchor and highlight its position in the highlighted bottom corner of the viewport layout. Tapping this element must prompt the oversized numeric PIN pad. Upon entering a valid PIN, clear the modal state and fire the explosive concentric ripple animation across the 1920x1080 canvas to dissolve the screen into the active E.A.T. High-Velocity POS floor terminal interface.
+- Contrast Elevation Framework: Completely eliminate all flat, dim dark gray panels and text rows across the entire system chassis (including Pairing Intelligence, the Studio, and the Coach Help matrix). Interweave rich Cream (#FFFDD0 / #FDFBF7) and metallic Warm Gold across all sub-modules. Use these premium cream tones strictly to construct bright container borders, button outlines, active selection bounding frames, and high-visibility typography data outputs. Apply soft, glowing radial ambient gradients behind primary content blocks to prevent glare and eliminate eye strain for 40-60 age cohorts in dimly lit lounge spaces.
+- Complete Icon Interdiction: Ban all glyphs, emojis, and unstyled system symbols from every file in the repository. Visual dominance must be driven purely by clean typography layout structures.
+
+====================================================================
+5. SYSTEM INTEGRATION & COMPONENT COMPILATION HANDSHAKE
+====================================================================
+- Connect Coach Help to OpenAI: Ensure the Coach Help section is not an empty black frame. Map the front-end component tree to pipe query payloads straight to the compiled server-side OpenAI route (`/server/api/coach/chat.ts`). The view must render a premium two-tab panel layout:
+  * Guides Tab: Displays 6 large topic cards embedded with luxury lifestyle hospitality imagery. Tapping a card streams the OpenAI instruction context live with clean back-navigation handles.
+  * FAQ Tab: Renders 6 hardware-accelerated accordion elements that expand and collapse cleanly without layout overlapping.
+- Lock Studio Objects: Ensure an ultra-premium, high-resolution photographic asset of a hand-rolled Nicaraguan Maduro cigar is hard-coded permanently on the center obsidian glass mat frame in the 'Your Reserve' workspace layout. The "Reset Blend" touch action must cleanly flush active selection cache strings from the state engine without locking up or looping the browser window.
+- Active Environmental Texture: Mount a continuous volumetric smoke canvas simulation layer at the bottom edge of the display canvas, drifting soft wisps and micro-ember sparks upward on a breathing 5.4-second looping animation.
+
+Execute a total production build pass across the repository tree immediately. Force the view components to pull state live from the compiled socket backend. Verify immediate, latency-free touchscreen gesture responsiveness and zero TypeScript compile drops.

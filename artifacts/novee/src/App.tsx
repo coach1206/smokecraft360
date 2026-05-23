@@ -899,79 +899,66 @@ interface AiCoachResult {
   suggestedFollowUps: string[];
 }
 
+const GUIDE_TOPICS_NOVEE = [
+  { id: "ritual",  label: "CIGAR RITUAL MASTERY",      sub: "Relighting, cutting, ash etiquette",    img: "https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?w=700&q=80" },
+  { id: "guest",   label: "GUEST EXPERIENCE PROTOCOL", sub: "From greeting to farewell",              img: "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=700&q=80" },
+  { id: "vip",     label: "VIP SERVICE EXCELLENCE",    sub: "White-glove lounge standards",           img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=700&q=80" },
+  { id: "pairing", label: "FLAVOR & PAIRING INTEL",    sub: "Spirits and food harmonics",             img: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=700&q=80" },
+  { id: "ops",     label: "INVENTORY & OPERATIONS",    sub: "Humidor checks, stock integrity",        img: "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=700&q=80" },
+  { id: "revenue", label: "REVENUE & UPSELLING",       sub: "Menu strategy, guided upgrades",         img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=700&q=80" },
+] as const;
+
+const FAQ_ITEMS_NOVEE = [
+  { q: "How do I properly relight a cigar?",               a: "Toast the foot with a soft flame without direct contact. Rotate slowly until the ash glows evenly. Draw gently — never puff aggressively." },
+  { q: "What bourbon pairs best with a Maduro?",           a: "Full-bodied bourbons with high-rye content complement Maduro’s cocoa and coffee notes. Wheated expressions harmonize beautifully with the wrapper’s natural sweetness." },
+  { q: "How do I recover a dissatisfied VIP guest?",       a: "Lead with acknowledgment, not explanation. Offer a complimentary selection from the reserve. Escalate to the lounge director if the guest remains uncomfortable." },
+  { q: "What are pre-shift humidor checks?",               a: "Verify humidity (68–72%), temperature (65–70°F), inspect wrappers for cracks, rotate stock oldest-forward, log the puro count, and report any anomaly immediately." },
+  { q: "How do I recommend the right vitola?",             a: "Match ring gauge to experience level: Coronas (44–46 RG) for novices, Robustos for intermediate guests, Churchills for connoisseurs. Factor in available time." },
+  { q: "What are table service protocols for the lounge?", a: "Greet within 90 seconds. Present the humidor selection within 3 minutes. Pair a beverage recommendation. Return every 12 minutes without interrupting conversation." },
+] as const;
+
 function CoachHelpView() {
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [selectedRole, setSelectedRole] = useState("server");
-  const [aiQuery, setAiQuery] = useState("");
-  const [aiResult, setAiResult] = useState<AiCoachResult | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-  const [docSearchQuery, setDocSearchQuery] = useState("");
-  const [docResults, setDocResults] = useState<{ title: string; source: string; excerpt: string }[]>([]);
-  const [docLoading, setDocLoading] = useState(false);
+  const [activeTab,   setActiveTab]   = useState<"guides" | "faq">("guides");
+  const [activeGuide, setActiveGuide] = useState<typeof GUIDE_TOPICS_NOVEE[number] | null>(null);
+  const [chatMsg,     setChatMsg]     = useState("");
+  const [chatReply,   setChatReply]   = useState<string | null>(null);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [openFaqIdx,  setOpenFaqIdx]  = useState<number | null>(null);
 
-  const section = INTEL_SECTIONS.find(s => s.id === activeSection);
-
-  async function handleAskAI() {
-    if (!aiQuery.trim() || aiLoading) return;
-    setAiLoading(true);
-    setAiError(null);
-    setAiResult(null);
+  async function askGuide(topic: typeof GUIDE_TOPICS_NOVEE[number], msg: string) {
+    if (!msg.trim() || chatLoading) return;
+    setChatLoading(true);
+    setChatReply(null);
     try {
-      const res = await fetch("/api/coach-ai/ask", {
+      const res = await fetch("/api/coach-ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: aiQuery, role: selectedRole }),
+        body: JSON.stringify({ message: msg, topicContext: topic.label }),
       });
-      if (!res.ok) throw new Error("AI service unavailable");
-      const data = await res.json() as AiCoachResult;
-      setAiResult(data);
+      if (!res.ok) throw new Error("unavailable");
+      const data = await res.json() as { reply: string };
+      setChatReply(data.reply);
     } catch {
-      setAiError("AI Coach is temporarily unavailable. Use Quick Answers or consult your manager.");
+      setChatReply("Guidance temporarily unavailable. Consult your lounge director.");
     } finally {
-      setAiLoading(false);
-    }
-  }
-
-  async function handleDocSearch() {
-    if (!docSearchQuery.trim()) return;
-    setDocLoading(true);
-    try {
-      const res = await fetch("/api/coach-ai/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: docSearchQuery }),
-      });
-      const data = await res.json() as { results: { title: string; source: string; excerpt: string }[] };
-      setDocResults(data.results ?? []);
-    } catch {
-      setDocResults([]);
-    } finally {
-      setDocLoading(false);
+      setChatLoading(false);
     }
   }
 
   return (
-    <div style={{ position: "relative", inset: 0, flex: 1, minHeight: 0, display: "flex", flexDirection: "column", background: "linear-gradient(160deg,#0A0600 0%,#060400 100%)", overflow: "hidden" }}>
-      <div style={{ position: "absolute", top: -80, left: "30%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, rgba(253,251,247,0.04) 0%, ${GOLD}08 40%, transparent 70%)`, pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: -60, right: "10%", width: 300, height: 300, borderRadius: "50%", background: `radial-gradient(circle, #C8702818 0%, transparent 70%)`, pointerEvents: "none" }} />
+    <div style={{ position: "relative", flex: 1, minHeight: 0, display: "flex", flexDirection: "column", background: "linear-gradient(160deg,#0A0600 0%,#060400 100%)", overflow: "hidden" }}>
 
+      {/* Header */}
       <div style={{ padding: "20px 24px 0", flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-          <div>
-            <div style={{ fontSize: 26, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em", lineHeight: 1.1 }}>HOSPITALITY INTELLIGENCE</div>
-            <div style={{ fontSize: 11, color: `${GOLD}55`, letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 3, fontFamily: "'Inter',sans-serif" }}>AI-Powered Staff Coach · 8 Knowledge Domains</div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "5px 11px", borderRadius: 20, background: "rgba(50,180,90,0.10)", border: "1px solid rgba(50,180,90,0.28)" }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 5px #32B45A" }} />
-            <span style={{ fontSize: 10, color: "#32B45A", fontWeight: 700, letterSpacing: "0.16em", fontFamily: "'Inter',sans-serif" }}>AI ACTIVE</span>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 5, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
-          {STAFF_ROLES_COACH.map(r => (
-            <motion.button key={r.id} type="button" whileTap={{ scale: 0.95 }} onClick={() => setSelectedRole(r.id)}
-              style={{ flexShrink: 0, padding: "5px 11px", borderRadius: 6, border: `1px solid ${selectedRole === r.id ? GOLD + "66" : GOLD + "18"}`, background: selectedRole === r.id ? `rgba(212,175,55,0.14)` : "transparent", color: selectedRole === r.id ? GOLD : `${GOLD}55`, fontSize: 10, fontWeight: 700, letterSpacing: "0.10em", cursor: "pointer", fontFamily: "'Inter',sans-serif", whiteSpace: "nowrap" }}>
-              {r.label.toUpperCase()}
+        <div style={{ fontSize: 26, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em", lineHeight: 1.1, marginBottom: 4 }}>HOSPITALITY INTELLIGENCE</div>
+        <div style={{ fontSize: 11, color: `${GOLD}55`, letterSpacing: "0.22em", textTransform: "uppercase" as const, marginBottom: 16, fontFamily: "'Inter',sans-serif" }}>AI-Powered Staff Coach</div>
+
+        {/* 2-tab switcher */}
+        <div style={{ display: "flex", gap: 6, marginBottom: 2 }}>
+          {(["guides", "faq"] as const).map(tab => (
+            <motion.button key={tab} type="button" whileTap={{ scale: 0.96 }} onClick={() => { setActiveTab(tab); setActiveGuide(null); setChatReply(null); setChatMsg(""); setOpenFaqIdx(null); }}
+              style={{ flex: 1, padding: "10px 0", borderRadius: 8, border: `1px solid ${activeTab === tab ? GOLD + "66" : GOLD + "18"}`, background: activeTab === tab ? `rgba(212,175,55,0.14)` : "rgba(255,255,255,0.02)", color: activeTab === tab ? GOLD : `${GOLD}55`, fontSize: 11, fontWeight: 900, letterSpacing: "0.18em", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
+              {tab === "guides" ? "GUIDES" : "FAQ"}
             </motion.button>
           ))}
         </div>
@@ -980,177 +967,92 @@ function CoachHelpView() {
       <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "14px 24px 32px" }}>
         <AnimatePresence mode="wait">
 
-          {!activeSection && (
-            <motion.div key="grid" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 16 }}>
-                {INTEL_SECTIONS.map((s, i) => {
-                  const CARD_IMGS: Record<string,string> = {
-                    guest_guidance:     "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?auto=format&fit=crop&w=600&q=75",
-                    pairing_intelligence:"https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=600&q=75",
-                    revenue_coaching:   "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=600&q=75",
-                    recovery_guidance:  "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=600&q=75",
-                    flavor_education:   "https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=600&q=75",
-                    vip_coaching:       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=75",
-                    quick_answers:      "https://images.unsplash.com/photo-1521791055366-0d553872952f?auto=format&fit=crop&w=600&q=75",
-                    live_ai:            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=75",
-                  };
-                  return (
-                    <motion.div key={s.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                      whileTap={{ scale: 0.97 }} onClick={() => setActiveSection(s.id)}
-                      style={{ minHeight: 120, borderRadius: 14, border: `1px solid ${s.color}44`, cursor: "pointer", position: "relative", overflow: "hidden" }}>
-                      <img src={CARD_IMGS[s.id]} alt={s.label} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(160deg, rgba(5,3,1,0.55) 0%, rgba(5,3,1,0.88) 100%)` }} />
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.color}88, transparent)` }} />
-                      <div style={{ position: "relative", padding: "16px 14px", display: "flex", flexDirection: "column", gap: 5, minHeight: 120 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 18, color: s.color, lineHeight: 1 }}>{s.icon}</span>
-                          <div style={{ fontSize: 14, fontWeight: 800, color: "#FFFDD0", letterSpacing: "0.04em", fontFamily: "'Inter',sans-serif" }}>{s.label}</div>
-                        </div>
-                        <div style={{ fontSize: 11, color: "rgba(255,253,208,0.62)", lineHeight: 1.45, fontFamily: "'Inter',sans-serif" }}>{s.summary}</div>
-                        <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 5 }}>
-                          <div style={{ width: 4, height: 4, borderRadius: "50%", background: s.color }} />
-                          <span style={{ fontSize: 9, color: `${s.color}88`, letterSpacing: "0.22em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>Tap to explore</span>
-                        </div>
+          {/* ── GUIDES TAB ── */}
+          {activeTab === "guides" && !activeGuide && (
+            <motion.div key="guides-grid" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+                {GUIDE_TOPICS_NOVEE.map((topic, i) => (
+                  <motion.div key={topic.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                    whileTap={{ scale: 0.97 }} onClick={() => { setActiveGuide(topic); setChatMsg(""); setChatReply(null); }}
+                    style={{ minHeight: 160, borderRadius: 14, border: `1px solid ${GOLD}44`, cursor: "pointer", position: "relative", overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,0.40)" }}>
+                    <img src={topic.img} alt={topic.label} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(170deg, rgba(5,3,1,0.38) 0%, rgba(5,3,1,0.85) 100%)" }} />
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${GOLD}88, transparent)` }} />
+                    <div style={{ position: "relative", padding: "16px 14px", display: "flex", flexDirection: "column" as const, gap: 6, minHeight: 160 }}>
+                      <div style={{ fontSize: 16, fontWeight: 900, color: "#FFFDD0", letterSpacing: "0.03em", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2, textShadow: "0 1px 8px rgba(0,0,0,0.70)" }}>{topic.label}</div>
+                      <div style={{ fontSize: 11, color: "rgba(255,253,208,0.65)", lineHeight: 1.5, fontFamily: "'Inter',sans-serif" }}>{topic.sub}</div>
+                      <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ height: 1, width: 16, background: `linear-gradient(90deg, ${GOLD}, transparent)`, borderRadius: 1 }} />
+                        <span style={{ fontSize: 9, color: `${GOLD}88`, letterSpacing: "0.28em", fontFamily: "'Inter',sans-serif", fontWeight: 700 }}>TAP TO EXPLORE</span>
                       </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-              <div style={{ padding: "14px 16px", borderRadius: 12, border: `1px solid ${GOLD}22`, background: "rgba(255,255,255,0.02)" }}>
-                <div style={{ fontSize: 11, color: `${GOLD}77`, letterSpacing: "0.20em", fontWeight: 700, marginBottom: 9, fontFamily: "'Inter',sans-serif" }}>SEARCH KNOWLEDGE BASE</div>
-                <div style={{ display: "flex", gap: 7 }}>
-                  <input value={docSearchQuery} onChange={e => setDocSearchQuery(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && void handleDocSearch()}
-                    placeholder="e.g. How do I relight a cigar? Bourbon pairing..."
-                    style={{ flex: 1, padding: "9px 12px", borderRadius: 7, border: `1px solid ${GOLD}33`, background: "rgba(255,255,255,0.04)", color: CREAM, fontSize: 12, fontFamily: "'Inter',sans-serif", outline: "none" }} />
-                  <motion.button type="button" whileTap={{ scale: 0.96 }} onClick={() => void handleDocSearch()} disabled={docLoading}
-                    style={{ padding: "9px 14px", borderRadius: 7, border: `1px solid ${GOLD}55`, background: `rgba(212,175,55,0.14)`, color: GOLD, fontSize: 11, fontWeight: 800, cursor: "pointer", letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif" }}>
-                    {docLoading ? "..." : "SEARCH"}
-                  </motion.button>
-                </div>
-                {docResults.length > 0 && (
-                  <div style={{ marginTop: 9, display: "flex", flexDirection: "column", gap: 6 }}>
-                    {docResults.slice(0, 4).map((r, i) => (
-                      <div key={i} style={{ padding: "9px 11px", borderRadius: 7, background: "rgba(212,175,55,0.05)", border: `1px solid ${GOLD}18` }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: GOLD, marginBottom: 2, fontFamily: "'Inter',sans-serif" }}>{r.title}</div>
-                        <div style={{ fontSize: 10, color: `${CREAM}55`, marginBottom: 2, fontFamily: "'Inter',sans-serif" }}>{r.source}</div>
-                        <div style={{ fontSize: 11, color: `${CREAM}75`, lineHeight: 1.4, fontFamily: "'Inter',sans-serif" }}>{r.excerpt.substring(0, 120)}...</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          {activeSection && activeSection !== "live_ai" && section && (
-            <motion.div key={activeSection} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
-              <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setActiveSection(null)}
-                style={{ marginBottom: 14, display: "flex", alignItems: "center", gap: 7, padding: "6px 12px", borderRadius: 7, border: `1px solid ${GOLD}33`, background: "rgba(212,175,55,0.06)", color: GOLD, fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>
-                ← ALL SECTIONS
-              </motion.button>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 15px", borderRadius: 10, background: `rgba(212,175,55,0.06)`, border: `1px solid ${section.color}33`, marginBottom: 12 }}>
-                <span style={{ fontSize: 26, color: section.color, fontFamily: "'Inter',sans-serif" }}>{section.icon}</span>
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: 900, color: GOLD, letterSpacing: "0.06em", fontFamily: "'Cormorant Garamond',serif" }}>{section.label}</div>
-                  <div style={{ fontSize: 10, color: `${GOLD}55`, letterSpacing: "0.12em", marginTop: 1, fontFamily: "'Inter',sans-serif" }}>{section.summary}</div>
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 14 }}>
-                {section.items.map((item, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
-                    style={{ padding: "13px 15px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: `1px solid ${GOLD}18` }}>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: CREAM, letterSpacing: "0.03em", marginBottom: 5, fontFamily: "'Inter',sans-serif" }}>{item.title}</div>
-                    <div style={{ fontSize: 12, color: "rgba(240,232,212,0.72)", lineHeight: 1.6, fontFamily: "'Inter',sans-serif" }}>{item.body}</div>
+                    </div>
                   </motion.div>
                 ))}
               </div>
-              <motion.button type="button" whileTap={{ scale: 0.97 }}
-                onClick={() => { setAiQuery(`Tell me more about ${section.label} for a ${selectedRole}`); setActiveSection("live_ai"); }}
-                style={{ width: "100%", padding: "12px", borderRadius: 9, border: `1px solid ${GOLD}44`, background: `rgba(212,175,55,0.10)`, color: GOLD, fontSize: 12, fontWeight: 800, cursor: "pointer", letterSpacing: "0.16em", fontFamily: "'Inter',sans-serif" }}>
-                ASK AI ABOUT {section.label.toUpperCase()}
-              </motion.button>
             </motion.div>
           )}
 
-          {activeSection === "live_ai" && (
-            <motion.div key="live_ai" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
-              <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => { setActiveSection(null); setAiResult(null); setAiError(null); }}
-                style={{ marginBottom: 14, display: "flex", alignItems: "center", gap: 7, padding: "6px 12px", borderRadius: 7, border: `1px solid ${GOLD}33`, background: "rgba(212,175,55,0.06)", color: GOLD, fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>
-                ← ALL SECTIONS
+          {/* ── GUIDE DETAIL + CHAT ── */}
+          {activeTab === "guides" && activeGuide && (
+            <motion.div key={`guide-${activeGuide.id}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+              <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => { setActiveGuide(null); setChatReply(null); setChatMsg(""); }}
+                style={{ marginBottom: 14, padding: "6px 12px", borderRadius: 7, border: `1px solid ${GOLD}33`, background: "rgba(212,175,55,0.06)", color: GOLD, fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>
+                BACK TO GUIDES
               </motion.button>
-              <div style={{ padding: "13px 15px", borderRadius: 10, background: "rgba(212,175,55,0.06)", border: `1px solid ${GOLD}33`, marginBottom: 12 }}>
-                <div style={{ fontSize: 18, fontWeight: 900, color: GOLD, letterSpacing: "0.06em", fontFamily: "'Cormorant Garamond',serif", marginBottom: 2 }}>LIVE AI COACH</div>
-                <div style={{ fontSize: 10, color: `${GOLD}55`, letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif" }}>Responding as {STAFF_ROLES_COACH.find(r => r.id === selectedRole)?.label ?? "Server"} · Grounded on internal manuals</div>
+
+              <div style={{ padding: "14px 16px", borderRadius: 12, background: `rgba(212,175,55,0.07)`, border: `1px solid ${GOLD}44`, marginBottom: 14 }}>
+                <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, letterSpacing: "0.06em", fontFamily: "'Cormorant Garamond',serif", marginBottom: 4 }}>{activeGuide.label}</div>
+                <div style={{ fontSize: 11, color: `${GOLD}66`, letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>{activeGuide.sub}</div>
               </div>
-              {!aiResult && !aiLoading && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 12 }}>
-                  <div style={{ fontSize: 10, color: `${GOLD}55`, letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif" }}>SUGGESTED QUESTIONS</div>
-                  {["How do I relight a cigar properly?", "What bourbon pairs best with a Maduro?", "How do I recover an upset VIP guest?", "Show me the pre-shift humidor checklist."].map((q, i) => (
-                    <motion.button key={i} type="button" whileTap={{ scale: 0.98 }} onClick={() => setAiQuery(q)}
-                      style={{ padding: "9px 12px", borderRadius: 7, border: `1px solid ${GOLD}22`, background: "rgba(255,255,255,0.02)", color: `${CREAM}77`, fontSize: 12, textAlign: "left", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
-                      {q}
-                    </motion.button>
-                  ))}
-                </div>
-              )}
-              <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 12 }}>
-                <textarea value={aiQuery} onChange={e => setAiQuery(e.target.value)}
-                  placeholder="Ask anything about guest service, pairings, operations, or conflict recovery..."
+
+              <div style={{ display: "flex", flexDirection: "column" as const, gap: 8, marginBottom: 12 }}>
+                <textarea value={chatMsg} onChange={e => setChatMsg(e.target.value)}
+                  placeholder={`Ask about ${activeGuide.label.toLowerCase()}...`}
                   rows={3}
-                  style={{ padding: "11px 13px", borderRadius: 9, border: `1px solid ${GOLD}33`, background: "rgba(255,255,255,0.04)", color: CREAM, fontSize: 12, fontFamily: "'Inter',sans-serif", outline: "none", resize: "none", lineHeight: 1.5 }} />
-                <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => void handleAskAI()} disabled={aiLoading || !aiQuery.trim()}
-                  style={{ padding: "12px", borderRadius: 9, border: `1px solid ${aiLoading ? GOLD + "33" : GOLD + "66"}`, background: aiLoading ? "rgba(212,175,55,0.06)" : `rgba(212,175,55,0.18)`, color: aiLoading ? `${GOLD}55` : GOLD, fontSize: 13, fontWeight: 800, cursor: aiLoading ? "default" : "pointer", letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif" }}>
-                  {aiLoading ? "CONSULTING AI COACH..." : "ASK AI COACH"}
+                  style={{ padding: "11px 13px", borderRadius: 9, border: `1px solid ${GOLD}33`, background: "rgba(255,255,255,0.04)", color: CREAM, fontSize: 12, fontFamily: "'Inter',sans-serif", outline: "none", resize: "none" as const, lineHeight: 1.5 }} />
+                <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => void askGuide(activeGuide, chatMsg)} disabled={chatLoading || !chatMsg.trim()}
+                  style={{ padding: "12px", borderRadius: 9, border: `1px solid ${chatLoading ? GOLD + "33" : GOLD + "66"}`, background: chatLoading ? "rgba(212,175,55,0.06)" : "rgba(212,175,55,0.18)", color: chatLoading ? `${GOLD}55` : GOLD, fontSize: 13, fontWeight: 800, cursor: chatLoading ? "default" : "pointer", letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif" }}>
+                  {chatLoading ? "CONSULTING AI..." : "ASK AI COACH"}
                 </motion.button>
               </div>
+
               <AnimatePresence>
-                {aiError && (
-                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    style={{ padding: "12px 14px", borderRadius: 9, background: "rgba(200,74,74,0.08)", border: "1px solid rgba(200,74,74,0.28)", color: "#F07070", fontSize: 12, fontFamily: "'Inter',sans-serif", lineHeight: 1.5, marginBottom: 9 }}>
-                    {aiError}
-                  </motion.div>
-                )}
-                {aiResult && (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                    {aiResult.lowConfidenceWarning && (
-                      <div style={{ padding: "7px 11px", borderRadius: 7, background: "rgba(200,160,10,0.10)", border: "1px solid rgba(200,160,10,0.28)", color: "#C8A00A", fontSize: 10, fontFamily: "'Inter',sans-serif", letterSpacing: "0.10em" }}>
-                        LOW CONFIDENCE — Verify with your manager or Knowledge Center before acting on this guidance.
-                      </div>
-                    )}
-                    <div style={{ padding: "14px 16px", borderRadius: 10, background: "rgba(212,175,55,0.06)", border: `1px solid ${GOLD}33` }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 9 }}>
-                        <div style={{ fontSize: 10, color: `${GOLD}66`, letterSpacing: "0.18em", fontFamily: "'Inter',sans-serif" }}>AI RESPONSE · {(STAFF_ROLES_COACH.find(r => r.id === selectedRole)?.label ?? "Server").toUpperCase()}</div>
-                        <div style={{ fontSize: 10, color: aiResult.confidence >= 0.7 ? "#32B45A" : "#C8A00A", fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>
-                          {Math.round(aiResult.confidence * 100)}% CONFIDENCE
-                        </div>
-                      </div>
-                      <div style={{ fontSize: 13, color: CREAM, lineHeight: 1.65, fontFamily: "'Inter',sans-serif", whiteSpace: "pre-wrap" }}>{aiResult.answer}</div>
-                    </div>
-                    {aiResult.sources.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, alignItems: "center" }}>
-                        <span style={{ fontSize: 9, color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.12em" }}>SOURCES:</span>
-                        {aiResult.sources.slice(0, 3).map((s, i) => (
-                          <div key={i} style={{ padding: "2px 7px", borderRadius: 4, background: "rgba(212,175,55,0.08)", border: `1px solid ${GOLD}22`, fontSize: 9, color: `${GOLD}88`, fontFamily: "'Inter',sans-serif" }}>{s.title}</div>
-                        ))}
-                      </div>
-                    )}
-                    {aiResult.suggestedFollowUps.length > 0 && (
-                      <div>
-                        <div style={{ fontSize: 9, color: `${GOLD}55`, letterSpacing: "0.14em", marginBottom: 5, fontFamily: "'Inter',sans-serif" }}>FOLLOW-UP QUESTIONS</div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          {aiResult.suggestedFollowUps.map((q, i) => (
-                            <motion.button key={i} type="button" whileTap={{ scale: 0.98 }} onClick={() => { setAiQuery(q); setAiResult(null); }}
-                              style={{ padding: "7px 10px", borderRadius: 6, border: `1px solid ${GOLD}22`, background: "rgba(255,255,255,0.02)", color: `${CREAM}77`, fontSize: 11, textAlign: "left", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
-                              {q}
-                            </motion.button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                {chatReply && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                    style={{ padding: "16px 18px", borderRadius: 12, background: `rgba(212,175,55,0.06)`, border: `1px solid ${GOLD}33` }}>
+                    <div style={{ fontSize: 9, color: `${GOLD}66`, letterSpacing: "0.22em", marginBottom: 9, fontFamily: "'Inter',sans-serif" }}>SOVEREIGN AI COACH RESPONSE</div>
+                    <div style={{ fontSize: 13, color: CREAM, lineHeight: 1.70, fontFamily: "'Inter',sans-serif" }}>{chatReply}</div>
                   </motion.div>
                 )}
               </AnimatePresence>
+            </motion.div>
+          )}
+
+          {/* ── FAQ TAB ── */}
+          {activeTab === "faq" && (
+            <motion.div key="faq" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div style={{ fontSize: 11, color: `${GOLD}55`, letterSpacing: "0.22em", marginBottom: 12, fontFamily: "'Inter',sans-serif" }}>FREQUENTLY ASKED QUESTIONS</div>
+              <div style={{ display: "flex", flexDirection: "column" as const, gap: 7 }}>
+                {FAQ_ITEMS_NOVEE.map((item, i) => (
+                  <motion.div key={i} layout style={{ borderRadius: 10, border: `1px solid ${openFaqIdx === i ? GOLD + "55" : GOLD + "18"}`, background: openFaqIdx === i ? "rgba(212,175,55,0.06)" : "rgba(255,255,255,0.02)", overflow: "hidden" }}>
+                    <motion.button type="button" whileTap={{ scale: 0.99 }} onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}
+                      style={{ width: "100%", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "transparent", border: "none", color: openFaqIdx === i ? GOLD : CREAM, fontSize: 13, fontWeight: 700, cursor: "pointer", textAlign: "left" as const, fontFamily: "'Inter',sans-serif", letterSpacing: "0.02em" }}>
+                      <span style={{ flex: 1, paddingRight: 12 }}>{item.q}</span>
+                      <motion.span animate={{ rotate: openFaqIdx === i ? 45 : 0 }} transition={{ duration: 0.2 }}
+                        style={{ fontSize: 18, color: GOLD, flexShrink: 0, lineHeight: 1 }}>+</motion.span>
+                    </motion.button>
+                    <AnimatePresence>
+                      {openFaqIdx === i && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}>
+                          <div style={{ padding: "0 16px 14px", fontSize: 12, color: `${CREAM}BB`, lineHeight: 1.65, fontFamily: "'Inter',sans-serif", borderTop: `1px solid ${GOLD}18`, paddingTop: 10 }}>
+                            {item.a}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
           )}
 
@@ -1159,34 +1061,6 @@ function CoachHelpView() {
     </div>
   );
 }
-
-
-/* ─────────────────────────────────────────────
-   OS Nav Bar — persistent top navigation
-───────────────────────────────────────────── */
-interface NavItem {
-  id:          string;
-  label:       string;
-  abbr:        string;
-  targetPhase: Phase | null;
-  pinLevel?:   PinRole;
-  staffOnly?:  boolean;
-  isActive:    (p: string) => boolean;
-}
-
-/* Guest nav: CraftHub · SmokeCraft · Pairing · My Profile
-   Staff nav: adds E.A.T Intel · Command Center · Lounge · Settings */
-const NAV_ITEMS: NavItem[] = [
-  { id: "crafthub",          label: "CraftHub",       abbr: "HUB", targetPhase: "crafthub",          staffOnly: false, isActive: (p) => p === "crafthub" },
-  { id: "smokecraft",        label: "SmokeCraft",     abbr: "SC",  targetPhase: "s1_demo",           staffOnly: false, isActive: (p) => SESSION_PHASES.has(p) },
-  { id: "pairing",           label: "Pairing",        abbr: "PR",  targetPhase: "pairing_view",      staffOnly: false, isActive: (p) => p === "pairing_view" },
-  { id: "profile",           label: "My Profile",     abbr: "ME",  targetPhase: "profile_view",      staffOnly: false, isActive: (p) => p === "profile_view" },
-  { id: "eat",               label: "E.A.T Intel",    abbr: "EAT", targetPhase: "eat_dashboard",     staffOnly: true,  isActive: (p) => p === "eat_dashboard" },
-  { id: "executive_command", label: "Command Center", abbr: "EXC", targetPhase: "executive_command", staffOnly: true,  pinLevel: "management", isActive: (p) => p === "executive_command" },
-  { id: "lounge",            label: "Lounge",         abbr: "LG",  targetPhase: "lounge_view",       staffOnly: true,  isActive: (p) => p === "lounge_view" },
-  { id: "settings",          label: "Settings",       abbr: "ST",  targetPhase: "settings_view",     staffOnly: true,  isActive: (p) => p === "settings_view" },
-  { id: "coach_help",        label: "Coach Help",     abbr: "CH",  targetPhase: "coach_help",        staffOnly: false, isActive: (p) => p === "coach_help" },
-];
 
 function useStaffMode() {
   const [isStaff, setIsStaff] = useState(() => !!localStorage.getItem("novee_staff_pin"));

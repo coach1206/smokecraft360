@@ -39,10 +39,10 @@ const CRAFT_COLORS: Record<string, string> = {
 };
 
 const CRAFT_ICONS: Record<string, string> = {
-  smoke: "🪨",
-  pour:  "🥃",
-  brew:  "🍺",
-  vape:  "💨",
+  smoke: "SC",
+  pour:  "PR",
+  brew:  "BC",
+  vape:  "VC",
   none:  "◆",
 };
 
