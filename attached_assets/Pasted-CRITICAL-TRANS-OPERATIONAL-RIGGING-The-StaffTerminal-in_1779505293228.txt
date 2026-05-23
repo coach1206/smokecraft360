@@ -1,0 +1,31 @@
+CRITICAL TRANS-OPERATIONAL RIGGING: The StaffTerminal interface is an un-wired graphic shell. The UI layout components are rendering text placeholders that are completely un-linked from our active global data states, schemas, and mutation logic. You must immediately inject the functional programmatic backend and event handling hooks to make the entire E.A.T. system live.
+
+Execute this comprehensive state and transaction refactor inside the code base right now:
+
+---
+
+### 1. ACTIVE SELECTION WRAPPING (Column 2 & 3 Interactive Linkage)
+* Initialize a global state tracker or context variable: 'selectedTableId' defaulting to 101.
+* Wire an active hardware touch event listener (onTouchStart) directly onto every Table Row Card in Column 2. Tapping a table must immediately update 'selectedTableId' to that specific table's ID.
+* Overwrite Column 3 (Active Ledger) to map dynamically. It must instantly filter, calculate, and display the items, quantities, subtotal, tax, and overall balance tracking fields of the currently selectedTableId. If a different table is tapped, Column 3 must update its display instantly without page reloads.
+
+---
+
+### 2. HARDWARE INVENTORY SCHEMAS INTEGRATION (Asset Automatic Deductions)
+* Bind the Station 1 'Puros Remaining' text value and the Station 2 'Bar Metrics' levels directly to our global Asset Catalog array variables.
+* Build out the state mutation processor for the ledger's circular gold remove button (✕). When a staff member taps the cross, it must immediately pop that specific SKU out of the active table's item array, recalculate the running financial total strings, and write a live stock increment adjustment value directly back to your local storage inventory count.
+
+---
+
+### 3. ENERGIZE THE TICKET TAPPER OVERLAY MODAL
+* Create the 'Ticket Tapper Modal' rendering portal wrapper directly over the workspace grid chassis. Wire its toggle visibility flag to the '★ OPEN TICKET TAPPER ★' buttons in Column 2.
+* Inside this modal container, map selectable item pills for our Cigars and Spirits categories. Every pill target must feature oversized, large plus and minus (±) quantity modifier touch controls that inject or drop items directly into the active table data model array upon tap.
+
+---
+
+### 4. ENVIRONMENT CONTROL & FOOTER TELEMETRY SYNC (eat system 1111.png Integration)
+* Hook the 'System Status' indicators (Humidor, Bar, Kitchen network pulse points) and 'Venue Insights' numbers directly to our Master Operations state variables.
+* Ensure that if any environment preset alterations or HVAC threshold metrics are modified inside our administrative backend panels, the live tracking updates reflect instantly across these layout rows.
+* Maximize screen space and readability layout. Ensure font-sizes across tracking numbers use large, prominent typography settings so no element bleeds or overlaps while staying entirely proportional to the wider monitor size.
+
+Do not write dummy text or incomplete placeholder elements. Refactor the backend layout wiring and compile this fully responsive operational terminal right now.

@@ -1,0 +1,89 @@
+Here is your definitive, multi-layered master script that merges the absolute visual matching rules, the exact font scales, the widescreen horizontal expansion layout, and the full mathematical backend wiring.
+
+This leaves the Replit agent zero room to hide behind fake strings, boxy viewports, or disconnected components. Copy this entire block and drop it directly into the agent chat:
+
+Plaintext
+COMMAND OVERRIDE: We are fully integrating our front-end 3-Column Touchscreen UI Layout (POS3.png) with our complete E.A.T. (Environment, Asset, Transaction) operational backend state engine and schemas (eat system 1111.png). You must rewrite the StaffTerminal component to stretch across 100% full widescreen edge-to-edge width, scale up the typography, and programmatically wire every button, calculation hook, and modal layout layer to active states without deleting or dropping any existing data models.
+
+---
+
+### 1. THE E.A.T. DYNAMIC GLOBAL OPERATIONAL STATE ENGINE
+Initialize and maintain a global, persistent context state framework within the terminal file. Do not use mock strings; bind the layout properties directly to these variables:
+
+```javascript
+const [venueState, setVenueState] = useState({
+  selectedTableId: 101,
+  syncIntervalMinutes: 15,
+  activeTables: {
+    101: { id: 101, guest: "John D.", zone: "VIP Section", timeActive: "01:42h", items: [
+      { id: "sku_rp_1992", name: "Rocky Patel Vintage 1992", qty: 1, price: 42.00, category: "Cigars" },
+      { id: "sku_bt_bourb", name: "Buffalo Trace Bourbon", qty: 2, price: 32.00, category: "Spirits" }
+    ]},
+    102: { id: 102, guest: "Maria S.", zone: "Main Floor", timeActive: "00:57h", items: [
+      { id: "sku_bt_bourb", name: "Buffalo Trace Bourbon", qty: 1, price: 32.00, category: "Spirits" }
+    ]},
+    103: { id: 103, guest: "Robert K.", zone: "Main Lounge", timeActive: "00:15h", items: [] }
+  },
+  telemetry: {
+    humidor: { purosRemaining: 145, temperature: 68, humidity: 71, alertMargin: 5 },
+    bar: { activePourSessions: 14, lowStockAlerts: [{ item: "Remy Martin XO", currentVolumePct: 12 }] },
+    kitchen: { pendingOrders: 3, readyOrders: 1 }
+  }
+});
+const [isTicketTapperOpen, setIsTicketTapperOpen] = useState(false);
+2. REAL-TIME REVENUE TRANSACTION MATHEMATICS
+Implement an automated calculation hook that filters items based on 'venueState.selectedTableId' and computes totals instantaneously. Apply our exact 8.46% sales tax logic:
+
+JavaScript
+const calculateActiveInvoice = () => {
+  const table = venueState.activeTables[venueState.selectedTableId];
+  if (!table) return { subtotal: 0, tax: 0, total: 0 };
+  
+  const subtotal = table.items.reduce((acc, item) => acc + (item.price * item.qty), 0);
+  const taxRate = 0.0846;
+  const tax = subtotal * taxRate;
+  const total = subtotal + tax;
+  
+  return {
+    subtotal: subtotal.toFixed(2),
+    tax: tax.toFixed(2),
+    total: total.toFixed(2)
+  };
+};
+3. LIVE TRANSACTION STATE MUTATIONS & MODAL RIGGING
+Attach these event handling hooks directly to our touchscreen layout targets:
+
+Table State Switching (Column 2 Node Selection): Tapping any table row card container in Column 2 must fire an onTouchStart event that updates venueState.selectedTableId to that card's specific ID, instantly refreshing the ledger data view in Column 3.
+
+Item Deletion Trigger (Column 3 Gold Circular ✕ Cross Button): ```javascript
+const handleRemoveLedgerItem = (itemId) => {
+setVenueState(prev => {
+const tableId = prev.selectedTableId;
+const updatedItems = prev.activeTables[tableId].items.filter(item => item.id !== itemId);
+return {
+...prev,
+activeTables: { ...prev.activeTables, [tableId]: { ...prev.activeTables[tableId], items: updatedItems } }
+};
+});
+};
+
+* **Ticket Tapper Overlay Modal Activation:** Wire the `★ OPEN TICKET TAPPER ★` bars in Column 2 to toggle `setIsTicketTapperOpen(true)`. Inside the overlay window, render item picker pills with large plus and minus (±) quantity modifiers connected directly to a state mutation that pushes assets right into the active table array.
+
+---
+
+### 4. FULL EDGE-TO-EDGE VIEWPORT PROPORTIONS & TYPOGRAPHY STYLE OVERRIDES
+Destroy all narrow, center-boxing margins and adjust component layout sizes to be large, prominent, and perfectly fitted to a wider display monitor:
+* **Master Workspace Chassis:** `width: "100vw"`, `maxWidth: "100vw"`, `height: "100vh"`, `backgroundColor: "#020202"`, `display: "grid"`, `gridTemplateColumns: "64px 1fr 1.2fr 1fr"`, `gap: "16px"`, `padding: "16px"`. Completely drop `margin: "0 auto"` or fixed max-widths.
+* **High-Contrast Typography Scale:** Enforce large typography properties across modules to guarantee touchscreen visibility. Set primary telemetry metric integers (Puros Remaining / Active Pours) to `fontSize: "44px"` with intense glowing amber values (#E6A11D). Increase general card descriptions and table row labels by a size larger (`fontSize: "18px"` baseline) so no text bleeds, overflows, or requires squished desktop mouse-pointers.
+* **Obsidian Glass Materials:** Set container layers to `backgroundColor: "rgba(12, 12, 12, 0.92)"` and apply heavy hardware-accelerated frosted panel blurs (`backdrop-filter: "blur(25px)"`) wrapped in razor-thin 1px gold (#D4AF37) borders.
+
+---
+
+### 5. INTEGRATE THE E.A.T. TELEMETRY CONTROLS (eat system 1111.png Integration)
+* Pin the fully operational lower panels across the bottom base edge of the terminal view:
+  - **Staff on Floor Array:** Maps circular staff avatar assets cleanly.
+  - **Venue Insights Analytics Matrix:** Binds live revenue velocity lines ($2,847/hour text strings) to master metrics.
+  - **System Status Rows:** Maps the network pulse indicators (Humidor, Bar, Kitchen data feeds) directly to `venueState.telemetry` properties. If values deviate from targets, change pulse colors dynamically from green to a warning alert state.
+* Apply hardware-accelerated touch event listeners (`onTouchStart`, `onTouchEnd`) globally to drop the mobile browser 300ms latency entirely.
+
+Execute this comprehensive layout refactor and system wiring now. Verify that the components expand horizontally to the viewport edges and all buttons execute live mathematical loops before outputting compilation success.
