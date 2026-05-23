@@ -1,0 +1,38 @@
+CRITICAL DEV-SERVER RECOVERY: OVERWRITE ROOT CONFIGURATIONS, ALIGN DEPLOYMENT PORT PATHS, AND TERMINATE PREVIEW BLACKOUT (IMMEDIATE COMPILATION REBOOT)
+
+====================================================================
+1. REASON FOR THIS INTERCEPTION (WORKSPACE RUNTIME BREAKAGE)
+====================================================================
+The live workspace preview is completely black because you partitioned the codebase into 'client' and 'server' subdirectories without updating the root process configurations. Your background process manager is dead because it cannot find the entry point. You are ordered to halt all loose feature programming, update the primary configuration files immediately, and force-reboot the concurrent compilation engine.
+
+====================================================================
+2. REPLIT ENGINE AND ROOT PACKAGE ALIGNMENT
+====================================================================
+- Locate the hidden '.replit' file in the absolute root directory of the project. Force-write the run command to handle the split directory structure concurrently:
+  run = "npm run dev"
+
+- Locate the primary 'package.json' in the absolute root directory of the project. Completely overwrite the "scripts" block to ensure the frontend bundler and backend server boot together smoothly:
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run server --prefix server\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "build": "npm run build --prefix client && npm run build --prefix server"
+  }
+- Ensure 'concurrently' is injected into the root dependencies if it is missing, or use standard shell parallel execution ("npm run server --prefix server & npm run dev --prefix client") to guarantee both engines fire instantly.
+
+====================================================================
+3. MOUNT THE ACCESSIBILITY SYSTEM AND 5-STAGE FLOW ONCE ONLINE
+====================================================================
+The moment the Vite development server boots, ensure the entire full-stack interface mounts cleanly without rendering stubs, 404 path drops, or blank frames. Emojis, textual glyphs, and unstyled decorations are permanently banned:
+
+- STAGE 1 & 2: REBOOT CHASSIS & 4-TILE MATRIX (PATH: '/craft-hub') -> Clean all navigation tags out of the top header. The Left Vertical Obsidian Rail is the sole routing driver. Render the 4-Tile Tactical Grid using layered Obsidian Glass card blocks. Configure the automated background carousels to fade every 6 seconds, displaying cinematic, human-centered luxury social lounge scenes.
+- STAGE 4 CIGAR FRAMING FIX -> Open the 'Your Reserve' workspace layout. The photographic asset of the hand-rolled Nicaraguan Maduro cigar is zoomed too close. Change its wrapper attributes to 'object-fit: contain' with absolute 1:1 aspect ratios, backing the camera view out completely so the entire product length is framed perfectly on top of the center obsidian mat without being cropped out at the boundaries.
+- STAGE 5 INTELLIGENCE TILES & POS DOCK -> Re-engineer the right panel into 4 touch-responsive telemetry modules (E.A.T Status, Revenue Velocity, Humidor Countdown, Socket Handshake) utilizing glowing radial cream-gold gradients. Map the Coach Help tab natively to the server-side OpenAI API handler (/server/api/coach/chat.ts) to stream operational guide responses smoothly.
+
+====================================================================
+4. ACCESSIBILITY & CONTRAST SWEEP
+====================================================================
+- Touch Hit-Boxes: Enforce a strict minimum 58px target footprint across all active buttons, navigation rail cells, side telemetry docks, and list nodes.
+- Contrast Framework: Eradicate flat, dim gray panels. Interweave rich Cream (#FFFDD0 / #FDFBF7) and metallic Warm Gold across all sub-modules to maximize data visibility for 40-60 age cohorts in dim venue environments.
+
+Wipe your build cache, align the concurrent directory prefixes, and execute an immediate workspace server restart. Bring the client preview out of the blackout and verify zero TypeScript compilation errors.
