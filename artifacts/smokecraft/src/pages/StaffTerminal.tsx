@@ -3136,7 +3136,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           </motion.button>
         </div>
       )}
-      <div style={{ flex:1, width:"100vw", minWidth:"100vw", boxSizing:"border-box", display:"flex", flexDirection:"row", gap:16, padding:"16px 24px 16px 24px", overflow:"hidden", position:"relative", zIndex:1 }}>
+      <div style={{ flex:1, display:"grid", gridTemplateColumns:"64px 390px 1fr 480px", gridTemplateRows:"1fr", columnGap:16, padding:"16px 24px 16px 24px", overflow:"hidden", position:"relative", zIndex:1, alignItems:"stretch" }}>
         <NavRail
           onBack={back}
           isAdminView={isAdminView}

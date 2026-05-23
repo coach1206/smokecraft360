@@ -1,0 +1,68 @@
+CRITICAL HARDWARE SPECIFICATION UPGRADE: RE-ENGINEER EVERY ROUTE, INPUT, AND ANIMATION FOR DIRECT 100% TOUCHSCREEN LATENCY EXECUTIONS (ZERO MOUSE-HOVER DEPENDENCIES)
+
+====================================================
+1. STRICT HARDWARE INTERACTION MANDATE
+====================================================
+This platform is being deployed directly onto high-end physical touch kiosks, iPad Pro surfaces, and terminal hardware. You are strictly forbidden from writing code that depends on CSS ':hover' states, mouse mousemove tracking, or desk-pointer click parameters. Every single event listener across the entire 5-stage architecture must be natively optimized for high-velocity finger gestures, direct taps, and tactile feedback loops.
+
+====================================================
+2. STAGE 1: HARDWARE INIT & SOVEREIGN BOOT SELECTION (PATH: '/')
+====================================================
+Enforce a non-skippable, continuous boot timeline on a solid True Obsidian (#010101) base layer before any workspace view mounts:
+- Phase 1.1: System Cold Init (0.0s – 1.5s): Viewport shifts from deep blackout to a solid, matte True Obsidian substrate. Web Audio API initializes a native low-frequency synthetic tone oscillator at 3400Hz for a single, clean 0.5-second activation chime on device readiness.
+- Phase 1.2: Corporate Anchor (1.5s – 4.5s): Center-screen, display a hyper-detailed geometric emblem built from polished smoked chrome and brushed titanium material vector paths. Animate "PROFOUND INNOVATIONS LLC" directly beneath it in an oversized luxury serif typography layout using a liquid warm gold foil texture overlay. Settle on a spring-mass physics curve and execute a 0.35s left-slide fade out.
+- Phase 1.3: OS Authorization Gate (4.5s – 7.5s): Fade the corporate lockup as "NOVEE OS" surfaces in a high-contrast True White sans-serif typeface, framed by a rotating radial edge-glow loading ring vector. Render the status subtitle "POWERED" beneath the logo tracking state context variables. Illuminate an absolute status node in the top-left corner reading "SYSTEM ACTIVE" and write a primary handshake token directly to localStorage to permanently authorize global navigation rail properties.
+
+====================================================
+3. STAGE 2: THE CRAFTHUB ECOSYSTEM LAUNCHER (PATH: '/craft-hub')
+====================================================
+- Clean Layout Architecture: Completely wipe out all duplicate text-tabs, link boxes, and cluttered buttons from the top status header bar. The Left Vertical Obsidian Navigation Rail (Hub, SC, PR, CH icons) is the absolute, singular routing engine for this operating system.
+- Phase 2.1: The 4-Craft Tactical Touch Selection Grid: Format the viewport into a full-screen 1920x1080 tactical grid using 4 massive card containers built with layered Obsidian Glass panel wrappers, brushed titanium bounding edges, and a strict physical hit-box footprint of at least 58px by 58px.
+- Touch Carousel Background Loops: Program an image array for each tile that automatically cross-fades gracefully every 6 seconds using 'object-fit: cover' and explicit aspect ratios. All assets must feature cinematic, human-centered luxury social compositions capturing real human experiences, atmosphere, and elite culture. Completely remove the dumpling food assets and dead placeholder images:
+  * TILE 1: 'SMOKECRAFT 360' (ACTIVE) -> Rotates between cinematic, editorial lounge scenes showing sophisticated people engaged in conversation in deep leather tufted chairs under warm amber accent lighting, and close-ups of premium cigar lounge rituals. This tile must listen natively to 'onTouchStart' event handlers to instantly boot straight into the ritual onboarding journey on a clean, single tap.
+  * TILE 2: 'POURCRAFT 360' (COMING SOON) -> Rotates between upscale mixologists crafting elite spirits and VIP couples socializing over luxury cocktails along a glowing crystal bar surface. (Affix a brushed bronze 'COMING SOON' overlay tag).
+  * TILE 3: 'BEERCRAFT 360' (COMING SOON) -> High-vibe stylish groups of friends interacting under twilight string-lighting on an upscale rooftop social brewery deck environment. (Affix a 'COMING SOON' tag).
+  * TILE 4: 'WINECRAFT 360' (COMING SOON) -> Intimate, refined date-night scenes inside a stone-walled private wine lounge as a sommelier pours a vintage selection. (Affix a 'COMING SOON' tag).
+
+====================================================
+4. STAGE 3: THE SMOKECRAFT EXPERIENCE JOURNEY (SESSION 1)
+====================================================
+Tapping Tile 1 initializes Session 1, establishing data structures inside the root state manager so progress tracking variables, earned XP, and selection choices never drop or reset on view changes.
+- Phase 3.1: The Ritual Activation (Onboarding Chamber): Render a clean, minimal space featuring zero technical developer setting boxes or layout grids. The screen displays an uncluttered editorial typography layout reading "Your Ritual Begins". Mount a massive, high-contrast primary CTA button at the bottom frame reading "Enter the Lounge" formatted with a minimum touch surface of 58px and 22px text scaling. Tapping it slides the viewport directly into the selection matrix.
+- Phase 3.2: Your Guide Portfolio (The Selection Chamber): Build a highly interactive grid of profile selection cards. Flat rows are banned. Each card showcases a real, high-resolution portrait photograph of an elite tobacco master blender framed neatly by their corresponding country-flag graphic asset (e.g., "DOÑA ROSA: WRAPPER ARTISTRY MENTOR"). Enforce strict, ritual-voiced naming standards across all sub-copy layout variables:
+  * "The Levels" -> "Your Mastery Path"
+  * "The Mentors" -> "Your Guide"
+  * "Signature Studio" -> "Your Reserve"
+  Tapping a profile card binds that specific Guide ID to the active session data model, shifting their presence into a persistent status widget.
+- Phase 3.3: Your Mastery Path (Dynamic Engagement): The selected Guide acts as a real-time conversational coach tracking choices through a multi-tier profile step. As the user inputs taste parameters, vitola sizes, and filler configurations, layer all data blocks inside semi-translucent smoke-tinted glass boxes with rich, high-contrast Cream (#FFFDD0 / #FDFBF7) and liquid metallic Warm Gold borders. Mount an ambient volumetric smoke canvas layer at the bottom edge that drifts wisps upward along with micro-ember sparks cycling on a continuous 5.4-second breathing animation loop.
+
+====================================================
+5. STAGE 4: ADVANCED CREATION & PAIRING (SESSION 2)
+====================================================
+Once a user earns 3 or more Milestone Badges or finishes their flavor profile, Session 2 initializes to isolate payment cache parameters, product affinity metrics, and custom blends.
+- Phase 4.1: Your Reserve Workspace: Strip away all distracting widgets, cards, and data graphs to provide maximum layout breathing room. Hard-code directly onto the center frame of an obsidian glass preparation mat an ultra-premium, high-resolution photographic asset of a hand-rolled Nicaraguan Maduro cigar displaying deep wrapper leaf textures. It must remain permanently visible on the screen. The "Reset Blend" button must be cleanly coded; tapping it flushes the filler/wrapper cache arrays instantly without freezing or looping the system.
+- Phase 4.2: Upgraded Pairing Intelligence (AI Sommelier): Selecting the Pairing icon (PR) on the left vertical rail fires a 4-second cinematic blur transition, bypassing static page reloads. Re-architect into three distinct structural columns:
+  * Left Panel: Hard-coded macro photography capturing the oily veins and rich tooth of a premium Maduro tobacco leaf wrapper, overlaid with a heavy strength index meter.
+  * Center Panel: An interactive AI Sommelier text canvas presenting flavor notes, highlighted with a glowing radial cream-gold gradient background.
+  * Right Panel: A touchscreen-ready selection array of premium liquid reserves featuring high-contrast lifestyle photographs of caramel single-malt whiskey inside crystal tumblers, classic cocktails over clear artisanal ice, and upscale private club culinary small plates.
+  * Primary Action Trigger: An oversized gold-bordered tactile button reading "PAIR WITH MY PROFILE" runs an immediate affinity calculation against user state metrics, while secondary elements handle "Add To Tab" operations.
+  * Lower Touch Trending Carousel: Convert this horizontal list into a high-velocity touch swipe component utilizing GPU-accelerated drag layers for fluid performance. Scroll through image-first premium trending indicators: Lounge Favorites, VIP Reserve, and Staff Picks.
+
+====================================================
+6. STAGE 5: SYSTEM INTELLIGENCE & SECURITY GATEWAYS (SESSIONS 3 & 4)
+====================================================
+- Phase 5.1: Global Un-Gated Coach Help: Permanently mount this view in the Left Vertical Rail via the CH icon target. It is fully un-gated, free of PIN parameters, and accessible by every customer tier with a strict minimum 58px hitbox. Connect the 'CoachHelpModule' component tree natively to your server-side OpenAI API route. The view splits into a clean two-tab layout:
+  * Guides Tab: Displays 6 large topic cards embedded with luxury lifestyle hospitality imagery. Tapping a card fires an immediate OpenAI chat stream context payload, outputting clear, numbered step-by-step instructions with back-navigation handles.
+  * FAQ Tab: Renders 6 hardware-accelerated accordion elements that expand and collapse cleanly without layout overlapping.
+- Phase 5.2: The Staff Authority E.A.T. PIN Gate (Session 3 Activation): Tapping E.A.T Intelligence or attempting to open inventory sub-modules immediately interrupts the terminal layout, prompting an oversized 4-digit numeric PIN pad window directly on top of the glass canvas. No blank black screen allowed. The exact millisecond a staff member inputs verified credentials, track the touch coordinates and trigger an explosive, hardware-accelerated concentric ripple animation that scales outward via GPU layers across the full 1920x1080 canvas, dissolving the modal window to expose the revenue command deck.
+- Phase 5.3: E.A.T. High-Velocity POS Terminal: Built for lightning-fast muscle memory on physical kiosk and tablet devices. Text headers lock to a crisp 28px and numeric values display at an ultra-bold 18px-20px scale highlighted with metallic gold outlines. Displays real-time seating grids and live reactive inventory stacks communicating with backend data frameworks: Active Kitchen order line queues, Bar drink pour level status metrics, and a Humidor stock countdown fixed at a strict 145 Puros remaining. The underlying POSRouterEngine normalizes incoming ticket streams from external vendor structures (Toast, Clover, Square) to calculate open lounge tabs, execute stock deductions, and dynamically activate gamified 2x, 3x, and 5x receipt spend multipliers.
+- Phase 5.4: The Executive Command Hub (Session 4): Administrative Control is hard-gated behind a secondary Management PIN sequence. The lounge manager is presented with physical toggle switches that globally inject, show, or completely hide individual E.A.T asset blocks from client-facing kiosk screens in real-time. Integrates a secure WebSocket client layer, granting the Developer role a persistent remote reverse-tunnel to push code overrides and safely flush lingering process memory stacks off-site.
+
+====================================================
+7. TOUCHSUITE SURFACE PRODUCTION MECHANICS
+====================================================
+- Strict Hit-Box Footprints: Every single selectable rail node, filter button, list cell, close icon, and navigation trigger across all 5 stages must maintain a massive, physical hit-box boundary of at least 58px by 58px to accommodate hardware interaction without mis-clicks.
+- Dynamic Keyboard Integration: Ensure tapping any text input field instantly gains focus, triggers an interactive on-screen keyboard component overlay, updates internal React/Zustand state hooks instantly on character input, and handles submission routines smoothly without element layout overlapping.
+- Contrast Calibration: Eliminate flat, dim dark gray panels across the entire system chassis. Wrap all content, data metrics, and descriptions inside lighter, semi-translucent smoke-tinted glass boxes backed by a warm cream-gold radial ambient edge glow to ensure high-visibility for 40-60 age cohorts in dim lounge spaces.
+
+Clear your build cache completely and execute this total file compilation override across the workspace repository tree immediately. Force the application to compile cleanly with 100% path alignment, native touchscreen gesture responsiveness, secure PIN verification, OpenAI connectivity, and active atmospheric animation loops. Verify zero TypeScript errors.
