@@ -1,0 +1,206 @@
+CRITICAL MASTER PRODUCTION CONVERGENCE: FULL-STACK ARCHITECTURAL ENGINE OVERWRITE (FRONTEND TOUCH CHASSIS + COMPLETE BACKEND ROUTERS • SYSTEM REBUILD MANDATE)
+
+====================================================================
+1. CORE ARCHITECTURAL OVERWRITE & HARDWARE RUNTIME MANDATE
+====================================================================
+The system is in a critical failure state. The application preview has choked, dropping layout states, breaking interactions, and rendering incorrect placeholder slides. You are ordered to execute an absolute, destructive file-level overwrite across the primary router, global layout context tree, and backend service engines immediately. 
+
+STRICT INTERFACE RULE: Completely purge and ban all text emojis, glyphs, and unstyled system symbols (e.g., ⚗, 🚀, 📦) from every file in the repository. The premium identity of the brand must be communicated strictly through high-contrast typography styling, geometric borders, solid layout boxes, and high-fidelity photographic paths. Every interactive element must listen natively to hardware-level finger-touch and swipe events with zero latency. CSS ':hover' dependent behaviors are banned.
+
+====================================================================
+2. BACKEND CODE INTEGRATION — FULL SERVER-SIDE SPECIFICATIONS
+====================================================================
+You must directly implement the following backend server-side files to ensure all interactive elements communicate with a real runtime engine. Replace all mock file layers with these production-ready Node.js / Express or Next.js API route blocks:
+
+--------------------------------------------------------------------
+FILE PATH: /server/api/coach/chat.ts (OR /api/coach/chat)
+--------------------------------------------------------------------
+import { Request, Response } from 'express';
+import { OpenAI } from 'openai';
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+export async function handleCoachChat(req: Request, res: Response) {
+  const { message, topicContext, themeState } = req.body;
+  
+  if (!message) {
+    return res.status(400).json({ error: "Missing prompt message payload." });
+  }
+
+  try {
+    const systemPrompt = `You are the ultimate ritual-voiced luxury hospitality AI assistant embedded inside NOVEE OS. 
+    Your tone is ultra-premium, commanding, highly polished, and sophisticated. 
+    You are answering an inquiry for a luxury private members' club. 
+    Current System Profile Configuration: Scale: ${themeState?.fontScale || 1.25}, Mode: ${themeState?.operationalLayout || 'Standard'}.
+    Provide clear, numbered step-by-step luxury operational instructions. Avoid casual slang. DO NOT use emojis, glyphs, or markdown text decorators under any circumstances. Ensure extreme clarity for lounge environments.`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Context: ${topicContext || 'General Operations'}. Message: ${message}` }
+      ],
+      temperature: 0.3,
+      stream: false
+    });
+
+    return res.status(200).json({ response: response.choices[0].message.content });
+  } catch (error: any) {
+    return res.status(500).json({ error: "OpenAI Gateway connection dropped.", details: error.message });
+  }
+}
+
+--------------------------------------------------------------------
+FILE PATH: /server/api/eat/pos-router.ts (OR /api/eat/pos-router)
+--------------------------------------------------------------------
+import { Request, Response } from 'express';
+
+// Secure backend inventory state memory stack
+let humidorInventory = 145;
+const VALID_STAFF_PIN = "3600";
+const VALID_MGMT_PIN = "7200";
+
+export async function handlePOSVerifyAndFetch(req: Request, res: Response) {
+  const { pin, action, multiplierData } = req.body;
+
+  if (pin !== VALID_STAFF_PIN && pin !== VALID_MGMT_PIN) {
+    return res.status(401).json({ authenticated: false, error: "ACCESS DENIED: INVALID AUTHORIZATION SECURITY CREDENTIALS" });
+  }
+
+  // Handle live high-velocity inventory transactions
+  if (action === "DEDUCT_PURO") {
+    humidorInventory = Math.max(0, humidorInventory - 1);
+  } else if (action === "RESET_CACHE") {
+    humidorInventory = 145;
+  }
+
+  // Live spend multiplier computation matrix
+  let systemMultiplier = 1;
+  if (multiplierData?.venueVelocity === "HIGH") {
+    systemMultiplier = multiplierData?.isExecutive ? 5 : 3;
+  } else if (multiplierData?.venueVelocity === "MEDIUM") {
+    systemMultiplier = 2;
+  }
+
+  return res.status(200).json({
+    authenticated: true,
+    clearance: pin === VALID_MGMT_PIN ? "MANAGEMENT" : "STAFF",
+    telemetry: {
+      humidorCount: humidorInventory,
+      kitchenQueueLength: 4,
+      barPourStatus: "OPTIMAL_94_PERCENT",
+      activeMultiplier: systemMultiplier,
+      seatingGridMap: [
+        { tableId: "T1", status: "OCCUPIED", tabTotal: 450 },
+        { tableId: "T2", status: "VIP_SESSION", tabTotal: 1250 },
+        { tableId: "T3", status: "AVAILABLE", tabTotal: 0 }
+      ]
+    }
+  });
+}
+
+--------------------------------------------------------------------
+FILE PATH: /server/websocket/sync-engine.ts
+--------------------------------------------------------------------
+import { WebSocketServer, WebSocket } from 'ws';
+
+export function initializeSyncEngine(server: any) {
+  const wss = new WebSocketServer({ noServer: true });
+  const activeTerminals = new Set<WebSocket>();
+
+  server.on('upgrade', (request: any, socket: any, head: any) => {
+    if (request.url === '/ws/theme-sync') {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
+    }
+  });
+
+  wss.on('connection', (ws: WebSocket) => {
+    activeTerminals.add(ws);
+
+    ws.on('message', (message: string) => {
+      try {
+        const payload = JSON.parse(message);
+        if (payload.type === "ACCESSIBILITY_MUTATION" || payload.type === "THEME_SYNC") {
+          activeTerminals.forEach((client) => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify({
+                type: "GLOBAL_MUTATION_PROPAGATION",
+                themeConfig: payload.themeConfig,
+                timestamp: Date.now()
+              }));
+            }
+          });
+        }
+      } catch (err) {
+        console.error("Invalid state transaction payload parsed over Socket layer.");
+      }
+    });
+
+    ws.on('close', () => activeTerminals.delete(ws));
+  });
+}
+
+====================================================================
+3. THE ENTERPRISE TYPOGRAPHY & ACCESSIBILITY CONTROL ENGINE (NEW DESIGN SYSTEM)
+====================================================================
+All frontend rendering layers must adapt dynamically to the centralized, tenant-aware themeConfig state model. Implement a React Context or global Zustand wrapper that reads directly from the broadcast engine data:
+
+themeConfig = {
+  fontFamily: "Cinematic Serif", // Luxury typography core
+  fontScale: 1.25,              // Dynamic scalar: 1.0x to 1.5x
+  touchScale: "large",          // Ergonomic bounds: "standard" | "large" | "executive"
+  contrastMode: "high",         // Contrast grading: "standard" | "high" | "luminous"
+  animationIntensity: "smooth", // Animation profiles: "none" | "smooth" | "cinematic"
+  cinematicIntensity: "high",   // Particle/Smoke engine scalar
+  spacingMode: "comfortable",   // Interface breathing: "compact" | "standard" | "comfortable"
+  dashboardDensity: "standard", // Data density layout matrix
+  operationalLayout: "standard" // Layout mode: "standard" | "Rush Mode" | "Senior Mode"
+}
+
+- Live Visual Mutation Broadcasting: When an administrative layout modification occurs on the Management Dashboard, shoot the mutation frame over the WebSocket route. The client interface must instantly propagate the new sizes, contrast weights, and spacing parameters smoothly without tab reloads.
+- Operational Screen Adaptation:
+  * Senior Mode: Instantly scale the font modifier to 1.45x, lock contrast into "luminous" mode, and enforce a strict 64px touch perimeter across all interactives to accommodate operators experiencing low visibility in dark club settings.
+  * Rush Mode: Tighten the visual grid into a hyper-efficient "compact" matrix, elevate the prominence of critical operational alerts, and accelerate animation curves to maximize transaction velocities on the POS floor.
+
+====================================================================
+4. STAGE 1: SYSTEM INITIALIZATION & SOVEREIGN BOOT PIPELINE (PATH: '/')
+====================================================================
+Enforce an un-skippable, multi-phase continuous boot sequence animation timeline driven by a solid True Obsidian (#010101) background architecture before any functional view mounts:
+
+- Phase 1.1: System Cold Init (0.0s – 1.5s): Viewport transitions from deep hardware blackout to a solid, matte True Obsidian base texture. Initialize a native Web Audio API low-frequency synthetic tone oscillator at 3400Hz to fire a single, clean 0.5-second activation chime on device readiness.
+- Phase 1.2: Corporate Anchor (1.5s – 4.5s): Center-frame, animate a hyper-detailed geometric emblem built from polished smoked chrome and brushed titanium material vector paths. Render the corporate subtitle text "PROFOUND INNOVATIONS LLC" directly beneath the emblem in an oversized luxury serif font styled with an expensive liquid warm gold foil material texture overlay. Settle on an engineered spring-mass physics curve and execute a 0.35s left-slide fade out.
+- Phase 1.3: OS Authorization Gate (4.5s – 7.5s): Fade the corporate lockup as "NOVEE OS" surfaces in a high-contrast True White sans-serif typeface, framed by a rotating radial edge-glow loading ring vector. Render the status subtitle "POWERED" beneath the logo tracking state context variables. Illuminate an absolute status node in the top-left corner reading "SYSTEM ACTIVE" and write a primary handshake token directly to localStorage to permanently authorize global navigation rail properties.
+
+====================================================================
+5. STAGE 2: THE CRAFTHUB ECOSYSTEM LAUNCHER GRID (PATH: '/craft-hub')
+====================================================================
+- Header De-Clutter Mandate: Open the global navigation layout headers across both applications. Completely strip out the redundant text-tag buttons for 'HUB CRAFTHUB', 'SC SMOKECRAFT', 'PR PAIRING', and 'CH COACH HELP' from the top bar layer. The Left Vertical Obsidian Navigation Rail (Hub, SC, PR, CH icons) is the absolute, singular routing engine for this operating system.
+- Touch Carousel Background Loops: Structure the interface into a clean, full-screen 1920x1080 tactical layout using 4 massive card containers built with layered Obsidian Glass panel wrappers, brushed titanium bounding edges, and a touchscreen hit-box perimeter scaled dynamically by the touchScale configuration (minimum baseline footprint of 58px by 58px).
+- Dynamic Image Rotation Carousels: Program a background image path array for each tile that automatically cross-fades gracefully every 6 seconds using 'object-fit: cover' and strict aspect-ratio enforcement. All assets must feature cinematic, human-centered luxury social compositions capturing real human experiences, atmosphere, and elite culture:
+  * TILE 1: 'SMOKECRAFT 360' (ACTIVE) -> Rotates between cinematic, editorial lounge scenes showing sophisticated people engaged in conversation in deep leather tufted chairs under warm amber accent lighting, and close-ups of premium cigar lounge rituals. This tile must listen natively to 'onTouchStart' event handlers to instantly boot straight into the ritual onboarding journey on a clean, single tap.
+  * TILE 2: 'POURCRAFT 360' (COMING SOON) -> Rotates between upscale mixologists crafting elite spirits and VIP couples socializing over luxury cocktails along a glowing crystal bar surface. (Affix a brushed bronze 'COMING SOON' overlay tag).
+  * TILE 3: 'BEERCRAFT 360' (COMING SOON) -> High-vibe stylish groups of friends interacting under twilight string-lighting on an upscale rooftop social brewery deck environment. (Affix a 'COMING SOON' tag).
+  * TILE 4: 'WINECRAFT 360' (COMING SOON) -> Intimate, refined date-night scenes inside a stone-walled private wine lounge as a sommelier pours a vintage selection. (Affix a 'COMING SOON' tag).
+- Global Return Hook: Ensure tapping the 'Hub' icon on the persistent left vertical rail instantly clears the active workspace context and returns the entire monitor frame back to this 4-Tile launcher base.
+
+====================================================================
+6. STAGE 3: THE SMOKECRAFT EXPERIENCE JOURNEY (SESSION 1)
+====================================================================
+Tapping Tile 1 initializes Session 1, establishing data structures inside the root state manager so progress tracking variables, earned XP, and selection choices never drop or reset on view changes.
+
+- Phase 3.1: The Ritual Activation (Onboarding Chamber): Render a clean, minimal space featuring zero technical developer setting boxes or layout grids. The screen displays an uncluttered editorial typography layout reading "Your Ritual Begins". Mount a massive, high-contrast primary CTA button at the bottom frame reading "Enter the Lounge" formatted with a minimum touch surface of 58px and 22px text scaling. Tapping it slides the viewport directly into the selection matrix.
+- Phase 3.2: Your Guide Portfolio (The Selection Chamber): Build a highly interactive grid of profile selection cards. Flat rows are banned. Each card showcases a real, high-resolution portrait photograph of an elite tobacco master blender framed neatly by their corresponding country-flag graphic asset (e.g., "DOÑA ROSA: WRAPPER ARTISTRY MENTOR"). Enforce strict, ritual-voiced naming standards across all sub-copy layout variables:
+  * "The Levels" -> "Your Mastery Path"
+  * "The Mentors" -> "Your Guide"
+  * "Signature Studio" -> "Your Reserve"
+  Tapping a profile card binds that specific Guide ID to the active session data model, shifting their presence into a persistent status widget.
+- Phase 3.3: Your Mastery Path (Dynamic Engagement): The selected Guide acts as a real-time conversational coach tracking choices through a multi-tier profile step. As the user inputs taste parameters, vitola sizes, and filler configurations, layer all data blocks inside semi-translucent smoke-tinted glass boxes with rich, high-contrast Cream (#FFFDD0 / #FDFBF7) and liquid metallic Warm Gold borders. Mount an ambient volumetric smoke canvas layer at the bottom edge that drifts wisps upward along with micro-ember sparks cycling on a continuous 5.4-second breathing animation loop.
+
+====================================================================
+7. STAGE 4: ADVANCED CREATION & PAIRING (SESSION 2)
+====================================================================
+Once a user earns 3 or more Milestone Badges or finishes their flavor profile, Session 2 initializes to isolate payment cache parameters, product affinity metrics, and custom blends.
+
+- Phase 4.1: Your Reserve Workspace: Strip away all distracting widgets, cards, and data graphs to provide maximum layout breathing room. Hard-code directly onto the center frame of an obsidian glass preparation mat an ultra-premium, high-resolution photographic asset of a hand-rolled Nicaraguan Maduro cigar displaying deep wrapper leaf textures. It must remain permanently visible on the screen. The "Reset Blend" button must be cleanly coded; tapping it flushes the filler/wrapper cache arrays instantly without freezing or looping

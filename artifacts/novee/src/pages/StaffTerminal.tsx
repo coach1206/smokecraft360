@@ -694,7 +694,7 @@ function ProximityFlashCard() {
   );
 }
 
-function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, onOpenReservations, onGenerateOrder, activeTables }: {
+function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, onOpenReservations, onGenerateOrder, activeTables, onOpenPinGate }: {
   tel: VenueState["telemetry"];
   thresh: ReturnType<typeof useThresholds>;
   onKitchenReady: () => void;
@@ -703,11 +703,17 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
   onOpenReservations: () => void;
   onGenerateOrder: (productId: string, qty: number, productName: string) => void;
   activeTables?: Record<number, VenueTable>;
+  onOpenPinGate: (target: "supervisor" | "admin") => void;
 }) {
   const SAMPLE_FOODS = ["Wagyu Beef Sliders","Truffle Parmesan Fries","Lobster Bisque","Charcuterie Board","Artisan Bruschetta","Seared Scallops","Duck Confit Crostini","Wagyu Carpaccio"];
   const [orderFlash, setOrderFlash]               = useState<string | null>(null);
   const [isKitchenModalOpen, setIsKitchenModalOpen] = useState(false);
+  const [showNetLog, setShowNetLog]               = useState(false);
+  const { fontScale, touchScale, operationalMode } = useThemeConfig();
   const h = tel.humidor; const b = tel.bar; const k = tel.kitchen;
+  const tableCount    = activeTables ? Object.keys(activeTables).length : 0;
+  const velocityMult  = tableCount >= 5 ? 3 : tableCount >= 3 ? 2 : 1;
+  const velocityLabel = tableCount >= 5 ? "HIGH" : tableCount >= 3 ? "MED" : "LOW";
 
   const buildQueue = (): KQItem[] => {
     const tables = activeTables ? Object.values(activeTables) : [];
@@ -773,6 +779,99 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
           </motion.button>
         ))}
       </div>
+
+      {/* ════ 4 ACTIVE DASHBOARD TILES ════ */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5, flexShrink:0 }}>
+
+        {/* TILE 1 — E.A.T. TELEMETRY STATUS → PIN pad */}
+        <motion.button whileTap={{ scale:0.97 }} {...T}
+          onTouchStart={(e) => { T.onTouchStart(e); onOpenPinGate("supervisor"); }}
+          onClick={() => onOpenPinGate("supervisor")}
+          style={{ minHeight:58, display:"flex", flexDirection:"column", justifyContent:"center",
+            padding:"8px 10px", cursor:"pointer", textAlign:"left", borderRadius:8,
+            background:"radial-gradient(ellipse at 50% 0%, rgba(255,253,208,0.09) 0%, rgba(10,7,3,0.93) 70%)",
+            border:"1px solid rgba(212,175,55,0.55)", boxShadow:"0 0 18px rgba(212,175,55,0.12)",
+            backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)" }}>
+          <div style={{ fontSize:9, fontFamily:C.mono, color:"#FFFDD0", letterSpacing:"0.28em", marginBottom:2, opacity:0.85 }}>E.A.T. SYSTEM</div>
+          <div style={{ fontSize:11, fontWeight:900, color:C.gold, letterSpacing:"0.14em", lineHeight:1.25 }}>DATA INTEGRATION</div>
+          <div style={{ fontSize:11, fontWeight:900, color:C.gold, letterSpacing:"0.14em" }}>CHASSIS ONLINE</div>
+          <motion.div animate={{ opacity:[0.45,1,0.45] }} transition={{ duration:1.8, repeat:Infinity }}
+            style={{ width:6, height:6, borderRadius:"50%", background:C.green, marginTop:5 }} />
+        </motion.button>
+
+        {/* TILE 2 — REVENUE VELOCITY → seating grid */}
+        <motion.button whileTap={{ scale:0.97 }} {...T}
+          onTouchStart={(e) => { T.onTouchStart(e); onOpenMapper(); }}
+          onClick={onOpenMapper}
+          style={{ minHeight:58, display:"flex", flexDirection:"column", justifyContent:"center",
+            padding:"8px 10px", cursor:"pointer", textAlign:"left", borderRadius:8,
+            background:"radial-gradient(ellipse at 50% 0%, rgba(255,253,208,0.07) 0%, rgba(8,5,2,0.94) 70%)",
+            border:"1px solid rgba(212,139,0,0.55)", boxShadow:"0 0 18px rgba(212,139,0,0.12)",
+            backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)" }}>
+          <div style={{ fontSize:9, fontFamily:C.mono, color:"#FFFDD0", letterSpacing:"0.28em", marginBottom:2, opacity:0.85 }}>VENUE VELOCITY: {velocityLabel}</div>
+          <div style={{ fontSize:20, fontWeight:900, color:C.amber, letterSpacing:"0.10em", lineHeight:1.1 }}>{velocityMult}x MULTIPLIER</div>
+          <div style={{ fontSize:9, fontWeight:700, color:C.muted, letterSpacing:"0.20em" }}>ACTIVE</div>
+        </motion.button>
+
+        {/* TILE 3 — HUMIDOR COUNTDOWN → reserve workspace */}
+        <motion.button whileTap={{ scale:0.97 }} {...T}
+          onTouchStart={(e) => { T.onTouchStart(e); onOpenMapper(); }}
+          onClick={onOpenMapper}
+          style={{ minHeight:58, display:"flex", flexDirection:"column", justifyContent:"center",
+            padding:"8px 10px", cursor:"pointer", textAlign:"left", borderRadius:8,
+            background:`radial-gradient(ellipse at 50% 0%, rgba(255,253,208,0.08) 0%, rgba(8,6,2,0.94) 70%)`,
+            border:`1px solid ${C.gold}88`, boxShadow:`0 0 18px ${C.gold}18`,
+            backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)" }}>
+          <div style={{ fontSize:9, fontFamily:C.mono, color:"#FFFDD0", letterSpacing:"0.28em", marginBottom:2, opacity:0.85 }}>HUMIDOR STATUS</div>
+          <motion.div
+            animate={{ textShadow:[`0 0 10px ${C.amber}55`,`0 0 26px ${C.amber}aa`,`0 0 10px ${C.amber}55`] }}
+            transition={{ duration:2.4, repeat:Infinity }}
+            style={{ fontSize:24, fontWeight:900, color:C.amber, letterSpacing:"0.08em", lineHeight:1.1 }}>
+            {h.purosRemaining}
+          </motion.div>
+          <div style={{ fontSize:9, fontWeight:700, color:C.muted, letterSpacing:"0.20em" }}>PUROS REMAINING</div>
+        </motion.button>
+
+        {/* TILE 4 — WEBSOCKET HANDSHAKE → theme config log */}
+        <motion.button whileTap={{ scale:0.97 }} {...T}
+          onTouchStart={(e) => { T.onTouchStart(e); setShowNetLog(v => !v); }}
+          onClick={() => setShowNetLog(v => !v)}
+          style={{ minHeight:58, display:"flex", flexDirection:"column", justifyContent:"center",
+            padding:"8px 10px", cursor:"pointer", textAlign:"left", borderRadius:8,
+            background:"radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.07) 0%, rgba(5,8,5,0.94) 70%)",
+            border:"1px solid rgba(34,197,94,0.42)", boxShadow:"0 0 18px rgba(34,197,94,0.10)",
+            backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)" }}>
+          <div style={{ fontSize:9, fontFamily:C.mono, color:"#FFFDD0", letterSpacing:"0.28em", marginBottom:2, opacity:0.85 }}>NETWORK SYNC</div>
+          <div style={{ fontSize:11, fontWeight:900, color:C.green, letterSpacing:"0.12em", lineHeight:1.25 }}>SOCKET REVERSE-TUNNEL</div>
+          <div style={{ fontSize:11, fontWeight:900, color:C.green, letterSpacing:"0.12em" }}>CONNECTED</div>
+        </motion.button>
+      </div>
+
+      {/* ThemeConfig mini-log panel (toggled by TILE 4) */}
+      <AnimatePresence>
+        {showNetLog && (
+          <motion.div initial={{ opacity:0, y:-8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-8 }}
+            transition={{ duration:0.20 }}
+            style={{ flexShrink:0, background:"rgba(4,8,4,0.97)",
+              border:"1px solid rgba(34,197,94,0.45)", borderRadius:8,
+              padding:"10px 14px", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)" }}>
+            <div style={{ fontSize:9, fontFamily:C.mono, color:C.green, letterSpacing:"0.26em", marginBottom:7 }}>THEME CONFIG BROADCAST PARAMS</div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:5 }}>
+              {([
+                { k:"FONT SCALE",  v:`${fontScale}x`    },
+                { k:"TOUCH SCALE", v:`${touchScale}x`   },
+                { k:"MODE",        v:operationalMode.toUpperCase() },
+              ] as const).map(({ k, v }) => (
+                <div key={k} style={{ background:"rgba(34,197,94,0.07)", border:"1px solid rgba(34,197,94,0.20)",
+                  borderRadius:6, padding:"6px 8px", textAlign:"center" }}>
+                  <div style={{ fontSize:18, fontWeight:900, color:C.green }}>{v}</div>
+                  <div style={{ fontSize:9, color:C.muted, letterSpacing:"0.16em", marginTop:1 }}>{k}</div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* HUMIDOR — qty from GET /api/products?category=cigar */}
       <div style={panel({ borderTop:`2px solid ${C.gold}`, flexShrink:0 })}>
@@ -2990,6 +3089,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
             onOpenReservations={() => setShowReservations(true)}
             onGenerateOrder={generateOrder}
             activeTables={venueState.activeTables}
+            onOpenPinGate={openPinGate}
           />
           <TicketsCol state={venueState} revenue={revenue} onSelect={selectTable} onUpdate={updateTableItems} onAddTable={addNewTable} />
           <LedgerCol  state={venueState} revenue={revenue} onRemove={removeItem} onProcessPayment={processPayment} coaching={coaching} />

@@ -1,0 +1,36 @@
+CRITICAL COMPILATION FORCE-WRITE: ANIMATE TELEMETRY SIDE TILES, ENFORCE NATIVE TOUCH ACTIONS, AND INTEGRATE LIVE REAL-TIME DATA STREAMS (ZERO STUBS • SYSTEM ALIVE MANDATE)
+
+====================================================================
+1. REASON FOR THIS DIRECTIVE (SIDE TELEMETRY TILES ARE DEAD)
+====================================================================
+Look at the live terminal preview state. The side tiles are completely dead, flat, uninspiring, and non-responsive. They are rendering as dummy visual boxes instead of operating as a high-visibility, touch-ready venue monitoring system. You are ordered to perform a direct code-level modification to the layout shell to inject active states, real event listeners, and rich cream accents. Emojis and unstyled system icons remain permanently banned.
+
+====================================================================
+2. RE-ENGINEER SIDE TILES INTO ACTIVE TOUCH dashBOARD NODES
+====================================================================
+Modify the layout code for the side tile container block to hard-code 4 distinct, touchscreen-ready operational modules. Every tile must maintain a strict 58px physical touch footprint, listen natively to 'onTouchStart' handlers, and be styled using layered Obsidian Glass containers wrapped in rich Cream (#FFFDD0 / #FDFBF7) and metallic Warm Gold borders:
+
+- MODULE 1: E.A.T. TELEMETRY STATUS
+  * Live Readout: Display text reading "E.A.T. SYSTEM" in a crisp, high-contrast serif font, accompanied by a dynamic status subtitle reading "DATA INTEGRATION CHASSIS ONLINE".
+  * Touch Action: Tapping this tile must instantly interrupt the viewport and launch the oversized 4-digit numeric Staff PIN pad modal overlay window over the screen.
+
+- MODULE 2: REVENUE VELOCITY TRACKER
+  * Live Readout: Query the underlying 'POSRouterEngine' variables to render the live transaction multiplier index. Display "VENUE VELOCITY: HIGH" with an ultra-bold gold outline text element highlighting the active multiplier modifier ("3x MULTIPLIER ACTIVE").
+  * Touch Action: Tapping this module must instantly route the central canvas view straight to the active high-velocity seating grid map.
+
+- MODULE 3: HUMIDOR REAL-TIME COUNTDOWN
+  * Live Readout: Connect this block straight to the backend inventory state memory stack. Display the category header "HUMIDOR STATUS" and an oversized, bold numeric inventory value tracking exactly "145 PUROS REMAINING".
+  * Touch Action: Tapping this tile must seamlessly clear the active workspace view and load the '⚗ Your Reserve' workspace matrix, placing the premium hand-rolled Maduro cigar photographic asset on the center preparation mat.
+
+- MODULE 4: WEBSOCKET NETWORK HANDSHAKE
+  * Live Readout: Display the connection label "NETWORK SYNC" and an active tracking indicator reading "SOCKET REVERSE-TUNNEL CONNECTED". This verifies that live UI mutations and accessibility adjustments are actively broadcasting across all venue kiosks.
+  * Touch Action: Tapping this tile launches a mini visual log displaying the current 'themeConfig' parameters (fontScale, touchScale, dashboardDensity).
+
+====================================================================
+3. VISUAL CONTRAST & REVISION ALIGNMENT
+====================================================================
+- Break the Muddy Darkness: Lighten the background weight of all 4 side tiles significantly by using semi-translucent smoke-tinted panels backed by a soft, glowing radial ambient cream edge glow gradient. 
+- Eliminate Interaction Lag: Ensure all text headers inside these modules lock to a crisp 20px–24px scale, and value metrics render at an ultra-bold 18px scale for immediate visibility under dim venue lounge environments.
+- Repair Global Navigation: The Left Vertical Obsidian Navigation Rail remains the sole global routing driver. Ensure clicking 'Hub' instantly unmounts any sub-module and clean-mounts the 4-Tile Human Selection Carousel Grid Matrix.
+
+Clear your build cache entirely and compile this complete full-stack interface overhaul right now. Ensure 100% path uptime, real PIN gate triggering, and zero TypeScript compilation dropouts.
