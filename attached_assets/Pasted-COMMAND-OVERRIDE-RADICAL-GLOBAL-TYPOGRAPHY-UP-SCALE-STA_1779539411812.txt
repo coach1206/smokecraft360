@@ -1,0 +1,44 @@
+COMMAND OVERRIDE: RADICAL GLOBAL TYPOGRAPHY UP-SCALE & STATE WELD. You are commanded to completely refactor the font scaling, layout density, and touch-target envelopes across ALL columns and footer grids of the main terminal interface. Eradicate all fine-print desktop styling. Every panel must maintain its live, reactive database state listeners while expanding to maximum physical legibility.
+
+Execute this full-screen visual and functional overhaul right now:
+
+---
+
+### 1. COLUMN 1: REAL-TIME TELEMETRY VAULT OVERHAUL
+* **Station Sub-Headers:** Scale up "STATION 1: HUMIDOR", "STATION 2: BAR METRICS", and "STATION 3: KITCHEN LINE" to a bold, clean `fontSize: "18px"` minimum with increased tracking.
+* **Humidor Core Metrics:** Keep the massive "145" counter, but elevate the "PUROS REMAINING" label text directly underneath it to a thick `fontSize: "16px"`. Scale the climate indicators ("68°F", "71%") and their labels ("TEMPERATURE", "RELATIVE HUMIDOR HUMIDITY") up to a bold `fontSize: "18px"`.
+* **Low Stock Alarm Block:** The text inside the low-stock alert area ("LOW STOCK — 12% Remy Martin XO") is critically small. Force it to an upscaled `fontSize: "16px"` bold layout, and expand the adjacent `[ GEN ORDER ]` action block to a thick, high-visibility 58px target boundary.
+* **Kitchen Orders Grid:** Scale the numeric markers ("3" and "1") and their status labels ("PENDING ORDERS", "READY ORDERS") to an upscaled, prominent layout. Increase the lower `[ 📋 VIEW KITCHEN QUEUE ➔ ]` trigger bar to an absolute `height: "58px"` target footprint with a bold `fontSize: "18px"` label.
+
+---
+
+### 2. COLUMN 2: HIGH-SPEED TICKET OVERVIEW EXPANSION
+* **Filter Pill Navigation:** Upscale the navigation tabs ("ALL TABLES", "VIP SECTION", "MAIN FLOOR", etc.) to a minimum height of `48px` with an internal text weight of `fontSize: "16px"` bold.
+* **Table Identification Blocks:** Inside each card, blow up "TABLE 101 VIP", "TABLE 102", and "TABLE 103" to a thick, clear `fontSize: "22px"`.
+* **Active Status Timers:** The active time markers ("02:07h", "01:22h", "00:48h") and their "TIME ACTIVE" headers must be upscaled to a bold `fontSize: "18px"`, rendered in high-contrast True White or Amber-Gold.
+* **Guest & Tab Insights:** Elevate the secondary rows ("Guest: John D.", "CURRENT TAB", "$170.00") from their tiny baseline up to a prominent `fontSize: "18px"`. 
+* **Ticket Tapper CTA Launchpads:** Expand the `★ OPEN TICKET TAPPER ★` bars at the bottom of the cards to an explicit touch footprint with an upscaled, glowing `fontSize: "16px"` bold typography profile.
+
+---
+
+### 3. COLUMN 3: ACTIVE LEDGER MASTER SCALING (RE-VERIFIED)
+* **Header & Balance Engine:** Force 'TABLE 101' to `fontSize: "24px"` bold, and its subtext ("John D. · VIP Section") to `fontSize: "18px"`. The top running balance output ('$184.45') must render in a prominent, heavy `fontSize: "28px"` gold weight.
+* **Line Item Registry:** Upscale every SKU name row ("Rocky Patel Vintage 1992", etc.) to a bold `fontSize: "20px"` minimum baseline, with its variant subtext ("Cigars", etc.) raised to `fontSize: "16px"`. Increase the item multiplier circular badges (`1x`, `2x`) size by 30% and set internal scales to `fontSize: "18px"` bold. Line prices must render at `fontSize: "20px"`.
+* **Totals & CTA Deck:** Upscale Subtotal/Tax labels to `fontSize: "18px"`. Drive the grand "TOTAL" line and the final balance readout to a commanding `fontSize: "32px"` outline gold profile. Set `[ VIEW FULL LEDGER ]` and `[ PROCESS PAYMENT ]` text weights to a heavy `fontSize: "20px"`.
+
+---
+
+### 4. THE LOWER ANALYTICS & HUB FOOTER DECK BLOWUP
+* **Staff On Floor Tracker:** Scale up the active team labels ("Alex M.", "Marco B.", "Tanya D.") and the "STAFF ON FLOOR" section title to `fontSize: "16px"` bold, keeping their status dots pulsing cleanly.
+* **Venue Insights Analytics Grid:** Scale every single performance indicator key up to high readability:
+  - Metric Totals ("$326", "$108.67", "Spirits", "92%") must be thick, upscaled to a prominent `fontSize: "24px"`.
+  - Analytical Labels ("SALES/HOUR", "AVG CHECK", "TOP CATEGORY", "PAIRING SUCCESS") must raise to a bold `fontSize: "16px"`.
+* **POS Hub Sync Badges:** Increase the size of the bottom integration badges (Clover, Toast, Square, Lightspeed, Shopify) by 25% and scale their tracking labels ("SYNC", "ORDER") up to `fontSize: "14px"` bold so their real-time connection status is explicitly visible from a distance.
+
+---
+
+### 5. BULLETPROOF DATA & WEBHOOK WIRE RETENTION
+* Ensure that every single upscaled text container remains bound to its active, moving state framework variables. Tapping item quantity adjustments, changing staff zone matrix drop-downs, or triggering inbound POS webhooks must instantly calculate, mutate values, and flash the newly upscaled counter elements in real time.
+* Maintain our true edge-to-edge full widescreen layout settings (`width: "100vw"`, `height: "100vh"`, `padding: "16px"`) with zero browser-scroll overflows or hidden text wraps. Clean TypeScript output verified across both platforms.
+
+Execute this comprehensive full-surface typography transformation immediately. Redraw all interactive frames onto our live terminal monitors now.
