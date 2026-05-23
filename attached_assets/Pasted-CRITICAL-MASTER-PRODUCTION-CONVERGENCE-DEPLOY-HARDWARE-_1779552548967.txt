@@ -1,0 +1,33 @@
+CRITICAL MASTER PRODUCTION CONVERGENCE: DEPLOY HARDWARE-OPTIMIZED NOVEE OS ACCESSIBILITY, TOUCH-GESTURE CONTROL CHASSIS, AND 5-STAGE OPERATING SYSTEM ROUTER (ZERO COMPROMISE • REVENUE RESTORATION MANDATE)
+
+====================================================================
+1. CORE ARCHITECTURAL OVERWRITE & HARDWARE RUNTIME MANDATE
+====================================================================
+The system is in a critical failure state. The live application preview remains broken because loose presentation layers are mismatched with incomplete component hooks. Emojis and unstyled system icons are corrupting the corporate identity. The 'Reset Blend' state engine is frozen, 'Coach Help' is dead, and entering the 'E.A.T System' or 'OPEN COMMAND CENTER >' drops the hardware into a blank black view. 
+
+You are ordered to halt all loose, exploratory file alterations and execute an absolute, destructive file-level overwrite of the primary router, global layout context tree, and API network bridges. This platform is deployed on industrial touchscreen kiosks, tablet terminals, and iPad Pro devices. All mouse-dependent behaviors, pointer hover states, and standard desk click assumptions are permanently banned. Every interactive element must listen natively to hardware-level finger-touch and swipe events with zero latency.
+
+====================================================================
+2. NO-COMPROMISE INTERFACE INTERDICTION: BAN ALL GLYPHS & EMOJIS
+====================================================================
+- Complete Structural Cleanse: Perform a total code-level audit across every component, modal, rail wrapper, and text node in the workspace. Permanently delete and block all glyphs, textual emojis, and low-fidelity graphic symbols (e.g., ⚗, 🚀, 📦). 
+- Premium Visual Rules: The premium identity of the brand must be communicated strictly through high-contrast typography styling, geometric borders, solid layout boxes, and high-fidelity photographic paths. No cheap decorations are permitted anywhere in the repository.
+
+====================================================================
+3. THE ENTERPRISE TYPOGRAPHY & ACCESSIBILITY CONTROL ENGINE (NEW DESIGN SYSTEM)
+====================================================================
+To support venue deployments serving diverse operator groups (including age 40–60 cohorts in dimly lit lounge spaces), you must install a live Experience Control System. Hardcoded font sizes, fixed spacing integers, and isolated component themes are strictly prohibited. All views must adapt dynamically to the centralized `themeConfig` state model:
+
+```ts
+// Centralized, Tenant-Aware Core UI Configuration
+themeConfig = {
+  fontFamily: "Cinematic Serif", // Luxury typography core
+  fontScale: 1.25,              // Dynamic scalar: 1.0x to 1.5x
+  touchScale: "large",          // Ergonomic bounds: "standard" | "large" | "executive"
+  contrastMode: "high",         // Contrast grading: "standard" | "high" | "luminous"
+  animationIntensity: "smooth", // Animation profiles: "none" | "smooth" | "cinematic"
+  cinematicIntensity: "high",   // Particle/Smoke engine scalar
+  spacingMode: "comfortable",   // Interface breathing: "compact" | "standard" | "comfortable"
+  dashboardDensity: "standard", // Data density layout matrix
+  operationalLayout: "standard" // Layout mode: "standard" | "Rush Mode" | "Senior Mode"
+}

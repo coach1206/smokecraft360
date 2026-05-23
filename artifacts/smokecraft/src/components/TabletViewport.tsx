@@ -30,7 +30,6 @@ function computeScale(): number {
 function applyScale(): void {
   const scale = computeScale();
   const root = document.documentElement;
-  root.style.zoom = String(scale);
   root.style.setProperty("--tablet-scale", String(scale));
 }
 
@@ -43,7 +42,6 @@ export function useTabletViewport(): void {
     return () => {
       observer.disconnect();
       window.removeEventListener("orientationchange", applyScale);
-      document.documentElement.style.zoom = "";
     };
   }, []);
 }
