@@ -1438,7 +1438,8 @@ export default function App() {
 /* ── HELPERS ── */
 function RootRedirect() {
   const [, navigate] = useLocation();
-  useEffect(() => { navigate('/craft-hub', { replace: true }); }, []);
+  // DEV OVERRIDE: force straight to StaffTerminal for preview
+  useEffect(() => { navigate('/pos', { replace: true }); }, []);
   return null;
 }
 
