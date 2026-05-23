@@ -157,7 +157,7 @@ export default function GesturalEngine() {
   }, []);
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: OB, display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: "'Inter',sans-serif", userSelect: "none", zoom: 0.8 }}>
+    <div style={{ position: "fixed", inset: 0, background: OB, display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: "'Inter',sans-serif", userSelect: "none", }}>
 
       {/* ── Top chrome ── */}
       <div style={{ height: 40, flexShrink: 0, borderBottom: `1px solid ${GOLD}22`, background: `linear-gradient(90deg,${CH},#0D0D0D)`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 18px" }}>

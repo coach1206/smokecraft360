@@ -1320,7 +1320,7 @@ function SystemBar() {
   const { navigate, resetGuest, resetBlend } = useNoveeNav();
   const { phase }                = profile;
   const inSession = SESSION_PHASES.has(phase);
-  const [staffAuthPulsing, setStaffAuthPulsing] = useState(true);
+  const [staffAuthPulsing, setStaffAuthPulsing] = useState(false);
   const [staffAuthActive,  setStaffAuthActive]  = useState(false);
 
   function onStaffAuth() {
@@ -1359,8 +1359,8 @@ function SystemBar() {
         </motion.button>
 
         <style>{`
-          @keyframes staffAuthPulse { 0%   { box-shadow: 0 0 8px rgba(212,175,55,0.55), 0 0 2px rgba(212,175,55,0.80); border-color: rgba(212,175,55,0.55); } 50%  { box-shadow: 0 0 22px rgba(212,175,55,0.90), 0 0 8px rgba(212,175,55,1.0), inset 0 0 6px rgba(212,175,55,0.18); border-color: rgba(212,175,55,1.0); } 100% { box-shadow: 0 0 8px rgba(212,175,55,0.55), 0 0 2px rgba(212,175,55,0.80); border-color: rgba(212,175,55,0.55); } }
-          @keyframes staffAuthDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.72); } }
+          @keyframes staffAuthPulse { 0%   { box-shadow: 0 0 8px rgba(212,175,55,0.35), 0 0 2px rgba(212,175,55,0.55); border-color: rgba(212,175,55,0.55); } 50%  { box-shadow: 0 0 16px rgba(212,175,55,0.60), 0 0 6px rgba(212,175,55,0.75); border-color: rgba(212,175,55,0.85); } 100% { box-shadow: 0 0 8px rgba(212,175,55,0.35), 0 0 2px rgba(212,175,55,0.55); border-color: rgba(212,175,55,0.55); } }
+          @keyframes staffAuthDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.65; transform: scale(0.82); } }
         `}</style>
         <motion.button type="button"
           onPointerDown={onStaffAuth}
