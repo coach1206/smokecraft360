@@ -708,7 +708,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
     </div>
   );
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", minWidth:0, width:"100%" }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", width:320, flexShrink:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
         <div style={{ flex:1 }}>
@@ -1115,7 +1115,7 @@ function TableCard({ table, isActive, onSelect, onTap }: {
         </div>
       )}
       <div style={{ display:"flex", height:118, overflow:"hidden" }}>
-        <div style={{ width:120, flexShrink:0, background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}` }} />
+        <div style={{ width:140, flexShrink:0, background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}` }} />
         <div style={{ flex:1, minWidth:0, padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"space-between", overflow:"hidden" }}>
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:3 }}>
@@ -1157,7 +1157,7 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
   const all = Object.values(state.activeTables);
   const list = filter==="ALL TABLES" ? all : all.filter(t => t.zone.toUpperCase().includes(filter.replace(" SECTION","").replace(" FLOOR","").replace(" LOUNGE","")));
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", minWidth:0, width:"100%" }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flex:1, minWidth:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={2} />
         <div>
@@ -1221,7 +1221,7 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
   const { subtotal, tax, total } = revenue.tableRevenue(state.selectedTableId);
   const isVip = table.zone.toLowerCase().includes("vip");
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", minWidth:0, width:"100%" }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", width:480, flexShrink:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={3} />
         <div>
@@ -2832,7 +2832,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           </motion.button>
         </div>
       )}
-      <div style={{ flex:1, minWidth:0, width:"100%", display:"grid", gridTemplateColumns:"64px minmax(0,24fr) minmax(0,32fr) minmax(0,38fr)", gap:16, padding:16, overflow:"hidden", position:"relative", zIndex:1, boxSizing:"border-box" }}>
+      <div style={{ flex:1, width:"100%", display:"flex", flexDirection:"row", gap:16, padding:16, overflow:"hidden", position:"relative", zIndex:1 }}>
         <NavRail
           onBack={back}
           isAdminView={isAdminView}
