@@ -1,6 +1,6 @@
 import { Router }  from "express";
 import { z }        from "zod";
-import { db }       from "../db";
+import { db }       from "@workspace/db";
 import { sql }      from "drizzle-orm";
 
 export const dayoneProximityRouter = Router();
