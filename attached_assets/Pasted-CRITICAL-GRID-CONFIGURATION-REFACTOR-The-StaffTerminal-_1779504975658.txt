@@ -1,0 +1,26 @@
+CRITICAL GRID CONFIGURATION REFACTOR: The StaffTerminal interface is unproportional and improperly boxed. You have center-aligned the layout containers with massive empty black margins on the left and right edges, compressing our 3 production columns into a narrow vertical strip. You must stretch the main workspace container to fill the complete width of the screen canvas and scale up the internal typography sizes immediately to match the exact spacing density of our design (POS3.png).
+
+Execute these precise viewport layouts and width sizing overrides directly:
+
+---
+
+### 1. FULL-WIDTH VIEWPORT STRETCH & GRID GEOMETRY
+* **Main Container Frame:** Overwrite any narrow max-width or fixed-pixel width settings on the primary terminal chassis. Set the workspace wrapper to: `width: "100%"`, `maxWidth: "100%"`, `height: "calc(100vh - [header_height])"`, and `display: "grid"`.
+* **The 3-Column Split Ratio:** Enforce a clean, expansive horizontal grid template split that dynamically utilizes every pixel of available horizontal space from the left Navigation Rail to the right edge of the screen: `gridTemplateColumns: "1fr 1.2fr 1fr"` or use flexbox metrics: `flex: 1` per column container wrapper. Remove all auto-centering margins (`margin: "0 auto"` is strictly banned).
+
+---
+
+### 2. COMPACT VERTICAL DENSITY & BOTTOM FOOTER FIX
+* **Height & Padding Restrictions:** The table row cards and station monitors are stretching vertically too far, cutting off or isolating the lower analytics block. Compress the vertical row padding fields and margin parameters: change large spacing placeholders to tight variables like `padding: "12px"` or `gap: "10px"`.
+* **Lock the Lower Infrastructure Rows:** Ensure that the [STAFF ON FLOOR | VENUE INSIGHTS | SYSTEM STATUS] footer layout rows are pinned flush to the bottom edge of the display container canvas, stretching full-width exactly like the master mockup grid.
+
+---
+
+### 3. TOUCHSCREEN TYPOGRAPHY SCALE-UP
+* **Telemetry Numbers:** The integers ('141' Puros, '14' Active Pours) must be scaled up significantly. Apply a heavy typography scale: `fontSize: "42px"` or `fontSize: "3rem"`, utilizing a high-contrast glowing amber color layer (#E6A11D).
+* **Table Headers & Financial Strings:** Ensure table labels, guest names, and the global total counters (`$184.45`) are scaled up to ultra-bold, easily readable typography metrics so floor staff never have to squint from an arm's length away.
+
+---
+
+### 4. VISUAL VALIDATION COMPLIANCE
+* Scan the CSS styles of the main wrapper containers. Ensure that there are no parent containers clamping your layout elements into a center-boxed presentation. Stretch the columns horizontally across the full terminal screen now.
