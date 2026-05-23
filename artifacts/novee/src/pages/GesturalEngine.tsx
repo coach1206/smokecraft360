@@ -157,10 +157,10 @@ export default function GesturalEngine() {
   }, []);
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: OB, display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: "'Inter',sans-serif", userSelect: "none" }}>
+    <div style={{ position: "fixed", inset: 0, background: OB, display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: "'Inter',sans-serif", userSelect: "none", zoom: 0.8 }}>
 
       {/* ── Top chrome ── */}
-      <div style={{ height: 50, flexShrink: 0, borderBottom: `1px solid ${GOLD}22`, background: `linear-gradient(90deg,${CH},#0D0D0D)`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 22px" }}>
+      <div style={{ height: 40, flexShrink: 0, borderBottom: `1px solid ${GOLD}22`, background: `linear-gradient(90deg,${CH},#0D0D0D)`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 18px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{ width: 8, height: 8, borderRadius: "50%", background: GOLD, boxShadow: `0 0 14px ${GOLD}` }} />
           <span style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.34em" }}>GESTURAL ENGINE</span>
@@ -188,12 +188,12 @@ export default function GesturalEngine() {
           {/* Top rule */}
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,transparent,${GOLD}55,transparent)`, pointerEvents: "none" }} />
           {/* Canvas label */}
-          <div style={{ position: "absolute", top: 14, left: 20, zIndex: 5, pointerEvents: "none" }}>
-            <span style={{ fontSize: 8, letterSpacing: "0.36em", color: `${GOLD}38`, fontWeight: 700 }}>TACTILE WORKSPACE CANVAS</span>
+          <div style={{ position: "absolute", top: 10, left: 18, zIndex: 5, pointerEvents: "none" }}>
+            <span style={{ fontSize: 7, letterSpacing: "0.36em", color: `${GOLD}38`, fontWeight: 700 }}>TACTILE WORKSPACE CANVAS</span>
           </div>
 
           {/* Draggable cards */}
-          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 16, padding: "52px 24px 68px" }}>
+          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 10, padding: "36px 20px 52px" }}>
             {items.map(item => (
               <DraggableCard key={item.id} item={item} ge={ge}
                 isUnderlayOpen={underlayItemId === item.id}
@@ -209,7 +209,7 @@ export default function GesturalEngine() {
           </div>
 
           {/* Gesture Engine footer HUD */}
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 54, borderTop: `1px solid ${GOLD}18`, background: "rgba(8,5,0,0.94)", backdropFilter: "blur(20px)", display: "flex", alignItems: "center", padding: "0 20px", gap: 22 }}>
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 42, borderTop: `1px solid ${GOLD}18`, background: "rgba(8,5,0,0.94)", backdropFilter: "blur(20px)", display: "flex", alignItems: "center", padding: "0 16px", gap: 16 }}>
             <span style={{ fontSize: 8, letterSpacing: "0.28em", color: `${GOLD}3A`, fontWeight: 700, flexShrink: 0 }}>GESTURE ENGINE</span>
             <div style={{ display: "flex", gap: 20 }}>
               {(["Rest","Lifted","UnderlayOpened","Tearing"] as PhysicsState[]).map(state => {
@@ -321,12 +321,12 @@ function DraggableCard({ item, ge, isUnderlayOpen, onDragStart, onDragUpdate, on
         animate={{ boxShadow: isTearing ? `0 0 36px ${tearColor}44, 0 4px 28px rgba(0,0,0,0.60)` : `0 4px 28px rgba(0,0,0,0.55)` }}
         transition={{ boxShadow: { duration: 0.2 } }}
         style={{ x, y, rotate, scale,
-          borderRadius: 12,
+          borderRadius: 10,
           border: `1px solid ${isTearing ? tearColor + "55" : GOLD + "25"}`,
           background: `linear-gradient(145deg,#161008,${CH})`,
           backdropFilter: "blur(24px)",
           cursor: "grab",
-          padding: "15px 17px",
+          padding: "11px 14px",
           position: "relative",
           overflow: "hidden",
           touchAction: "none",
@@ -338,23 +338,23 @@ function DraggableCard({ item, ge, isUnderlayOpen, onDragStart, onDragUpdate, on
         {/* Row 1: Name + Price */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: "#FFFDD0", letterSpacing: "0.025em", marginBottom: 5, lineHeight: 1.2 }}>{item.name}</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: "#FFFDD0", letterSpacing: "0.02em", marginBottom: 4, lineHeight: 1.2 }}>{item.name}</div>
             <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
-              <span style={{ fontSize: 8, fontWeight: 900, letterSpacing: "0.20em", color: CAT_COLORS[item.category], border: `1px solid ${CAT_COLORS[item.category]}30`, borderRadius: 4, padding: "2px 7px", background: `${CAT_COLORS[item.category]}10` }}>
+              <span style={{ fontSize: 7, fontWeight: 900, letterSpacing: "0.18em", color: CAT_COLORS[item.category], border: `1px solid ${CAT_COLORS[item.category]}30`, borderRadius: 4, padding: "1px 5px", background: `${CAT_COLORS[item.category]}10` }}>
                 {item.category.toUpperCase()}
               </span>
               <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
                 <motion.span animate={{ opacity: item.syncStatus === "Syncing" ? [1, 0.3, 1] : 1 }} transition={{ duration: 0.9, repeat: item.syncStatus === "Syncing" ? Infinity : 0 }}
-                  style={{ width: 5, height: 5, borderRadius: "50%", background: SYNC_COLORS[item.syncStatus], display: "inline-block", boxShadow: `0 0 8px ${SYNC_COLORS[item.syncStatus]}88` }} />
-                <span style={{ fontSize: 8, color: SYNC_COLORS[item.syncStatus], letterSpacing: "0.14em", fontWeight: 700 }}>{item.syncStatus.toUpperCase()}</span>
+                  style={{ width: 4, height: 4, borderRadius: "50%", background: SYNC_COLORS[item.syncStatus], display: "inline-block", boxShadow: `0 0 6px ${SYNC_COLORS[item.syncStatus]}88` }} />
+                <span style={{ fontSize: 7, color: SYNC_COLORS[item.syncStatus], letterSpacing: "0.14em", fontWeight: 700 }}>{item.syncStatus.toUpperCase()}</span>
               </span>
             </div>
           </div>
           <div style={{ textAlign: "right", flexShrink: 0, paddingLeft: 12 }}>
-            <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", lineHeight: 1 }}>
+            <div style={{ fontSize: 17, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", lineHeight: 1 }}>
               ${(item.unitPrice * item.qty).toFixed(2)}
             </div>
-            <div style={{ fontSize: 9, color: `${GOLD}50`, letterSpacing: "0.10em", marginTop: 2 }}>@ ${item.unitPrice.toFixed(2)} ea.</div>
+            <div style={{ fontSize: 8, color: `${GOLD}50`, letterSpacing: "0.08em", marginTop: 1 }}>@ ${item.unitPrice.toFixed(2)} ea.</div>
           </div>
         </div>
 
@@ -362,17 +362,17 @@ function DraggableCard({ item, ge, isUnderlayOpen, onDragStart, onDragUpdate, on
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
             <motion.button whileTap={{ scale: 0.86 }} onClick={e => { e.stopPropagation(); onQtyChange(-1); }}
-              style={{ width: 30, height: 30, borderRadius: 7, border: `1px solid ${GOLD}30`, background: `rgba(212,175,55,0.07)`, color: GOLD, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>
+              style={{ width: 24, height: 24, borderRadius: 5, border: `1px solid ${GOLD}30`, background: `rgba(212,175,55,0.07)`, color: GOLD, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>
               −
             </motion.button>
-            <span style={{ fontSize: 17, fontWeight: 900, color: "#FFFDD0", minWidth: 22, textAlign: "center" }}>{item.qty}</span>
+            <span style={{ fontSize: 13, fontWeight: 900, color: "#FFFDD0", minWidth: 18, textAlign: "center" }}>{item.qty}</span>
             <motion.button whileTap={{ scale: 0.86 }} onClick={e => { e.stopPropagation(); onQtyChange(1); }}
               style={{ width: 30, height: 30, borderRadius: 7, border: `1px solid ${GOLD}30`, background: `rgba(212,175,55,0.07)`, color: GOLD, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>
               +
             </motion.button>
           </div>
           <motion.button whileTap={{ scale: 0.93 }} onClick={e => { e.stopPropagation(); onToggleSplit(); }}
-            style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 13px", borderRadius: 7, border: `1px solid ${item.isSplit ? GOLD + "66" : GOLD + "20"}`, background: item.isSplit ? `rgba(212,175,55,0.12)` : "transparent", color: item.isSplit ? GOLD : `${GOLD}40`, fontSize: 9, fontWeight: 700, cursor: "pointer", letterSpacing: "0.16em" }}>
+            style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 5, border: `1px solid ${item.isSplit ? GOLD + "66" : GOLD + "20"}`, background: item.isSplit ? `rgba(212,175,55,0.12)` : "transparent", color: item.isSplit ? GOLD : `${GOLD}40`, fontSize: 8, fontWeight: 700, cursor: "pointer", letterSpacing: "0.14em" }}>
             ⟠ {item.isSplit ? `SPLIT ${item.splitPct}%` : "SPLIT"}
           </motion.button>
         </div>
@@ -380,14 +380,14 @@ function DraggableCard({ item, ge, isUnderlayOpen, onDragStart, onDragUpdate, on
         {/* Split bar */}
         <AnimatePresence>
           {item.isSplit && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 24, opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
-              style={{ marginTop: 10, borderRadius: 5, overflow: "hidden" }}>
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 18, opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
+              style={{ marginTop: 7, borderRadius: 4, overflow: "hidden" }}>
               <div style={{ height: "100%", display: "flex" }}>
                 <div style={{ width: `${item.splitPct}%`, background: `rgba(212,175,55,0.20)`, borderRight: `1px solid ${GOLD}55`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 9, color: GOLD, fontWeight: 700 }}>${(item.unitPrice * item.qty * item.splitPct / 100).toFixed(2)}</span>
+                  <span style={{ fontSize: 8, color: GOLD, fontWeight: 700 }}>${(item.unitPrice * item.qty * item.splitPct / 100).toFixed(2)}</span>
                 </div>
                 <div style={{ flex: 1, background: `rgba(212,175,55,0.07)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 9, color: `${GOLD}66`, fontWeight: 700 }}>${(item.unitPrice * item.qty * (100 - item.splitPct) / 100).toFixed(2)}</span>
+                  <span style={{ fontSize: 8, color: `${GOLD}66`, fontWeight: 700 }}>${(item.unitPrice * item.qty * (100 - item.splitPct) / 100).toFixed(2)}</span>
                 </div>
               </div>
             </motion.div>
@@ -435,7 +435,7 @@ function HudMeter({ label, pct, accentColor, display }: {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 7 }}>
         <span style={{ fontSize: 8, letterSpacing: "0.28em", color: `${accentColor}88`, fontWeight: 700 }}>{label}</span>
-        <span style={{ fontSize: 18, fontWeight: 900, color: accentColor, fontFamily: "'Cormorant Garamond',serif" }}>{display}</span>
+        <span style={{ fontSize: 16, fontWeight: 900, color: accentColor, fontFamily: "'Cormorant Garamond',serif" }}>{display}</span>
       </div>
       <div style={{ height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
         <motion.div animate={{ width: `${clamped}%` }} transition={{ duration: 0.14, ease: "linear" }}
