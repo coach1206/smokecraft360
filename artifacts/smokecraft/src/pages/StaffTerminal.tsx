@@ -282,6 +282,9 @@ interface VenueState {
   selectedTableId: number;
   syncIntervalMinutes: number;
   lastSyncAt: Date;
+  isTicketTapperOpen: boolean;
+  isUpsellModalOpen: boolean;
+  dayone360ReferralUrl: string;
 }
 
 const ZONE_BG: Record<string, string> = {
@@ -295,6 +298,8 @@ const zoneBg = (zone: string) => ZONE_BG[zone] ?? IMG("scenes/craft-hub.jpg");
 // ── Initial State ─────────────────────────────────────────────────────────────
 const INITIAL: VenueState = {
   selectedTableId: 101, syncIntervalMinutes: 15, lastSyncAt: new Date(),
+  isTicketTapperOpen: false, isUpsellModalOpen: false,
+  dayone360ReferralUrl: "https://dayone360.com/ref?venue=profound-lounge-001",
   activeTables: {
     101: { id: 101, guest: "John D.", zone: "VIP Section",
       timeStarted: new Date(Date.now() - 6_120_000).toISOString(),
@@ -2079,6 +2084,11 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
       },
     }));
   }, []);
+
+  const openTicketTapper  = useCallback(() => setVenueState(prev => ({ ...prev, isTicketTapperOpen: true  })), []);
+  const closeTicketTapper = useCallback(() => setVenueState(prev => ({ ...prev, isTicketTapperOpen: false })), []);
+  const openUpsellModal   = useCallback(() => setVenueState(prev => ({ ...prev, isUpsellModalOpen:  true  })), []);
+  const closeUpsellModal  = useCallback(() => setVenueState(prev => ({ ...prev, isUpsellModalOpen:  false })), []);
 
   // ── Reservation → Table Assignment ─────────────────────────────────────────
   const assignReservation = useCallback((resId: string, tableId: number, guestName: string) => {
