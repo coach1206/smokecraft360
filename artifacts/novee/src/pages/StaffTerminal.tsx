@@ -1340,90 +1340,159 @@ const STAFF_LIST = [
   { name:"Tanya G.",   role:"Runner",    dot:C.green },
   { name:"Devon H.",   role:"Host",      dot:C.green },
 ];
+
+const FALLBACK_PROVIDERS: PosProvider[] = [
+  { provider:"clover",     displayName:"Clover POS",     capabilities:{ supportsWebhooks:true,  supportsInventorySync:true,  supportsOrderPush:true  } },
+  { provider:"toast",      displayName:"Toast POS",      capabilities:{ supportsWebhooks:true,  supportsInventorySync:false, supportsOrderPush:true  } },
+  { provider:"square",     displayName:"Square POS",     capabilities:{ supportsWebhooks:false, supportsInventorySync:true,  supportsOrderPush:true  } },
+  { provider:"lightspeed", displayName:"Lightspeed POS", capabilities:{ supportsWebhooks:false, supportsInventorySync:false, supportsOrderPush:true  } },
+  { provider:"shopify",    displayName:"Shopify POS",    capabilities:{ supportsWebhooks:true,  supportsInventorySync:true,  supportsOrderPush:true  } },
+];
+
 function Footer({ revenue, providers, paymentState }: {
   revenue: ReturnType<typeof useRevenueEngine>;
   providers: PosProvider[];
   paymentState: PaymentState;
 }) {
+  const displayProviders = providers.length > 0 ? providers.slice(0, 5) : FALLBACK_PROVIDERS;
+  const [syncMsg,      setSyncMsg]      = useState<string | null>(null);
+  const [syncingId,    setSyncingId]    = useState<string | null>(null);
+  const [flashKey,     setFlashKey]     = useState(0);
+  const [insightDelta, setInsightDelta] = useState({ sales: 0, avg: 0, pairing: 92 });
+
   const posStatusColor = (p: PosProvider) => {
     if (p.capabilities.supportsWebhooks && p.capabilities.supportsInventorySync) return C.green;
     if (p.capabilities.supportsOrderPush) return C.orange;
     return C.muted;
   };
+
+  const handleSync = (prov: PosProvider) => {
+    const name = prov.displayName.replace(" POS", "");
+    setSyncingId(prov.provider);
+    setSyncMsg(`🔄 SYNCHRONIZING WITH ${name.toUpperCase()} LEDGER... SYSTEM LIVE.`);
+    setFlashKey(k => k + 1);
+    setInsightDelta({
+      sales:   Math.floor(Math.random() * 40) - 10,
+      avg:     parseFloat((Math.random() * 4 - 1).toFixed(2)),
+      pairing: 88 + Math.floor(Math.random() * 9),
+    });
+    setTimeout(() => { setSyncingId(null); setSyncMsg(null); }, 3500);
+  };
+
   return (
-    <div style={{ flexShrink:0, height:148, background:C.dark, borderTop:`1px solid ${C.chrome}`, display:"grid", gridTemplateColumns:"1fr 1fr 1fr" }}>
-      <div style={{ padding:"10px 16px", borderRight:`1px solid ${C.chrome}` }}>
-        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-          <span style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>STAFF ON FLOOR</span>
-          <span style={{ fontSize:10, color:C.muted, cursor:"pointer" }}>VIEW ALL ›</span>
-        </div>
-        <div style={{ display:"flex", gap:10, alignItems:"flex-end" }}>
-          {STAFF_LIST.map(s => (
-            <div key={s.name} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
-              <div style={{ position:"relative" }}>
-                <div style={{ width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#3D2B1F,#1A120A)",border:`2px solid ${C.chrome}`,display:"flex",alignItems:"center",justifyContent:"center" }}>
-                  <Icon d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" size={22} color={C.muted} />
-                </div>
-                <div style={{ position:"absolute",bottom:1,right:1,width:8,height:8,borderRadius:"50%",background:s.dot,border:`1.5px solid ${C.dark}` }} />
-              </div>
-              <div style={{ fontSize:16, color:C.cream, textAlign:"center", lineHeight:1.2, maxWidth:56, fontWeight:700 }}>{s.name}</div>
-              <div style={{ fontSize:12, color:C.muted, textAlign:"center" }}>{s.role}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div style={{ padding:"10px 16px", borderRight:`1px solid ${C.chrome}` }}>
-        <div style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.24em", marginBottom:8 }}>VENUE INSIGHTS</div>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:8 }}>
-          {[
-            { l:"SALES/HOUR",     v:`$${revenue.totalFloorRevenue.toFixed(0)}`, s:"+18% vs last hour", c:C.green },
-            { l:"AVG CHECK",      v:`$${revenue.avgCheck.toFixed(2)}`,           s:"+12% vs last hour", c:C.green },
-            { l:"TOP CATEGORY",   v:revenue.topCategory,                         s:"by revenue",         c:C.amber },
-            { l:"PAIRING SUCCESS",v:"92%",                                        s:"High Impact",        c:C.green },
-          ].map(m => (
-            <div key={m.l}>
-              <div style={{ fontSize:24, fontWeight:900, color:m.c, lineHeight:1 }}>{m.v}</div>
-              <div style={{ fontSize:16, color:C.muted, letterSpacing:"0.12em", textTransform:"uppercase", margin:"4px 0 2px" }}>{m.l}</div>
-              <div style={{ fontSize:10, color:m.c }}>{m.s}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div style={{ padding:"10px 14px" }}>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-          <span style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.22em" }}>POS HUB</span>
-          {paymentState === "processing" && (
-            <motion.span animate={{opacity:[1,0.4,1]}} transition={{duration:0.8,repeat:Infinity}}
-              style={{ fontSize:9, color:C.amber, fontFamily:C.mono }}>PROCESSING...</motion.span>
-          )}
-          {paymentState === "success" && (
-            <span style={{ fontSize:9, color:C.green, fontFamily:C.mono, display:"flex", alignItems:"center", gap:4 }}>
-              <Icon d={P.check} size={11} color={C.green} /> SENT
+    <div style={{ flexShrink:0, background:C.dark, borderTop:`1px solid ${C.chrome}`, position:"relative" }}>
+      {/* ── Sync Toast Banner ── */}
+      <AnimatePresence>
+        {syncMsg && (
+          <motion.div
+            key="sync-banner"
+            initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:8 }}
+            style={{ position:"absolute", top:-52, left:0, right:0, zIndex:100,
+              background:`linear-gradient(90deg,rgba(10,10,10,0.97),rgba(20,16,4,0.97))`,
+              border:`1px solid ${C.gold}`, borderRadius:8, margin:"0 12px",
+              padding:"10px 18px", display:"flex", alignItems:"center", gap:12,
+              boxShadow:`0 0 32px ${C.goldGlo}` }}>
+            <motion.span animate={{ rotate:[0,360] }} transition={{ duration:1.2, repeat:Infinity, ease:"linear" }}
+              style={{ fontSize:20, display:"inline-block" }}>🔄</motion.span>
+            <span style={{ flex:1, fontSize:16, fontWeight:900, color:C.gold, letterSpacing:"0.08em", fontFamily:C.sans }}>
+              {syncMsg}
             </span>
-          )}
-          {paymentState === "error" && <span style={{ fontSize:9, color:C.redHi, fontFamily:C.mono }}>ERROR</span>}
-        </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:5 }}>
-          {providers.slice(0,5).map(prov => {
-            const col = posStatusColor(prov);
-            const name = prov.displayName.replace(" POS","");
-            return (
-              <div key={prov.provider} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
-                <div style={{ width:40,height:40,borderRadius:7,background:`${col}18`,border:`1px solid ${col}40`,display:"flex",alignItems:"center",justifyContent:"center" }}>
-                  <Icon d={P.pos} size={20} color={col} />
+            <motion.span animate={{ opacity:[1,0.3,1] }} transition={{ duration:0.6, repeat:Infinity }}
+              style={{ fontSize:13, color:C.green, fontFamily:C.mono, fontWeight:700 }}>● LIVE</motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div style={{ height:148, display:"grid", gridTemplateColumns:"1fr 1fr 1fr" }}>
+        {/* Staff on Floor */}
+        <div style={{ padding:"10px 16px", borderRight:`1px solid ${C.chrome}` }}>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+            <span style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>STAFF ON FLOOR</span>
+            <span style={{ fontSize:10, color:C.muted, cursor:"pointer" }}>VIEW ALL ›</span>
+          </div>
+          <div style={{ display:"flex", gap:10, alignItems:"flex-end" }}>
+            {STAFF_LIST.map(s => (
+              <div key={s.name} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
+                <div style={{ position:"relative" }}>
+                  <div style={{ width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#3D2B1F,#1A120A)",border:`2px solid ${C.chrome}`,display:"flex",alignItems:"center",justifyContent:"center" }}>
+                    <Icon d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" size={22} color={C.muted} />
+                  </div>
+                  <div style={{ position:"absolute",bottom:1,right:1,width:8,height:8,borderRadius:"50%",background:s.dot,border:`1.5px solid ${C.dark}` }} />
                 </div>
-                <div style={{ fontSize:14, color:col, fontWeight:700, textAlign:"center", lineHeight:1.1 }}>{name}</div>
-                <div style={{ fontSize:14, color:C.muted, textAlign:"center", fontWeight:700 }}>
-                  {prov.capabilities.supportsInventorySync ? "SYNC" : "ORDER"}
-                </div>
+                <div style={{ fontSize:16, color:C.cream, textAlign:"center", lineHeight:1.2, maxWidth:56, fontWeight:700 }}>{s.name}</div>
+                <div style={{ fontSize:12, color:C.muted, textAlign:"center" }}>{s.role}</div>
               </div>
-            );
-          })}
-          {providers.length === 0 && (
-            <div style={{ gridColumn:"span 5", fontSize:10, color:C.muted, textAlign:"center", paddingTop:8 }}>
-              Connecting to POS Hub...
-            </div>
-          )}
+            ))}
+          </div>
+        </div>
+
+        {/* Venue Insights — refreshes on every POS sync */}
+        <div style={{ padding:"10px 16px", borderRight:`1px solid ${C.chrome}` }}>
+          <div style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.24em", marginBottom:8 }}>VENUE INSIGHTS</div>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:8 }}>
+            {[
+              { l:"SALES/HOUR",     v:`$${(revenue.totalFloorRevenue + insightDelta.sales).toFixed(0)}`, s:"+18% vs last hour", c:C.green },
+              { l:"AVG CHECK",      v:`$${(revenue.avgCheck + insightDelta.avg).toFixed(2)}`,            s:"+12% vs last hour", c:C.green },
+              { l:"TOP CATEGORY",   v:revenue.topCategory,                                               s:"by revenue",         c:C.amber },
+              { l:"PAIRING SUCCESS",v:`${insightDelta.pairing}%`,                                        s:"High Impact",        c:C.green },
+            ].map(m => (
+              <motion.div key={`${m.l}-${flashKey}`}
+                initial={{ opacity:0.4, y:4 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }}>
+                <div style={{ fontSize:24, fontWeight:900, color:m.c, lineHeight:1 }}>{m.v}</div>
+                <div style={{ fontSize:16, color:C.muted, letterSpacing:"0.12em", textTransform:"uppercase", margin:"4px 0 2px" }}>{m.l}</div>
+                <div style={{ fontSize:10, color:m.c }}>{m.s}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* POS Integration Hub — all 5 buttons fully interactive */}
+        <div style={{ padding:"10px 14px" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
+            <span style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.22em" }}>POS HUB</span>
+            {paymentState === "processing" && (
+              <motion.span animate={{opacity:[1,0.4,1]}} transition={{duration:0.8,repeat:Infinity}}
+                style={{ fontSize:9, color:C.amber, fontFamily:C.mono }}>PROCESSING...</motion.span>
+            )}
+            {paymentState === "success" && (
+              <span style={{ fontSize:9, color:C.green, fontFamily:C.mono, display:"flex", alignItems:"center", gap:4 }}>
+                <Icon d={P.check} size={11} color={C.green} /> SENT
+              </span>
+            )}
+            {paymentState === "error" && <span style={{ fontSize:9, color:C.redHi, fontFamily:C.mono }}>ERROR</span>}
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:5 }}>
+            {displayProviders.map(prov => {
+              const col = posStatusColor(prov);
+              const name = prov.displayName.replace(" POS","");
+              const isSyncing = syncingId === prov.provider;
+              return (
+                <motion.button key={prov.provider}
+                  whileTap={{ scale:0.93 }}
+                  animate={isSyncing ? { boxShadow:[`0 0 0px ${col}00`,`0 0 18px ${col}99`,`0 0 0px ${col}00`] } : { boxShadow:`0 0 0px ${col}00` }}
+                  transition={isSyncing ? { duration:0.7, repeat:Infinity } : {}}
+                  onClick={() => handleSync(prov)}
+                  style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3,
+                    minHeight:58, padding:"6px 2px", borderRadius:8, cursor:"pointer",
+                    background: isSyncing ? `${col}22` : "transparent",
+                    border: isSyncing ? `1px solid ${col}` : "1px solid transparent",
+                    transition:"background 0.2s, border 0.2s" }}>
+                  <div style={{ width:40,height:40,borderRadius:7,background:`${col}18`,border:`1px solid ${col}40`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+                    {isSyncing
+                      ? <motion.div animate={{ rotate:[0,360] }} transition={{ duration:0.8, repeat:Infinity, ease:"linear" }}>
+                          <Icon d={P.pos} size={20} color={col} />
+                        </motion.div>
+                      : <Icon d={P.pos} size={20} color={col} />
+                    }
+                  </div>
+                  <div style={{ fontSize:14, color:col, fontWeight:700, textAlign:"center", lineHeight:1.1 }}>{name}</div>
+                  <div style={{ fontSize:12, color: isSyncing ? C.green : C.muted, textAlign:"center", fontWeight:700, letterSpacing:"0.08em" }}>
+                    {isSyncing ? "SYNCING" : prov.capabilities.supportsInventorySync ? "SYNC" : "ORDER"}
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
