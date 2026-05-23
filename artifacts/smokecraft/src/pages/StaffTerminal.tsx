@@ -1143,9 +1143,9 @@ function TableCard({ table, isActive, onSelect, onTap }: {
           </span>
         </div>
       )}
-      <div style={{ display:"grid", gridTemplateColumns:"38% 62%", height:118 }}>
-        <div style={{ background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}` }} />
-        <div style={{ padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+      <div style={{ display:"flex", height:118, overflow:"hidden" }}>
+        <div style={{ width:120, flexShrink:0, background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}` }} />
+        <div style={{ flex:1, minWidth:0, padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"space-between", overflow:"hidden" }}>
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:3 }}>
               <div style={{ display:"flex", alignItems:"center", gap:6 }}>
@@ -1194,10 +1194,10 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
           <div style={{ fontSize:12, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>ACTIVE LOUNGE TABLES & QUEUES</div>
         </div>
       </div>
-      <div style={{ display:"flex", gap:8, marginBottom:8, flexShrink:0, alignItems:"center", overflow:"hidden" }}>
+      <div style={{ display:"flex", gap:12, marginBottom:8, flexShrink:0, alignItems:"center", overflowX:"auto", overflowY:"hidden", whiteSpace:"nowrap" }}>
         {FILTER_TABS.map(t => (
           <motion.button key={t} whileTap={{scale:0.95}} onClick={()=>setFilter(t)}
-            style={{ height:48, padding:"0 10px", borderRadius:5, cursor:"pointer", flexShrink:0, background:filter===t?`linear-gradient(135deg,${C.gold},#A67C00)`:"rgba(255,255,255,0.04)", border:`1px solid ${filter===t?C.gold:C.chrome}`, color:filter===t?"#000":C.muted, fontSize:14, fontWeight:800, letterSpacing:"0.08em", fontFamily:C.sans, whiteSpace:"nowrap" }}>{t}</motion.button>
+            style={{ height:44, padding:"0 12px", borderRadius:5, cursor:"pointer", flexShrink:0, background:filter===t?`linear-gradient(135deg,${C.gold},#A67C00)`:"rgba(255,255,255,0.04)", border:`1px solid ${filter===t?C.gold:C.chrome}`, color:filter===t?"#000":C.muted, fontSize:13, fontWeight:800, letterSpacing:"0.06em", fontFamily:C.sans, whiteSpace:"nowrap" }}>{t}</motion.button>
         ))}
         <div style={{ marginLeft:"auto" }}><Icon d={P.filter} size={16} color={C.muted} /></div>
       </div>
@@ -3019,7 +3019,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           </motion.button>
         </div>
       )}
-      <div style={{ flex:1, minWidth:0, display:"grid", gridTemplateColumns:"64px 24% 30% 36%", gap:16, padding:16, overflow:"hidden", position:"relative", zIndex:1 }}>
+      <div style={{ flex:1, minWidth:0, width:"100%", display:"grid", gridTemplateColumns:"64px minmax(0,24fr) minmax(0,32fr) minmax(0,38fr)", gap:16, padding:16, overflow:"hidden", position:"relative", zIndex:1, boxSizing:"border-box" }}>
         <NavRail
           onBack={back}
           isAdminView={isAdminView}
