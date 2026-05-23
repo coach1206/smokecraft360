@@ -67,6 +67,8 @@ import eeisOrdersRouter          from "./routes/eeisOrders";
 import posEventStreamRouter       from "./routes/posEventStream";
 import staffRosterRouter          from "./routes/staffRoster";
 import purchaseOrdersRouter       from "./routes/purchaseOrdersRoute";
+import deviceFleetRouter          from "./routes/deviceFleet";
+import arrEngineRouter            from "./routes/arrEngine";
 import intelligenceRouter         from "./routes/intelligence";
 import orchestrationRouter        from "./routes/orchestration";
 import distributedClusterRouter   from "./routes/distributedCluster";
@@ -639,6 +641,8 @@ app.use("/api",                         eeisOrdersRouter);
 app.use("/api",                         posEventStreamRouter);
 app.use("/api/staff",                   staffRosterRouter);
 app.use("/api",                         purchaseOrdersRouter);
+app.use("/api",                         deviceFleetRouter);
+app.use("/api",                         arrEngineRouter);
 
 // ── Deep health endpoint ───────────────────────────────────────────────────────
 

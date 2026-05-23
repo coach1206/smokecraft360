@@ -209,6 +209,39 @@ const api = {
       return j.order ?? null;
     } catch { return null; }
   },
+  fetchZoneAssignments: async (): Promise<{ assignments: Array<{ staffId: string; staffName: string; assignedSection: string | null; assignedTables: string[] | null }> }> => {
+    try {
+      const r = await fetch("/api/staff/zone-assignments");
+      if (!r.ok) return { assignments: [] };
+      return await r.json() as { assignments: Array<{ staffId: string; staffName: string; assignedSection: string | null; assignedTables: string[] | null }> };
+    } catch { return { assignments: [] }; }
+  },
+  reportHeartbeat: async (payload: { deviceId: string; batteryPct: number | null; networkLatencyMs: number; retryQueueDepth: number; venueId?: string }): Promise<void> => {
+    try {
+      await fetch("/api/devices/heartbeat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch { /* non-critical — silently drop */ }
+  },
+  reportArrEvent: async (totalCents: number, venueId?: string): Promise<void> => {
+    try {
+      await fetch("/api/analytics/arr-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ totalCents, venueId }),
+      });
+    } catch { /* non-critical */ }
+  },
+  fetchContextCoaching: async (): Promise<{ cue: string; tag: string; accent: string } | null> => {
+    try {
+      const r = await fetch("/api/staff/context-coaching");
+      if (!r.ok) return null;
+      const j = await r.json() as { suggestion: { cue: string; tag: string; accent: string } };
+      return j.suggestion ?? null;
+    } catch { return null; }
+  },
   validatePin: async (pin: string, level: "supervisor" | "admin"): Promise<{ ok: boolean; staffName?: string }> => {
     try {
       const r = await fetch("/api/staff/validate-pin", {
@@ -882,10 +915,11 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
 }
 
 // ── Column 3: Active Ledger ───────────────────────────────────────────────────
-function LedgerCol({ state, revenue, onRemove, onProcessPayment }: {
+function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
   state: VenueState; revenue: ReturnType<typeof useRevenueEngine>;
   onRemove:(tableId:number,itemId:string)=>void;
   onProcessPayment:(table:VenueTable)=>void;
+  coaching: CoachingSuggestion | null;
 }) {
   const table = state.activeTables[state.selectedTableId];
   if (!table) return null;
@@ -937,6 +971,9 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment }: {
           ))}
         </AnimatePresence>
       </div>
+      <AnimatePresence>
+        <CoachingBadge coaching={coaching} />
+      </AnimatePresence>
       <div style={panel({ padding:"13px 13px 0", flexShrink:0 })}>
         {[{l:"SUBTOTAL",v:subtotal},{l:"TAX",v:tax}].map(r => (
           <div key={r.l} style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
@@ -1067,6 +1104,104 @@ function Footer({ revenue, providers, paymentState }: {
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Cross-Layer Hooks ─────────────────────────────────────────────────────────
+
+type ZoneAssignment = { staffId: string; staffName: string; assignedSection: string | null; assignedTables: string[] | null };
+type CoachingSuggestion = { cue: string; tag: string; accent: string };
+
+/** Polls /api/staff/zone-assignments every intervalMs; returns latest assignments. */
+function useZoneSync(intervalMs = 60_000) {
+  const [assignments, setAssignments] = useState<ZoneAssignment[]>([]);
+  useEffect(() => {
+    const run = async () => {
+      const data = await api.fetchZoneAssignments();
+      setAssignments(data.assignments);
+    };
+    run();
+    const id = setInterval(run, intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+  return assignments;
+}
+
+/** Measures local network latency and posts device pulse to /api/devices/heartbeat every intervalMs. */
+function useDeviceHeartbeat(deviceId: string, intervalMs = 60_000) {
+  useEffect(() => {
+    const ping = async () => {
+      const t0 = performance.now();
+      let latencyMs = 0;
+      try {
+        await fetch("/api/health", { method: "HEAD", cache: "no-store" });
+        latencyMs = Math.round(performance.now() - t0);
+      } catch { latencyMs = 9999; }
+      const battery = (navigator as unknown as { getBattery?: () => Promise<{ level: number }> }).getBattery;
+      const batteryPct = battery
+        ? await battery.call(navigator).then((b: { level: number }) => Math.round(b.level * 100)).catch(() => null)
+        : null;
+      await api.reportHeartbeat({
+        deviceId,
+        batteryPct,
+        networkLatencyMs: latencyMs,
+        retryQueueDepth:  0,
+        venueId: "sc-terminal",
+      });
+    };
+    ping();
+    const id = setInterval(ping, intervalMs);
+    return () => clearInterval(id);
+  }, [deviceId, intervalMs]);
+}
+
+/** Polls /api/staff/context-coaching every intervalMs; returns the latest AI cue. */
+function useContextCoaching(intervalMs = 30_000) {
+  const [coaching, setCoaching] = useState<CoachingSuggestion | null>(null);
+  useEffect(() => {
+    const run = async () => {
+      const s = await api.fetchContextCoaching();
+      if (s) setCoaching(s);
+    };
+    run();
+    const id = setInterval(run, intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+  return coaching;
+}
+
+// ── Coaching Badge — AI tableside coaching display in LedgerCol ───────────────
+function CoachingBadge({ coaching }: { coaching: CoachingSuggestion | null }) {
+  if (!coaching) return null;
+  return (
+    <motion.div
+      key={coaching.cue}
+      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+      style={{ marginBottom: 8, borderRadius: 10, overflow: "hidden",
+        border: `1px solid ${coaching.accent}66`,
+        background: "rgba(4,4,6,0.97)", backdropFilter: "blur(18px)",
+        boxShadow: `0 0 22px ${coaching.accent}22` }}>
+      <div style={{ padding: "7px 12px 0",
+        display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ fontFamily: C.mono, fontSize: 8, color: C.muted, letterSpacing: "0.22em" }}>
+          AI CONTEXT ENGINE
+        </div>
+        <div style={{ fontSize: 8, fontWeight: 800, letterSpacing: "0.16em", fontFamily: C.mono,
+          color: coaching.accent, border: `1px solid ${coaching.accent}55`,
+          borderRadius: 4, padding: "2px 6px" }}>
+          {coaching.tag}
+        </div>
+      </div>
+      <div style={{ padding: "7px 12px 10px" }}>
+        <motion.div animate={{ opacity: [1, 0.85, 1] }} transition={{ duration: 3, repeat: Infinity }}
+          style={{ fontSize: 12, fontWeight: 700, color: C.white,
+            lineHeight: 1.55, letterSpacing: "0.01em" }}>
+          {coaching.cue}
+        </motion.div>
+      </div>
+      <motion.div animate={{ width: ["0%", "100%"] }} transition={{ duration: 30, ease: "linear", repeat: Infinity }}
+        style={{ height: 2, background: `linear-gradient(90deg,transparent,${coaching.accent},transparent)` }} />
+    </motion.div>
   );
 }
 
@@ -1718,6 +1853,9 @@ function PaymentToast({ state, total }: { state: PaymentState; total: number }) 
   );
 }
 
+// ── Stable terminal device ID (module-scoped, persists for session) ───────────
+const TERMINAL_DEVICE_ID = `sc-${Math.random().toString(36).slice(2, 10)}`;
+
 // ── Root — Full Engine ────────────────────────────────────────────────────────
 export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => void } = {}) {
   const [, navigate] = useLocation();
@@ -1746,6 +1884,12 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
   const [pinTarget,        setPinTarget]         = useState<"supervisor" | "admin" | null>(null);
   const [sessionStart,     setSessionStart]      = useState<Date | null>(null);
   const [showZoneDynamics, setShowZoneDynamics]  = useState(false);
+
+  // ── Cross-layer sync hooks ─────────────────────────────────────────────────
+  const zoneAssignments = useZoneSync(60_000);
+  const coaching        = useContextCoaching(30_000);
+  useDeviceHeartbeat(TERMINAL_DEVICE_ID, 60_000);
+  const syncedSection   = zoneAssignments[0]?.assignedSection ?? null;
 
   // ── Bootstrap: fetch live products + POS providers ─────────────────────────
   const refreshInventory = useCallback(async () => {
@@ -1982,6 +2126,9 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
     };
 
     const result = await api.submitOrder(payload);
+    if (result.ok) {
+      void api.reportArrEvent(Math.round(total * 100));
+    }
     setPaymentState(result.ok ? "success" : "error");
     setTimeout(() => setPaymentState("idle"), 4000);
   }, [paymentState, revenue, venueState.syncIntervalMinutes]);
@@ -2022,7 +2169,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
             onGenerateOrder={generateOrder}
           />
           <TicketsCol state={venueState} revenue={revenue} onSelect={selectTable} onUpdate={updateTableItems} />
-          <LedgerCol  state={venueState} revenue={revenue} onRemove={removeItem} onProcessPayment={processPayment} />
+          <LedgerCol  state={venueState} revenue={revenue} onRemove={removeItem} onProcessPayment={processPayment} coaching={coaching} />
         </div>
 
         {/* Reservation sidebar panel */}

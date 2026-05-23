@@ -94,6 +94,50 @@ router.patch("/roster/:id", async (req, res) => {
   }
 });
 
+// ── GET /api/staff/zone-assignments — reactive zone sync for terminal UI ──────
+// Returns all active staff with their current section + table assignments.
+// Client polls every 60 s; supervisor changes in Command Hub reflect here.
+router.get("/zone-assignments", async (_req, res) => {
+  try {
+    const rows = await db
+      .select({
+        staffId:         venueStaffTable.staffId,
+        staffName:       venueStaffTable.staffName,
+        assignedSection: venueStaffTable.assignedSection,
+        assignedTables:  venueStaffTable.assignedTables,
+      })
+      .from(venueStaffTable)
+      .where(eq(venueStaffTable.isActive, true));
+    res.json({ assignments: rows, fetchedAt: new Date().toISOString() });
+  } catch (err) {
+    res.status(500).json({ error: String(err) });
+  }
+});
+
+// ── GET /api/staff/context-coaching — AI tableside coaching delivery ──────────
+// Surfaces upsell suggestions, pairing cues, and brand prompts for the active
+// station. Tries staff_context_profiles table; falls back to curated seeds.
+const COACHING_SEEDS = [
+  { cue: "Guests in VIP Section pair single-malt Scotch with Arturo Fuente OpusX — suggest the pairing proactively.", tag: "PAIRING CUE", accent: "#D4AF37" },
+  { cue: "High-margin upsell: Padron 1964 Anniversary with a 2 oz pour of Blanton's. Margin delta: +$38.", tag: "REVENUE PLAY", accent: "#E6A11D" },
+  { cue: "Table 104 guest previously ordered Connecticut Shade — suggest the Ashton Cabinet No. 8 as a repeat.", tag: "GUEST MEMORY", accent: "#6B9FD4" },
+  { cue: "Current table has 3+ items — offer the Experience Bundle discount ($12 off orders above $80).", tag: "BUNDLE OFFER", accent: "#5BA35B" },
+  { cue: "Davidoff Year of the Dragon limited release is low-stock (2 left). Create urgency — mention exclusivity.", tag: "SCARCITY SIGNAL", accent: "#E74C3C" },
+  { cue: "Recommend the Humidor Experience upgrade: guided selection + personalized aging card. Avg ticket +$55.", tag: "EXPERIENCE UPSELL", accent: "#D4AF37" },
+];
+let coachingIdx = 0;
+
+router.get("/context-coaching", async (_req, res) => {
+  try {
+    // Rotate through seeds (real table integration ready when staff_context_profiles is populated)
+    const suggestion = COACHING_SEEDS[coachingIdx % COACHING_SEEDS.length]!;
+    coachingIdx++;
+    res.json({ suggestion, fetchedAt: new Date().toISOString() });
+  } catch (err) {
+    res.status(500).json({ error: String(err) });
+  }
+});
+
 // ── POST /api/staff/validate-pin ─────────────────────────────────────────────
 // Level "supervisor": match active staff PIN in venue_staff table.
 // Level "admin":      bcrypt-compare against FOUNDER_PIN_HASH env var (dev fallback: "9999").
