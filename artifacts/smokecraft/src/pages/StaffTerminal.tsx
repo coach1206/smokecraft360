@@ -592,7 +592,9 @@ function NavRail({ onBack, isAdminView, isSupervisorView, onOpenPinGate }: {
 }
 
 // ── Column 1: Telemetry ───────────────────────────────────────────────────────
-function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, onOpenReservations, onGenerateOrder }: {
+type KQItem = { id: string; tableId: number; itemName: string; qty: number; status: "pending"|"ready"; elapsed: string };
+
+function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, onOpenReservations, onGenerateOrder, activeTables }: {
   tel: VenueState["telemetry"];
   thresh: ReturnType<typeof useThresholds>;
   onKitchenReady: () => void;
@@ -600,24 +602,49 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
   onOpenStaff: () => void;
   onOpenReservations: () => void;
   onGenerateOrder: (productId: string, qty: number, productName: string) => void;
+  activeTables?: Record<number, VenueTable>;
 }) {
-  const [orderFlash, setOrderFlash] = useState<string | null>(null);
+  const SAMPLE_FOODS = ["Wagyu Beef Sliders","Truffle Parmesan Fries","Lobster Bisque","Charcuterie Board","Artisan Bruschetta","Seared Scallops","Duck Confit Crostini","Wagyu Carpaccio"];
+  const [orderFlash, setOrderFlash]           = useState<string | null>(null);
+  const [isKitchenModalOpen, setIsKitchenModalOpen] = useState(false);
   const h = tel.humidor; const b = tel.bar; const k = tel.kitchen;
-  const mb = (val: string, label: string, icon: string) => (
-    <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.03)", border:`1px solid ${C.chrome}`, borderRadius:7, padding:"8px 10px" }}>
-      <Icon d={icon} size={16} color={C.amber} />
-      <div>
-        <div style={{ fontSize:17, fontWeight:800, color:C.amber }}>{val}</div>
-        <div style={{ fontSize:8, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" }}>{label}</div>
-      </div>
-    </div>
-  );
+
+  const buildQueue = (): KQItem[] => {
+    const tables = activeTables ? Object.values(activeTables) : [];
+    const items: KQItem[] = [];
+    tables.forEach(t => {
+      t.items.slice(0, 2).forEach((item, i) => {
+        items.push({ id:`${t.id}_${item.id}`, tableId:t.id, itemName:item.name, qty:item.qty, status:"pending", elapsed:`${4+i*3}m` });
+      });
+    });
+    if (items.length > 0) return items.slice(0, 10);
+    return Array.from({ length: Math.max(k.pendingOrders, 2) }, (_, i) => ({
+      id:`kq_syn_${i}`, tableId:101+i, itemName:SAMPLE_FOODS[i % SAMPLE_FOODS.length],
+      qty:(i%3)+1, status:"pending" as const, elapsed:`${3+i*3}m`,
+    }));
+  };
+  const [kitchenQueue, setKitchenQueue] = useState<KQItem[]>(buildQueue);
+
+  const markOrderReady = (id: string) => {
+    setKitchenQueue(prev => prev.map(q => q.id === id ? { ...q, status:"ready" } : q));
+    onKitchenReady();
+  };
 
   const fireOrder = (productId: string, qty: number, name: string) => {
     onGenerateOrder(productId, qty, name);
     setOrderFlash(productId);
     setTimeout(() => setOrderFlash(null), 3_000);
   };
+
+  const mb = (val: string, label: string, icon: string) => (
+    <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.03)", border:`1px solid ${C.chrome}`, borderRadius:7, padding:"9px 11px" }}>
+      <Icon d={icon} size={20} color={C.amber} />
+      <div>
+        <div style={{ fontSize:20, fontWeight:800, color:C.white }}>{val}</div>
+        <div style={{ fontSize:12, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase" }}>{label}</div>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden" }}>
@@ -653,7 +680,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <div style={panel({ borderTop:`2px solid ${C.gold}`, flexShrink:0 })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
           <Icon d={P.leaf} size={14} color={C.gold} />
-          <span style={{ fontSize:10, fontWeight:700, color:C.muted, letterSpacing:"0.22em" }}>STATION 1: HUMIDOR</span>
+          <span style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 1: HUMIDOR</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", minHeight:100 }}>
           <div style={{ padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
@@ -663,12 +690,12 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
               style={{ fontSize:56, fontWeight:900, color:C.amber, lineHeight:1 }}>
               {h.purosRemaining}
             </motion.div>
-            <div style={{ fontSize:8, color:C.muted, letterSpacing:"0.20em", marginTop:4 }}>PUROS REMAINING</div>
+            <div style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.16em", marginTop:4 }}>PUROS REMAINING</div>
           </div>
           <div style={{ background:`url(${IMG("cedar_box.png")}) center/cover no-repeat,linear-gradient(135deg,#3D2510,#0F0A06)`, borderLeft:`1px solid ${C.chrome}` }} />
         </div>
         <div style={{ padding:"8px 12px", borderTop:`1px solid ${C.chrome}` }}>
-          <div style={{ fontSize:8, color:C.muted, letterSpacing:"0.22em", marginBottom:6 }}>CLIMATE CONTROL</div>
+          <div style={{ fontSize:12, color:C.muted, letterSpacing:"0.20em", marginBottom:6 }}>CLIMATE CONTROL</div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
             {mb(`${h.temperature}°F`, "TEMPERATURE", P.thermo)}
             {mb(`${h.humidity}%`, "RELATIVE HUMIDITY", P.drop)}
@@ -692,12 +719,12 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <div style={panel({ borderTop:"2px solid #3A6BC4", flexShrink:0 })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
           <Icon d={P.cocktail} size={14} color={C.blue} />
-          <span style={{ fontSize:10, fontWeight:700, color:C.muted, letterSpacing:"0.22em" }}>STATION 2: BAR METRICS</span>
+          <span style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 2: BAR METRICS</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr auto", alignItems:"center", padding:"10px 12px", gap:10 }}>
           <div>
             <div style={{ fontSize:48, fontWeight:900, color:C.white, lineHeight:1 }}>{b.activePourSessions}</div>
-            <div style={{ fontSize:9, color:C.muted, letterSpacing:"0.18em", marginTop:3 }}>ACTIVE POUR SESSIONS</div>
+            <div style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.16em", marginTop:3 }}>ACTIVE POUR SESSIONS</div>
           </div>
           <div style={{ width:48, height:72, borderRadius:7, background:`url(${IMG("pour/pour_whiskey.png")}) center/cover no-repeat,#1A0A00`, border:`1px solid ${C.chrome}` }} />
         </div>
@@ -731,23 +758,122 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <div style={panel({ borderTop:"2px solid #7B5EA7", flex:1, display:"flex", flexDirection:"column" })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
           <Icon d={P.utensils} size={14} color={C.purple} />
-          <span style={{ fontSize:10, fontWeight:700, color:C.muted, letterSpacing:"0.22em" }}>STATION 3: KITCHEN LINE</span>
+          <span style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 3: KITCHEN LINE</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, padding:"10px 12px" }}>
           {[{val:k.pendingOrders,label:"PENDING ORDERS",color:C.amber},{val:k.readyOrders,label:"READY ORDERS",color:C.green}].map(m => (
             <div key={m.label} style={{ background:`${m.color}0a`, border:`1px solid ${m.color}30`, borderRadius:7, padding:"10px 0", textAlign:"center" }}>
               <div style={{ fontSize:38, fontWeight:900, color:m.color, lineHeight:1 }}>{m.val}</div>
-              <div style={{ fontSize:8, color:C.muted, letterSpacing:"0.18em", marginTop:4 }}>{m.label}</div>
+              <div style={{ fontSize:14, fontWeight:600, color:C.muted, letterSpacing:"0.14em", marginTop:4 }}>{m.label}</div>
             </div>
           ))}
         </div>
-        <motion.button whileTap={{scale:0.97}} {...T} onClick={onKitchenReady}
-          style={{ marginTop:"auto", width:"100%", height:42, background:"rgba(123,94,167,0.10)", border:"none", borderTop:"1px solid rgba(123,94,167,0.28)", color:C.purple, fontSize:12, fontWeight:800, letterSpacing:"0.14em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-          <Icon d={P.list} size={14} color={C.purple} />
-          VIEW KITCHEN QUEUE
-          <span style={{ fontSize:14 }}>›</span>
+        <motion.button whileTap={{scale:0.97}} {...T}
+          onTouchStart={e => { T.onTouchStart(e); setIsKitchenModalOpen(true); }}
+          onClick={() => setIsKitchenModalOpen(true)}
+          style={{ marginTop:"auto", width:"100%", height:58, background:"rgba(123,94,167,0.18)", border:"none", borderTop:"2px solid rgba(123,94,167,0.45)", color:C.purple, fontSize:15, fontWeight:900, letterSpacing:"0.18em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+          <Icon d={P.list} size={20} color={C.purple} />
+          VIEW KITCHEN QUEUE ➔
         </motion.button>
       </div>
+
+      {/* ── Kitchen Queue Modal ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {isKitchenModalOpen && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+            style={{ position:"fixed", inset:0, zIndex:9500, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.91)", backdropFilter:"blur(20px)" }} onClick={() => setIsKitchenModalOpen(false)} />
+            <motion.div initial={{scale:0.92,y:24}} animate={{scale:1,y:0}} exit={{scale:0.92,y:24}}
+              style={{ position:"relative", zIndex:1, width:680, maxHeight:"88vh", background:"rgba(4,4,8,0.99)",
+                border:`1px solid ${C.purple}`, borderRadius:14, overflow:"hidden", display:"flex", flexDirection:"column",
+                boxShadow:"0 0 70px rgba(123,94,167,0.45)" }}>
+              <div style={{ height:4, background:`linear-gradient(90deg,${C.purple},#A07BC4,${C.purple})` }} />
+              {/* Header */}
+              <div style={{ padding:"18px 24px", borderBottom:`1px solid ${C.chrome}`, display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0 }}>
+                <div>
+                  <div style={{ fontFamily:C.mono, fontSize:9, color:C.purple, letterSpacing:"0.30em" }}>KITCHEN OPERATIONS — LIVE QUEUE</div>
+                  <div style={{ fontSize:22, fontWeight:900, color:C.white, marginTop:4 }}>KITCHEN ORDER DISPATCH</div>
+                </div>
+                <motion.button whileTap={{scale:0.9}} onClick={() => setIsKitchenModalOpen(false)} {...T}
+                  style={{ width:38, height:38, borderRadius:9, background:"rgba(255,255,255,0.05)", border:`1px solid ${C.chrome}`,
+                    cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <Icon d={P.close2} size={18} color={C.muted} />
+                </motion.button>
+              </div>
+              {/* Stats bar */}
+              <div style={{ padding:"12px 24px", borderBottom:`1px solid ${C.chrome}`, display:"flex", gap:12, flexShrink:0 }}>
+                {[
+                  {label:"PENDING", v:kitchenQueue.filter(q=>q.status==="pending").length, c:C.amber},
+                  {label:"READY",   v:kitchenQueue.filter(q=>q.status==="ready").length,   c:C.green},
+                  {label:"TOTAL",   v:kitchenQueue.length,                                  c:C.muted},
+                ].map(s => (
+                  <div key={s.label} style={{ background:`${s.c}14`, border:`1px solid ${s.c}33`, borderRadius:8, padding:"8px 20px", textAlign:"center", minWidth:88 }}>
+                    <div style={{ fontSize:28, fontWeight:900, color:s.c, lineHeight:1 }}>{s.v}</div>
+                    <div style={{ fontSize:10, fontFamily:C.mono, color:C.muted, letterSpacing:"0.16em", marginTop:4 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              {/* Order list */}
+              <div style={{ flex:1, overflowY:"auto" }}>
+                <AnimatePresence>
+                  {kitchenQueue.map((order, idx) => (
+                    <motion.div key={order.id} layout initial={{opacity:0,x:-16}} animate={{opacity:order.status==="ready"?0.50:1,x:0}} exit={{opacity:0,x:20}}
+                      style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 24px",
+                        borderBottom:idx<kitchenQueue.length-1?`1px solid ${C.chrome}`:"none",
+                        background:order.status==="ready"?"rgba(39,174,96,0.04)":"transparent" }}>
+                      <div style={{ width:48, height:48, borderRadius:10, background:`rgba(123,94,167,0.12)`, border:`1px solid ${C.chrome}`,
+                        display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                        <Icon d={P.utensils} size={26} color={order.status==="ready"?C.green:C.purple} />
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:18, fontWeight:800, color:C.white }}>Table {order.tableId}</div>
+                        <div style={{ fontSize:15, color:C.muted, marginTop:3 }}>{order.qty}x {order.itemName}</div>
+                        <div style={{ fontSize:11, fontFamily:C.mono, color:order.status==="ready"?C.green:C.amber, marginTop:4, letterSpacing:"0.14em" }}>
+                          {order.status==="ready" ? "✓ READY FOR PICKUP" : `⏱ PENDING · ${order.elapsed}`}
+                        </div>
+                      </div>
+                      {order.status==="pending" ? (
+                        <motion.button whileTap={{scale:0.95}} {...T}
+                          onTouchStart={e => { T.onTouchStart(e); markOrderReady(order.id); }}
+                          onClick={() => markOrderReady(order.id)}
+                          style={{ height:54, padding:"0 22px", borderRadius:10, cursor:"pointer", flexShrink:0,
+                            background:`linear-gradient(135deg,${C.gold},#A67C00)`,
+                            border:"none", color:"#000", fontSize:14, fontWeight:900, letterSpacing:"0.10em",
+                            fontFamily:C.sans, boxShadow:`0 0 20px ${C.goldGlo}`, whiteSpace:"nowrap" }}>
+                          MARK AS READY
+                        </motion.button>
+                      ) : (
+                        <div style={{ height:54, padding:"0 18px", borderRadius:10, background:"rgba(39,174,96,0.12)",
+                          border:`1px solid ${C.green}44`, color:C.green, fontSize:14, fontWeight:900,
+                          display:"flex", alignItems:"center", letterSpacing:"0.12em" }}>
+                          ✓ DONE
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                {kitchenQueue.length === 0 && (
+                  <div style={{ padding:"48px", textAlign:"center" }}>
+                    <div style={{ fontSize:18, color:C.muted, marginBottom:8 }}>No active orders</div>
+                    <div style={{ fontSize:12, fontFamily:C.mono, color:C.chrome, letterSpacing:"0.18em" }}>KITCHEN IS CLEAR</div>
+                  </div>
+                )}
+              </div>
+              {/* Footer action */}
+              <div style={{ padding:"14px 24px", borderTop:`1px solid ${C.chrome}`, flexShrink:0 }}>
+                <motion.button whileTap={{scale:0.97}} {...T}
+                  onTouchStart={e => { T.onTouchStart(e); setIsKitchenModalOpen(false); onKitchenReady(); }}
+                  onClick={() => { setIsKitchenModalOpen(false); onKitchenReady(); }}
+                  style={{ width:"100%", height:54, borderRadius:10, background:"rgba(39,174,96,0.12)",
+                    border:`1px solid ${C.green}44`, color:C.green, fontSize:15, fontWeight:800,
+                    letterSpacing:"0.14em", cursor:"pointer", fontFamily:C.sans }}>
+                  DISPATCH ALL READY → CLOSE
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1144,7 +1270,7 @@ function Footer({ revenue, providers, paymentState }: {
     return C.muted;
   };
   return (
-    <div style={{ flexShrink:0, height:116, background:C.dark, borderTop:`1px solid ${C.chrome}`, display:"grid", gridTemplateColumns:"1fr 1fr 1fr" }}>
+    <div style={{ flexShrink:0, height:148, background:C.dark, borderTop:`1px solid ${C.chrome}`, display:"grid", gridTemplateColumns:"1fr 1fr 1fr" }}>
       {/* Staff on Floor */}
       <div style={{ padding:"10px 16px", borderRight:`1px solid ${C.chrome}` }}>
         <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
@@ -1160,8 +1286,8 @@ function Footer({ revenue, providers, paymentState }: {
                 </div>
                 <div style={{ position:"absolute",bottom:1,right:1,width:8,height:8,borderRadius:"50%",background:s.dot,border:`1.5px solid ${C.dark}` }} />
               </div>
-              <div style={{ fontSize:10, color:C.cream, textAlign:"center", lineHeight:1.2, maxWidth:44, fontWeight:600 }}>{s.name}</div>
-              <div style={{ fontSize:9, color:C.muted, textAlign:"center" }}>{s.role}</div>
+              <div style={{ fontSize:12, color:C.cream, textAlign:"center", lineHeight:1.2, maxWidth:48, fontWeight:700 }}>{s.name}</div>
+              <div style={{ fontSize:10, color:C.muted, textAlign:"center" }}>{s.role}</div>
             </div>
           ))}
         </div>
@@ -1169,7 +1295,7 @@ function Footer({ revenue, providers, paymentState }: {
 
       {/* Venue Insights — live from revenue engine */}
       <div style={{ padding:"10px 16px", borderRight:`1px solid ${C.chrome}` }}>
-        <div style={{ fontSize:10, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em", marginBottom:8 }}>VENUE INSIGHTS</div>
+        <div style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.24em", marginBottom:8 }}>VENUE INSIGHTS</div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:8 }}>
           {[
             { l:"SALES/HOUR",     v:`$${revenue.totalFloorRevenue.toFixed(0)}`, s:"+18% vs last hour", c:C.green },
@@ -1178,9 +1304,9 @@ function Footer({ revenue, providers, paymentState }: {
             { l:"PAIRING SUCCESS",v:"92%",                                        s:"High Impact",        c:C.green },
           ].map(m => (
             <div key={m.l}>
-              <div style={{ fontSize:16, fontWeight:900, color:m.c, lineHeight:1 }}>{m.v}</div>
-              <div style={{ fontSize:8, color:C.muted, letterSpacing:"0.14em", textTransform:"uppercase", margin:"3px 0 2px" }}>{m.l}</div>
-              <div style={{ fontSize:9, color:m.c }}>{m.s}</div>
+              <div style={{ fontSize:24, fontWeight:900, color:m.c, lineHeight:1 }}>{m.v}</div>
+              <div style={{ fontSize:10, color:C.muted, letterSpacing:"0.12em", textTransform:"uppercase", margin:"4px 0 2px" }}>{m.l}</div>
+              <div style={{ fontSize:10, color:m.c }}>{m.s}</div>
             </div>
           ))}
         </div>
@@ -1189,7 +1315,7 @@ function Footer({ revenue, providers, paymentState }: {
       {/* POS Integration Hub — live from GET /api/pos/providers */}
       <div style={{ padding:"10px 14px" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-          <span style={{ fontSize:10, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>POS HUB</span>
+          <span style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.22em" }}>POS HUB</span>
           {paymentState === "processing" && (
             <motion.span animate={{opacity:[1,0.4,1]}} transition={{duration:0.8,repeat:Infinity}}
               style={{ fontSize:9, color:C.amber, fontFamily:C.mono }}>PROCESSING...</motion.span>
@@ -2776,7 +2902,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
   }, [paymentState, revenue, venueState.syncIntervalMinutes]);
 
   return (
-    <div style={{ position:"fixed", inset:0, background:C.base, display:"flex", flexDirection:"column", fontFamily:C.sans, overflow:"hidden", backgroundImage:"radial-gradient(ellipse 100% 35% at 50% 0%,rgba(212,175,55,0.05),transparent 60%)" }}>
+    <div style={{ position:"fixed", inset:0, width:"100vw", background:C.base, display:"flex", flexDirection:"column", fontFamily:C.sans, overflow:"hidden", backgroundImage:"radial-gradient(ellipse 100% 35% at 50% 0%,rgba(212,175,55,0.05),transparent 60%)" }}>
       <div style={{ position:"absolute", inset:0, pointerEvents:"none", boxShadow:"inset 0 0 110px rgba(0,0,0,0.65)", zIndex:0 }} />
       <div style={{ position:"relative", zIndex:2 }}>
         <Header lastSync={venueState.lastSyncAt} syncAge={syncAge} />
@@ -2831,6 +2957,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
             onOpenStaff={() => setShowStaffRoster(true)}
             onOpenReservations={() => setShowReservations(prev => !prev)}
             onGenerateOrder={generateOrder}
+            activeTables={venueState.activeTables}
           />
           <TicketsCol state={venueState} revenue={revenue} onSelect={selectTable} onUpdate={updateTableItems} />
           <LedgerCol  state={venueState} revenue={revenue} onRemove={removeItem} onProcessPayment={processPayment} coaching={coaching} />

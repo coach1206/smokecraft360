@@ -1,0 +1,36 @@
+COMMAND OVERRIDE: CRITICAL GLOBAL TOUCHSCREEN OVERHAUL. The entire POS system interface is failing touchscreen usability standards. Typography across ALL columns (1, 2, and 3) and the bottom telemetry bar is too small, and the 'VIEW KITCHEN QUEUE' button is non-functional. You must refactor the entire system chassis right now to enforce large high-visibility typography, guarantee a minimum 58px physical touch footprint on all targets, and write the active state wiring for the kitchen queue portal.
+
+Execute this full-chassis sovereign touchscreen integration immediately:
+
+---
+
+### 1. FULL-CHASSIS GLOBAL TYPOGRAPHY & TOUCHSCALE UPGRADE
+Apply these strict visual metrics globally across the entire StaffTerminal layout to ensure readability from an arm's length in a dimly lit venue:
+* **COLUMN 1 (Telemetry Monitors):**
+  - All station titles and descriptor subtext labels ('Puros Remaining', 'Active Pour Sessions', 'Pending / Ready') must be upscaled to a bold baseline size of fontSize: "18px" (1.1rem).
+  - Main climate readouts ('68°F / 71% RH') must be a prominent, clear fontSize: "20px" in high-contrast true white text.
+* **COLUMN 2 (Ticket Overview Matrix):**
+  - Table headers, guest names, active timers, and running balances must use expanded typography (fontSize: "18px" minimum).
+  - The '[ ★ OPEN TICKET TAPPER ★ ]' action button layout must be a massive gold-gradient block locked to an absolute height boundary of 58px.
+* **COLUMN 3 (Active Invoice Ledger):**
+  - Itemized SKU text names and quantity multipliers ('1x', '2x') must be bold, clean, and set to fontSize: "18px" minimum.
+  - The financial breakdown summary rows must look massive. The final numeric total bill output balance must render in a prominent fontSize: "26px" highlighted with a glowing amber-gold outline color layer (#E6A11D).
+* **THE LOWER TELEMETRY BAR (Footer Analytics):**
+  - Radical font upscale. Set all subtext headers to fontSize: "18px" minimum, and all dynamic engine metrics ('$2,847/HR', '$108.67', 'Spirits') to a thick, bold fontSize: "24px". 
+  - Scale up all pulsing network and device fleet status badges.
+
+---
+
+### 2. ACTIVATE THE 'VIEW KITCHEN QUEUE' REVENUE ENGINE
+* **The Touch Trigger Mapping:** Solder an active touchscreen event listener (onTouchStart) directly to the [ VIEW KITCHEN QUEUE ➔ ] container button at the base of Column 1, ensuring a 58px target height footprint layout.
+* **The Interactive Modal Overlay:** TAPPING this button must instantly toggle the local view layout state variable: isKitchenModalOpen === true, mounting a full-screen or centered Obsidian Glass panel portal directly over the workspace grid chassis.
+* **Live Ticket Processing:** Inside this kitchen modal, map the live pending state stream directly to active card items (e.g., "Table 101: 1x Wagyu Beef Sliders"). Next to each row, mount an oversized gold button reading [ MARK AS READY ]. Tapping this button must instantly execute a state mutation that drops the pending order counter down and increments the ready count metrics in real time.
+
+---
+
+### 3. LIVE TRANS-OPERATIONAL RIGGING & STRETCH
+* Ensure the workspace wrapper layout completely fills 100% edge-to-edge widescreen viewport width (`width: "100vw"`), eliminating all center-boxing errors or side margins.
+* Link all bottom analytics readouts directly to your background useRevenueEngine data structures so values update dynamically based on live checkout item modifications.
+* Maintain all underlying multi-tenant data schemas, 15-minute backend synchronization rules, and external POS vendor webhook relays entirely active.
+
+Do not write dummy text lines or leave elements unproportional. Blow up the typography properties globally across Columns 1, 2, 3, and the footer, code the functioning kitchen queue modal loop, and paint this fully operational sovereign touchscreen interface right now.
