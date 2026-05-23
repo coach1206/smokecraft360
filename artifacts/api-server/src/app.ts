@@ -64,6 +64,9 @@ import posOperationsRouter       from "./routes/posOperations";
 import posHealthRouter           from "./routes/posHealth";
 import posMenuMappingRouter      from "./routes/posMenuMapping";
 import eeisOrdersRouter          from "./routes/eeisOrders";
+import posEventStreamRouter       from "./routes/posEventStream";
+import staffRosterRouter          from "./routes/staffRoster";
+import purchaseOrdersRouter       from "./routes/purchaseOrdersRoute";
 import intelligenceRouter         from "./routes/intelligence";
 import orchestrationRouter        from "./routes/orchestration";
 import distributedClusterRouter   from "./routes/distributedCluster";
@@ -632,6 +635,10 @@ app.use("/api",                         posHealthRouter);
 app.use("/api",                         posMenuMappingRouter);
 // Universal order creation + EEIS order event timeline
 app.use("/api",                         eeisOrdersRouter);
+// Kiosk operational feeds: webhook event stream, staff roster, purchase orders
+app.use("/api",                         posEventStreamRouter);
+app.use("/api/staff",                   staffRosterRouter);
+app.use("/api",                         purchaseOrdersRouter);
 
 // ── Deep health endpoint ───────────────────────────────────────────────────────
 

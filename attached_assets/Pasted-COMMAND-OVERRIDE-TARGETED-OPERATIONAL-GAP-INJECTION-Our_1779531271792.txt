@@ -1,0 +1,30 @@
+COMMAND OVERRIDE: TARGETED OPERATIONAL GAP INJECTION. Our backend schemas, tables, and webhook collectors are fully built and collecting data, but they are completely blind to the frontend interface. You are commanded to build the visible UI layouts, real-time listeners, and control matrices for our highest-leverage operational features immediately. Do not touch or break existing state logic.
+
+Execute this precise structural and routing integration right now:
+
+---
+
+### 1. THE INBOUND POS WEBHOOK → LIVE UI SYNC MATRIX (Priority 1)
+* **The Live Event Listener:** Inside `StaffTerminal`, establish a long-polling hook or live SSE/WebSocket stream that actively monitors the `pos_webhook_events` table data.
+* **The Real-Time Delta Modifier:** The exact millisecond a webhook payload hits from Toast or Clover showing an off-platform transaction, execute an immediate immutable delta mutation on `venueState.telemetry`. 
+* **The Visual Feedback Loop:** Force the Humidor 'Puros Remaining' text counter and Bar fluid percentage bars to countdown and flash in real time based on external POS rings without requiring a manual screen refresh.
+
+---
+
+### 2. DEPLOY THE POS MENU MAPPING MATRIX & PURCHASE ORDER ENGINE (Priority 1)
+* **Menu Mapping View:** Build a clean, high-density modal inside the Venue Config Matrix called 'POS Menu Mapper'. Render a data table displaying your local Cigar/Spirit schema item IDs on the left, paired with an editable text input/dropdown field on the right to link them directly to their corresponding Clover/Toast API item ID tokens. Save updates straight to the database.
+* **The Actionable Reorder Pipeline:** Create a 'Purchase Order Generator' card component inside the telemetry columns. When `checkReorder` flags an asset as low stock, pull the alert row dynamically. Mount an oversized 58px touch-ready action button reading: '[ 📦 GENERATE ORDER ➔ ]'. Tapping this button must auto-populate the existing `purchase_orders` schema table with vendor details, quantities, and item SKUs seamlessly on press.
+
+---
+
+### 3. IMMERSE THE VENUE STAFF & RESERVATION MANAGEMENT CONTROLS (Priority 2)
+* **The Self-Administration Cockpit:** Inside the supervisor deck, build out the 'Staff Deployment Roster' UI wrapper. Map inputs to write directly to the `venue_staff` table: Add Staff Member Name, Assign Floor Section/Active Tables, Assign 4-digit PIN access tokens, and a distinct toggle switch component to Deactivate Accounts instantly.
+* **Reservation-To-Table Assignment:** Create an interactive sidebar panel inside the Table Overview Matrix tracking the `reservations` table queue. Next to every accepted guest RSVP, embed a drag-and-drop or click-to-place touchscreen selection handle that links the reservation ID directly to a numbered table cell grid coordinate, changing that table node's visual state to 'Reserved' instantly.
+
+---
+
+### 4. SOVEREIGN TOUCHSCREEN DESIGN ENFORCEMENT
+* **Global Visibility and Hit-Boxes:** Ensure all newly injected configuration tables, modal inputs, and list elements utilize our premium luxury design system layout: True Obsidian (#020202) canvas plates, bold Amber-Gold accenting headers (#E6A11D), and large high-readability typography scales (`fontSize: "18px"` baseline metrics).
+* **Zero Mobile Latency:** Enforce hardware-accelerated touch physics event listeners (`onTouchStart`, `onTouchEnd`) globally across all new data grid buttons to eliminate interaction delays entirely.
+
+Scan your local component schemas, link the data listeners to the active database tables, and paint these responsive operational panels onto our live preview monitor immediately.

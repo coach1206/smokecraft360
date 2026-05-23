@@ -1,0 +1,24 @@
+COMMAND OVERRIDE: TARGETED OPERATIONAL GAP INJECTION. Our backend schemas, tables, and webhook collectors are fully built and collecting data, but they are completely blind to the frontend interface. You must immediately build the visible UI layouts, real-time listeners, and management panels for our two highest-leverage blind spots. Do not drop or break existing state logic.
+
+Execute this precise structural and routing integration right now:
+
+---
+
+### 1. THE INBOUND POS WEBHOOK → LIVE UI SYNC MATRIX (Priority 1)
+* **The Live Event Listener:** Inside 'StaffTerminal', establish a long-polling hook or live SSE/WebSocket stream that actively monitors the 'pos_webhook_events' table data.
+* **The Real-Time Delta Modifier:** The exact millisecond a webhook payload hits from Toast or Clover showing an off-platform transaction, execute an immediate immutable delta mutation on 'venueState.telemetry'. 
+* **The Visual Feedback Loop:** Force the Humidor 'Puros Remaining' text counter and Bar fluid percentage bars to countdown and flash in real time based on external POS rings without requiring a manual screen refresh.
+
+---
+
+### 2. DEPLOY THE VENUE STAFF SELF-ADMINISTRATION COCKPIT (Priority 2)
+* **The Management Portal:** Inside the supervisor deck layout, build out the 'Staff Deployment Roster' UI wrapper card. 
+* **Database Wire Insertion:** Map input components to write directly to our existing 'venue_staff' table fields: Add Staff Member Name, Assign Floor Section/Active Tables, Assign 4-digit PIN access tokens, and an explicit toggle switch component to Deactivate Accounts instantly.
+
+---
+
+### 3. SOVEREIGN TOUCHSCREEN DESIGN ENFORCEMENT
+* **Global Visibility and Hit-Boxes:** Ensure all newly injected configuration tables, modal inputs, and list elements utilize our premium luxury design system layout: True Obsidian (#020202) canvas plates, bold Amber-Gold accenting headers (#E6A11D), and large high-readability typography scales (fontSize: "18px" baseline metrics, minimum 58px touch-target height envelopes).
+* **Zero Mobile Latency:** Enforce hardware-accelerated touch physics event listeners (onTouchStart, onTouchEnd) globally across all new data grid buttons to eliminate interaction delays entirely.
+
+Scan your local component schemas, link the data listeners to the active database tables, and paint these responsive operational panels onto our live preview monitor immediately.

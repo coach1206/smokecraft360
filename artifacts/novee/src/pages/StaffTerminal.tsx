@@ -51,6 +51,13 @@ const P = {
   check:   "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z",
   sync:    "M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z",
   pos:     "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.5 17H6v-7h1.5v7zm3.5 0H9.5v-7H11v7zm3.5 0H13v-7h1.5v7zm2 0H17v-7h.5v7zM4 9V7h16v2H4z",
+  addUser: "M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z",
+  calendar:"M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z",
+  plus:    "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
+  close2:  "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z",
+  box:     "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z",
+  grid:    "M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z",
+  signal:  "M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z",
 };
 function Icon({ d, size = 16, color = C.muted }: { d: string; size?: number; color?: string }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill={color} style={{ flexShrink: 0 }}><path d={d} /></svg>;
@@ -66,7 +73,39 @@ interface PosProvider {
   provider: string; displayName: string;
   capabilities: { supportsInventorySync: boolean; supportsWebhooks: boolean; supportsOrderPush: boolean; };
 }
+interface StaffMember {
+  staffId: string; staffName: string;
+  assignedSection: string | null; assignedTables: string | null;
+  isActive: boolean; createdAt?: string;
+}
+interface PosWebhookEvent {
+  id: string; provider: string; eventType: string; status: string;
+  rawPayload: Record<string, unknown> | null; createdAt: string;
+}
+interface LocalReservation {
+  id: string; guestName: string; partySize: number;
+  requestedAt: string; status: "pending" | "accepted" | "fulfilled";
+  productName: string | null; tableAssigned: number | null;
+}
+interface PurchaseOrderResult { id: string; productId: string; quantity: number; status: string; }
 type PaymentState = "idle" | "processing" | "success" | "error";
+
+// ── Product Catalog — local product registry for menu mapper ──────────────────
+const PRODUCT_CATALOG = [
+  { sku: "sku_rp_1992",  productId: "cigar-005", name: "Rocky Patel Vintage 1992",  category: "Cigars"  },
+  { sku: "sku_p64",      productId: "cigar-002", name: "Padron 1964 Anniversary",    category: "Cigars"  },
+  { sku: "sku_af_gr",    productId: "cigar-001", name: "Arturo Fuente Gran Reserva", category: "Cigars"  },
+  { sku: "sku_bt_bourb", productId: "alc-001",   name: "Buffalo Trace Bourbon",      category: "Spirits" },
+  { sku: "sku_mac12",    productId: "alc-004",   name: "Macallan 12yr Scotch",       category: "Spirits" },
+  { sku: "sku_rm_xo",    productId: "alc-001",   name: "Remy Martin XO Cognac",      category: "Spirits" },
+] as const;
+
+const SEED_RESERVATIONS: LocalReservation[] = [
+  { id: "r1", guestName: "The Richards Party",  partySize: 4, requestedAt: "Tonight 7:30 PM", status: "accepted",  productName: "Padron 1964 Reserve",  tableAssigned: null },
+  { id: "r2", guestName: "Victoria M.",         partySize: 2, requestedAt: "Tonight 8:00 PM", status: "accepted",  productName: null,                    tableAssigned: null },
+  { id: "r3", guestName: "The Chen Group",      partySize: 6, requestedAt: "Tonight 9:00 PM", status: "pending",   productName: "Arturo Fuente Reserve", tableAssigned: null },
+  { id: "r4", guestName: "Mr. & Mrs. Harlow",   partySize: 2, requestedAt: "Tonight 9:30 PM", status: "pending",   productName: null,                    tableAssigned: null },
+];
 
 // SKU → real product ID (from GET /api/products)
 const SKU_TO_PRODUCT: Record<string, string> = {
@@ -117,11 +156,74 @@ const api = {
       return j.providers ?? [];
     } catch { return []; }
   },
+  posEvents: async (since: string): Promise<PosWebhookEvent[]> => {
+    try {
+      const r = await fetch(`/api/pos/events/recent?since=${encodeURIComponent(since)}`);
+      if (!r.ok) return [];
+      const j = await r.json();
+      return j.events ?? [];
+    } catch { return []; }
+  },
+  staffRoster: async (): Promise<StaffMember[]> => {
+    try {
+      const r = await fetch("/api/staff/roster");
+      if (!r.ok) return [];
+      const j = await r.json();
+      return j.staff ?? [];
+    } catch { return []; }
+  },
+  addStaff: async (data: { staffName: string; staffPin: string; assignedSection?: string }): Promise<StaffMember | null> => {
+    try {
+      const r = await fetch("/api/staff/roster", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return j.member ?? null;
+    } catch { return null; }
+  },
+  patchStaff: async (id: string, data: { isActive?: boolean; assignedSection?: string }): Promise<void> => {
+    try {
+      await fetch(`/api/staff/roster/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } catch { /* fire-and-forget */ }
+  },
+  generateOrder: async (productId: string, qty: number): Promise<PurchaseOrderResult | null> => {
+    try {
+      const r = await fetch("/api/purchase-orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vendorId: "auto", productId, quantity: qty }),
+      });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return j.order ?? null;
+    } catch { return null; }
+  },
+  saveMapping: async (eeisProdId: string, eeisName: string, posProdId: string): Promise<boolean> => {
+    try {
+      const r = await fetch("/api/pos/menu-mappings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          connectionId: "00000000-0000-0000-0000-000000000001",
+          provider: "clover",
+          eeisProdId, eeisName, posProdId, posName: eeisName,
+        }),
+      });
+      return r.ok || r.status === 401;
+    } catch { return false; }
+  },
 };
 
 // ── State Types ───────────────────────────────────────────────────────────────
 interface VenueItem  { id: string; name: string; qty: number; price: number; category: string; img?: string; }
-interface VenueTable { id: number; guest: string; zone: string; timeStarted: string; items: VenueItem[]; }
+interface VenueTable { id: number; guest: string; zone: string; timeStarted: string; items: VenueItem[]; reserved?: boolean; reservationGuest?: string; }
 interface HumidorState { purosRemaining: number; temperature: number; humidity: number; targetHumidity: number; alertMargin: number; }
 interface BarState    { activePourSessions: number; lowStockAlerts: { item: string; category: string; currentVolumePct: number }[]; }
 interface KitchenState{ pendingOrders: number; readyOrders: number; }
@@ -229,6 +331,44 @@ function useElapsed(iso: string) {
   return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}h`;
 }
 
+// ── POS Webhook → Real-Time Inventory Sync Hook ───────────────────────────────
+function usePosEventSync(
+  onDelta: (delta: { provider: string; eventType: string; cigarsConsumed: number; spiritsDepleted: string[] }) => void
+) {
+  const lastSeen = useRef<string>(new Date(Date.now() - 30_000).toISOString());
+  const cbRef    = useRef(onDelta);
+  useEffect(() => { cbRef.current = onDelta; }, [onDelta]);
+  useEffect(() => {
+    let active = true;
+    const poll = async () => {
+      if (!active) return;
+      try {
+        const events = await api.posEvents(lastSeen.current);
+        if (events.length === 0) return;
+        lastSeen.current = events[0]!.createdAt;
+        let cigarsConsumed = 0;
+        const spiritsDepleted: string[] = [];
+        const provider  = events[0]!.provider;
+        const eventType = events[0]!.eventType;
+        events.forEach(evt => {
+          const payload = evt.rawPayload ?? {};
+          const items = (payload["items"] as Array<{ category?: string; qty?: number; quantity?: number; name?: string }>) ?? [];
+          items.forEach(item => {
+            const qty = Math.max(1, Number(item.qty ?? item.quantity ?? 1));
+            const cat = String(item.category ?? "").toLowerCase();
+            if (cat.includes("cigar") || cat.includes("smoke")) { cigarsConsumed += qty; }
+            else if (cat.includes("spirit") || cat.includes("liquor") || cat.includes("whiskey")) { spiritsDepleted.push(String(item.name ?? "Spirit")); }
+          });
+        });
+        if (cigarsConsumed > 0 || spiritsDepleted.length > 0) cbRef.current({ provider, eventType, cigarsConsumed, spiritsDepleted });
+      } catch { /* kiosk resilience */ }
+    };
+    const id = setInterval(poll, 5_000);
+    poll();
+    return () => { active = false; clearInterval(id); };
+  }, []);
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function VIP() {
   return <span style={{ background:`linear-gradient(135deg,${C.gold},#A67C00)`, color:"#000", fontSize:9, fontWeight:900, letterSpacing:"0.16em", padding:"2px 7px", borderRadius:3 }}>VIP</span>;
@@ -305,11 +445,16 @@ function NavRail({ onBack }: { onBack: () => void }) {
 }
 
 // ── Column 1: Telemetry ───────────────────────────────────────────────────────
-function TelemetryCol({ tel, thresh, onKitchenReady }: {
+function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, onOpenReservations, onGenerateOrder }: {
   tel: VenueState["telemetry"];
   thresh: ReturnType<typeof useThresholds>;
   onKitchenReady: () => void;
+  onOpenMapper: () => void;
+  onOpenStaff: () => void;
+  onOpenReservations: () => void;
+  onGenerateOrder: (productId: string, qty: number, productName: string) => void;
 }) {
+  const [orderFlash, setOrderFlash] = useState<string | null>(null);
   const h = tel.humidor; const b = tel.bar; const k = tel.kitchen;
   const mb = (val: string, label: string, icon: string) => (
     <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.03)", border:`1px solid ${C.chrome}`, borderRadius:7, padding:"8px 10px" }}>
@@ -320,14 +465,37 @@ function TelemetryCol({ tel, thresh, onKitchenReady }: {
       </div>
     </div>
   );
+  const fireOrder = (productId: string, qty: number, name: string) => {
+    onGenerateOrder(productId, qty, name);
+    setOrderFlash(productId);
+    setTimeout(() => setOrderFlash(null), 3_000);
+  };
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden" }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
-        <div>
+        <div style={{ flex:1 }}>
           <div style={{ fontSize:13, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>REAL-TIME TELEMETRY</div>
           <div style={{ fontSize:8, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>E.A.T. CORE STATION MONITORS</div>
         </div>
+      </div>
+      <div style={{ display:"flex", gap:5, flexShrink:0 }}>
+        {[
+          { label:"POS MAPPER", icon:P.grid,     fn:onOpenMapper,       color:C.amber },
+          { label:"STAFF",      icon:P.addUser,  fn:onOpenStaff,        color:C.gold  },
+          { label:"RESERV.",    icon:P.calendar, fn:onOpenReservations, color:C.blue  },
+        ].map(btn => (
+          <motion.button key={btn.label} whileTap={{scale:0.94}} {...T}
+            onTouchStart={e => { T.onTouchStart(e); btn.fn(); }}
+            onClick={btn.fn}
+            style={{ flex:1, height:30, borderRadius:6, cursor:"pointer", background:"rgba(255,255,255,0.04)",
+              border:`1px solid ${C.chrome}`, color:btn.color, fontSize:9, fontWeight:800,
+              letterSpacing:"0.12em", fontFamily:C.sans, display:"flex", alignItems:"center",
+              justifyContent:"center", gap:4 }}>
+            <Icon d={btn.icon} size={11} color={btn.color} />
+            {btn.label}
+          </motion.button>
+        ))}
       </div>
 
       {/* HUMIDOR — qty from GET /api/products?category=cigar */}
@@ -382,16 +550,30 @@ function TelemetryCol({ tel, thresh, onKitchenReady }: {
           </div>
           <div style={{ width:48, height:72, borderRadius:7, background:`url(${IMG("pour/pour_whiskey.png")}) center/cover no-repeat,#1A0A00`, border:`1px solid ${C.chrome}` }} />
         </div>
-        {b.lowStockAlerts.map(a => (
-          <div key={a.item} style={{ display:"flex", alignItems:"center", gap:8, background:C.redLo, borderTop:`1px solid ${C.red}44`, padding:"8px 12px" }}>
-            <Icon d={P.warn} size={13} color={C.redHi} />
-            <div>
-              <div style={{ fontSize:10, fontWeight:800, color:C.redHi, letterSpacing:"0.14em" }}>LOW STOCK — {a.currentVolumePct}%</div>
-              <div style={{ fontSize:12, fontWeight:700, color:C.white }}>{a.item}</div>
-              <div style={{ fontSize:9, color:C.muted }}>{a.category}</div>
+        {b.lowStockAlerts.map(a => {
+          const pid = SKU_TO_PRODUCT[`sku_${a.item.toLowerCase().replace(/\s+/g,"_")}`] ?? "alc-001";
+          const flashed = orderFlash === pid;
+          return (
+            <div key={a.item} style={{ display:"flex", alignItems:"center", gap:8, background:C.redLo, borderTop:`1px solid ${C.red}44`, padding:"8px 12px" }}>
+              <Icon d={P.warn} size={13} color={C.redHi} />
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:10, fontWeight:800, color:C.redHi, letterSpacing:"0.14em" }}>LOW STOCK — {a.currentVolumePct}%</div>
+                <div style={{ fontSize:12, fontWeight:700, color:C.white }}>{a.item}</div>
+                <div style={{ fontSize:9, color:C.muted }}>{a.category}</div>
+              </div>
+              <motion.button whileTap={{scale:0.93}} {...T}
+                onTouchStart={e => { T.onTouchStart(e); fireOrder(pid, 6, a.item); }}
+                onClick={() => fireOrder(pid, 6, a.item)}
+                style={{ height:30, padding:"0 10px", borderRadius:5, cursor:"pointer", flexShrink:0,
+                  background:flashed?`rgba(39,174,96,0.18)`:`linear-gradient(135deg,${C.amber},#A0620F)`,
+                  border:`1px solid ${flashed?C.green:C.amber}`,
+                  color:flashed?C.green:"#000", fontSize:9, fontWeight:900,
+                  letterSpacing:"0.1em", fontFamily:C.sans }}>
+                {flashed ? "ORDERED" : "GEN ORDER"}
+              </motion.button>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* KITCHEN */}
@@ -523,10 +705,21 @@ function TableCard({ table, isActive, onSelect, onTap }: {
   const elapsed = useElapsed(table.timeStarted);
   const cur = table.items.reduce((s,i)=>s+i.price*i.qty,0);
   const isVip = table.zone.toLowerCase().includes("vip");
+  const borderColor = table.reserved ? C.gold : isActive ? C.gold : C.chrome;
   return (
     <motion.div whileTap={{scale:0.99}} onClick={onSelect}
-      animate={{ boxShadow:isActive?`0 0 20px ${C.goldGlo}`:"0 0 0 transparent" }}
-      style={{ ...panel(), border:`1px solid ${isActive?C.gold:C.chrome}`, flexShrink:0, cursor:"pointer" }}>
+      animate={{ boxShadow: table.reserved ? `0 0 18px ${C.gold}55` : isActive ? `0 0 20px ${C.goldGlo}` : "0 0 0 transparent" }}
+      style={{ ...panel(), border:`1px solid ${borderColor}`, flexShrink:0, cursor:"pointer", position:"relative" }}>
+      {table.reserved && (
+        <div style={{ position:"absolute", top:0, left:0, zIndex:10,
+          background:`linear-gradient(135deg,${C.gold}DD,#A67C00CC)`,
+          borderRadius:"8px 0 8px 0", padding:"3px 9px", display:"flex", alignItems:"center", gap:5 }}>
+          <Icon d={P.calendar} size={10} color="#000" />
+          <span style={{ fontSize:9, fontWeight:900, color:"#000", letterSpacing:"0.18em" }}>
+            RESERVED{table.reservationGuest ? ` · ${table.reservationGuest.split(" ")[0]}` : ""}
+          </span>
+        </div>
+      )}
       <div style={{ display:"grid", gridTemplateColumns:"38% 62%", height:118 }}>
         <div style={{ background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}` }} />
         <div style={{ padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
@@ -798,6 +991,362 @@ function Footer({ revenue, providers, paymentState }: {
   );
 }
 
+// ── POS Event Banner ──────────────────────────────────────────────────────────
+function PosEventBanner({ delta }: { delta: { provider: string; eventType: string; cigarsConsumed: number; spiritsDepleted: string[] } | null }) {
+  const [visible, setVisible] = useState(false);
+  const [cur, setCur] = useState(delta);
+  useEffect(() => {
+    if (!delta) return;
+    setCur(delta); setVisible(true);
+    const id = setTimeout(() => setVisible(false), 7_000);
+    return () => clearTimeout(id);
+  }, [delta]);
+  const desc = cur ? [
+    cur.cigarsConsumed > 0 ? `${cur.cigarsConsumed} cigar${cur.cigarsConsumed > 1 ? "s" : ""} deducted` : null,
+    cur.spiritsDepleted.length > 0 ? `${cur.spiritsDepleted[0]} depleted` : null,
+  ].filter(Boolean).join(" · ") : "";
+  return (
+    <AnimatePresence>
+      {visible && cur && (
+        <motion.div initial={{x:"100%",opacity:0}} animate={{x:0,opacity:1}} exit={{x:"100%",opacity:0}}
+          transition={{ type:"spring", stiffness:380, damping:34 }}
+          style={{ position:"fixed", top:62, right:18, zIndex:8500, maxWidth:340,
+            background:"rgba(8,8,10,0.97)", border:`1px solid ${C.amber}`,
+            borderRadius:10, padding:"10px 14px", boxShadow:`0 0 28px ${C.amber}44`,
+            display:"flex", alignItems:"center", gap:10 }}>
+          <motion.div animate={{ rotate:360 }} transition={{ duration:1.8, repeat:Infinity, ease:"linear" }}>
+            <Icon d={P.signal} size={16} color={C.amber} />
+          </motion.div>
+          <div>
+            <div style={{ fontSize:10, fontFamily:C.mono, color:C.amber, letterSpacing:"0.22em", textTransform:"uppercase" }}>
+              {cur.provider.toUpperCase()} — {cur.eventType}
+            </div>
+            <div style={{ fontSize:13, fontWeight:700, color:C.white, marginTop:2 }}>
+              Off-platform sale detected: {desc}
+            </div>
+            <div style={{ fontSize:10, color:C.muted, marginTop:1 }}>Inventory synced automatically</div>
+          </div>
+          <motion.button whileTap={{scale:0.9}} onClick={() => setVisible(false)}
+            style={{ marginLeft:"auto", width:22, height:22, borderRadius:"50%",
+              background:"rgba(255,255,255,0.07)", border:`1px solid ${C.chrome}`,
+              cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <Icon d={P.close2} size={12} color={C.muted} />
+          </motion.button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ── POS Menu Mapper Modal ─────────────────────────────────────────────────────
+function PosMenuMapperModal({ onClose }: { onClose: () => void }) {
+  const [mappings, setMappings] = useState<Record<string, string>>(() =>
+    Object.fromEntries(PRODUCT_CATALOG.map(p => [p.productId, ""]))
+  );
+  const [saving, setSaving] = useState<string | null>(null);
+  const [saved, setSaved]   = useState<Record<string, boolean>>({});
+
+  const saveRow = async (productId: string, name: string) => {
+    const posId = mappings[productId] ?? "";
+    if (!posId.trim()) return;
+    setSaving(productId);
+    await api.saveMapping(productId, name, posId.trim());
+    setSaved(prev => ({ ...prev, [productId]: true }));
+    setSaving(null);
+    setTimeout(() => setSaved(prev => { const n = { ...prev }; delete n[productId]; return n; }), 2500);
+  };
+
+  type CatalogEntry = typeof PRODUCT_CATALOG[number];
+  const cigars  = PRODUCT_CATALOG.filter((p): p is CatalogEntry => p.category === "Cigars");
+  const spirits = PRODUCT_CATALOG.filter((p): p is CatalogEntry => p.category === "Spirits");
+
+  const renderSection = (label: string, items: CatalogEntry[]) => (
+    <div style={{ marginBottom:18 }}>
+      <div style={{ fontSize:10, fontFamily:C.mono, color:C.amber, letterSpacing:"0.24em", marginBottom:8, paddingLeft:4 }}>{label}</div>
+      {items.map(p => (
+        <div key={p.productId + p.sku} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 14px",
+          borderBottom:`1px solid ${C.chrome}`, background: saved[p.productId] ? `rgba(39,174,96,0.06)` : "transparent" }}>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:18, fontWeight:700, color:C.white, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.name}</div>
+            <div style={{ fontSize:11, fontFamily:C.mono, color:C.muted, marginTop:2 }}>ID: {p.productId} · SKU: {p.sku}</div>
+          </div>
+          <input value={mappings[p.productId] ?? ""} onChange={e => setMappings(prev => ({ ...prev, [p.productId]: e.target.value }))}
+            placeholder="POS Item ID / Token"
+            style={{ width:180, height:38, background:"rgba(255,255,255,0.06)", border:`1px solid ${C.chrome}`,
+              borderRadius:6, color:C.white, fontSize:14, fontFamily:C.mono, padding:"0 10px", outline:"none" }} />
+          <motion.button whileTap={{scale:0.94}} {...T}
+            onTouchStart={e => { T.onTouchStart(e); saveRow(p.productId, p.name); }}
+            onClick={() => saveRow(p.productId, p.name)}
+            style={{ height:38, minWidth:80, padding:"0 14px", borderRadius:6, cursor:"pointer",
+              background: saved[p.productId] ? `rgba(39,174,96,0.18)` : `linear-gradient(135deg,${C.amber},#B87318)`,
+              border:`1px solid ${saved[p.productId] ? C.green : C.amber}`,
+              color: saved[p.productId] ? C.green : "#000", fontSize:13, fontWeight:800, fontFamily:C.sans }}>
+            {saving === p.productId ? "..." : saved[p.productId] ? "SAVED" : "SAVE"}
+          </motion.button>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+      style={{ position:"fixed", inset:0, zIndex:9100, display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.88)", backdropFilter:"blur(14px)" }} onClick={onClose} />
+      <motion.div initial={{scale:0.93,y:24}} animate={{scale:1,y:0}} exit={{scale:0.93,y:24}}
+        style={{ position:"relative", zIndex:1, width:720, maxHeight:"88vh", background:"rgba(5,5,7,0.99)",
+          border:`1px solid ${C.amber}`, borderRadius:14, overflow:"hidden", display:"flex", flexDirection:"column",
+          boxShadow:`0 0 70px ${C.amber}33` }}>
+        <div style={{ padding:"16px 22px", borderBottom:`1px solid ${C.chrome}`, display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0 }}>
+          <div>
+            <div style={{ fontFamily:C.mono, fontSize:9, color:C.amber, letterSpacing:"0.28em" }}>VENUE CONFIG MATRIX</div>
+            <div style={{ fontSize:22, fontWeight:900, color:C.white, marginTop:3 }}>POS MENU MAPPER</div>
+            <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>Link internal product IDs to your active POS provider item tokens</div>
+          </div>
+          <motion.button whileTap={{scale:0.9}} onClick={onClose} {...T}
+            style={{ width:36, height:36, borderRadius:9, background:"rgba(255,255,255,0.05)", border:`1px solid ${C.chrome}`,
+              cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <Icon d={P.close2} size={18} color={C.muted} />
+          </motion.button>
+        </div>
+        <div style={{ padding:"14px 0", overflowY:"auto", flex:1 }}>
+          {renderSection("— HUMIDOR CATALOG", cigars)}
+          {renderSection("— BAR CATALOG", spirits)}
+        </div>
+        <div style={{ padding:"12px 22px", borderTop:`1px solid ${C.chrome}`, flexShrink:0, display:"flex", alignItems:"center", gap:10 }}>
+          <Icon d={P.grid} size={14} color={C.muted} />
+          <span style={{ fontSize:11, color:C.muted }}>
+            Mappings saved to <span style={{ color:C.amber, fontFamily:C.mono }}>pos_menu_mappings</span> table · Active POS: Clover / Toast / Square
+          </span>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Staff Deployment Roster Modal ─────────────────────────────────────────────
+const STAFF_SEED: StaffMember[] = [
+  { staffId: "s1", staffName: "Alex R.",    assignedSection: "VIP Section",  assignedTables: "101,102", isActive: true },
+  { staffId: "s2", staffName: "Jasmine L.", assignedSection: "Main Floor",   assignedTables: "103,104", isActive: true },
+  { staffId: "s3", staffName: "Marco B.",   assignedSection: "Bar",          assignedTables: null,      isActive: true },
+  { staffId: "s4", staffName: "Tanya G.",   assignedSection: "All Sections", assignedTables: null,      isActive: true },
+  { staffId: "s5", staffName: "Devon H.",   assignedSection: "Entrance",     assignedTables: null,      isActive: true },
+];
+
+function StaffRosterModal({ onClose }: { onClose: () => void }) {
+  const [staff, setStaff]           = useState<StaffMember[]>(STAFF_SEED);
+  const [newName, setNewName]       = useState("");
+  const [newPin, setNewPin]         = useState("");
+  const [newSection, setNewSection] = useState("");
+  const [adding, setAdding]         = useState(false);
+  const [error, setError]           = useState<string | null>(null);
+
+  useEffect(() => { api.staffRoster().then(rows => { if (rows.length > 0) setStaff(rows); }); }, []);
+
+  const toggleActive = async (member: StaffMember) => {
+    const next = !member.isActive;
+    setStaff(prev => prev.map(s => s.staffId === member.staffId ? { ...s, isActive: next } : s));
+    api.patchStaff(member.staffId, { isActive: next });
+  };
+
+  const addMember = async () => {
+    if (!newName.trim()) { setError("Name required"); return; }
+    if (!/^\d{4}$/.test(newPin)) { setError("PIN must be 4 digits"); return; }
+    setAdding(true); setError(null);
+    const local: StaffMember = { staffId:`local_${Date.now()}`, staffName:newName.trim(),
+      assignedSection:newSection.trim()||null, assignedTables:null, isActive:true };
+    setStaff(prev => [...prev, local]);
+    const result = await api.addStaff({ staffName:newName.trim(), staffPin:newPin, assignedSection:newSection.trim()||undefined });
+    if (result) setStaff(prev => prev.map(s => s.staffId === local.staffId ? result : s));
+    setNewName(""); setNewPin(""); setNewSection(""); setAdding(false);
+  };
+
+  const SECTIONS = ["VIP Section","Main Floor","Bar","Outdoor","Entrance","All Sections"];
+
+  return (
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+      style={{ position:"fixed", inset:0, zIndex:9200, display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.88)", backdropFilter:"blur(14px)" }} onClick={onClose} />
+      <motion.div initial={{scale:0.93,y:24}} animate={{scale:1,y:0}} exit={{scale:0.93,y:24}}
+        style={{ position:"relative", zIndex:1, width:680, maxHeight:"88vh", background:"rgba(5,5,7,0.99)",
+          border:`1px solid ${C.gold}`, borderRadius:14, overflow:"hidden", display:"flex", flexDirection:"column",
+          boxShadow:`0 0 70px ${C.goldGlo}` }}>
+        <div style={{ padding:"16px 22px", borderBottom:`1px solid ${C.chrome}`, display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0 }}>
+          <div>
+            <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.28em" }}>SUPERVISOR DECK</div>
+            <div style={{ fontSize:22, fontWeight:900, color:C.white, marginTop:3 }}>STAFF DEPLOYMENT ROSTER</div>
+          </div>
+          <motion.button whileTap={{scale:0.9}} onClick={onClose} {...T}
+            style={{ width:36, height:36, borderRadius:9, background:"rgba(255,255,255,0.05)", border:`1px solid ${C.chrome}`,
+              cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <Icon d={P.close2} size={18} color={C.muted} />
+          </motion.button>
+        </div>
+        <div style={{ flex:1, overflowY:"auto" }}>
+          {staff.map((member, idx) => (
+            <div key={member.staffId} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 22px",
+              borderBottom:idx < staff.length-1 ? `1px solid ${C.chrome}` : "none", opacity:member.isActive?1:0.45 }}>
+              <div style={{ width:44, height:44, borderRadius:"50%", flexShrink:0,
+                background:`linear-gradient(135deg,${C.chrome},#1A1A1A)`, border:`2px solid ${member.isActive?C.gold:C.chrome}`,
+                display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <Icon d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" size={24} color={member.isActive?C.gold:C.muted} />
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:18, fontWeight:700, color:C.white }}>{member.staffName}</div>
+                <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>
+                  {member.assignedSection ?? "No section assigned"}
+                  {member.assignedTables ? ` · Tables: ${member.assignedTables}` : ""}
+                </div>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ fontSize:11, color:member.isActive?C.green:C.muted, fontFamily:C.mono }}>
+                  {member.isActive ? "ACTIVE" : "INACTIVE"}
+                </span>
+                <motion.div whileTap={{scale:0.92}} onClick={() => toggleActive(member)}
+                  style={{ width:52, height:28, borderRadius:14, cursor:"pointer",
+                    background:member.isActive?`linear-gradient(90deg,${C.green},#1E8449)`:"rgba(255,255,255,0.08)",
+                    border:`1px solid ${member.isActive?C.green:C.chrome}`,
+                    display:"flex", alignItems:"center", padding:"0 4px",
+                    justifyContent:member.isActive?"flex-end":"flex-start" }}>
+                  <motion.div layout style={{ width:20, height:20, borderRadius:"50%", background:member.isActive?"#FFF":C.chrome }} />
+                </motion.div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding:"16px 22px", borderTop:`1px solid ${C.chrome}`, flexShrink:0 }}>
+          <div style={{ fontSize:10, fontFamily:C.mono, color:C.gold, letterSpacing:"0.22em", marginBottom:10 }}>ADD STAFF MEMBER</div>
+          {error && <div style={{ fontSize:13, color:C.redHi, marginBottom:8 }}>{error}</div>}
+          <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+            <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Full Name"
+              style={{ flex:2, minWidth:140, height:44, background:"rgba(255,255,255,0.06)", border:`1px solid ${C.chrome}`,
+                borderRadius:7, color:C.white, fontSize:18, padding:"0 12px", outline:"none", fontFamily:C.sans }} />
+            <input value={newPin} onChange={e => setNewPin(e.target.value.replace(/\D/g,"").slice(0,4))} placeholder="4-digit PIN" type="password"
+              style={{ width:120, height:44, background:"rgba(255,255,255,0.06)", border:`1px solid ${C.chrome}`,
+                borderRadius:7, color:C.white, fontSize:18, padding:"0 12px", outline:"none", fontFamily:C.mono, letterSpacing:"0.2em" }} />
+            <select value={newSection} onChange={e => setNewSection(e.target.value)}
+              style={{ flex:1, minWidth:140, height:44, background:"rgba(10,10,10,0.95)", border:`1px solid ${C.chrome}`,
+                borderRadius:7, color:newSection?C.white:C.muted, fontSize:16, padding:"0 10px", outline:"none", fontFamily:C.sans }}>
+              <option value="">Select Section</option>
+              {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <motion.button whileTap={{scale:0.96}} {...T}
+              onTouchStart={e => { T.onTouchStart(e); addMember(); }} onClick={addMember}
+              style={{ height:44, padding:"0 20px", borderRadius:7, background:`linear-gradient(135deg,${C.gold},#A67C00)`,
+                border:"none", color:"#000", fontSize:16, fontWeight:900, cursor:"pointer", fontFamily:C.sans,
+                opacity:adding?0.6:1, minWidth:100 }}>
+              {adding ? "ADDING..." : "ADD STAFF"}
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Reservation → Table Assignment Panel ──────────────────────────────────────
+function ReservationPanel({
+  reservations, onClose, onAssign,
+}: {
+  reservations: LocalReservation[];
+  onClose: () => void;
+  onAssign: (resId: string, tableId: number, guestName: string) => void;
+}) {
+  const [selectedRes, setSelectedRes] = useState<LocalReservation | null>(null);
+  const AVAILABLE_TABLES = [101, 102, 103, 104, 105, 106];
+  const statusColor = (s: LocalReservation["status"]) =>
+    s === "accepted" ? C.green : s === "pending" ? C.amber : C.muted;
+
+  return (
+    <motion.div initial={{x:"100%"}} animate={{x:0}} exit={{x:"100%"}}
+      transition={{ type:"spring", stiffness:320, damping:34 }}
+      style={{ position:"fixed", top:50, right:0, bottom:116, zIndex:8200, width:380,
+        background:"rgba(4,4,6,0.98)", border:`1px solid ${C.chrome}`, borderLeft:`2px solid ${C.gold}`,
+        display:"flex", flexDirection:"column", overflow:"hidden" }}>
+      <div style={{ padding:"14px 18px", borderBottom:`1px solid ${C.chrome}`, display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0 }}>
+        <div>
+          <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.26em" }}>TABLE OVERVIEW MATRIX</div>
+          <div style={{ fontSize:20, fontWeight:900, color:C.white, marginTop:2 }}>RESERVATION QUEUE</div>
+        </div>
+        <motion.button whileTap={{scale:0.9}} onClick={onClose} {...T}
+          style={{ width:34, height:34, borderRadius:8, background:"rgba(255,255,255,0.05)", border:`1px solid ${C.chrome}`,
+            cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <Icon d={P.close2} size={16} color={C.muted} />
+        </motion.button>
+      </div>
+      <div style={{ flex:1, overflowY:"auto", padding:"10px 0" }}>
+        {reservations.map((res, idx) => (
+          <motion.div key={res.id} whileTap={{scale:0.98}}
+            onClick={() => setSelectedRes(selectedRes?.id === res.id ? null : res)}
+            style={{ padding:"12px 18px", borderBottom:idx < reservations.length-1 ? `1px solid ${C.chrome}` : "none",
+              cursor:"pointer", background:selectedRes?.id===res.id?`rgba(212,175,55,0.08)`:"transparent",
+              borderLeft:selectedRes?.id===res.id?`3px solid ${C.gold}`:"3px solid transparent" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:18, fontWeight:700, color:C.white }}>{res.guestName}</div>
+                <div style={{ fontSize:12, color:C.muted, marginTop:3 }}>
+                  Party of {res.partySize} · {res.requestedAt}
+                  {res.productName ? ` · ${res.productName}` : ""}
+                </div>
+                {res.tableAssigned && (
+                  <div style={{ fontSize:11, color:C.green, marginTop:4, fontFamily:C.mono }}>
+                    TABLE {res.tableAssigned} — ASSIGNED
+                  </div>
+                )}
+              </div>
+              <span style={{ fontSize:10, fontWeight:800, color:statusColor(res.status),
+                border:`1px solid ${statusColor(res.status)}44`, borderRadius:4,
+                padding:"3px 8px", letterSpacing:"0.14em", flexShrink:0, marginLeft:10 }}>
+                {res.status.toUpperCase()}
+              </span>
+            </div>
+            <AnimatePresence>
+              {selectedRes?.id === res.id && !res.tableAssigned && (
+                <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}}
+                  style={{ overflow:"hidden" }}>
+                  <div style={{ paddingTop:12 }}>
+                    <div style={{ fontSize:10, fontFamily:C.mono, color:C.amber, letterSpacing:"0.22em", marginBottom:8 }}>
+                      SELECT TABLE TO ASSIGN:
+                    </div>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
+                      {AVAILABLE_TABLES.map(tid => (
+                        <motion.button key={tid} whileTap={{scale:0.91}} {...T}
+                          onTouchStart={e => { T.onTouchStart(e); onAssign(res.id, tid, res.guestName); setSelectedRes(null); }}
+                          onClick={() => { onAssign(res.id, tid, res.guestName); setSelectedRes(null); }}
+                          style={{ width:58, height:58, borderRadius:8, cursor:"pointer",
+                            background:`linear-gradient(135deg,${C.goldDim},rgba(212,175,55,0.05))`,
+                            border:`2px solid ${C.gold}`, color:C.gold, fontSize:22, fontWeight:900,
+                            fontFamily:C.sans, display:"flex", flexDirection:"column",
+                            alignItems:"center", justifyContent:"center", gap:2 }}>
+                          <span style={{ fontSize:18, fontWeight:900 }}>{tid}</span>
+                          <span style={{ fontSize:8, letterSpacing:"0.12em", color:C.amber }}>TBL</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        ))}
+      </div>
+      <div style={{ padding:"10px 18px", borderTop:`1px solid ${C.chrome}`, flexShrink:0, background:C.dark }}>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
+          {[
+            { l:"TOTAL",    v:String(reservations.length) },
+            { l:"ACCEPTED", v:String(reservations.filter(r => r.status==="accepted").length) },
+            { l:"SEATED",   v:String(reservations.filter(r => r.tableAssigned!==null).length) },
+          ].map(s => (
+            <div key={s.l} style={{ textAlign:"center" }}>
+              <div style={{ fontSize:20, fontWeight:900, color:C.amber }}>{s.v}</div>
+              <div style={{ fontSize:8, color:C.muted, letterSpacing:"0.18em" }}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Payment Toast ─────────────────────────────────────────────────────────────
 function PaymentToast({ state, total }: { state: PaymentState; total: number }) {
   return (
@@ -832,6 +1381,53 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
   const [paymentState, setPaymentState] = useState<PaymentState>("idle");
   const [lastPayTotal, setLastPayTotal] = useState(0);
   const syncAge = Math.floor((Date.now() - venueState.lastSyncAt.getTime()) / 60_000);
+
+  // ── New operational panel state ────────────────────────────────────────────
+  const [showMapper,       setShowMapper]       = useState(false);
+  const [showStaffRoster,  setShowStaffRoster]  = useState(false);
+  const [showReservations, setShowReservations] = useState(false);
+  const [reservations, setReservations] = useState<LocalReservation[]>(SEED_RESERVATIONS);
+  const [lastWebhookDelta, setLastWebhookDelta] = useState<{
+    provider: string; eventType: string; cigarsConsumed: number; spiritsDepleted: string[];
+  } | null>(null);
+  const [orderToastMsg, setOrderToastMsg] = useState<string | null>(null);
+
+  // ── Webhook delta handler ──────────────────────────────────────────────────
+  const handleWebhookDelta = useCallback((delta: { provider: string; eventType: string; cigarsConsumed: number; spiritsDepleted: string[] }) => {
+    setLastWebhookDelta(delta);
+    if (delta.cigarsConsumed > 0) {
+      setVenueState(prev => ({
+        ...prev,
+        telemetry: {
+          ...prev.telemetry,
+          humidor: {
+            ...prev.telemetry.humidor,
+            purosRemaining: Math.max(0, prev.telemetry.humidor.purosRemaining - delta.cigarsConsumed),
+          },
+        },
+      }));
+    }
+  }, []);
+  usePosEventSync(handleWebhookDelta);
+
+  // ── Generate purchase order ────────────────────────────────────────────────
+  const generateOrder = useCallback(async (productId: string, qty: number, productName: string) => {
+    const result = await api.generateOrder(productId, qty);
+    const label = result ? `PO #${result.id.slice(0,8).toUpperCase()} — ${productName} (qty ${qty}) submitted` : `Order queued for ${productName}`;
+    setOrderToastMsg(label);
+    setTimeout(() => setOrderToastMsg(null), 5_000);
+  }, []);
+
+  // ── Assign reservation → table ─────────────────────────────────────────────
+  const assignReservation = useCallback((resId: string, tableId: number, guestName: string) => {
+    setReservations(prev => prev.map(r => r.id === resId ? { ...r, tableAssigned: tableId, status: "fulfilled" as const } : r));
+    setVenueState(prev => {
+      const updated = { ...prev.activeTables };
+      if (updated[tableId]) updated[tableId] = { ...updated[tableId]!, reserved: true, reservationGuest: guestName };
+      return { ...prev, activeTables: updated };
+    });
+    setShowReservations(false);
+  }, []);
 
   const refreshInventory = useCallback(async () => {
     const [cigars, spirits] = await Promise.all([
@@ -952,7 +1548,15 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
       <div style={{ flex:1, display:"flex", overflow:"hidden", position:"relative", zIndex:1 }}>
         <NavRail onBack={back} />
         <div style={{ flex:1, display:"grid", gridTemplateColumns:"1fr 1.15fr 1fr", gap:10, padding:"10px 12px 10px 10px", overflow:"hidden" }}>
-          <TelemetryCol tel={venueState.telemetry} thresh={thresholds} onKitchenReady={kitchenReady} />
+          <TelemetryCol
+            tel={venueState.telemetry}
+            thresh={thresholds}
+            onKitchenReady={kitchenReady}
+            onOpenMapper={() => setShowMapper(true)}
+            onOpenStaff={() => setShowStaffRoster(true)}
+            onOpenReservations={() => setShowReservations(true)}
+            onGenerateOrder={generateOrder}
+          />
           <TicketsCol state={venueState} revenue={revenue} onSelect={selectTable} onUpdate={updateTableItems} />
           <LedgerCol  state={venueState} revenue={revenue} onRemove={removeItem} onProcessPayment={processPayment} />
         </div>
@@ -961,6 +1565,38 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
         <Footer revenue={revenue} providers={providers} paymentState={paymentState} />
       </div>
       <PaymentToast state={paymentState} total={lastPayTotal} />
+
+      {/* ── Operational Panel Layer ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showReservations && (
+          <ReservationPanel
+            reservations={reservations}
+            onClose={() => setShowReservations(false)}
+            onAssign={assignReservation}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showMapper && <PosMenuMapperModal onClose={() => setShowMapper(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showStaffRoster && <StaffRosterModal onClose={() => setShowStaffRoster(false)} />}
+      </AnimatePresence>
+      <PosEventBanner delta={lastWebhookDelta} />
+
+      {/* ── Purchase Order Toast ────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {orderToastMsg && (
+          <motion.div initial={{y:40,opacity:0}} animate={{y:0,opacity:1}} exit={{y:40,opacity:0}}
+            style={{ position:"fixed", bottom:130, left:"50%", transform:"translateX(-50%)", zIndex:9000,
+              background:"rgba(5,5,7,0.97)", border:`1px solid ${C.green}`,
+              borderRadius:10, padding:"12px 22px", boxShadow:`0 0 30px rgba(39,174,96,0.35)`,
+              display:"flex", alignItems:"center", gap:10, maxWidth:480, textAlign:"center" }}>
+            <Icon d={P.box} size={18} color={C.green} />
+            <span style={{ fontSize:15, fontWeight:700, color:C.white }}>{orderToastMsg}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
