@@ -80,10 +80,30 @@ const GOLD = "#D4AF37";
 const IMG  = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
 const HERO_POOL: Record<string, string[]> = {
-  smoke: [IMG("cigar_hero.png"), IMG("scenes/craft-hub.jpg"), IMG("scenes/smoke-lounge-1.jpg")],
-  pour:  [IMG("scenes/spirits-bar.jpg"), IMG("scenes/craft-hub.jpg")],
-  beer:  [IMG("scenes/brew-taproom.jpg"), IMG("scenes/craft-hub.jpg")],
-  vape:  [IMG("scenes/vape-lounge.jpg"), IMG("scenes/craft-hub.jpg")],
+  smoke: [
+    "https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1559056961-1f3b601c9b60?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1600&q=85",
+  ],
+  pour: [
+    "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1560512823-829485b8bf24?auto=format&fit=crop&w=1600&q=85",
+  ],
+  beer: [
+    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1536700503279-b8f893bd8a9e?auto=format&fit=crop&w=1600&q=85",
+  ],
+  wine: [
+    "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1600&q=85",
+  ],
+  vape: [
+    "https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1559056961-1f3b601c9b60?auto=format&fit=crop&w=1600&q=85",
+  ],
 };
 
 function playTactile() {
@@ -159,7 +179,7 @@ export default function CraftPortalHome() {
     if (heroTimer.current) clearInterval(heroTimer.current);
     heroTimer.current = setInterval(() => {
       setHeroIdx(i => (i + 1) % (HERO_POOL[activeCraft]?.length ?? 1));
-    }, 5500);
+    }, 6000);
     return () => { if (heroTimer.current) clearInterval(heroTimer.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCraft]);
@@ -201,7 +221,7 @@ export default function CraftPortalHome() {
             const pool = HERO_POOL[activeCraft] ?? HERO_POOL.smoke!;
             setHeroIdx(i => dx < 0 ? (i + 1) % pool.length : (i - 1 + pool.length) % pool.length);
             if (heroTimer.current) clearInterval(heroTimer.current);
-            heroTimer.current = setInterval(() => setHeroIdx(i => (i + 1) % pool.length), 5500);
+            heroTimer.current = setInterval(() => setHeroIdx(i => (i + 1) % pool.length), 6000);
           }
         }}
       >

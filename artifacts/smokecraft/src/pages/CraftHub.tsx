@@ -264,29 +264,29 @@ function IntelStatusBar() {
 // ── Per-genre scene image pools — strictly isolated, no cross-bleed ──────────
 
 const TILE_BG: Record<string, string[]> = {
-  // SmokeCraft: cigar, humidor, lounge atmosphere only
+  // SmokeCraft: cigar lounge atmosphere — sophisticated people in leather chairs, amber lighting, premium rituals
   smoke: [
-    "/images/craft/smoke-1.png",
-    "/images/craft/smoke-2.png",
-    "/images/craft/smoke-3.png",
+    "https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1559056961-1f3b601c9b60?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1600&q=85",
   ],
-  // PourCraft: spirits, bar, glassware only
+  // PourCraft: elite spirits, master mixology, VIP bar scenes
   pour: [
-    "/images/craft/pour-1.png",
-    "/images/craft/pour-2.png",
-    "/images/craft/pour-3.png",
+    "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1560512823-829485b8bf24?auto=format&fit=crop&w=1600&q=85",
   ],
-  // BeerCraft: taproom, drafts, craft brewery only
+  // BeerCraft: artisanal taproom, rooftop brewery, craft draft culture
   brew: [
-    "/images/craft/brew-1.png",
-    "/images/craft/brew-2.png",
-    "/images/craft/brew-3.png",
+    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1536700503279-b8f893bd8a9e?auto=format&fit=crop&w=1600&q=85",
   ],
-  // WineCraft: cellar, vineyard, crystal service only
+  // WineCraft: stone-walled cellar, sommelier service, intimate date-night
   wine: [
-    "/images/craft/wine-1.png",
-    "/images/craft/wine-2.png",
-    "/images/craft/wine-3.png",
+    "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1600&q=85",
+    "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1600&q=85",
   ],
 };
 
@@ -476,7 +476,7 @@ function CraftCard({
     timerRef.current = setInterval(() => {
       setSceneIdx(i => (i + 1) % pool.length);
       setImgError(false);
-    }, 5500);
+    }, 6000);
   };
 
   useEffect(() => {
@@ -706,6 +706,47 @@ function CraftCard({
           </motion.div>
         )}
       </div>
+
+      {/* ── COMING SOON overlay — secondary tiles only ── */}
+      {!isPrimary && (
+        <div style={{
+          position:             "absolute",
+          top:                  0, left: 0, right: 0, bottom: 0,
+          zIndex:               8,
+          pointerEvents:        "none",
+          display:              "flex",
+          flexDirection:        "column",
+          alignItems:           "center",
+          justifyContent:       "center",
+          background:           "rgba(0,0,0,0.38)",
+          backdropFilter:       "blur(2px)",
+          WebkitBackdropFilter: "blur(2px)",
+        }}>
+          <div style={{
+            display:              "flex",
+            alignItems:           "center",
+            gap:                  8,
+            background:           "rgba(0,0,0,0.72)",
+            backdropFilter:       "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            border:               "1px solid rgba(184,138,0,0.40)",
+            borderRadius:         6,
+            padding:              "6px 16px",
+          }}>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#B88A00", opacity: 0.7 }} />
+            <span style={{
+              fontSize:      10,
+              fontWeight:    800,
+              letterSpacing: "0.30em",
+              color:         "#B88A00",
+              textTransform: "uppercase" as const,
+              fontFamily:    "inherit",
+            }}>
+              COMING SOON
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* ── Razor-thin genre accent border ring ── */}
       <GlowRing color={genre.accent} />
