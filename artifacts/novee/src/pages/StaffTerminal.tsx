@@ -727,7 +727,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
     </div>
   );
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", flexBasis:"22%", flexShrink:0, flexGrow:0 }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", width:340, flexShrink:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
         <div style={{ flex:1 }}>
@@ -1134,7 +1134,7 @@ function TableCard({ table, isActive, onSelect, onTap }: {
         </div>
       )}
       <div style={{ display:"flex", height:118, overflow:"hidden" }}>
-        <div style={{ width:100, flexShrink:0, background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}` }} />
+        <div style={{ width:140, flexShrink:0, background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}` }} />
         <div style={{ flex:1, minWidth:0, padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"space-between", overflow:"hidden" }}>
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:3 }}>
@@ -1165,10 +1165,11 @@ function TableCard({ table, isActive, onSelect, onTap }: {
   );
 }
 
-function TicketsCol({ state, revenue, onSelect, onUpdate }: {
+function TicketsCol({ state, revenue, onSelect, onUpdate, onAddTable }: {
   state: VenueState; revenue: ReturnType<typeof useRevenueEngine>;
   onSelect:(id:number)=>void;
   onUpdate:(tableId:number, items:VenueItem[], mutations:{id:string;qty:number}[])=>void;
+  onAddTable:()=>void;
 }) {
   const [filter,       setFilter]       = useState<FilterTab>("ALL TABLES");
   const [tapTable,     setTapTable]     = useState<VenueTable|null>(null);
@@ -1176,7 +1177,7 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
   const all = Object.values(state.activeTables);
   const list = filter==="ALL TABLES" ? all : all.filter(t => t.zone.toUpperCase().includes(filter.replace(" SECTION","").replace(" FLOOR","").replace(" LOUNGE","")));
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flex:1, minWidth:0 }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flex:1, minWidth:0, overflowX:"hidden" }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={2} />
         <div>
@@ -1191,6 +1192,17 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
         ))}
         <div style={{ marginLeft:"auto" }}><Icon d={P.filter} size={16} color={C.muted} /></div>
       </div>
+      <motion.button whileTap={{scale:0.97}} onClick={onAddTable}
+        style={{ height:58, width:"100%", marginBottom:10, flexShrink:0,
+          background:`linear-gradient(135deg,rgba(212,175,55,0.18),rgba(212,175,55,0.08))`,
+          border:`2px solid ${C.gold}`, borderRadius:8, color:C.gold,
+          fontSize:18, fontWeight:900, letterSpacing:"0.10em", fontFamily:C.sans,
+          display:"flex", alignItems:"center", justifyContent:"center", gap:10,
+          cursor:"pointer", boxShadow:`0 0 22px ${C.goldGlo}`,
+          textTransform:"uppercase" as const }}>
+        <Icon d={P.addUser} size={18} color={C.gold} />
+        ➕ OPEN NEW TICKET / TABLE
+      </motion.button>
       <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", gap:7 }}>
         {list.map(t => (
           <TableCard key={t.id} table={t} isActive={t.id===state.selectedTableId}
@@ -1240,7 +1252,7 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
   const { subtotal, tax, total } = revenue.tableRevenue(state.selectedTableId);
   const isVip = table.zone.toLowerCase().includes("vip");
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flexBasis:"34%", flexShrink:0, flexGrow:0 }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", width:480, flexShrink:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={3} />
         <div>
@@ -1487,10 +1499,10 @@ function CoachingBadge({ coaching }: { coaching: CoachingSuggestion | null }) {
         boxShadow: `0 0 22px ${coaching.accent}22` }}>
       <div style={{ padding: "7px 12px 0",
         display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ fontFamily: C.mono, fontSize: 8, color: C.muted, letterSpacing: "0.22em" }}>
+        <div style={{ fontFamily: C.mono, fontSize: 12, color: C.muted, letterSpacing: "0.22em" }}>
           AI CONTEXT ENGINE
         </div>
-        <div style={{ fontSize: 8, fontWeight: 800, letterSpacing: "0.16em", fontFamily: C.mono,
+        <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.16em", fontFamily: C.mono,
           color: coaching.accent, border: `1px solid ${coaching.accent}55`,
           borderRadius: 4, padding: "2px 6px" }}>
           {coaching.tag}
@@ -2774,6 +2786,26 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
     });
   }, []);
 
+  const addNewTable = useCallback(() => {
+    setVenueState(prev => {
+      const ids = Object.keys(prev.activeTables).map(Number);
+      const newId = ids.length > 0 ? Math.max(...ids) + 1 : 200;
+      const newTable: VenueTable = {
+        id: newId,
+        guest: "Walk-in Guest",
+        zone: "Main Floor",
+        timeStarted: new Date().toISOString(),
+        items: [],
+        reserved: false,
+      };
+      return {
+        ...prev,
+        activeTables: { ...prev.activeTables, [newId]: newTable },
+        selectedTableId: newId,
+      };
+    });
+  }, []);
+
   const kitchenReady = useCallback(() => {
     setVenueState(prev => ({
       ...prev,
@@ -2870,7 +2902,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
             onGenerateOrder={generateOrder}
             activeTables={venueState.activeTables}
           />
-          <TicketsCol state={venueState} revenue={revenue} onSelect={selectTable} onUpdate={updateTableItems} />
+          <TicketsCol state={venueState} revenue={revenue} onSelect={selectTable} onUpdate={updateTableItems} onAddTable={addNewTable} />
           <LedgerCol  state={venueState} revenue={revenue} onRemove={removeItem} onProcessPayment={processPayment} coaching={coaching} />
       </div>
       <div style={{ position:"relative", zIndex:2 }}>
