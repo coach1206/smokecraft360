@@ -80,6 +80,7 @@ const NAV_ITEMS = [
   { id: "analytics",    label: "Analytics",            desc: "Revenue & swipe insights",    icon: Activity,        route: "/analytics",               group: "venue" },
   { id: "orders",       label: "Orders",               desc: "Live order management",       icon: CalendarDays,    route: "/orders",                  group: "venue" },
   { id: "settings",     label: "Settings",             desc: "System configuration",        icon: Settings,        route: "/settings",                group: "venue" },
+  { id: "venue-config", label: "Venue Config Matrix",  desc: "Floor · Assets · Integration", icon: Building2,       route: "/operations",              group: "venue" },
 ];
 
 // ── Engine status colors ──────────────────────────────────────────────────────
@@ -416,6 +417,284 @@ function VenueStateCard({ venueState, kpis }: { venueState: any; kpis: any }) {
   );
 }
 
+// ── Venue Config Matrix ────────────────────────────────────────────────────────
+
+const POS_PROVIDERS = ["Toast", "Clover", "Lightspeed", "Square", "Custom"] as const;
+type PosProvider = typeof POS_PROVIDERS[number];
+
+function VenueConfigPanel() {
+  const [vcTab, setVcTab]             = useState<"floor" | "assets" | "integrations">("floor");
+  const [tables, setTables]           = useState<Record<string, number>>({});
+  const [tableCounter, setTableCounter] = useState(1);
+  const [hoveredCell, setHoveredCell] = useState<string | null>(null);
+  const [assetCraft, setAssetCraft]   = useState<"cigar" | "spirit" | "beer">("cigar");
+  const [posProvider, setPosProvider] = useState<PosProvider>("Toast");
+  const [webhookUrl, setWebhookUrl]   = useState("");
+  const [apiKey, setApiKey]           = useState("");
+  const [testStatus, setTestStatus]   = useState<"idle" | "testing" | "ok" | "fail">("idle");
+  const [zoneName, setZoneName]       = useState("Main Floor");
+  const [zones, setZones]             = useState([
+    { name: "Main Floor", color: T.gold },
+    { name: "VIP Lounge", color: T.purple },
+    { name: "Bar Zone",   color: T.green  },
+  ]);
+
+  const ROWS = 6, COLS = 10;
+
+  const toggleCell = (key: string) => {
+    setTables(prev => {
+      if (prev[key]) {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      }
+      const n = tableCounter;
+      setTableCounter(c => c + 1);
+      return { ...prev, [key]: n };
+    });
+  };
+
+  const testConnection = async () => {
+    setTestStatus("testing");
+    await new Promise(r => setTimeout(r, 1400));
+    setTestStatus(webhookUrl ? "ok" : "fail");
+    setTimeout(() => setTestStatus("idle"), 3000);
+  };
+
+  const fieldStyle: React.CSSProperties = {
+    width: "100%", boxSizing: "border-box",
+    background: "rgba(255,255,255,0.03)", border: `1px solid ${T.border}`,
+    borderRadius: 7, padding: "9px 12px",
+    color: T.text, fontFamily: "'Inter',sans-serif", fontSize: 14, outline: "none",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 11, fontWeight: 700, color: T.textMuted,
+    letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 6, display: "block",
+  };
+
+  return (
+    <div>
+      {/* Sub-tab bar */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+        {(["floor", "assets", "integrations"] as const).map(t => (
+          <button key={t} onClick={() => setVcTab(t)}
+            style={{
+              padding: "8px 18px", borderRadius: 8, cursor: "pointer",
+              background: vcTab === t ? `rgba(0,128,255,0.16)` : "rgba(255,255,255,0.03)",
+              border: `1px solid ${vcTab === t ? T.gold : T.border}`,
+              color: vcTab === t ? T.gold : T.textMuted,
+              fontSize: 13, fontWeight: vcTab === t ? 700 : 400, letterSpacing: "0.08em",
+              textTransform: "capitalize", transition: "all 0.15s",
+            }}>
+            {t === "floor" ? "Room & Floor Plan" : t === "assets" ? "Asset Catalog" : "Integration Provisioning"}
+          </button>
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div key={vcTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.16 }}>
+
+          {/* ── Floor Plan Builder ── */}
+          {vcTab === "floor" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 220px", gap: 16 }}>
+              <GlassCard style={{ padding: "16px 18px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                    Floor Plan Canvas
+                  </div>
+                  <button onClick={() => { setTables({}); setTableCounter(1); }}
+                    style={{ padding: "5px 12px", borderRadius: 6, background: "rgba(248,113,113,0.10)", border: "1px solid rgba(248,113,113,0.30)", color: "#F87171", fontSize: 11, cursor: "pointer" }}>
+                    Clear Canvas
+                  </button>
+                </div>
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+                  gap: 4, userSelect: "none",
+                }}>
+                  {Array.from({ length: ROWS }, (_, r) =>
+                    Array.from({ length: COLS }, (_, c) => {
+                      const key = `${r}-${c}`;
+                      const tableNum = tables[key];
+                      const isHov = hoveredCell === key;
+                      return (
+                        <motion.div
+                          key={key}
+                          onMouseEnter={() => setHoveredCell(key)}
+                          onMouseLeave={() => setHoveredCell(null)}
+                          onClick={() => toggleCell(key)}
+                          animate={{
+                            background: tableNum
+                              ? `rgba(0,128,255,0.22)`
+                              : isHov ? "rgba(0,128,255,0.06)" : "rgba(255,255,255,0.03)",
+                            borderColor: tableNum ? T.gold : isHov ? `${T.gold}44` : T.border,
+                          }}
+                          style={{
+                            height: 44, borderRadius: 6, border: `1px solid ${T.border}`,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            cursor: "pointer", fontSize: tableNum ? 13 : 10, fontWeight: 700,
+                            color: tableNum ? T.gold : T.textMuted, transition: "background 0.12s",
+                          }}>
+                          {tableNum ? `T${tableNum}` : "+"}
+                        </motion.div>
+                      );
+                    })
+                  )}
+                </div>
+                <div style={{ marginTop: 12, fontSize: 12, color: T.textMuted }}>
+                  {Object.keys(tables).length} table{Object.keys(tables).length !== 1 ? "s" : ""} placed · Click cell to add/remove
+                </div>
+              </GlassCard>
+
+              {/* Zones panel */}
+              <GlassCard style={{ padding: "16px 18px" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 14 }}>Zones</div>
+                {zones.map((z, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, padding: "8px 10px", background: `${z.color}0c`, border: `1px solid ${z.color}28`, borderRadius: 8 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: z.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: T.text, flex: 1 }}>{z.name}</span>
+                  </div>
+                ))}
+                <div style={{ marginTop: 12 }}>
+                  <input value={zoneName} onChange={e => setZoneName(e.target.value)} placeholder="New zone name"
+                    style={{ ...fieldStyle, marginBottom: 8, fontSize: 13 }} />
+                  <button onClick={() => { if (zoneName.trim()) { setZones(z => [...z, { name: zoneName.trim(), color: [T.gold, T.purple, T.green, T.blue, T.amber][z.length % 5] }]); setZoneName(""); } }}
+                    style={{ width: "100%", padding: "8px", borderRadius: 7, background: `rgba(0,128,255,0.12)`, border: `1px solid ${T.gold}44`, color: T.gold, fontSize: 12, cursor: "pointer" }}>
+                    + Add Zone
+                  </button>
+                </div>
+              </GlassCard>
+            </div>
+          )}
+
+          {/* ── Asset Catalog ── */}
+          {vcTab === "assets" && (
+            <GlassCard style={{ padding: "18px 20px" }}>
+              <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+                {(["cigar", "spirit", "beer"] as const).map(c => (
+                  <button key={c} onClick={() => setAssetCraft(c)}
+                    style={{
+                      padding: "6px 16px", borderRadius: 7, cursor: "pointer",
+                      background: assetCraft === c ? `rgba(0,128,255,0.14)` : "transparent",
+                      border: `1px solid ${assetCraft === c ? T.gold : T.border}`,
+                      color: assetCraft === c ? T.gold : T.textMuted,
+                      fontSize: 12, fontWeight: assetCraft === c ? 700 : 400, textTransform: "capitalize",
+                    }}>
+                    {c === "cigar" ? "🍂 Cigars" : c === "spirit" ? "🥃 Spirits" : "🍺 Beer"}
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                {assetCraft === "cigar" && (
+                  <>
+                    {["Product Name","Brand","Vitola","Wrapper Origin","Binder","Filler Blend","Strength (1–5)","Retail Price ($)"].map(f => (
+                      <div key={f}>
+                        <label style={labelStyle}>{f}</label>
+                        <input style={fieldStyle} placeholder={`Enter ${f.toLowerCase()}...`} />
+                      </div>
+                    ))}
+                  </>
+                )}
+                {assetCraft === "spirit" && (
+                  <>
+                    {["Product Name","Distillery","Category","Age Statement","ABV (%)","Flavor Profile","Region","Retail Price ($)"].map(f => (
+                      <div key={f}>
+                        <label style={labelStyle}>{f}</label>
+                        <input style={fieldStyle} placeholder={`Enter ${f.toLowerCase()}...`} />
+                      </div>
+                    ))}
+                  </>
+                )}
+                {assetCraft === "beer" && (
+                  <>
+                    {["Product Name","Brewery","Style","ABV (%)","IBU","Draft / Bottle","Serving Temp (°F)","Retail Price ($)"].map(f => (
+                      <div key={f}>
+                        <label style={labelStyle}>{f}</label>
+                        <input style={fieldStyle} placeholder={`Enter ${f.toLowerCase()}...`} />
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+              <button style={{ marginTop: 16, padding: "10px 24px", borderRadius: 8, background: `rgba(0,128,255,0.14)`, border: `1px solid ${T.gold}55`, color: T.gold, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                Save Asset Schema
+              </button>
+            </GlassCard>
+          )}
+
+          {/* ── Integration Provisioning ── */}
+          {vcTab === "integrations" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <GlassCard style={{ padding: "18px 20px" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16 }}>POS Provider</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                  {POS_PROVIDERS.map(p => (
+                    <label key={p} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+                      <div onClick={() => setPosProvider(p)} style={{
+                        width: 16, height: 16, borderRadius: "50%",
+                        border: `2px solid ${posProvider === p ? T.gold : T.border}`,
+                        background: posProvider === p ? T.gold : "transparent",
+                        flexShrink: 0, cursor: "pointer", transition: "all 0.15s",
+                      }} />
+                      <span style={{ fontSize: 14, color: posProvider === p ? T.gold : T.text }}>{p}</span>
+                    </label>
+                  ))}
+                </div>
+
+                <div style={{ marginBottom: 14 }}>
+                  <label style={labelStyle}>Webhook Endpoint URL</label>
+                  <input value={webhookUrl} onChange={e => setWebhookUrl(e.target.value)}
+                    placeholder="https://your-pos.example.com/webhook"
+                    style={fieldStyle} />
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={labelStyle}>API Key / Secret</label>
+                  <input value={apiKey} onChange={e => setApiKey(e.target.value)} type="password"
+                    placeholder="••••••••••••••••"
+                    style={fieldStyle} />
+                </div>
+
+                <motion.button onClick={testConnection} disabled={testStatus === "testing"} whileTap={{ scale: 0.97 }}
+                  style={{
+                    padding: "10px 20px", borderRadius: 8, cursor: testStatus === "testing" ? "default" : "pointer",
+                    background: testStatus === "ok" ? "rgba(52,211,153,0.14)" : testStatus === "fail" ? "rgba(248,113,113,0.14)" : `rgba(0,128,255,0.14)`,
+                    border: `1px solid ${testStatus === "ok" ? T.green : testStatus === "fail" ? T.red : T.gold}55`,
+                    color: testStatus === "ok" ? T.green : testStatus === "fail" ? T.red : T.gold,
+                    fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 8,
+                  }}>
+                  {testStatus === "testing" && (
+                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                      style={{ width: 12, height: 12, border: `2px solid ${T.gold}`, borderTopColor: "transparent", borderRadius: "50%" }} />
+                  )}
+                  {testStatus === "ok" ? "✓ Connection Verified" : testStatus === "fail" ? "✗ Connection Failed" : "Test Connection"}
+                </motion.button>
+              </GlassCard>
+
+              <GlassCard style={{ padding: "18px 20px" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 14 }}>Active Integrations</div>
+                {[
+                  { label: `${posProvider} POS`, status: testStatus === "ok" ? "CONNECTED" : "PENDING", color: testStatus === "ok" ? T.green : T.amber },
+                  { label: "Stripe Payments",    status: "CONNECTED", color: T.green  },
+                  { label: "SendGrid Email",      status: "CONNECTED", color: T.green  },
+                  { label: "Cloudinary Media",   status: "CONNECTED", color: T.green  },
+                  { label: "ElevenLabs TTS",     status: "ACTIVE",    color: T.blue   },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: i < 4 ? `1px solid ${T.border}` : "none" }}>
+                    <span style={{ fontSize: 14, color: T.text }}>{item.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: item.color, letterSpacing: "0.14em" }}>{item.status}</span>
+                  </div>
+                ))}
+              </GlassCard>
+            </div>
+          )}
+
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function MasterOperations() {
@@ -609,6 +888,13 @@ export default function MasterOperations() {
 
         {/* ── MAIN CONTENT ── */}
         <div style={{ flex: 1, overflowY: "auto", padding: 20, minWidth: 0 }}>
+
+          {/* Venue Config Matrix — inline panel */}
+          {activeNav === "venue-config" && <VenueConfigPanel />}
+
+          {/* Standard ops content — hidden when viewing venue config */}
+          {activeNav !== "venue-config" && (
+          <>
 
           {/* Venue state */}
           {overview?.venueState && (
@@ -813,6 +1099,8 @@ export default function MasterOperations() {
               ))}
             </div>
           </GlassCard>
+          </>
+          )}
         </div>
 
         {/* ── RIGHT LIVE FEED ── */}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+import PinGate from "@/components/CinematicLanding/PinGate";
 
 const NoveeOsShell = lazy(() => import("@/pages/NoveeOsShell"));
 
@@ -78,6 +79,15 @@ const TILES = [
     tag: "COMING SOON",
   },
 ];
+
+const ADMIN_TILES = [
+  { id: "pos",        label: "POS GATEWAY",   sub: "Integration Hub",       accent: "#D4AF37", route: "/pos"         },
+  { id: "revenue",    label: "REVENUE BRAIN", sub: "v2 Telemetry",          accent: "#34D399", route: "/revenue"     },
+  { id: "operations", label: "OPERATIONS",    sub: "Command Terminal",       accent: "#60A5FA", route: "/operations"  },
+  { id: "venue",      label: "VENUE SETUP",   sub: "Floor & Configuration",  accent: "#A78BFA", route: "/venue-setup" },
+  { id: "devices",    label: "DEVICE FLEET",  sub: "Health Monitor",         accent: "#F87171", route: "/devices"     },
+  { id: "analytics",  label: "ANALYTICS",     sub: "Swipe IQ & Insights",   accent: "#FB923C", route: "/analytics"   },
+] as const;
 
 function useTactileTone() {
   const ctxRef = useRef(null as AudioContext | null);
@@ -348,7 +358,17 @@ function ObsidianNavRail({ active = "HUB", onTap }: { active?: string; onTap?: (
   );
 }
 
-export function CraftGrid({ onSmokecraft, onEAT }: { onSmokecraft: () => void; onEAT?: () => void }) {
+export function CraftGrid({
+  onSmokecraft,
+  onEAT,
+  isAdminView = false,
+  onStaffAccess,
+}: {
+  onSmokecraft: () => void;
+  onEAT?: () => void;
+  isAdminView?: boolean;
+  onStaffAccess?: () => void;
+}) {
   const [, navigate] = useLocation();
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredEAT, setHoveredEAT] = useState<string | null>(null);
@@ -410,10 +430,67 @@ export function CraftGrid({ onSmokecraft, onEAT }: { onSmokecraft: () => void; o
             </p>
           </div>
         </div>
-        <img src={IMG("logo_novee_os.jpg")} alt="NOVEE OS" style={{ height: 40, width: "auto", objectFit: "contain", opacity: 0.85 }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          {isAdminView && (
+            <div style={{ padding: "4px 12px", background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.35)", borderRadius: 6, fontSize: 10, fontWeight: 800, color: "#D4AF37", letterSpacing: "0.22em", textTransform: "uppercase" }}>
+              STAFF MODE
+            </div>
+          )}
+          <img src={IMG("logo_novee_os.jpg")} alt="NOVEE OS" style={{ height: 40, width: "auto", objectFit: "contain", opacity: 0.85 }} />
+          {!isAdminView && onStaffAccess && (
+            <button onClick={onStaffAccess} style={{ background: "none", border: "1px solid rgba(212,175,55,0.22)", borderRadius: 6, padding: "5px 12px", color: "rgba(212,175,55,0.40)", fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
+              STAFF
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* 4-tile grid */}
+      {/* ── Admin tile grid ── */}
+      {isAdminView && (
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(2, 1fr)", overflow: "hidden", gap: 1, background: "rgba(212,175,55,0.06)" }}>
+          {ADMIN_TILES.map((tile) => {
+            const isHov = hovered === tile.id;
+            return (
+              <motion.button
+                key={tile.id}
+                onHoverStart={() => setHovered(tile.id)}
+                onHoverEnd={() => setHovered(null)}
+                onClick={() => navigate(tile.route)}
+                whileTap={{ scale: 0.98 }}
+                style={{
+                  position: "relative", border: "none", padding: 0,
+                  background: "#010101", cursor: "pointer", overflow: "hidden",
+                  display: "flex", alignItems: "flex-end", justifyContent: "flex-start",
+                  borderRight: "1px solid rgba(212,175,55,0.05)",
+                }}
+              >
+                <motion.div animate={{ opacity: isHov ? 1 : 0 }} transition={{ duration: 0.3 }}
+                  style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${tile.accent}12, transparent)`, borderTop: `2px solid ${tile.accent}55` }} />
+                <motion.div animate={{ opacity: isHov ? 0.08 : 0.03 }} transition={{ duration: 0.4 }}
+                  style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 80% 80% at 20% 80%, ${tile.accent}, transparent)` }} />
+                <div style={{ padding: "0 36px 40px", position: "relative", zIndex: 2 }}>
+                  <div style={{ fontSize: 10, color: `${tile.accent}77`, letterSpacing: "0.32em", textTransform: "uppercase", marginBottom: 12, fontFamily: "'Inter',sans-serif" }}>
+                    ADMIN OPS  →
+                  </div>
+                  <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 42, fontWeight: 700, color: "#FDFBF7", letterSpacing: "0.04em", lineHeight: 1.05, marginBottom: 10, textShadow: "0 0 40px rgba(0,0,0,0.90)" }}>
+                    {tile.label}
+                  </div>
+                  <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, letterSpacing: "0.18em", color: "rgba(253,251,247,0.45)", textTransform: "uppercase" }}>
+                    {tile.sub}
+                  </div>
+                </div>
+                {isHov && (
+                  <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }}
+                    style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${tile.accent}, transparent)`, transformOrigin: "left" }} />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Guest 4-tile grid ── */}
+      {!isAdminView && (
       <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", overflow: "hidden" }}>
         {TILES.map((tile) => {
           const isHovered = hovered === tile.id;
@@ -562,8 +639,8 @@ export function CraftGrid({ onSmokecraft, onEAT }: { onSmokecraft: () => void; o
           );
         })}
       </div>
+      )}
 
-      {/* Footer */}
       {/* ── E.A.T. Command Bar ── */}
       <div style={{
         flexShrink: 0,
@@ -583,7 +660,7 @@ export function CraftGrid({ onSmokecraft, onEAT }: { onSmokecraft: () => void; o
           <img src={IMG("logo_eat.png")} alt="E.A.T System" style={{ height: 30, width: "auto", filter: "drop-shadow(0 0 8px rgba(212,175,55,0.40))" }} />
           <div>
             <p style={{ margin: 0, fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.32em", color: `${GOLD}55`, textTransform: "uppercase" }}>
-              ENVIRONMENT · ASSET · TRANSACTION
+              {isAdminView ? "ENVIRONMENT · ASSET · TRANSACTION" : "SMOKECRAFT 360 · LUXURY CIGAR RITUAL"}
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
               <motion.div animate={{ opacity: [1, 0.25, 1] }} transition={{ duration: 1.6, repeat: Infinity }}
@@ -648,6 +725,8 @@ export default function CraftEntryPoint() {
   const [stage, setStage] = useState<Stage>(() => {
     try { return localStorage.getItem("craft_entry_done") === "1" ? "grid" : "boot"; } catch { return "boot"; }
   });
+  const [isAdminView, setIsAdminView] = useState(false);
+  const [showPinGate, setShowPinGate] = useState(false);
 
   function handleBootComplete() {
     try { localStorage.setItem("craft_entry_done", "1"); } catch {}
@@ -675,7 +754,25 @@ export default function CraftEntryPoint() {
           initial={{ opacity: 0, filter: "blur(4px)" }} animate={{ opacity: 1, filter: "blur(0px)" }}
           exit={{ opacity: 0, scale: 1.01, filter: "blur(3px)" }}
           transition={{ duration: 0.28, ease: EASE }}>
-          <CraftGrid onSmokecraft={handleSmokecraftSelect} />
+          <CraftGrid
+            onSmokecraft={handleSmokecraftSelect}
+            isAdminView={isAdminView}
+            onStaffAccess={() => setShowPinGate(true)}
+          />
+          <AnimatePresence>
+            {showPinGate && (
+              <motion.div key="pingate"
+                style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center" }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}>
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.80)", backdropFilter: "blur(10px)" }}
+                  onClick={() => setShowPinGate(false)} />
+                <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 440 }}>
+                  <PinGate onSuccess={() => { setIsAdminView(true); setShowPinGate(false); }} />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
       {stage === "journey" && (

@@ -1,0 +1,56 @@
+We are executing a total multi-tenant platform overhaul. Stop treating this project like a localized mockup or a single shared screen. This system must scale cleanly as a commercial B2B product. We are implementing a strict, multi-tiered user role firewall that isolates the Developer Engine, the Onsite Venue Manager, the On-Floor Service Staff POS, and the Immersive Guest Journey into completely independent viewports.
+
+Execute these comprehensive backend routing models, role isolation rules, and layout updates concurrently across the workspace:
+
+---
+
+### 1. THE TRIPLE-TIER ABSOLUTE ROLE ISOLATION FIREWALL
+Enforce an ironclad cryptographic and conditional boundary to stop user roles and view layouts from bleeding or rendering inside the same frame context. Route the display chassis strictly based on clear state rules:
+
+* **TIER A: THE PLATFORM DEVELOPER HUB (Path: `/developer-gate`)**
+  - accessible ONLY via a hidden, un-linked master route requiring a cryptographic Master Developer Access Key (completely independent of venue staff PINs).
+  - This is exclusively for the SaaS platform owner to monitor global infrastructure health and onboard multi-tenant lounges. 
+  - STRIP OUT all staff POS queues, manager setup menus, and client onboarding wizards entirely from this context.
+* **TIER B: THE HIGH-VELOCITY STAFF & BARTENDER POS (Context: `isAdminView === true && isManagerSetup === false`)**
+  - Triggered the exact millisecond a standard floor staff member or bartender inputs their verified 4-digit passcode at the Staff Authority PIN Gate.
+  - This terminal must force-render the lightning-fast muscle-memory POS service interface (Kitchen Queues, Bar Pour Metrics, Humidor Stock, and Ticket Tapper).
+  - COMPLETELY BLOCK floor service staff from seeing or accessing the `/developer-gate` corporate metrics or tenant initialization dashboards.
+* **TIER C: THE PURE CONSUMER EXPERIENCE (Context: `isAdminView === false`)**
+  - The customer tablet terminal must strictly display the immersive, full-screen guest journey lifecycle (BootIntro, CraftHub 4-Tile Grid, Profile Canvas, Pick Your Mentor, '⚗ Your Reserve' Workspace, AI Sommelier).
+  - Render with absolute zero visual reference to POS integration gateway data, API tokens, database backdoors, or system mapping progress metrics.
+  - Clean up the visual bleed labels permanently: remove 'EAT, ASST, TRANSACTION' text links from the bottom frame and swap out the top-left 'E.A.T. System' text identifier string for a clean, high-contrast True White 'SMOKECRAFT 360' or 'NOVEE OS' brand text asset.
+
+---
+
+### 2. THE SERVICE STAFF TERMINAL & TICKET TAPPER INTEGRATION
+The floor terminal must be optimized for brutal speed, quick-glance readability, and rapid touchscreen taps on physical venue tablets:
+* **The High-Velocity UI Scale:** Text headers must lock to a crisp 28px, and numeric values must render at an ultra-bold 18px-20px scale highlighted with clean gold outlines for dark, high-action environments.
+* **Continuous Active Matrix Sidebar:** The right-hand panel of the staff view must persistently display the active floor table transaction ledger. Bartenders and waitstaff must be able to tap any open table row to instantly deploy the 'Ticket Tapper' input overlay.
+* **The Safety Valve & Real-Time Sync:** The Ticket Tapper modal must feature an interactive 'Add +' and 'Delete / minus (-)' button immediately adjacent to every guest item row to instantly fix entry mistakes. Tapping these buttons must execute immediate state changes, adding or subtracting the exact SKU pricing from that customer's active tab balance in the global database and refreshing the sidebar totals instantly without latency or layout reloads. Include a 'Custom Notes' text touch-target for cutting/lighting preferences and a sleek minimalist gold 'X' close icon.
+* **Live Station Synchronization Loops:** Ensure that changing an order state in Kitchen Operations (Cooking -> Ready) or tracking a bar pour status automatically triggers a WebSocket state sync event that updates the Table Node coloring on the visual layout floor plan map natively, clearing any active notification pulses after exactly 4 seconds.
+
+---
+
+### 3. THE VENUE CONFIGURATION MATRIX (MANAGER SETUP PORTAL)
+Build an administrative 'Venue Control & Setup' sub-view inside the Stage 5 Admin Operations terminal, accessible only when authorized management roles override the staff POS view:
+* **The Room & Floor Plan Builder UI:** Provide an interactive configuration editor canvas where a manager can define their physical space: input total number of tables, define custom lounge zones ('Main Floor', 'VIP Cigar Vault', 'Member's Patio'), and map individual tablet hardware/serial IDs straight to specific floor layout nodes.
+* **Asset Catalog Schema Customizer:** Provide a clean data-entry form canvas allowing the manager to manage their inventory baselines:
+  - Add, edit, or remove premium Cigar selections, set humidor tracking alert margins, and input initial box stocks.
+  - Add, edit, or remove Spirit assets, track running bottle fluid levels, and assign custom pricing tiers.
+  - Map baseline flavor tags (e.g., body, wrapper types, proof strengths) that directly feed into the Pairing Engine's primary ranking logic.
+* **The Integration Provisioning Panel:** Expand the '[P] POS Gateway' view. Include form components where the manager can manually select a provider (Toast, Clover, Lightspeed, Custom), toggle inventory synchronization interval limits (5 mins, 15 mins, hourly), and update active Webhook endpoints securely.
+
+---
+
+### 4. THE GLOBAL SENSORY PROVISIONING DASHBOARD (DEVELOPER CONTROL)
+The master software licensing and enterprise management tier operating at `/developer-gate`. Style the view canvas in an ultra-premium 'Brushed Titanium' theme with glowing emerald accents:
+* **New Venue Onboarding Engine:** Create a functional multi-tenant creation portal with form controls for: Organization Name, Location Metadata (City, State, Country), and Licensing Tier Toggles ('SmokeCraft Tablet Only', 'Full E.A.T. Core Ops Suite', 'POS Integration Pack').
+* **Database & Tenant Isolation Spawner:** Tapping 'Provision Tenant' must dynamically generate a new unique Tenant ID and spin up an isolated database memory context, ensuring different venues' guest profiles, inventories, and transaction tickets never cross-talk or mix. Automatically output a unique master admin passkey for that lounge.
+* **Global Fleet Monitoring & Management Utilities:** Render an interactive real-time management matrix tracking all provisioned venues simultaneously, detailing total running devices, live cross-venue tab volumes ($), network ping statuses, a corporate analytics ARR tracker, and a master 'Flush Process Memory Stacks' command button that clears hanging backend process variables and memory leaks via our remote WebSocket tunnel instantly.
+
+---
+
+### 5. STATE INTEGRITY & LUXURY VISUAL SYSTEM
+* **Non-Destructive Navigation Layouts:** Toggling between navigation headers within the Stage 5 staff dashboard ('Venue Setup', 'POS Gateway', 'Kitchen Queue', 'Bar Ops') or switching tabs inside the Developer Console must be completely non-destructive. Never drop, delete, or overwrite the underlying component layout rendering blocks during view swaps.
+* **Intelligence Score Dynamic Reasoning:** The E.A.T. V1 Intelligence Score (e.g., 49/100) must dynamically calculate its numerical value and rewrite its live reasoning description block container immediately below the score header (e.g., 'Score shifted — 2 high-value tabs awaiting attention') every single time the active tab list, kitchen orders, or bar metrics mutate.
+* **Premium Touch System Physics:** Maintain our strict visual design framework: obsidian glass paneling, smoked chrome containers, gold typography accents, deep shadow text vignettes, and hardware-accelerated touch physics events (onTouchStart, onTouchMove, onTouchEnd) across all active states. Run the full refactor in parallel to unify the workspace.

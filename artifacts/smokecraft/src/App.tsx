@@ -108,6 +108,7 @@ const UpgradeRequired       = lazy(() => import('@/pages/UpgradeRequired'));
 const NoveeOsShell          = lazy(() => import('@/pages/NoveeOsShell'));
 const CraftEntryPoint       = lazy(() => import('@/pages/CraftEntryPoint'));
 const ControlChamber        = lazy(() => import('@/pages/ControlChamber'));
+const DeveloperGate         = lazy(() => import('@/pages/DeveloperGate'));
 
 /* ── Lazy-loaded pages previously unregistered in router ───── */
 const PaymentSuccess        = lazy(() => import('@/pages/PaymentSuccess'));
@@ -1371,6 +1372,9 @@ export default function App() {
           </Route>
 
           {/* ── Sovereign routes ── */}
+          <Route path="/developer-gate">
+            <Suspense fallback={null}><DeveloperGate /></Suspense>
+          </Route>
           <Route path="/sovereign-gate">
             <SovereignGate />
           </Route>
