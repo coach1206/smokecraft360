@@ -708,7 +708,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
     </div>
   );
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden" }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", minWidth:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
         <div style={{ flex:1 }}>
@@ -1157,7 +1157,7 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
   const all = Object.values(state.activeTables);
   const list = filter==="ALL TABLES" ? all : all.filter(t => t.zone.toUpperCase().includes(filter.replace(" SECTION","").replace(" FLOOR","").replace(" LOUNGE","")));
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden" }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", minWidth:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={2} />
         <div>
@@ -1221,7 +1221,7 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
   const { subtotal, tax, total } = revenue.tableRevenue(state.selectedTableId);
   const isVip = table.zone.toLowerCase().includes("vip");
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden" }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", minWidth:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={3} />
         <div>
@@ -2839,7 +2839,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           isSupervisorView={isSupervisorView}
           onOpenPinGate={openPinGate}
         />
-        <div style={{ flex:1, display:"grid", gridTemplateColumns:"1fr 1.2fr 1fr", gap:16, padding:"16px", overflow:"hidden" }}>
+        <div style={{ flex:1, minWidth:0, width:0, display:"grid", gridTemplateColumns:"1fr 1.4fr 1.1fr", gap:12, padding:"12px 14px", overflow:"hidden" }}>
           <TelemetryCol
             tel={venueState.telemetry}
             thresh={thresholds}
