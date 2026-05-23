@@ -1,0 +1,28 @@
+COMMAND OVERRIDE: THE WORK IS NOT COMPLETE. Our 3-Column StaffTerminal UI layout is currently completely disconnected from our backend E.A.T. Configuration Matrix schemas and external POS provider modules. You are commanded to execute a deep infrastructural integration immediately. Solder the UI states directly to our real data schemas, syncing logic, and external integration webhooks so the entire platform operates as ONE single unified engine.
+
+Execute this comprehensive programmatic integration now:
+
+---
+
+### 1. SOLDER THE ASSET COMPONENT TO REAL SCHEMAS (E.A.T. -> Asset Integration)
+* **The Humidor Link:** Overwrite the static text count for 'Puros Remaining' in Column 1. It must read directly from the live `Cigar Schema` database count inside the Venue Config Matrix. 
+* **The Bar Metrics Link:** Link the bar metrics readout and low-stock indicators directly to your active `Spirit Schema` object array. If a bottle's current fluid percentage falls past the low-level alert threshold specified in your admin config, render the premium red alert container automatically.
+
+---
+
+### 2. RIG THE TRANSACTION CONTROLS TO ACTIVE LIVE SCHEMA MUTATIONS (E.A.T. -> Transaction Integration)
+* **The Active Ticket Reducer:** Modify the ledger removal button (✕) and the Ticket Tapper (±) quantity controls. The moment a staff member clicks these, it must not only change the screen text, it must actively trigger a database stock deduction inside your master Cigar or Spirit state schema arrays.
+* **The Automated Revenue Split:** Ensure that all financial total calculations ($2,847/hour counters and live table totals) instantly feed the Platform SaaS Take-Rate Model inside the Developer Gate KPI engine to continuously update the Est. ARR telemetry metric.
+
+---
+
+### 3. INTEGRATE THE EXTERNAL POS HUB NORMALIZATION ENGINE
+* **The 15-Minute Sync Execution:** Locate your Integration Provisioning data state (Toast, Clover, Square, Lightspeed picker). 
+* **Live Webhook Relay:** When the gold '[ PROCESS PAYMENT ➔ ]' button at the base of Column 3 is touched (`onTouchStart`), fire a transaction payload string containing the itemized SKU array, quantities, and table layout coordinates. Broadcast this payload directly to your configured Webhook URL and API key inputs while updating the "Live Active Integrations Status List" dynamically.
+* Execute the data sync loops precisely according to the pre-selected 15-minute Inventory Sync Interval toggle bar.
+
+---
+
+### 4. COMPILER DIRECTIVE
+* Ensure all typography sizes remain large, prominent, and highly visible for touchscreen navigation layout across a full-width viewport display monitor.
+* Do not drop or delete any existing multi-tenant settings, route rules, or PIN codes. Merge the visual 3 columns and the backend configuration matrix tables into a single codebase file architecture right now.
