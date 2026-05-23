@@ -708,7 +708,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
     </div>
   );
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", minWidth:0 }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", minWidth:0, width:"100%" }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
         <div style={{ flex:1 }}>
@@ -1157,7 +1157,7 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
   const all = Object.values(state.activeTables);
   const list = filter==="ALL TABLES" ? all : all.filter(t => t.zone.toUpperCase().includes(filter.replace(" SECTION","").replace(" FLOOR","").replace(" LOUNGE","")));
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", minWidth:0 }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", minWidth:0, width:"100%" }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={2} />
         <div>
@@ -1165,10 +1165,10 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
           <div style={{ fontSize:12, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>ACTIVE LOUNGE TABLES & QUEUES</div>
         </div>
       </div>
-      <div style={{ display:"flex", gap:5, marginBottom:8, flexShrink:0, alignItems:"center" }}>
+      <div style={{ display:"flex", gap:8, marginBottom:8, flexShrink:0, alignItems:"center", overflow:"hidden" }}>
         {FILTER_TABS.map(t => (
           <motion.button key={t} whileTap={{scale:0.95}} onClick={()=>setFilter(t)}
-            style={{ height:48, padding:"0 12px", borderRadius:5, cursor:"pointer", background:filter===t?`linear-gradient(135deg,${C.gold},#A67C00)`:"rgba(255,255,255,0.04)", border:`1px solid ${filter===t?C.gold:C.chrome}`, color:filter===t?"#000":C.muted, fontSize:16, fontWeight:800, letterSpacing:"0.12em", fontFamily:C.sans, whiteSpace:"nowrap" }}>{t}</motion.button>
+            style={{ height:48, padding:"0 10px", borderRadius:5, cursor:"pointer", flexShrink:0, background:filter===t?`linear-gradient(135deg,${C.gold},#A67C00)`:"rgba(255,255,255,0.04)", border:`1px solid ${filter===t?C.gold:C.chrome}`, color:filter===t?"#000":C.muted, fontSize:14, fontWeight:800, letterSpacing:"0.08em", fontFamily:C.sans, whiteSpace:"nowrap" }}>{t}</motion.button>
         ))}
         <div style={{ marginLeft:"auto" }}><Icon d={P.filter} size={16} color={C.muted} /></div>
       </div>
@@ -1221,7 +1221,7 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
   const { subtotal, tax, total } = revenue.tableRevenue(state.selectedTableId);
   const isVip = table.zone.toLowerCase().includes("vip");
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", minWidth:0 }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", minWidth:0, width:"100%" }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={3} />
         <div>
@@ -2832,7 +2832,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           </motion.button>
         </div>
       )}
-      <div style={{ flex:1, minWidth:0, display:"grid", gridTemplateColumns:"64px 1.1fr 1.2fr 1.4fr", gap:20, padding:20, overflow:"hidden", position:"relative", zIndex:1 }}>
+      <div style={{ flex:1, minWidth:0, display:"grid", gridTemplateColumns:"64px 24% 30% 36%", gap:16, padding:16, overflow:"hidden", position:"relative", zIndex:1 }}>
         <NavRail
           onBack={back}
           isAdminView={isAdminView}
