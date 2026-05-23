@@ -1,0 +1,31 @@
+CRITICAL UI REFACTOR: The current StaffTerminal layout scales incorrectly. The layout containers are oversized, the typography is too small for high-readability touch targeting, and the UI utilizes generic text placeholders instead of rich graphic/photographic assets. You must immediately refactor the CSS flex layout configurations, padding values, and component dimensions to perfectly match the high-density premium look of our master design.
+
+Execute these precise layout adjustments inside the StaffTerminal code file immediately:
+
+---
+
+### 1. HIGH-DENSITY CHASSIS & COLOR DEPTH TIGHTENING
+* **Grid and Panel Proportions:** Do not let the layout columns stretch across the entire screen viewport height in thick, sparse blocks. Tighten the card layout structures to leave a clear, dedicated bottom footer section for the [STAFF ON FLOOR | VENUE INSIGHTS | SYSTEM STATUS] control rows exactly as structured in the master mockup.
+* **Obsidian Glass Depth:** Elevate container backgrounds from flat charcoal shades to heavy obsidian glass plates: `backgroundColor: "rgba(10, 10, 10, 0.90)"`, tracking crisp hairline borders: `border: "1px solid #2A2A2A"`. Add deep gold box-shadow metrics to currently active or selected container elements.
+
+---
+
+### 2. RE-DENSIDY THE THREE COMPONENT COLUMNS
+* **COLUMN 1 (REAL-TIME TELEMETRY):** - Shrink the station card component envelopes so all three monitors stack perfectly inside the vertical viewport limits without causing page body overflow.
+  - Scale up the numeric tracking integers (e.g., '143', '14') utilizing massive, bold Amber-Gold typography layouts (#E6A11D). 
+  - Ensure actual product asset image components render cleanly inside the station cards instead of cheap, flat text glyphs.
+* **COLUMN 2 (HIGH-SPEED TICKET OVERVIEW):**
+  - Condense the giant table row strips into tight, modular glass cards exactly like the master mockup card grids.
+  - Inject the high-end cocktail, lounge luxury, and premium tobacco background asset imagery directly into each corresponding active table layout element.
+  - Force the '★ OPEN TICKET TAPPER ★' interaction bar to scale up to its dedicated 58px touch boundary with a rich gold-gradient background style.
+* **COLUMN 3 (ACTIVE LEDGER):**
+  - Tighten the itemized line rows, forcing item counts ('1x', '2x') to render in high-visibility gold, item titles in true clean white, and align the circular gold delete switches (✕) cleanly to the right edge.
+  - Scale the total numeric output layout field at the base to an ultra-bold 24px gold state structure.
+
+---
+
+### 3. TEXT ACCENT & GRAPHIC LAYER ALIGNMENT
+* Purge all cheap text-symbol glyph placeholders. Ensure actual crisp icon assets or high-resolution graphic rendering objects are applied to the Left Vertical Rail options and station metric blocks.
+* Maximize text visibility parameters by scaling font classes to clear, crisp levels while maintaining a tight component layout envelope footprint.
+
+Do not output raw summary checklists or tell me the build is complete until you have physically updated the layout code syntax variables, checked the live DOM bounds, and compressed this entire interface to look like the rich, premium, high-density touchscreen master layout design. Run this build now.
