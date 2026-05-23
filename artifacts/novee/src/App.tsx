@@ -28,6 +28,7 @@ import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
 import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
 import { S4_DesignStudio } from "@/pages/S4_DesignStudio";
 import ControlChamber from "@/pages/ControlChamber";
+import StaffTerminal from "@/pages/StaffTerminal";
 import MasterBlender from "@/pages/MasterBlender";
 import { AmbientEmberField } from "@/components/AmbientEmberField";
 import { AshParticles } from "@/components/AshParticles";
@@ -1301,8 +1302,7 @@ function SystemBar() {
   function onStaffAuth() {
     setStaffAuthActive(true);
     setStaffAuthPulsing(false);
-    navigate("eat_dashboard");
-    setTimeout(() => { setStaffAuthActive(false); setStaffAuthPulsing(true); }, 4000);
+    navigate("pos_terminal");
   }
 
   return (
@@ -1339,7 +1339,7 @@ function SystemBar() {
         <motion.button type="button" onPointerDown={onStaffAuth} whileTap={{ scale: 0.93 }}
           style={{ border: `1px solid ${GOLD}`, borderRadius: 6, padding: "5px 14px", background: staffAuthActive ? `rgba(212,175,55,0.32)` : `rgba(212,175,55,0.10)`, cursor: "pointer", fontSize: 9, fontWeight: 900, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 6, animation: staffAuthPulsing ? "staffAuthPulse 2.0s ease-in-out infinite" : "none", transition: "background 0.25s" }}>
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD, animation: staffAuthPulsing ? "staffAuthDot 2.0s ease-in-out infinite" : "none", boxShadow: `0 0 6px ${GOLD}`, flexShrink: 0 }} />
-          STAFF AUTH
+          ⚡ LAUNCH TERMINAL (POS 3)
         </motion.button>
 
         {/* PROFILE RESET */}
@@ -1752,6 +1752,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; on
   if (phase === "upgrade_plan")      return <UpgradePage />;
   if (phase === "upgrade_required")  return <UpgradeRequired />;
   if (phase === "master_blender")    return <MasterBlender />;
+  if (phase === "pos_terminal")      return <StaffTerminal />;
   if (S1_PHASES.has(phase))          return <S1_InitGate />;
   if (S2_PHASES.has(phase))          return <S2_TerroirMatrix />;
   if (S3_PHASES.has(phase))          return <S3_FormulationLab />;

@@ -1422,8 +1422,7 @@ function SystemBar() {
   function onStaffAuth() {
     setStaffAuthActive(true);
     setStaffAuthPulsing(false);
-    navigate("eat_dashboard");
-    setTimeout(() => { setStaffAuthActive(false); setStaffAuthPulsing(true); }, 4000);
+    window.location.href = "/pos";
   }
 
   return (
@@ -1465,7 +1464,7 @@ function SystemBar() {
           whileTap={{ scale: 0.93 }}
           style={{ border: `1px solid ${GOLD}`, borderRadius: 6, padding: "5px 14px", background: staffAuthActive ? `rgba(212,175,55,0.32)` : `rgba(212,175,55,0.10)`, cursor: "pointer", fontSize: 9, fontWeight: 900, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 6, animation: staffAuthPulsing ? "staffAuthPulse 2.0s ease-in-out infinite" : "none", transition: "background 0.25s" }}>
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD, animation: staffAuthPulsing ? "staffAuthDot 2.0s ease-in-out infinite" : "none", boxShadow: `0 0 6px ${GOLD}`, flexShrink: 0 }} />
-          STAFF AUTH
+          ⚡ LAUNCH TERMINAL (POS 3)
         </motion.button>
 
         <motion.button type="button" onPointerDown={() => { resetGuest(); navigate("crafthub"); }} whileTap={{ scale: 0.93 }}

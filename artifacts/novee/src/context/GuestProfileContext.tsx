@@ -34,7 +34,8 @@ export type Phase =
   | "coach_help"
   | "upgrade_plan"
   | "upgrade_required"
-  | "master_blender";
+  | "master_blender"
+  | "pos_terminal";
 
 export type DifficultyTier = "beginner" | "apprentice" | "blender" | "master" | "architect";
 export type SessionType = "live" | "demo" | "investor" | "qa" | "presentation";
