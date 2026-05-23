@@ -1273,7 +1273,7 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
         <div style={{ fontSize:18, color:C.muted, marginTop:4 }}>{table.guest} · {table.zone}</div>
       </div>
       <div style={{ fontSize:14, fontFamily:C.mono, color:C.muted, letterSpacing:"0.24em", marginBottom:5, paddingLeft:2, flexShrink:0 }}>LINE ITEMS</div>
-      <div style={{ ...panel(), flex:1, overflowY:"auto", marginBottom:7 }}>
+      <div style={{ ...panel(), flex:1, overflowY:"auto", marginBottom:7, display:"flex", flexDirection:"column", gap:16 }}>
         <AnimatePresence>
           {table.items.length===0 && (
             <motion.div initial={{opacity:0}} animate={{opacity:1}}
@@ -3019,14 +3019,13 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           </motion.button>
         </div>
       )}
-      <div style={{ flex:1, display:"flex", overflow:"hidden", position:"relative", zIndex:1 }}>
+      <div style={{ flex:1, minWidth:0, display:"grid", gridTemplateColumns:"64px 1.1fr 1.2fr 1.4fr", gap:20, padding:20, overflow:"hidden", position:"relative", zIndex:1 }}>
         <NavRail
           onBack={back}
           isAdminView={isAdminView}
           isSupervisorView={isSupervisorView}
           onOpenPinGate={openPinGate}
         />
-        <div style={{ flex:1, minWidth:0, width:0, display:"grid", gridTemplateColumns:"1fr 1.4fr 1.1fr", gap:12, padding:"12px 14px", overflow:"hidden" }}>
           <TelemetryCol
             tel={venueState.telemetry}
             thresh={thresholds}
@@ -3039,7 +3038,6 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           />
           <TicketsCol state={venueState} revenue={revenue} onSelect={selectTable} onUpdate={updateTableItems} />
           <LedgerCol  state={venueState} revenue={revenue} onRemove={removeItem} onProcessPayment={processPayment} coaching={coaching} />
-        </div>
 
         {/* Reservation sidebar panel */}
         <AnimatePresence>
