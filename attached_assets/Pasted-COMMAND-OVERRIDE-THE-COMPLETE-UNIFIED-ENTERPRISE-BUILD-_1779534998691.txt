@@ -1,0 +1,34 @@
+COMMAND OVERRIDE: THE COMPLETE UNIFIED ENTERPRISE BUILD. You are commanded to execute a comprehensive, full-chassis programmatic merge to bind our entire front-end touchscreen interface (POS3.png), our dual-layered PIN security gates, our dynamic staff zoning matrices, the DayOne360 referral engine, the Ticket Tapper Smart Upsell Intercept systems, and our 5-mile geo-fenced promotion tracks into ONE single, unified platform engine. The system must operate edge-to-edge with maximum visual density, upscaled typography properties, and live operational database mutations.
+
+Execute this absolute master system merge across the entire codebase immediately:
+
+---
+
+### 1. THE UNIFIED E.A.T. GLOBAL OPERATIONAL STATE ENGINE
+Initialize and maintain a global, persistent context state framework within the master terminal engine. Do not use mock strings; bind the layout properties directly to these live database variables:
+
+```javascript
+const [venueState, setVenueState] = useState({
+  selectedTableId: 101,
+  syncIntervalMinutes: 15,
+  isAdminView: false,
+  isSupervisorView: false,
+  isKitchenModalOpen: false,
+  isTicketTapperOpen: false,
+  isUpsellModalOpen: false,
+  dayone360_referral_url: "[https://dayone360.com/ref?venue=profound-lounge-001](https://dayone360.com/ref?venue=profound-lounge-001)",
+  activeTables: {
+    101: { id: 101, guest: "John D.", zone: "MAIN FLOOR LOUNGE", timeActive: "01:42h", items: [
+      { id: "sku_rp_1992", name: "Rocky Patel Vintage 1992", qty: 1, price: 42.00, category: "Cigars" },
+      { id: "sku_bt_bourb", name: "Buffalo Trace Bourbon", qty: 2, price: 32.00, category: "Spirits" }
+    ]},
+    102: { id: 102, guest: "Maria S.", zone: "HIGH-VELOCITY BAR", timeActive: "00:57h", items: [] },
+    103: { id: 103, guest: "Robert K.", zone: "HUMIDOR DEPOT", timeActive: "00:15h", items: [] }
+  },
+  telemetry: {
+    humidor: { purosRemaining: 145, temperature: 68, humidity: 71, alertMargin: 5 },
+    bar: { activePourSessions: 14, lowStockAlerts: [{ item: "Remy Martin XO", currentVolumePct: 12 }] },
+    kitchen: { pendingOrders: 3, readyOrders: 1 }
+  }
+});
+const [enteredPin, setEnteredPin] = useState("");
