@@ -208,6 +208,25 @@ const api = {
       return j.order ?? null;
     } catch { return null; }
   },
+  logDayOneClick: async (venueId: string, referralUrl: string): Promise<void> => {
+    try {
+      await fetch("/api/dayone360/log-click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ venueId, referralUrl }),
+      });
+    } catch { /* non-critical */ }
+  },
+  proximityFlashBlast: async (payload: { venueId: string; promoCode: string; message: string }): Promise<{ eligibleCount: number; message: string } | null> => {
+    try {
+      const r = await fetch("/api/proximity/flash-blast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      return await r.json() as { eligibleCount: number; message: string };
+    } catch { return null; }
+  },
   provisionTenant: async (payload: { venueName: string; salesTaxPct?: number; hydrateTemplates?: boolean }): Promise<{ success: boolean; tenantId: string; recordsHydrated: number } | null> => {
     try {
       const r = await fetch("/api/tenant/provision", {
@@ -588,8 +607,8 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
         <div style={{ flex:1 }}>
-          <div style={{ fontSize:13, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>REAL-TIME TELEMETRY</div>
-          <div style={{ fontSize:8, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>E.A.T. CORE STATION MONITORS</div>
+          <div style={{ fontSize:18, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>REAL-TIME TELEMETRY</div>
+          <div style={{ fontSize:12, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>E.A.T. CORE STATION MONITORS</div>
         </div>
       </div>
       <div style={{ display:"flex", gap:5, flexShrink:0 }}>
@@ -808,6 +827,68 @@ function TapperModal({ table, onClose, onUpdate }: {
   );
 }
 
+// ── Upsell Modal (Premium Pairing intercept) ──────────────────────────────────
+const UPGRADE_SKU_BASE = { name:"★ Premier Cigar & Spirit Pairing", category:"Premium Experience", price:38.00, qty:1 };
+
+function UpsellModal({ table, onAccept, onDecline }: {
+  table: VenueTable;
+  onAccept: (upgradedItems: VenueItem[]) => void;
+  onDecline: () => void;
+}) {
+  const tax   = UPGRADE_SKU_BASE.price * 0.0846;
+  const total = UPGRADE_SKU_BASE.price + tax;
+  return (
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+      style={{ position:"fixed", inset:0, zIndex:9400, display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.82)", backdropFilter:"blur(14px)" }} onClick={onDecline} />
+      <motion.div initial={{scale:0.90,y:30}} animate={{scale:1,y:0}} exit={{scale:0.90,y:30}}
+        style={{ position:"relative", zIndex:1, width:460, background:"rgba(5,5,7,0.99)",
+          border:`1px solid ${C.gold}`, borderRadius:14, overflow:"hidden",
+          boxShadow:`0 0 60px ${C.goldGlo}` }}>
+        <div style={{ height:4, background:`linear-gradient(90deg,${C.gold},#A67C00,${C.gold})` }} />
+        <div style={{ padding:"28px 32px" }}>
+          <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.30em", marginBottom:8 }}>⭐ PREMIUM UPGRADE AVAILABLE</div>
+          <div style={{ fontSize:22, fontWeight:900, color:C.white, marginBottom:8 }}>Add a Premier Pairing?</div>
+          <div style={{ fontSize:14, color:C.muted, lineHeight:1.7, marginBottom:22 }}>
+            Elevate Table {table.id}'s experience with a curated{" "}
+            <span style={{ color:C.amber, fontWeight:700 }}>Cigar & Spirit Special Pairing</span> — handpicked by the house.
+          </div>
+          <div style={{ background:"rgba(212,175,55,0.08)", border:`1px solid ${C.gold}44`, borderRadius:10, padding:"14px 18px", marginBottom:24 }}>
+            <div style={{ fontSize:16, fontWeight:700, color:C.white, marginBottom:10 }}>{UPGRADE_SKU_BASE.name}</div>
+            {[{l:"Base price",v:`$${UPGRADE_SKU_BASE.price.toFixed(2)}`},{l:"Tax (8.46%)",v:`$${tax.toFixed(2)}`}].map(r=>(
+              <div key={r.l} style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                <span style={{ fontSize:13, color:C.muted }}>{r.l}</span>
+                <span style={{ fontSize:13, color:C.white }}>{r.v}</span>
+              </div>
+            ))}
+            <div style={{ display:"flex", justifyContent:"space-between", marginTop:10, paddingTop:10, borderTop:`1px solid ${C.chrome}` }}>
+              <span style={{ fontSize:15, fontWeight:800, color:C.gold }}>TOTAL ADD</span>
+              <span style={{ fontSize:15, fontWeight:900, color:C.gold }}>${total.toFixed(2)}</span>
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:10 }}>
+            <motion.button whileTap={{scale:0.97}} onClick={onDecline}
+              style={{ flex:1, height:52, borderRadius:9, cursor:"pointer",
+                background:"rgba(255,255,255,0.05)", border:`1px solid ${C.chrome}`,
+                color:C.muted, fontSize:14, fontWeight:700, fontFamily:C.sans }}>
+              NO THANKS
+            </motion.button>
+            <motion.button whileTap={{scale:0.97}} {...T}
+              onTouchStart={e => { T.onTouchStart(e); onAccept([...table.items, { ...UPGRADE_SKU_BASE, id:`upgrade_${Date.now()}` }]); }}
+              onClick={() => onAccept([...table.items, { ...UPGRADE_SKU_BASE, id:`upgrade_${Date.now()}` }])}
+              style={{ flex:2, height:52, borderRadius:9, cursor:"pointer",
+                background:`linear-gradient(135deg,${C.gold},#A67C00)`,
+                border:"none", color:"#000", fontSize:13, fontWeight:900,
+                fontFamily:C.sans, letterSpacing:"0.06em", boxShadow:`0 0 24px ${C.goldGlo}` }}>
+              YES — ADD UPGRADE ★
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── Column 2: Tickets ─────────────────────────────────────────────────────────
 const FILTER_TABS = ["ALL TABLES","VIP SECTION","MAIN FLOOR","OUTDOOR"] as const;
 type FilterTab = typeof FILTER_TABS[number];
@@ -839,15 +920,15 @@ function TableCard({ table, isActive, onSelect, onTap }: {
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:3 }}>
               <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                <span style={{ fontSize:14, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
-                {isVip ? <VIP /> : <span style={{ fontSize:9, color:C.muted }}>{table.zone}</span>}
+                <span style={{ fontSize:18, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
+                {isVip ? <VIP /> : <span style={{ fontSize:11, color:C.muted }}>{table.zone}</span>}
               </div>
               <div style={{ textAlign:"right" }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.amber }}>{elapsed}</div>
-                <div style={{ fontSize:8, color:C.muted, letterSpacing:"0.12em" }}>TIME ACTIVE</div>
+                <div style={{ fontSize:18, fontWeight:700, color:C.amber }}>{elapsed}</div>
+                <div style={{ fontSize:10, color:C.muted, letterSpacing:"0.12em" }}>TIME ACTIVE</div>
               </div>
             </div>
-            <div style={{ fontSize:11, color:C.muted }}>Guest: {table.guest}</div>
+            <div style={{ fontSize:18, color:C.muted }}>Guest: {table.guest}</div>
           </div>
           <div>
             <div style={{ fontSize:9, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" }}>CURRENT TAB</div>
@@ -870,8 +951,9 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
   onSelect:(id:number)=>void;
   onUpdate:(tableId:number, items:VenueItem[], mutations:{id:string;qty:number}[])=>void;
 }) {
-  const [filter, setFilter] = useState<FilterTab>("ALL TABLES");
-  const [tapTable, setTapTable] = useState<VenueTable|null>(null);
+  const [filter,       setFilter]       = useState<FilterTab>("ALL TABLES");
+  const [tapTable,     setTapTable]     = useState<VenueTable|null>(null);
+  const [upsellTarget, setUpsellTarget] = useState<VenueTable|null>(null);
   const all = Object.values(state.activeTables);
   const list = filter==="ALL TABLES" ? all : all.filter(t => t.zone.toUpperCase().includes(filter.replace(" SECTION","").replace(" FLOOR","").replace(" LOUNGE","")));
   return (
@@ -879,8 +961,8 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={2} />
         <div>
-          <div style={{ fontSize:13, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>HIGH-SPEED TICKET OVERVIEW</div>
-          <div style={{ fontSize:8, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>ACTIVE LOUNGE TABLES & QUEUES</div>
+          <div style={{ fontSize:18, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>HIGH-SPEED TICKET OVERVIEW</div>
+          <div style={{ fontSize:12, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>ACTIVE LOUNGE TABLES & QUEUES</div>
         </div>
       </div>
       <div style={{ display:"flex", gap:5, marginBottom:8, flexShrink:0, alignItems:"center" }}>
@@ -893,7 +975,7 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
       <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", gap:7 }}>
         {list.map(t => (
           <TableCard key={t.id} table={t} isActive={t.id===state.selectedTableId}
-            onSelect={()=>onSelect(t.id)} onTap={()=>setTapTable(t)} />
+            onSelect={()=>onSelect(t.id)} onTap={()=>setUpsellTarget(t)} />
         ))}
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", background:C.glass2, border:`1px solid ${C.chrome}`, borderRadius:7, marginTop:7, flexShrink:0 }}>
@@ -909,6 +991,13 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
           </div>
         ))}
       </div>
+      <AnimatePresence>
+        {upsellTarget && !tapTable && (
+          <UpsellModal key={`upsell_${upsellTarget.id}`} table={upsellTarget}
+            onAccept={(upgraded) => { onUpdate(upsellTarget.id, upgraded, []); setTapTable(upsellTarget); setUpsellTarget(null); }}
+            onDecline={() => { setTapTable(upsellTarget); setUpsellTarget(null); }} />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {tapTable && (
           <TapperModal key={tapTable.id} table={tapTable}
@@ -936,8 +1025,8 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={3} />
         <div>
-          <div style={{ fontSize:13, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>ACTIVE LEDGER</div>
-          <div style={{ fontSize:8, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>PERSISTENT LINE ITEMS</div>
+          <div style={{ fontSize:18, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>ACTIVE LEDGER</div>
+          <div style={{ fontSize:12, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>PERSISTENT LINE ITEMS</div>
         </div>
       </div>
       <div style={panel({ borderTop:`2px solid ${C.gold}`, padding:"11px 13px", marginBottom:8, flexShrink:0 })}>
@@ -967,10 +1056,10 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
               <div style={{ width:38,height:38,borderRadius:6,flexShrink:0,border:`1px solid ${C.chrome}`,background:item.img?`url(${item.img}) center/cover,#1A1A1A`:"linear-gradient(135deg,#2A1810,#111)" }} />
               <div style={{ width:30,height:30,borderRadius:"50%",flexShrink:0,background:`linear-gradient(135deg,${C.gold},#A67C00)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,color:"#000" }}>{item.qty}x</div>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.white, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.name}</div>
-                <div style={{ fontSize:10, color:C.muted, fontStyle:"italic" }}>{item.category}</div>
+                <div style={{ fontSize:18, fontWeight:700, color:C.white, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.name}</div>
+                <div style={{ fontSize:13, color:C.muted, fontStyle:"italic" }}>{item.category}</div>
               </div>
-              <div style={{ fontSize:14, fontWeight:700, color:C.white, minWidth:46, textAlign:"right" }}>${item.price.toFixed(2)}</div>
+              <div style={{ fontSize:18, fontWeight:700, color:C.white, minWidth:50, textAlign:"right" }}>${item.price.toFixed(2)}</div>
               <motion.button whileTap={{scale:0.84}} {...T} onClick={()=>onRemove(table.id,item.id)}
                 style={{ width:26,height:26,borderRadius:"50%",background:C.goldDim,border:`1px solid ${C.gold}44`,color:C.gold,fontSize:14,lineHeight:"24px",textAlign:"center",cursor:"pointer",flexShrink:0 }}>×</motion.button>
             </motion.div>
@@ -988,8 +1077,8 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
           </div>
         ))}
         <div style={{ display:"flex", justifyContent:"space-between", padding:"9px 0 11px", borderTop:`1px solid ${C.chrome}` }}>
-          <span style={{ fontSize:17, fontWeight:900, color:C.white }}>TOTAL</span>
-          <span style={{ fontSize:24, fontWeight:900, color:C.amber }}>${total.toFixed(2)}</span>
+          <span style={{ fontSize:18, fontWeight:900, color:C.white }}>TOTAL</span>
+          <span style={{ fontSize:26, fontWeight:900, color:C.amber, textShadow:`0 0 16px ${C.goldGlo}` }}>${total.toFixed(2)}</span>
         </div>
         <motion.button whileTap={{scale:0.97}} {...T}
           style={{ width:"100%",height:42,marginBottom:8,background:"rgba(255,255,255,0.04)",border:`1px solid ${C.chrome}`,borderRadius:8,color:C.cream,fontSize:12,fontWeight:800,letterSpacing:"0.14em",cursor:"pointer",fontFamily:C.sans,display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
@@ -1033,7 +1122,7 @@ function Footer({ revenue, providers, paymentState }: {
     <div style={{ flexShrink:0, height:116, background:C.dark, borderTop:`1px solid ${C.chrome}`, display:"grid", gridTemplateColumns:"1fr 1fr 1fr" }}>
       <div style={{ padding:"10px 16px", borderRight:`1px solid ${C.chrome}` }}>
         <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-          <span style={{ fontSize:10, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>STAFF ON FLOOR</span>
+          <span style={{ fontSize:14, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>STAFF ON FLOOR</span>
           <span style={{ fontSize:10, color:C.muted, cursor:"pointer" }}>VIEW ALL ›</span>
         </div>
         <div style={{ display:"flex", gap:10, alignItems:"flex-end" }}>
@@ -1476,18 +1565,20 @@ function PinGateOverlay({
       setTimeout(() => { setStatus("idle"); setDots([]); }, 1_300);
     }
   };
+  const maxLen = target === "supervisor" ? 6 : 4;
   const append = (d: string) => {
-    if (dots.length >= 4 || status !== "idle") return;
+    if (dots.length >= maxLen || status !== "idle") return;
     const next = [...dots, d];
     setDots(next);
-    if (next.length === 4) submit(next.join(""));
+    if (next.length === maxLen) submit(next.join(""));
   };
-  const del = () => { if (status === "idle") setDots(p => p.slice(0, -1)); };
+  const del   = () => { if (status === "idle") setDots(p => p.slice(0, -1)); };
+  const clear = () => { if (status === "idle") setDots([]); };
 
-  const KEYS = ["1","2","3","4","5","6","7","8","9","⌫","0","✓"];
+  const KEYS = ["1","2","3","4","5","6","7","8","9","CLR","0","⌫"];
   const accent = target === "admin" ? C.redHi : C.gold;
   const label  = target === "admin" ? "ADMIN OVERRIDE ACCESS" : "SUPERVISOR SESSION";
-  const hint   = target === "admin" ? "Founder PIN required" : "Enter your staff PIN to activate session";
+  const hint   = target === "admin" ? "Founder PIN required" : "Enter your 6-digit supervisor code to activate session";
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -1509,8 +1600,8 @@ function PinGateOverlay({
           </div>
           <div style={{ fontSize: 12, color: C.muted, marginTop: 6 }}>{hint}</div>
         </div>
-        <div style={{ display: "flex", justifyContent: "center", gap: 18, padding: "22px 0 18px" }}>
-          {[0,1,2,3].map(i => (
+        <div style={{ display: "flex", justifyContent: "center", gap: 16, padding: "22px 0 18px", flexWrap: "wrap" }}>
+          {Array.from({ length: maxLen }, (_, i) => i).map(i => (
             <motion.div key={i}
               animate={{
                 scale: dots.length > i ? 1.2 : 1,
@@ -1522,20 +1613,21 @@ function PinGateOverlay({
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, padding: "0 20px 20px" }}>
           {KEYS.map(k => {
-            const isBack    = k === "⌫";
-            const isConfirm = k === "✓";
+            const isBack  = k === "⌫";
+            const isClear = k === "CLR";
+            const action  = () => isClear ? clear() : isBack ? del() : append(k);
             return (
               <motion.button key={k} whileTap={{ scale: 0.86 }} {...T}
-                onTouchStart={e => { T.onTouchStart(e); isBack ? del() : isConfirm ? (dots.length === 4 && submit(dots.join(""))) : append(k); }}
-                onClick={() => isBack ? del() : isConfirm ? (dots.length === 4 && submit(dots.join(""))) : append(k)}
+                onTouchStart={e => { T.onTouchStart(e); action(); }}
+                onClick={action}
                 style={{ height: 64, borderRadius: 10, cursor: "pointer", fontFamily: C.sans,
-                  fontWeight: 900, fontSize: isBack || isConfirm ? 22 : 28,
-                  background: isConfirm ? `linear-gradient(135deg,${accent},${target === "admin" ? "#8B0000" : "#8B6914"})` : isBack ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.05)",
-                  border: `1px solid ${isConfirm ? accent : C.chrome}`,
-                  color: isConfirm ? (target === "admin" ? C.white : "#000") : C.white,
+                  fontWeight: 900, fontSize: isBack || isClear ? 18 : 28,
+                  background: isClear ? `rgba(231,76,60,0.12)` : isBack ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.05)",
+                  border: `1px solid ${isClear ? C.redHi + "44" : C.chrome}`,
+                  color: isClear ? C.redHi : C.white,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   opacity: status === "checking" ? 0.5 : 1 }}>
-                {status === "checking" && isConfirm ? "…" : k}
+                {status === "checking" ? "…" : k}
               </motion.button>
             );
           })}
@@ -1836,47 +1928,116 @@ const STAFF_SEED: StaffMember[] = [
 ];
 
 function StaffRosterModal({ onClose }: { onClose: () => void }) {
-  const [staff, setStaff]           = useState<StaffMember[]>(STAFF_SEED);
-  const [newName, setNewName]       = useState("");
-  const [newPin, setNewPin]         = useState("");
-  const [newSection, setNewSection] = useState("");
-  const [adding, setAdding]         = useState(false);
-  const [error, setError]           = useState<string | null>(null);
+  const ZONE_CATS = ["HUMIDOR DEPOT", "MAIN FLOOR LOUNGE", "HIGH-VELOCITY BAR", "KITCHEN LINE"] as const;
+  type ZoneCat = typeof ZONE_CATS[number];
+  const ZONE_COLORS: Record<ZoneCat, string> = {
+    "HUMIDOR DEPOT":     "#D4AF37",
+    "MAIN FLOOR LOUNGE": "#22C55E",
+    "HIGH-VELOCITY BAR": "#3B82F6",
+    "KITCHEN LINE":      "#E6A11D",
+  };
+  const ZONE_SHORT: Record<ZoneCat, string> = {
+    "HUMIDOR DEPOT": "HUMIDOR", "MAIN FLOOR LOUNGE": "FLOOR", "HIGH-VELOCITY BAR": "BAR", "KITCHEN LINE": "KITCHEN",
+  };
 
-  useEffect(() => { api.staffRoster().then(rows => { if (rows.length > 0) setStaff(rows); }); }, []);
+  const [staff,             setStaff]            = useState<StaffMember[]>(STAFF_SEED);
+  const [newName,           setNewName]           = useState("");
+  const [newPin,            setNewPin]            = useState("");
+  const [newSection,        setNewSection]        = useState<ZoneCat | "">("");
+  const [adding,            setAdding]            = useState(false);
+  const [error,             setError]             = useState<string | null>(null);
+  const [zones,             setZones]             = useState<Record<string, ZoneCat>>({});
+  const [overridePinTarget, setOverridePinTarget] = useState<string | null>(null);
+  const [overridePinDigits, setOverridePinDigits] = useState<string[]>([]);
+  const [blastState,        setBlastState]        = useState<"idle"|"firing"|"done">("idle");
+  const [blastResult,       setBlastResult]       = useState("");
+  const [auditLog, setAuditLog] = useState<{ts:string; zone:string; msg:string}[]>([
+    { ts: new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}), zone:"HUMIDOR", msg:"Alex M. started inventory check" },
+    { ts: new Date(Date.now()-4*60000).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}), zone:"BAR", msg:"Marcus T. processed payment on Table 101" },
+  ]);
+
+  const addAudit = (zone: string, msg: string) => {
+    const ts = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    setAuditLog(prev => [{ ts, zone, msg }, ...prev].slice(0,40));
+  };
+
+  useEffect(() => {
+    api.staffRoster().then(rows => {
+      if (rows.length > 0) {
+        setStaff(rows);
+        const zm: Record<string, ZoneCat> = {};
+        rows.forEach(r => { if (r.assignedSection && (ZONE_CATS as readonly string[]).includes(r.assignedSection)) zm[r.staffId] = r.assignedSection as ZoneCat; });
+        setZones(zm);
+      }
+    });
+  }, []);
 
   const toggleActive = async (member: StaffMember) => {
     const next = !member.isActive;
     setStaff(prev => prev.map(s => s.staffId === member.staffId ? { ...s, isActive: next } : s));
+    addAudit(zones[member.staffId] ?? "UNASSIGNED", `${member.staffName} ${next?"activated":"deactivated"}`);
     api.patchStaff(member.staffId, { isActive: next });
+  };
+
+  const reassignZoneFn = async (member: StaffMember, zone: ZoneCat) => {
+    setZones(prev => ({ ...prev, [member.staffId]: zone }));
+    setStaff(prev => prev.map(s => s.staffId === member.staffId ? { ...s, assignedSection: zone } : s));
+    addAudit(zone, `${member.staffName} reassigned to ${zone}`);
+    api.patchStaff(member.staffId, { assignedSection: zone });
+  };
+
+  const startPinOverride = (staffId: string) => { setOverridePinTarget(staffId); setOverridePinDigits([]); };
+  const cancelPinOverride = () => { setOverridePinTarget(null); setOverridePinDigits([]); };
+  const appendOverrideDigit = (d: string) => {
+    setOverridePinDigits(prev => {
+      const next = [...prev, d].slice(0, 4);
+      if (next.length === 4) {
+        const m = staff.find(s => s.staffId === overridePinTarget);
+        if (m) { addAudit(zones[overridePinTarget!] ?? "UNASSIGNED", `${m.staffName} PIN overridden by supervisor`); }
+        setTimeout(() => { setOverridePinTarget(null); setOverridePinDigits([]); }, 600);
+      }
+      return next;
+    });
   };
 
   const addMember = async () => {
     if (!newName.trim()) { setError("Name required"); return; }
     if (!/^\d{4}$/.test(newPin)) { setError("PIN must be 4 digits"); return; }
     setAdding(true); setError(null);
-    const local: StaffMember = { staffId:`local_${Date.now()}`, staffName:newName.trim(),
-      assignedSection:newSection.trim()||null, assignedTables:null, isActive:true };
+    const local: StaffMember = { staffId:`local_${Date.now()}`, staffName:newName.trim(), assignedSection:newSection||null, assignedTables:null, isActive:true };
     setStaff(prev => [...prev, local]);
-    const result = await api.addStaff({ staffName:newName.trim(), staffPin:newPin, assignedSection:newSection.trim()||undefined });
+    if (newSection) setZones(prev => ({ ...prev, [local.staffId]: newSection as ZoneCat }));
+    addAudit(newSection || "UNASSIGNED", `${newName.trim()} added to roster`);
+    const result = await api.addStaff({ staffName:newName.trim(), staffPin:newPin, assignedSection:newSection||undefined });
     if (result) setStaff(prev => prev.map(s => s.staffId === local.staffId ? result : s));
     setNewName(""); setNewPin(""); setNewSection(""); setAdding(false);
   };
 
-  const SECTIONS = ["VIP Section","Main Floor","Bar","Outdoor","Entrance","All Sections"];
+  const runProximityBlast = async () => {
+    setBlastState("firing");
+    const r = await api.proximityFlashBlast({ venueId:"tenant_profound_001", promoCode:`FLASH${Date.now().toString().slice(-4)}`, message:"Slow night special: 15% off premium pairings tonight only." });
+    setBlastResult(r?.message ?? "Blast dispatched.");
+    setBlastState("done");
+    addAudit("PROXIMITY", "Supervisor triggered 5-mile proximity flash blast");
+    setTimeout(() => setBlastState("idle"), 8_000);
+  };
+
+  const SECTIONS = ZONE_CATS; // kept for add-member select
 
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
       style={{ position:"fixed", inset:0, zIndex:9200, display:"flex", alignItems:"center", justifyContent:"center" }}>
       <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.88)", backdropFilter:"blur(14px)" }} onClick={onClose} />
       <motion.div initial={{scale:0.93,y:24}} animate={{scale:1,y:0}} exit={{scale:0.93,y:24}}
-        style={{ position:"relative", zIndex:1, width:680, maxHeight:"88vh", background:"rgba(5,5,7,0.99)",
+        style={{ position:"relative", zIndex:1, width:820, maxHeight:"93vh", background:"rgba(5,5,7,0.99)",
           border:`1px solid ${C.gold}`, borderRadius:14, overflow:"hidden", display:"flex", flexDirection:"column",
           boxShadow:`0 0 70px ${C.goldGlo}` }}>
+
+        {/* ── Header ── */}
         <div style={{ padding:"16px 22px", borderBottom:`1px solid ${C.chrome}`, display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0 }}>
           <div>
-            <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.28em" }}>SUPERVISOR DECK</div>
-            <div style={{ fontSize:22, fontWeight:900, color:C.white, marginTop:3 }}>STAFF DEPLOYMENT ROSTER</div>
+            <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.28em" }}>SUPERVISOR DECK — STAFF DEPLOYMENT MATRIX</div>
+            <div style={{ fontSize:22, fontWeight:900, color:C.white, marginTop:3 }}>DYNAMIC STAFF ZONING & OVERRIDE ENGINE</div>
           </div>
           <motion.button whileTap={{scale:0.9}} onClick={onClose} {...T}
             style={{ width:36, height:36, borderRadius:9, background:"rgba(255,255,255,0.05)", border:`1px solid ${C.chrome}`,
@@ -1884,59 +2045,164 @@ function StaffRosterModal({ onClose }: { onClose: () => void }) {
             <Icon d={P.close2} size={18} color={C.muted} />
           </motion.button>
         </div>
-        <div style={{ flex:1, overflowY:"auto" }}>
-          {staff.map((member, idx) => (
-            <div key={member.staffId} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 22px",
-              borderBottom:idx < staff.length-1 ? `1px solid ${C.chrome}` : "none", opacity:member.isActive?1:0.45 }}>
-              <div style={{ width:44, height:44, borderRadius:"50%", flexShrink:0,
-                background:`linear-gradient(135deg,${C.chrome},#1A1A1A)`, border:`2px solid ${member.isActive?C.gold:C.chrome}`,
-                display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <Icon d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" size={24} color={member.isActive?C.gold:C.muted} />
-              </div>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:18, fontWeight:700, color:C.white }}>{member.staffName}</div>
-                <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>
-                  {member.assignedSection ?? "No section assigned"}
-                  {member.assignedTables ? ` · Tables: ${member.assignedTables}` : ""}
-                </div>
-              </div>
-              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                <span style={{ fontSize:11, color:member.isActive?C.green:C.muted, fontFamily:C.mono }}>
-                  {member.isActive ? "ACTIVE" : "INACTIVE"}
-                </span>
-                <motion.div whileTap={{scale:0.92}} onClick={() => toggleActive(member)}
-                  style={{ width:52, height:28, borderRadius:14, cursor:"pointer",
-                    background:member.isActive?`linear-gradient(90deg,${C.green},#1E8449)`:"rgba(255,255,255,0.08)",
-                    border:`1px solid ${member.isActive?C.green:C.chrome}`,
-                    display:"flex", alignItems:"center", padding:"0 4px",
-                    justifyContent:member.isActive?"flex-end":"flex-start" }}>
-                  <motion.div layout style={{ width:20, height:20, borderRadius:"50%", background:member.isActive?"#FFF":C.chrome }} />
-                </motion.div>
-              </div>
+
+        {/* ── Zone Legend ── */}
+        <div style={{ display:"flex", gap:6, padding:"10px 22px", borderBottom:`1px solid ${C.chrome}`, flexShrink:0, flexWrap:"wrap" }}>
+          {ZONE_CATS.map(z => (
+            <div key={z} style={{ display:"flex", alignItems:"center", gap:5, padding:"3px 10px",
+              background:"rgba(255,255,255,0.04)", border:`1px solid ${ZONE_COLORS[z]}44`, borderRadius:20 }}>
+              <div style={{ width:7, height:7, borderRadius:"50%", background:ZONE_COLORS[z] }} />
+              <span style={{ fontSize:9, fontWeight:800, color:ZONE_COLORS[z], fontFamily:C.mono, letterSpacing:"0.14em" }}>{z}</span>
             </div>
           ))}
         </div>
-        <div style={{ padding:"16px 22px", borderTop:`1px solid ${C.chrome}`, flexShrink:0 }}>
+
+        {/* ── Two-column body ── */}
+        <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+          {/* Staff list */}
+          <div style={{ flex:1, overflowY:"auto", borderRight:`1px solid ${C.chrome}` }}>
+            {staff.map((member, idx) => {
+              const zone      = zones[member.staffId];
+              const zoneColor = zone ? ZONE_COLORS[zone] : C.muted;
+              const isPinTgt  = overridePinTarget === member.staffId;
+              return (
+                <div key={member.staffId} style={{ borderBottom:idx < staff.length-1 ? `1px solid ${C.chrome}` : "none",
+                  opacity: member.isActive ? 1 : 0.45, background: isPinTgt ? "rgba(212,175,55,0.05)" : "transparent" }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", gap:12, padding:"12px 18px" }}>
+                    <div style={{ width:46, height:46, borderRadius:"50%", flexShrink:0,
+                      background:`linear-gradient(135deg,${C.chrome},#1A1A1A)`, border:`2px solid ${zone ? zoneColor : C.chrome}`,
+                      display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <Icon d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" size={26} color={zone ? zoneColor : C.muted} />
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:18, fontWeight:700, color:C.white }}>{member.staffName}</div>
+                      <div style={{ display:"flex", gap:4, marginTop:7, flexWrap:"wrap" }}>
+                        {ZONE_CATS.map(z => (
+                          <motion.button key={z} whileTap={{scale:0.94}} onClick={() => reassignZoneFn(member, z)}
+                            style={{ height:26, padding:"0 9px", borderRadius:14, cursor:"pointer", fontFamily:C.mono,
+                              fontSize:8, fontWeight:800, letterSpacing:"0.10em", whiteSpace:"nowrap",
+                              background: zone===z ? `${ZONE_COLORS[z]}22` : "rgba(255,255,255,0.03)",
+                              border:`1px solid ${zone===z ? ZONE_COLORS[z] : C.chrome}`,
+                              color: zone===z ? ZONE_COLORS[z] : C.muted }}>
+                            {ZONE_SHORT[z]}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:8, flexShrink:0 }}>
+                      <motion.div whileTap={{scale:0.92}} onClick={() => toggleActive(member)}
+                        style={{ width:52, height:28, borderRadius:14, cursor:"pointer",
+                          background: member.isActive ? `linear-gradient(90deg,${C.green},#1E8449)` : "rgba(255,255,255,0.08)",
+                          border:`1px solid ${member.isActive ? C.green : C.chrome}`,
+                          display:"flex", alignItems:"center", padding:"0 4px",
+                          justifyContent: member.isActive ? "flex-end" : "flex-start" }}>
+                        <motion.div layout style={{ width:20, height:20, borderRadius:"50%", background: member.isActive ? "#FFF" : C.chrome }} />
+                      </motion.div>
+                      <motion.button whileTap={{scale:0.96}} {...T}
+                        onClick={() => isPinTgt ? cancelPinOverride() : startPinOverride(member.staffId)}
+                        style={{ height:36, padding:"0 12px", borderRadius:7, cursor:"pointer",
+                          background: isPinTgt ? "rgba(231,76,60,0.18)" : "rgba(255,255,255,0.05)",
+                          border:`1px solid ${isPinTgt ? C.redHi : C.gold}`,
+                          color: isPinTgt ? C.redHi : C.gold,
+                          fontSize:9, fontWeight:800, letterSpacing:"0.14em", fontFamily:C.mono, whiteSpace:"nowrap" }}>
+                        {isPinTgt ? "CANCEL" : "OVERRIDE PIN"}
+                      </motion.button>
+                    </div>
+                  </div>
+                  {isPinTgt && (
+                    <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}}
+                      style={{ padding:"12px 22px", borderTop:`1px solid ${C.chrome}`, background:"rgba(255,255,255,0.02)" }}>
+                      <div style={{ fontSize:9, fontFamily:C.mono, color:C.gold, letterSpacing:"0.20em", marginBottom:8 }}>
+                        NEW 4-DIGIT PIN FOR {member.staffName.toUpperCase()}
+                      </div>
+                      <div style={{ display:"flex", gap:10, alignItems:"center", marginBottom:10 }}>
+                        {[0,1,2,3].map(i => (
+                          <div key={i} style={{ width:14, height:14, borderRadius:"50%",
+                            background: overridePinDigits.length > i ? C.gold : "rgba(255,255,255,0.12)",
+                            border:`2px solid ${C.gold}44` }} />
+                        ))}
+                      </div>
+                      <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:5 }}>
+                        {["1","2","3","4","5","6","7","8","9","×","0","⌫"].map(k => (
+                          <motion.button key={k} whileTap={{scale:0.88}}
+                            onClick={() => k==="⌫" ? setOverridePinDigits(p=>p.slice(0,-1)) : k==="×" ? cancelPinOverride() : appendOverrideDigit(k)}
+                            style={{ height:36, borderRadius:7, cursor:"pointer",
+                              background: k==="×" ? "rgba(231,76,60,0.12)" : "rgba(255,255,255,0.05)",
+                              border:`1px solid ${k==="×" ? C.redHi+"44" : C.chrome}`,
+                              color: k==="×" ? C.redHi : C.white, fontSize:14, fontWeight:900, fontFamily:C.sans }}>
+                            {k}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Audit Ticker + Proximity Blast */}
+          <div style={{ width:240, display:"flex", flexDirection:"column", flexShrink:0 }}>
+            <div style={{ padding:"10px 14px", borderBottom:`1px solid ${C.chrome}`, flexShrink:0 }}>
+              <div style={{ fontSize:9, fontFamily:C.mono, color:C.gold, letterSpacing:"0.22em" }}>LIVE AUDIT TICKER</div>
+              <motion.div animate={{opacity:[1,0.4,1]}} transition={{duration:1.2,repeat:Infinity}}
+                style={{ display:"flex", alignItems:"center", gap:5, marginTop:4 }}>
+                <div style={{ width:6, height:6, borderRadius:"50%", background:C.green }} />
+                <span style={{ fontSize:8, color:C.green, fontFamily:C.mono, letterSpacing:"0.14em" }}>REAL-TIME</span>
+              </motion.div>
+            </div>
+            <div style={{ flex:1, overflowY:"auto", padding:"8px 0" }}>
+              {auditLog.map((entry, i) => (
+                <div key={i} style={{ padding:"7px 14px", borderBottom:`1px solid ${C.chrome}22` }}>
+                  <div style={{ fontSize:8, fontFamily:C.mono, color:C.muted, marginBottom:2 }}>
+                    {entry.ts} · <span style={{ color:C.amber }}>[{entry.zone}]</span>
+                  </div>
+                  <div style={{ fontSize:10, color:C.white, lineHeight:1.4 }}>{entry.msg}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding:"12px 14px", borderTop:`1px solid ${C.chrome}`, flexShrink:0 }}>
+              <div style={{ fontSize:8, fontFamily:C.mono, color:C.amber, letterSpacing:"0.18em", marginBottom:8 }}>⚡ PROXIMITY FLASH BLAST</div>
+              {blastResult && blastState==="done" && (
+                <div style={{ fontSize:9, color:C.green, marginBottom:8, lineHeight:1.4 }}>{blastResult}</div>
+              )}
+              <motion.button whileTap={{scale:0.96}} onClick={runProximityBlast} disabled={blastState==="firing"}
+                style={{ width:"100%", height:44, borderRadius:8, cursor:"pointer",
+                  background: blastState==="done" ? "rgba(34,197,94,0.18)" : "rgba(230,161,29,0.15)",
+                  border:`1px solid ${blastState==="done" ? C.green : C.amber}`,
+                  color: blastState==="done" ? C.green : C.amber,
+                  fontSize:9, fontWeight:800, letterSpacing:"0.14em", fontFamily:C.mono,
+                  display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                {blastState==="firing"
+                  ? <motion.span animate={{opacity:[1,0.4,1]}} transition={{duration:0.7,repeat:Infinity}}>FIRING...</motion.span>
+                  : blastState==="done" ? "BLAST SENT ✓" : "5-MILE BLAST →"}
+              </motion.button>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Add Staff Footer ── */}
+        <div style={{ padding:"14px 22px", borderTop:`1px solid ${C.chrome}`, flexShrink:0 }}>
           <div style={{ fontSize:10, fontFamily:C.mono, color:C.gold, letterSpacing:"0.22em", marginBottom:10 }}>ADD STAFF MEMBER</div>
           {error && <div style={{ fontSize:13, color:C.redHi, marginBottom:8 }}>{error}</div>}
           <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
             <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Full Name"
               style={{ flex:2, minWidth:140, height:44, background:"rgba(255,255,255,0.06)", border:`1px solid ${C.chrome}`,
-                borderRadius:7, color:C.white, fontSize:18, padding:"0 12px", outline:"none", fontFamily:C.sans }} />
+                borderRadius:7, color:C.white, fontSize:16, padding:"0 12px", outline:"none", fontFamily:C.sans }} />
             <input value={newPin} onChange={e => setNewPin(e.target.value.replace(/\D/g,"").slice(0,4))} placeholder="4-digit PIN" type="password"
               style={{ width:120, height:44, background:"rgba(255,255,255,0.06)", border:`1px solid ${C.chrome}`,
-                borderRadius:7, color:C.white, fontSize:18, padding:"0 12px", outline:"none", fontFamily:C.mono, letterSpacing:"0.2em" }} />
-            <select value={newSection} onChange={e => setNewSection(e.target.value)}
-              style={{ flex:1, minWidth:140, height:44, background:"rgba(10,10,10,0.95)", border:`1px solid ${C.chrome}`,
-                borderRadius:7, color:newSection?C.white:C.muted, fontSize:16, padding:"0 10px", outline:"none", fontFamily:C.sans }}>
-              <option value="">Select Section</option>
+                borderRadius:7, color:C.white, fontSize:16, padding:"0 12px", outline:"none", fontFamily:C.mono, letterSpacing:"0.2em" }} />
+            <select value={newSection} onChange={e => setNewSection(e.target.value as typeof newSection)}
+              style={{ flex:1, minWidth:160, height:44, background:"rgba(10,10,10,0.95)", border:`1px solid ${C.chrome}`,
+                borderRadius:7, color: newSection ? C.white : C.muted, fontSize:14, padding:"0 10px", outline:"none", fontFamily:C.sans }}>
+              <option value="">Select Zone</option>
               {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
             <motion.button whileTap={{scale:0.96}} {...T}
               onTouchStart={e => { T.onTouchStart(e); addMember(); }} onClick={addMember}
               style={{ height:44, padding:"0 20px", borderRadius:7, background:`linear-gradient(135deg,${C.gold},#A67C00)`,
                 border:"none", color:"#000", fontSize:16, fontWeight:900, cursor:"pointer", fontFamily:C.sans,
-                opacity:adding?0.6:1, minWidth:100 }}>
+                opacity: adding ? 0.6 : 1, minWidth:100 }}>
               {adding ? "ADDING..." : "ADD STAFF"}
             </motion.button>
           </div>
@@ -2157,6 +2423,28 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
     setSessionStart(null); setEnteredPin(""); setPinTarget(null);
   }, []);
 
+  // ── 120-second idle lockout ─────────────────────────────────────────────────
+  useEffect(() => {
+    const IDLE_MS = 120_000;
+    let timer: ReturnType<typeof setTimeout>;
+    const reset = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        setIsAdminView(false);
+        setIsSupervisorView(false);
+        setSessionStart(null);
+      }, IDLE_MS);
+    };
+    window.addEventListener("touchstart", reset, { passive: true });
+    window.addEventListener("click",      reset);
+    reset();
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("touchstart", reset);
+      window.removeEventListener("click",      reset);
+    };
+  }, []);
+
   const forceCloseTable = useCallback((tableId: number) => {
     setVenueState(prev => {
       const next = { ...prev.activeTables }; delete next[tableId];
@@ -2350,7 +2638,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           isSupervisorView={isSupervisorView}
           onOpenPinGate={openPinGate}
         />
-        <div style={{ flex:1, display:"grid", gridTemplateColumns:"1fr 1.15fr 1fr", gap:10, padding:"10px 12px 10px 10px", overflow:"hidden" }}>
+        <div style={{ flex:1, display:"grid", gridTemplateColumns:"1fr 1.2fr 1fr", gap:16, padding:"16px", overflow:"hidden" }}>
           <TelemetryCol
             tel={venueState.telemetry}
             thresh={thresholds}

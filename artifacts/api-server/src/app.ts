@@ -70,6 +70,7 @@ import purchaseOrdersRouter       from "./routes/purchaseOrdersRoute";
 import deviceFleetRouter          from "./routes/deviceFleet";
 import arrEngineRouter            from "./routes/arrEngine";
 import { multiTenantRouter }      from "./routes/multiTenant";
+import { dayoneProximityRouter }  from "./routes/dayoneProximity";
 import intelligenceRouter         from "./routes/intelligence";
 import orchestrationRouter        from "./routes/orchestration";
 import distributedClusterRouter   from "./routes/distributedCluster";
@@ -645,6 +646,7 @@ app.use("/api",                         purchaseOrdersRouter);
 app.use("/api",                         deviceFleetRouter);
 app.use("/api",                         arrEngineRouter);
 app.use("/api",                         multiTenantRouter);
+app.use("/api",                         dayoneProximityRouter);
 
 // ── Deep health endpoint ───────────────────────────────────────────────────────
 

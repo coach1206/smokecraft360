@@ -1,0 +1,50 @@
+COMMAND OVERRIDE: FULL INFRASTRUCTURE SPECIFICATION AND IMPLEMENTATION. You are commanded to execute the complete, un-truncated feature build for our core terminal and backend architecture. Implement items 2 through 6 identically across both SmokeCraft and NOVEE OS environments. Maintain all existing state handlers, upscaled touchscreen font properties, and 100vw edge-to-edge styling boundaries.
+
+Execute this comprehensive programmatic build now:
+
+---
+
+### 2. DUAL-LAYERED TOUCHSCREEN PIN SECURITY SECURITY FIREWALLS
+* **Layer 1: Staff 4-Digit PIN Access Gateway Keypad Layout:**
+  - Tapping the top navigation bar '* STAFF AUTH' button or touching any active table card container in Column 2 while `isAdminView === false` must lock the view and render an Obsidian Glass numeric keypad layout overlay component (`isPinModalOpen`).
+  - The keypad component must display a 3x4 layout container grid: `[1] [2] [3]`, `[4] [5] [6]`, `[7] [8] [9]`, and a bottom row containing `[CLEAR] [0] [✕ BACKSPACE]`. Every button target key must utilize an explicit `height: "58px"` touch footprint envelope.
+  - Validate the typed input against active records in our 'venue_staff' database table. If valid, set 'isAdminView = true', reset the entry buffer, and unlock the 3-column workstation. If invalid, flash an 'ACCESS DENIED' amber warning state.
+* **Layer 2: Supervisor 6-Digit Root Gateway Keypad Layout:**
+  - Any direct touch navigation target attempting to open the E.A.T. Command Center Hub matrix, edit POS menu mappings, or generate manual purchase orders must intercept the route and force a separate 6-digit cryptographic security code screen overlay with an identical premium numeric keypad layout. Validate specifically against database profiles flagged with supervisor status fields.
+* **Automated Idle Lockout Timer:** If the touchscreen registers zero interaction events (`onTouchStart`, `onClick`) for more than 120 seconds, automatically trigger an immutable state cleanup mutation: clear current authorization tokens, set 'isAdminView = false', set 'isSupervisorView = false', and lock the console back down to the secure PIN view frame.
+
+---
+
+### 3. THE DYNAMIC STAFF ZONING, TRACKING, & OVERRIDE MATRIX
+Inside the supervisor hub, build out an interactive operational roster tracking who is deployed where and what assets they are controlling:
+* **Categorized Venue Infrastructure Groups:** Segment the visual deployment display into 4 explicit operational categories: [HUMIDOR DEPOT], [MAIN FLOOR LOUNGE], [HIGH-VELOCITY BAR], and [KITCHEN LINE].
+* **Live Dynamic PIN Assignment & Re-Routing:** Next to each employee profile, display their assigned category as a touch-ready drop-down menu or selection pill array. If a manager switches an employee from 'HUMIDOR DEPOT' to 'HIGH-VELOCITY BAR', their operational footprint, active table notifications, and ticket-mapping metrics must instantly follow their PIN profile to that physical station in real time.
+* **The Live PIN Override Engine:** Every staff row must include a 58px action touch target reading `[ OVERRIDE PIN ]`. Tapping this must open an instant keypad prompt letting the supervisor update that staff member's passcode or instantly toggle their access switch to 'Deactivated' in real time, writing straight to the database.
+* **The Integrated Audit Tracker:** Embed a live scrolling telemetry ticker alongside the roster that displays real-time actions stamped by zone and employee name (e.g., "11:04 PM - [HUMIDOR] Alex M. checked inventory status", "11:08 PM - [BAR] Marcus T. processed payment on Table 101").
+
+---
+
+### 4. THE INTERACTIVE TICKET TAPPER SMART UPSELL & POS WEBHOOK INTEGRATION
+* **The Interaction Intercept:** Modify the 58px touch targets inside Column 3. When an item or quantity rocker is tapped, intercept the action and pop open a centered Obsidian Glass confirmation layout box using the state `isUpsellModalOpen === true`.
+* **The Prominent Question Prompt:** Render a clear, bold message text: "Would you like to upgrade this selection to our premium Cigar/Spirit Special pairing?"
+* **Live Ticket & Inventory Mutation:** If the user touches [ YES ], instantly mutate `venueState.activeTables[selectedTableId].items` to include the upgraded SKU pricing tiers, calculate the 8.46% sales tax instantly, and dispatch a background event packet straight to our live Kitchen Queue state array (`kitchenReady` tracker). Concurrently, execute an immediate inventory drop in Column 1 ('Puros Remaining').
+* **External Clover/Toast Webhook Relay:** When the upgraded transaction is processed via the gold '[ PROCESS PAYMENT ➔ ]' button at the base of Column 3, bundle the new 'Special Pairing' SKU data, table coordinates, and employee PIN signature into our POS Provider Hub Normalization engine, firing the payload to your configured external webhooks.
+
+---
+
+### 5. DAYONE360 PASSIVE REVENUE TRACKING & 5-MILE PROXIMITY PROMOTIONS
+* **DayOne360 Referral Attribution:** Build a link trigger to fetch `dayone360ReferralUrl`. Log all outbound guest booking clicks to a backend `dayone_commission_logs` table tracking source venue attribution metrics so referral commissions automatically stream back into the specific venue's master ledger metadata inside the Command Center Hub.
+* **The 5-Mile Radius Opt-In Proximity Promotion Grid:** Add a boolean flag field to our member context profiles database schemas: `proximity_sms_opt_in` (defaults to false).
+* **The Slow-Night Trigger Loop:** Inside the protected Supervisor Command Center Hub, build a marketing trigger card called "Proximity Flash Blast". When a supervisor executes this action block, query the geolocation tracking coordinates. Filter for members where `proximity_sms_opt_in === true` who are within an absolute 5-mile distance radius from the venue coordinates. Trigger a simulated external SMS text broadcast containing targeted slow-night promotion codes, and log the campaign impact telemetry dynamically. When a guest confirms, instantly inject a new card row into your `reservations` table schema.
+
+---
+
+### 6. GLOBAL TOUCHSCREEN SCALE & MULTI-TENANT FAILOVER INFRASTRUCTURE
+* **Master Workspace Chassis Grid:** Enforce our absolute fullscreen widescreen layout rules: `width: "100vw"`, `height: "100vh"`, `backgroundColor: "#020202"`, `display: "grid"`, `gridTemplateColumns: "64px 1fr 1.2fr 1fr"`, `gap: "16px"`, `padding: "16px"`. 
+* **Sovereign Typography Upscale:** - COLUMN 1: Telemetry subtext headers must be bold and set to `fontSize: "18px"`. Main climate readouts must use `fontSize: "20px"` in true white high-visibility text.
+  - COLUMN 2: Table headers, guest names, and active timers must use a minimum of `fontSize: "18px"`.
+  - COLUMN 3: Itemized SKU names and quantity multipliers must be bold and set to `fontSize: "18px"` minimum. The final numeric total bill output balance must render in a prominent `fontSize: "26px"` highlighted with a glowing amber-gold outline color layer (#E6A11D).
+  - LOWER TELEMETRY BAR: Set all subtext headers to `fontSize: "18px"` minimum, and all dynamic engine metrics to a thick, bold `fontSize: "24px"`.
+* **Multi-Tenant Partitioning & HA Replica Status Engine:** Integrate the backend `multiTenantRouter` logic. Provide a frontend card interface inside the developer console mapping node connections (`PRIMARY_WRITE_CLUSTER` vs. `REPLICA_MIRROR_01`). Mount an active 58px touch target labeled `[ FORCE REPLICA HOT-SWAP TEST ]` that executes a live failover loop, verifying zero-downtime client-side operations on press.
+
+Execute this comprehensive full-chassis configuration right now. Compile all layout files and update the live preview window immediately.
