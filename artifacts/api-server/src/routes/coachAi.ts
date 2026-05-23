@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { logger } from "../lib/logger";
+import { openai } from "@workspace/integrations-openai-ai-server";
 import { getCoachResponse, getDocumentSearchResponse } from "../services/coachHelpAIService";
 import { buildDocumentIndex, getIndexStats } from "../services/documentIndexService";
 import { KNOWLEDGE_BASE, getAllDomains, getChunksByDomain } from "../services/coachKnowledgeBase";
@@ -115,6 +116,56 @@ router.get("/stats", (_req, res) => {
     manuals: MASTER_MANUALS.length,
     roles: Object.keys(ROLE_PROFILES).length,
   });
+});
+
+const CoachChatSchema = z.object({
+  message:      z.string().min(1).max(600),
+  topicContext: z.string().max(200).optional(),
+  themeState:   z.object({
+    operationalMode:    z.string().optional(),
+    operationalLayout:  z.string().optional(),
+    fontScale:          z.number().optional(),
+    touchScale:         z.number().optional(),
+    contrastMode:       z.string().optional(),
+    animationIntensity: z.string().optional(),
+    spacingMode:        z.string().optional(),
+    dashboardDensity:   z.string().optional(),
+    cinematicIntensity: z.string().optional(),
+  }).optional(),
+});
+
+router.post("/chat", async (req, res) => {
+  const parsed = CoachChatSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid request", details: parsed.error.flatten() });
+    return;
+  }
+
+  const { message, topicContext, themeState } = parsed.data;
+
+  const themeContext = themeState
+    ? `\n\nCurrent interface state: operational mode="${themeState.operationalMode ?? "standard"}", layout="${themeState.operationalLayout ?? "Standard"}", cinematic intensity="${themeState.cinematicIntensity ?? "standard"}", dashboard density="${themeState.dashboardDensity ?? "standard"}". Adapt your communication style accordingly — senior mode warrants slower, clearer phrasing; rush mode warrants brevity and directness.`
+    : "";
+
+  const systemPrompt = `You are the Sovereign Intelligence Coach for NOVEE OS — the luxury hospitality operating platform for upscale cigar lounges and venues. You speak with precision, authority, and understated elegance. Never use casual language.${topicContext ? ` Current topic context: ${topicContext}.` : ""}${themeContext}`;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system",    content: systemPrompt },
+        { role: "user",      content: message },
+      ],
+      max_tokens: 400,
+      temperature: 0.7,
+    });
+
+    const reply = completion.choices[0]?.message?.content ?? "Guidance unavailable at this moment.";
+    res.json({ reply, themeAware: !!themeState });
+  } catch (err) {
+    req.log.error({ err }, "Coach /chat failed");
+    res.status(500).json({ error: "Coach temporarily unavailable" });
+  }
 });
 
 export default router;

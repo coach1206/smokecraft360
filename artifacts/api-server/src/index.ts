@@ -1227,6 +1227,16 @@ await pgPubSub.init();
 const { FounderIntelligenceStream } = await import("./services/founderIntelligenceStream");
 FounderIntelligenceStream.init();
 
+// Theme-sync broadcast namespace — mirrors the /ws/theme-sync broadcast
+// channel via the existing Socket.io server (no separate ws server needed).
+const io = getIO();
+const themeSyncNs = io.of("/ws/theme-sync");
+themeSyncNs.on("connection", (socket) => {
+  socket.on("theme:update", (payload: unknown) => {
+    socket.broadcast.emit("theme:update", payload);
+  });
+});
+
 httpServer.listen(port, (err?: Error) => {
   if (err) {
     logger.error({ err }, "Error listening on port");
