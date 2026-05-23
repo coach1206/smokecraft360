@@ -1,0 +1,29 @@
+COMMAND OVERRIDE: CROSS-LAYER ARCHITECTURE SYNERGY MERGE. Our individual application interfaces are performing in isolation. You are commanded to build out the high-level operational sync pipes, telemetry relays, and analytic data loops required to bind the Staff Terminal UI (POS3.png), the Command Hub Hub, and the Developer Multi-Tenant Dashboard into a single, cohesive sovereign platform.
+
+Execute this cross-layer pipeline integration right now:
+
+---
+
+### 1. DEPLOY THE COMMAND HUB ➔ POS3 CLIENT SOCKET SUBSCRIPTION
+* **The Reactive Zone Sync:** Inside the 'StaffTerminal' state engine, implement a persistent listener effect connected to our database event stream. 
+* **The Dynamic UI Remap:** The exact millisecond a supervisor modifies an employee's section assignment inside the Command Hub (e.g., moving a staff PIN from HUMIDOR to BAR), force the client UI to immediately re-filter its active table grids, notification queues, and telemetry card focus streams to match that exact station profile dynamically.
+
+---
+
+### 2. STREAM THE HARDWARE FLEET HEARTBEAT LOGS
+* **The Telemetry Collector:** Build a background scheduling hook inside the client terminal wrapper that checks device pulse metrics every 60 seconds (local battery status, network latency millisecond responses, and client-side database retry queue depth).
+* **The Admin Surface:** Stream this data structure packet directly to an active table endpoint accessible by the Command Center Hub, tracking active node health across the entire hardware fleet layout.
+
+---
+
+### 3. WIRE THE TRANSACTIONS TO THE DEVELOPER SAAS ARR ENGINE
+* **The Financial Split Pipeline:** Modify our '[ PROCESS PAYMENT ➔ ]' success handler function. Upon authorization completion, take the transaction invoice totals and instantly compute our platform's software licensing take-rate percentage metrics.
+* **The Multi-Tenant Record:** Broadcast this calculation payload securely to our Developer Console analytics schema table to continuously update the platform's multi-location ARR metrics and performance tracking lines in real time.
+
+---
+
+### 4. MOUNT THE STAFF CONTEXT COACHING DELIVEY INTERFACE
+* **The AI Display Frame:** Create a compact, highly visible Obsidian Glass information badge component directly inside Column 3 (Active Ledger) of the Staff Terminal layout. Set text parameters to a bold, highly readable structure.
+* **The Data Injection Rail:** Wire this UI container to pull recommendations directly from our 'staff_context_profiles' AI generation table. If the database updates with an optimized tableside upsell suggestion or brand pairing cue tailored for that staff member's active section, surface the text prompt instantly onto their screen workspace.
+
+Ensure all layout components honor our full widescreen edge-to-edge width configuration rules, maintain our minimum 58px touchscreen hit-target boundaries, and use our prominent typography scales. Do not break or delete existing multi-tenant routing properties or PIN authorization codes. Compile these cross-system connections right now.

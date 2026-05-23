@@ -9,7 +9,7 @@
 import { Router } from "express";
 import { db }     from "@workspace/db";
 import { venueStaffTable } from "@workspace/db/schema";
-import { eq }     from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 const router = Router();
 
@@ -91,6 +91,36 @@ router.patch("/roster/:id", async (req, res) => {
     res.json({ member: row });
   } catch (err) {
     res.status(500).json({ error: String(err) });
+  }
+});
+
+// ── POST /api/staff/validate-pin ─────────────────────────────────────────────
+// Level "supervisor": match active staff PIN in venue_staff table.
+// Level "admin":      bcrypt-compare against FOUNDER_PIN_HASH env var (dev fallback: "9999").
+router.post("/validate-pin", async (req, res) => {
+  const { pin, level } = req.body as { pin?: string; level?: string };
+  if (!pin || !/^\d{4}$/.test(pin) || !["supervisor", "admin"].includes(level ?? "")) {
+    res.status(400).json({ ok: false, error: "invalid_request" }); return;
+  }
+  try {
+    if (level === "admin") {
+      const hash = process.env["FOUNDER_PIN_HASH"] ?? "";
+      if (!hash) {
+        res.json({ ok: pin === "9999", level }); return;
+      }
+      const { compare } = await import("bcryptjs");
+      const ok = await compare(pin, hash);
+      res.json({ ok, level }); return;
+    }
+    // supervisor: check any active staff member with matching PIN
+    const matched = await db
+      .select({ staffId: venueStaffTable.staffId, staffName: venueStaffTable.staffName })
+      .from(venueStaffTable)
+      .where(and(eq(venueStaffTable.staffPin, pin), eq(venueStaffTable.isActive, true)))
+      .limit(1);
+    res.json({ ok: matched.length > 0, staffName: matched[0]?.staffName ?? null, level });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: String(err) });
   }
 });
 

@@ -45,6 +45,9 @@ const P = {
   list:    "M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z",
   filter:  "M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z",
   signal:  "M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z",
+  lock:    "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z",
+  shield:  "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z",
+  map:     "M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z",
   wifi:    "M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z",
   star:    "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z",
   receipt: "M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z",
@@ -205,6 +208,17 @@ const api = {
       const j = await r.json();
       return j.order ?? null;
     } catch { return null; }
+  },
+  validatePin: async (pin: string, level: "supervisor" | "admin"): Promise<{ ok: boolean; staffName?: string }> => {
+    try {
+      const r = await fetch("/api/staff/validate-pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin, level }),
+      });
+      if (!r.ok) return { ok: false };
+      return await r.json() as { ok: boolean; staffName?: string };
+    } catch { return { ok: false }; }
   },
   saveMapping: async (eeisProdId: string, eeisName: string, posProdId: string): Promise<boolean> => {
     try {
@@ -433,7 +447,12 @@ function Header({ lastSync, syncAge }: { lastSync: Date; syncAge: number }) {
 }
 
 // ── Nav Rail ──────────────────────────────────────────────────────────────────
-function NavRail({ onBack }: { onBack: () => void }) {
+function NavRail({ onBack, isAdminView, isSupervisorView, onOpenPinGate }: {
+  onBack: () => void;
+  isAdminView: boolean;
+  isSupervisorView: boolean;
+  onOpenPinGate: (target: "supervisor" | "admin") => void;
+}) {
   const items = [
     { icon:P.house,    sub:"Hub",           active:true,  fn:onBack },
     { icon:P.leaf,     sub:"SC\nSmoke",     active:false, fn:undefined },
@@ -450,6 +469,35 @@ function NavRail({ onBack }: { onBack: () => void }) {
         </motion.button>
       ))}
       <div style={{ flex:1 }} />
+      {/* ── Security Gate Buttons ── */}
+      <motion.button whileTap={{scale:0.91}} {...T}
+        onTouchStart={e => { T.onTouchStart(e); onOpenPinGate("supervisor"); }}
+        onClick={() => onOpenPinGate("supervisor")}
+        style={{ width:52, minHeight:58, borderRadius:8, cursor:"pointer", marginBottom:4,
+          background: isSupervisorView ? `rgba(212,175,55,0.22)` : "rgba(255,255,255,0.04)",
+          border:`1px solid ${isSupervisorView ? C.gold : C.chrome}`,
+          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3 }}>
+        <Icon d={P.lock} size={16} color={isSupervisorView ? C.gold : C.muted} />
+        <span style={{ fontFamily:C.mono, fontSize:6, color:isSupervisorView ? C.gold : C.muted, letterSpacing:"0.08em", textAlign:"center", lineHeight:1.3 }}>{"SUP\nACCESS"}</span>
+        {isSupervisorView && (
+          <motion.div animate={{opacity:[1,0.3,1]}} transition={{duration:1.1,repeat:Infinity}}
+            style={{width:6,height:6,borderRadius:"50%",background:C.gold}} />
+        )}
+      </motion.button>
+      <motion.button whileTap={{scale:0.91}} {...T}
+        onTouchStart={e => { T.onTouchStart(e); onOpenPinGate("admin"); }}
+        onClick={() => onOpenPinGate("admin")}
+        style={{ width:52, minHeight:58, borderRadius:8, cursor:"pointer", marginBottom:4,
+          background: isAdminView ? `rgba(231,76,60,0.22)` : "rgba(255,255,255,0.04)",
+          border:`1px solid ${isAdminView ? C.redHi : C.chrome}`,
+          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3 }}>
+        <Icon d={P.shield} size={16} color={isAdminView ? C.redHi : C.muted} />
+        <span style={{ fontFamily:C.mono, fontSize:6, color:isAdminView ? C.redHi : C.muted, letterSpacing:"0.08em", textAlign:"center", lineHeight:1.3 }}>{"ADMIN\nGATE"}</span>
+        {isAdminView && (
+          <motion.div animate={{opacity:[1,0.3,1]}} transition={{duration:0.8,repeat:Infinity}}
+            style={{width:6,height:6,borderRadius:"50%",background:C.redHi}} />
+        )}
+      </motion.button>
       <motion.button whileTap={{scale:0.93}} {...T}
         style={{ width:52, minHeight:70, marginBottom:10, borderRadius:8, background:`linear-gradient(180deg,rgba(212,175,55,0.20),rgba(212,175,55,0.09))`, border:`1px solid ${C.gold}`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", cursor:"pointer", gap:2, boxShadow:`0 0 16px ${C.goldGlo}` }}>
         <span style={{ fontSize:24, fontWeight:900, color:C.gold }}>P</span>
@@ -1022,6 +1070,248 @@ function Footer({ revenue, providers, paymentState }: {
   );
 }
 
+// ── PIN Gate Overlay — dual-layer security authentication ─────────────────────
+function PinGateOverlay({
+  target, onSuccess, onCancel,
+}: {
+  target: "supervisor" | "admin";
+  onSuccess: (level: "supervisor" | "admin") => void;
+  onCancel: () => void;
+}) {
+  const [dots,   setDots]   = useState<string[]>([]);
+  const [status, setStatus] = useState<"idle" | "checking" | "fail">("idle");
+
+  const submit = async (pin: string) => {
+    setStatus("checking");
+    const result = await api.validatePin(pin, target);
+    if (result.ok) {
+      onSuccess(target);
+    } else {
+      setStatus("fail");
+      setTimeout(() => { setStatus("idle"); setDots([]); }, 1_300);
+    }
+  };
+  const append = (d: string) => {
+    if (dots.length >= 4 || status !== "idle") return;
+    const next = [...dots, d];
+    setDots(next);
+    if (next.length === 4) submit(next.join(""));
+  };
+  const del = () => { if (status === "idle") setDots(p => p.slice(0, -1)); };
+
+  const KEYS = ["1","2","3","4","5","6","7","8","9","⌫","0","✓"];
+  const accent = target === "admin" ? C.redHi : C.gold;
+  const label  = target === "admin" ? "ADMIN OVERRIDE ACCESS" : "SUPERVISOR SESSION";
+  const hint   = target === "admin" ? "Founder PIN required" : "Enter your staff PIN to activate session";
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ position: "fixed", inset: 0, zIndex: 9800, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.93)", backdropFilter: "blur(20px)" }} onClick={onCancel} />
+      <motion.div
+        animate={status === "fail" ? { x: [0, -14, 14, -10, 10, -5, 5, 0] } : {}}
+        transition={{ duration: 0.48 }}
+        initial={{ scale: 0.88, y: 36 }} whileInView={{ scale: 1, y: 0 }}
+        style={{ position: "relative", zIndex: 1, width: 360,
+          background: "rgba(3,3,5,0.99)", border: `1px solid ${accent}`,
+          borderRadius: 16, overflow: "hidden", boxShadow: `0 0 90px ${accent}44` }}>
+        {/* Header */}
+        <div style={{ padding: "20px 24px 16px", textAlign: "center", borderBottom: `1px solid ${C.chrome}`,
+          background: `linear-gradient(180deg,${target === "admin" ? "rgba(80,10,10,0.6)" : "rgba(60,50,0,0.5)"},transparent)` }}>
+          <div style={{ fontFamily: C.mono, fontSize: 9, color: accent, letterSpacing: "0.32em" }}>E.A.T. SECURITY LAYER</div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginTop: 8 }}>
+            <Icon d={P.shield} size={24} color={accent} />
+            <div style={{ fontSize: 22, fontWeight: 900, color: C.white }}>{label}</div>
+          </div>
+          <div style={{ fontSize: 12, color: C.muted, marginTop: 6 }}>{hint}</div>
+        </div>
+        {/* Dot indicator */}
+        <div style={{ display: "flex", justifyContent: "center", gap: 18, padding: "22px 0 18px" }}>
+          {[0,1,2,3].map(i => (
+            <motion.div key={i}
+              animate={{
+                scale: dots.length > i ? 1.2 : 1,
+                background: status === "fail" ? C.redHi : dots.length > i ? accent : "rgba(255,255,255,0.10)",
+              }}
+              transition={{ duration: 0.15 }}
+              style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${status === "fail" ? C.redHi : accent}` }} />
+          ))}
+        </div>
+        {/* Numpad */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, padding: "0 20px 20px" }}>
+          {KEYS.map(k => {
+            const isBack    = k === "⌫";
+            const isConfirm = k === "✓";
+            return (
+              <motion.button key={k} whileTap={{ scale: 0.86 }} {...T}
+                onTouchStart={e => { T.onTouchStart(e); isBack ? del() : isConfirm ? (dots.length === 4 && submit(dots.join(""))) : append(k); }}
+                onClick={() => isBack ? del() : isConfirm ? (dots.length === 4 && submit(dots.join(""))) : append(k)}
+                style={{ height: 64, borderRadius: 10, cursor: "pointer", fontFamily: C.sans,
+                  fontWeight: 900, fontSize: isBack || isConfirm ? 22 : 28,
+                  background: isConfirm ? `linear-gradient(135deg,${accent},${target === "admin" ? "#8B0000" : "#8B6914"})` : isBack ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.05)",
+                  border: `1px solid ${isConfirm ? accent : C.chrome}`,
+                  color: isConfirm ? (target === "admin" ? C.white : "#000") : C.white,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  opacity: status === "checking" ? 0.5 : 1 }}>
+                {status === "checking" && isConfirm ? "…" : k}
+              </motion.button>
+            );
+          })}
+        </div>
+        {status === "fail" && (
+          <div style={{ textAlign: "center", color: C.redHi, fontSize: 13, fontWeight: 700, paddingBottom: 10, letterSpacing: "0.14em" }}>
+            INCORRECT PIN
+          </div>
+        )}
+        <div style={{ padding: "0 20px 20px" }}>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={onCancel} {...T}
+            style={{ width: "100%", height: 46, borderRadius: 8, cursor: "pointer",
+              background: "rgba(255,255,255,0.04)", border: `1px solid ${C.chrome}`,
+              color: C.muted, fontSize: 14, fontWeight: 700, fontFamily: C.sans }}>
+            CANCEL
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Elevated Session Ribbon — appears below header when supervisor/admin active ─
+function ElevatedSessionRibbon({
+  level, sessionStart, selectedTableId, onEndSession, onForceClose, onZoneDynamics,
+}: {
+  level: "supervisor" | "admin";
+  sessionStart: Date;
+  selectedTableId: number;
+  onEndSession: () => void;
+  onForceClose: (id: number) => void;
+  onZoneDynamics: () => void;
+}) {
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - sessionStart.getTime()) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, [sessionStart]);
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
+  const ss = String(elapsed % 60).padStart(2, "0");
+  const accent = level === "admin" ? C.redHi : C.gold;
+  const label  = level === "admin" ? "ADMIN OVERRIDE ACTIVE" : "SUPERVISOR SESSION ACTIVE";
+  const actions = level === "admin"
+    ? [
+        { label: "FORCE CLOSE TAB",  fn: () => onForceClose(selectedTableId) },
+        { label: "ZONE DYNAMICS",    fn: onZoneDynamics },
+      ]
+    : [
+        { label: "ZONE DYNAMICS",    fn: onZoneDynamics },
+      ];
+  return (
+    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 44, opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+      style={{ flexShrink: 0, overflow: "hidden",
+        background: level === "admin" ? "rgba(70,5,5,0.96)" : "rgba(50,40,0,0.96)",
+        borderBottom: `1px solid ${accent}`,
+        display: "flex", alignItems: "center", gap: 12, padding: "0 16px", position: "relative", zIndex: 4 }}>
+      <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.0, repeat: Infinity }}
+        style={{ width: 8, height: 8, borderRadius: "50%", background: accent, flexShrink: 0 }} />
+      <span style={{ fontSize: 10, fontWeight: 900, color: accent, letterSpacing: "0.22em", fontFamily: C.mono, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 10, color: C.muted, fontFamily: C.mono, flexShrink: 0 }}>{mm}:{ss}</span>
+      <div style={{ flex: 1, display: "flex", gap: 6 }}>
+        {actions.map(a => (
+          <motion.button key={a.label} whileTap={{ scale: 0.93 }} {...T}
+            onTouchStart={e => { T.onTouchStart(e); a.fn(); }} onClick={a.fn}
+            style={{ height: 28, padding: "0 12px", borderRadius: 6, cursor: "pointer",
+              background: "rgba(255,255,255,0.07)", border: `1px solid ${accent}55`,
+              color: accent, fontSize: 9, fontWeight: 800, letterSpacing: "0.12em", fontFamily: C.sans }}>
+            {a.label}
+          </motion.button>
+        ))}
+      </div>
+      <motion.button whileTap={{ scale: 0.93 }} {...T}
+        onTouchStart={e => { T.onTouchStart(e); onEndSession(); }} onClick={onEndSession}
+        style={{ height: 28, padding: "0 14px", borderRadius: 6, cursor: "pointer", flexShrink: 0,
+          background: "rgba(255,255,255,0.05)", border: `1px solid ${C.chrome}`,
+          color: C.muted, fontSize: 9, fontWeight: 800, letterSpacing: "0.14em", fontFamily: C.sans }}>
+        END SESSION
+      </motion.button>
+    </motion.div>
+  );
+}
+
+// ── Zone Dynamics Panel — supervisor table-to-zone reassignment ────────────────
+function ZoneDynamicsPanel({
+  activeTables, onClose, onReassign,
+}: {
+  activeTables: Record<number, VenueTable>;
+  onClose: () => void;
+  onReassign: (tableId: number, zone: string) => void;
+}) {
+  const ZONES = ["VIP Section", "Main Floor", "Main Lounge", "Outdoor", "High-Velocity Bar", "Humidor Depot"];
+  const tables = Object.values(activeTables);
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ position: "fixed", inset: 0, zIndex: 9100, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.88)", backdropFilter: "blur(14px)" }} onClick={onClose} />
+      <motion.div initial={{ scale: 0.93, y: 24 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.93, y: 24 }}
+        style={{ position: "relative", zIndex: 1, width: 620, maxHeight: "82vh",
+          background: "rgba(3,3,5,0.99)", border: `1px solid ${C.gold}`, borderRadius: 14,
+          overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: `0 0 80px ${C.goldGlo}` }}>
+        <div style={{ padding: "16px 22px", borderBottom: `1px solid ${C.chrome}`,
+          display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0,
+          background: "linear-gradient(180deg,rgba(60,50,0,0.5),transparent)" }}>
+          <div>
+            <div style={{ fontFamily: C.mono, fontSize: 9, color: C.gold, letterSpacing: "0.28em" }}>SUPERVISOR CONTROL MATRIX</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: C.white, marginTop: 4, display: "flex", alignItems: "center", gap: 10 }}>
+              <Icon d={P.map} size={22} color={C.gold} /> ZONE DYNAMICS
+            </div>
+          </div>
+          <motion.button whileTap={{ scale: 0.9 }} onClick={onClose} {...T}
+            style={{ width: 36, height: 36, borderRadius: 9, background: "rgba(255,255,255,0.05)",
+              border: `1px solid ${C.chrome}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Icon d={P.close2} size={18} color={C.muted} />
+          </motion.button>
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
+          {tables.length === 0 && (
+            <div style={{ padding: 32, textAlign: "center", color: C.muted, fontSize: 14 }}>No active tables on floor</div>
+          )}
+          {tables.map((t, idx) => (
+            <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 22px",
+              borderBottom: idx < tables.length - 1 ? `1px solid ${C.chrome}` : "none" }}>
+              <div style={{ width: 52, height: 52, borderRadius: 9, flexShrink: 0,
+                background: `url(${zoneBg(t.zone)}) center/cover,#1A1A1A`, border: `2px solid ${C.chrome}` }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 20, fontWeight: 700, color: C.white }}>TABLE {t.id}</div>
+                <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>
+                  {t.guest} · {t.items.length} item{t.items.length !== 1 ? "s" : ""} · ${t.items.reduce((s,i) => s + i.price * i.qty, 0).toFixed(2)}
+                </div>
+              </div>
+              <select value={t.zone} onChange={e => onReassign(t.id, e.target.value)}
+                style={{ height: 50, padding: "0 14px", borderRadius: 8, minWidth: 200,
+                  background: "rgba(10,10,10,0.98)", border: `2px solid ${C.gold}`,
+                  color: C.amber, fontSize: 18, fontWeight: 700, fontFamily: C.sans,
+                  outline: "none", cursor: "pointer" }}>
+                {ZONES.map(z => <option key={z} value={z}>{z}</option>)}
+              </select>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: "12px 22px", borderTop: `1px solid ${C.chrome}`, flexShrink: 0,
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          background: "rgba(0,0,0,0.5)" }}>
+          <span style={{ fontSize: 11, color: C.muted, fontFamily: C.mono }}>
+            {tables.length} active table{tables.length !== 1 ? "s" : ""} · Changes apply immediately
+          </span>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={onClose} {...T}
+            style={{ height: 46, padding: "0 28px", borderRadius: 8, cursor: "pointer",
+              background: `linear-gradient(135deg,${C.gold},#A67C00)`, border: "none",
+              color: "#000", fontSize: 16, fontWeight: 900, fontFamily: C.sans }}>
+            LOCK ASSIGNMENTS
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── POS Event Banner — flashes on inbound webhook deltas ──────────────────────
 function PosEventBanner({ delta }: { delta: { provider: string; eventType: string; cigarsConsumed: number; spiritsDepleted: string[] } | null }) {
   const [visible, setVisible] = useState(false);
@@ -1449,6 +1739,14 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
   } | null>(null);
   const [orderToastMsg, setOrderToastMsg] = useState<string | null>(null);
 
+  // ── Dual-layer security gate state ──────────────────────────────────────────
+  const [isAdminView,      setIsAdminView]      = useState(false);
+  const [isSupervisorView, setIsSupervisorView] = useState(false);
+  const [enteredPin,       setEnteredPin]        = useState("");
+  const [pinTarget,        setPinTarget]         = useState<"supervisor" | "admin" | null>(null);
+  const [sessionStart,     setSessionStart]      = useState<Date | null>(null);
+  const [showZoneDynamics, setShowZoneDynamics]  = useState(false);
+
   // ── Bootstrap: fetch live products + POS providers ─────────────────────────
   const refreshInventory = useCallback(async () => {
     const [cigars, spirits] = await Promise.all([
@@ -1604,6 +1902,40 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
     setTimeout(() => setOrderToastMsg(null), 5_000);
   }, []);
 
+  // ── Security Gate Callbacks ─────────────────────────────────────────────────
+  const openPinGate = useCallback((target: "supervisor" | "admin") => {
+    setEnteredPin(""); setPinTarget(target);
+  }, []);
+
+  const handlePinSuccess = useCallback((level: "supervisor" | "admin") => {
+    setPinTarget(null); setEnteredPin(""); setSessionStart(new Date());
+    if (level === "admin") { setIsAdminView(true); setIsSupervisorView(true); }
+    else { setIsSupervisorView(true); }
+  }, []);
+
+  const endElevatedSession = useCallback(() => {
+    setIsAdminView(false); setIsSupervisorView(false);
+    setSessionStart(null); setEnteredPin(""); setPinTarget(null);
+  }, []);
+
+  const forceCloseTable = useCallback((tableId: number) => {
+    setVenueState(prev => {
+      const next = { ...prev.activeTables }; delete next[tableId];
+      const remaining = Object.keys(next).map(Number);
+      return { ...prev, activeTables: next, selectedTableId: remaining[0] ?? 101 };
+    });
+  }, []);
+
+  const reassignZone = useCallback((tableId: number, zone: string) => {
+    setVenueState(prev => ({
+      ...prev,
+      activeTables: {
+        ...prev.activeTables,
+        ...(prev.activeTables[tableId] ? { [tableId]: { ...prev.activeTables[tableId]!, zone } } : {}),
+      },
+    }));
+  }, []);
+
   // ── Reservation → Table Assignment ─────────────────────────────────────────
   const assignReservation = useCallback((resId: string, tableId: number, guestName: string) => {
     setReservations(prev => prev.map(r => r.id === resId ? { ...r, tableAssigned: tableId, status: "fulfilled" as const } : r));
@@ -1660,8 +1992,25 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
       <div style={{ position:"relative", zIndex:2 }}>
         <Header lastSync={venueState.lastSyncAt} syncAge={syncAge} />
       </div>
+      <AnimatePresence>
+        {(isSupervisorView || isAdminView) && sessionStart && (
+          <ElevatedSessionRibbon
+            level={isAdminView ? "admin" : "supervisor"}
+            sessionStart={sessionStart}
+            selectedTableId={venueState.selectedTableId}
+            onEndSession={endElevatedSession}
+            onForceClose={forceCloseTable}
+            onZoneDynamics={() => setShowZoneDynamics(true)}
+          />
+        )}
+      </AnimatePresence>
       <div style={{ flex:1, display:"flex", overflow:"hidden", position:"relative", zIndex:1 }}>
-        <NavRail onBack={back} />
+        <NavRail
+          onBack={back}
+          isAdminView={isAdminView}
+          isSupervisorView={isSupervisorView}
+          onOpenPinGate={openPinGate}
+        />
         <div style={{ flex:1, display:"grid", gridTemplateColumns:"1fr 1.15fr 1fr", gap:10, padding:"10px 12px 10px 10px", overflow:"hidden" }}>
           <TelemetryCol
             tel={venueState.telemetry}
@@ -1698,6 +2047,24 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
       </AnimatePresence>
       <AnimatePresence>
         {showStaffRoster && <StaffRosterModal onClose={() => setShowStaffRoster(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showZoneDynamics && (
+          <ZoneDynamicsPanel
+            activeTables={venueState.activeTables}
+            onClose={() => setShowZoneDynamics(false)}
+            onReassign={reassignZone}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {pinTarget && (
+          <PinGateOverlay
+            target={pinTarget}
+            onSuccess={handlePinSuccess}
+            onCancel={() => { setPinTarget(null); setEnteredPin(""); }}
+          />
+        )}
       </AnimatePresence>
 
       {/* Toasts & banners */}
