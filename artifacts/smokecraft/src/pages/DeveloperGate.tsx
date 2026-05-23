@@ -509,16 +509,18 @@ function FleetMonitoringTab() {
   const totalDevices = fleet.reduce((a, v) => a + v.devices, 0);
   const totalTabs    = fleet.reduce((a, v) => a + v.tabVolume, 0);
   const onlineCount  = fleet.filter(v => v.status === "online").length;
+  const estimatedARR = Math.round(totalTabs * 12 * 0.015);
 
   return (
     <div>
       {/* KPI strip */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 14, marginBottom: 24 }}>
         {[
           { label: "Total Venues",    value: fleet.length, color: T.silver },
           { label: "Online",          value: onlineCount, color: T.emerald },
           { label: "Running Devices", value: totalDevices, color: "#60A5FA" },
           { label: "Live Tab Volume", value: `$${totalTabs.toLocaleString()}`, color: "#A78BFA" },
+          { label: "Est. ARR",        value: `$${estimatedARR.toLocaleString()}`, color: T.emerald },
         ].map(k => (
           <TitanCard key={k.label} style={{ padding: "16px 20px", textAlign: "center" }}>
             <div style={{ fontSize: 28, fontWeight: 800, color: k.color, letterSpacing: "0.04em" }}>{k.value}</div>

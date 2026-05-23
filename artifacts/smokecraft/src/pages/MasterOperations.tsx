@@ -594,6 +594,41 @@ function VenueConfigPanel() {
                         <input style={fieldStyle} placeholder={`Enter ${f.toLowerCase()}...`} />
                       </div>
                     ))}
+                    <div style={{ gridColumn: "1 / -1", marginTop: 4 }}>
+                      <div style={{ height: 1, background: `${T.gold}18`, marginBottom: 14 }} />
+                      <div style={{ fontSize: 12, fontWeight: 700, color: T.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 12 }}>
+                        Humidor Tracking
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                        {[
+                          { label: "Box Stock (units)", placeholder: "e.g. 25" },
+                          { label: "Low-Stock Alert Margin", placeholder: "e.g. 5 units" },
+                          { label: "Humidity Target (%RH)", placeholder: "e.g. 68–72%" },
+                        ].map(f => (
+                          <div key={f.label}>
+                            <label style={labelStyle}>{f.label}</label>
+                            <input style={fieldStyle} placeholder={f.placeholder} />
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 14 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: T.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>
+                          Flavor Tags → Pairing Engine
+                        </div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          {["Earthy","Creamy","Spicy","Cedar","Leather","Cocoa","Sweet","Peppery","Nutmeg","Floral"].map(tag => (
+                            <div key={tag} style={{
+                              padding: "5px 12px", borderRadius: 20,
+                              background: "rgba(212,175,55,0.08)", border: `1px solid ${T.gold}33`,
+                              fontSize: 12, color: T.gold, cursor: "pointer",
+                            }}>
+                              {tag}
+                            </div>
+                          ))}
+                          <input style={{ ...fieldStyle, width: 140, padding: "5px 10px", fontSize: 12 }} placeholder="+ Custom tag" />
+                        </div>
+                      </div>
+                    </div>
                   </>
                 )}
                 {assetCraft === "spirit" && (
@@ -604,6 +639,36 @@ function VenueConfigPanel() {
                         <input style={fieldStyle} placeholder={`Enter ${f.toLowerCase()}...`} />
                       </div>
                     ))}
+                    <div style={{ gridColumn: "1 / -1", marginTop: 4 }}>
+                      <div style={{ height: 1, background: `${T.gold}18`, marginBottom: 14 }} />
+                      <div style={{ fontSize: 12, fontWeight: 700, color: T.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 12 }}>
+                        Bottle Tracking & Pricing Tiers
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                        {[
+                          { label: "Bottle Volume (ml)", placeholder: "e.g. 750" },
+                          { label: "Current Fluid Level (%)", placeholder: "e.g. 85%" },
+                          { label: "Low-Level Alert (%)", placeholder: "e.g. 20%" },
+                        ].map(f => (
+                          <div key={f.label}>
+                            <label style={labelStyle}>{f.label}</label>
+                            <input style={fieldStyle} placeholder={f.placeholder} />
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: 12 }}>
+                        {[
+                          { label: "Pour Price — 1oz ($)", placeholder: "e.g. 14.00" },
+                          { label: "Pour Price — 2oz ($)", placeholder: "e.g. 24.00" },
+                          { label: "Bottle Purchase Price ($)", placeholder: "e.g. 180.00" },
+                        ].map(f => (
+                          <div key={f.label}>
+                            <label style={labelStyle}>{f.label}</label>
+                            <input style={fieldStyle} placeholder={f.placeholder} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </>
                 )}
                 {assetCraft === "beer" && (
@@ -653,6 +718,27 @@ function VenueConfigPanel() {
                   <input value={apiKey} onChange={e => setApiKey(e.target.value)} type="password"
                     placeholder="••••••••••••••••"
                     style={fieldStyle} />
+                </div>
+
+                <div style={{ marginBottom: 18 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 10 }}>
+                    Inventory Sync Interval
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {(["5 min","15 min","Hourly"] as const).map(interval => (
+                      <button key={interval}
+                        style={{
+                          flex: 1, padding: "8px 0", borderRadius: 7, cursor: "pointer",
+                          background: interval === "15 min" ? `rgba(0,128,255,0.14)` : "rgba(255,255,255,0.03)",
+                          border: `1px solid ${interval === "15 min" ? T.gold : T.border}`,
+                          color: interval === "15 min" ? T.gold : T.textMuted,
+                          fontSize: 12, fontWeight: interval === "15 min" ? 700 : 400,
+                          transition: "all 0.15s",
+                        }}>
+                        {interval}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <motion.button onClick={testConnection} disabled={testStatus === "testing"} whileTap={{ scale: 0.97 }}

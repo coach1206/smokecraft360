@@ -1,0 +1,45 @@
+CRITICAL UI REFACTOR: Discard the old flat administration mockups. We are deploying the production-ready High-Velocity Staff POS interface (STAGE_5_OPERATIONS) exactly matching our newly established cinematic layout design. Re-code the component layers, inline styles, and state hooks immediately to mirror these exact engineering specifications:
+
+---
+
+### 1. THE CINEMATIC THEME & COLOR TOKENS (CSS / STYLING OBJECT)
+Enforce our absolute luxury obsidian design system layout across the entire chassis:
+* **Base Surface Canvas:** Solid True Obsidian (#020202) with deep vignette shadow properties.
+* **Component Containers:** Layered Obsidian Glass paneling (rgba(16, 16, 16, 0.85)) with a hardware-accelerated frosted blur effect (backdrop-filter: blur(25px)).
+* **Bounding Edges:** Ultra-clean, thin 1px borders tracking Liquid Warm Gold (#D4AF37) and Smoked Chrome (#2A2A2A).
+* **Typography Hierarchy:** Premium True White headers for primary titles, deep Amber-Gold (#E6A11D) for real-time tracking metrics and active selections, and muted slate-grey for subtitle details.
+
+---
+
+### 2. THE THREE-COLUMN TACTICAL TERMINAL ARCHITECTURE
+Format the workspace layout as a seamless flex-row structure offset exactly 64px right from our persistent Left Vertical Navigation Rail:
+
+* **COLUMN 1: REAL-TIME TELEMETRY (E.A.T. Core Station Monitors)**
+  - Stacked premium card containers mapping the venue hardware streams natively.
+  - STATION 1: HUMIDOR -> Render a big, glowing Amber-Gold numeric counter displaying '145 Puros Remaining' paired with an integrated high-res image asset container showing our leaf-wrapped premium cigar box setup. Include climate readout metadata rows ('68°F / 71% RH').
+  - STATION 2: BAR METRICS -> Display an 'Active Pour Sessions: 14' digital readout. Embed an explicit, high-visibility red alert badge container for '⚠️ LOW STOCK: REMY MARTIN XO' with zero layout bounds collision.
+  - STATION 3: KITCHEN LINE -> Display running counts for '3 Pending / 1 Ready'. Add an oversized, high-contrast action button: '[ VIEW KITCHEN QUEUE ➔ ]'.
+
+* **COLUMN 2: HIGH-SPEED TICKET OVERVIEW (Active Lounge Tables & Queues)**
+  - A scroll-optimized touch matrix displaying active physical table states.
+  - Table Row Cards: Render high-contrast headers (e.g., 'Table 101 - VIP SECTION'), active timers ('🕒 01:42h ACTIVE'), and the guest's verified name.
+  - Main Action Target: Embed a full-width, tactile gold touchscreen action bar layout reading '[ 🎟️ OPEN TICKET TAPPER ➔ ]' with an expanded hit-target boundary of 58px.
+
+* **COLUMN 3: ACTIVE LEDGER (Persistent Line Items)**
+  - The permanent financial checkout sidebar mapping live customer invoices.
+  - Active Header Row: Display the locked table and current running balance (e.g., 'TABLE 101 - John D. | $291.00').
+  - Itemized SKU Array: Map rows directly from our product store ('1x Rocky Patel Vintage 1992 ($42)', '2x Buffalo Trace Bourbon ($32)'). Next to every item row, mount a crisp circular gold remove icon button (✕) wired directly to our live ticket state reducer to subtract items seamlessly on press.
+  - Bottom Summary Block: Calculate Subtotal ($130.00), Tax ($11.00), and Total ($141.00) dynamically based on active line rows.
+
+---
+
+### 3. LIVE WEBSOCKET STATE & NAVIGATION ENGINE INTEGRATION
+* **Root Role Firewall Validation:** Restrict this layout strictly to `isAdminView === true`. Ensure that toggling administrative tabs ('Venue Setup', 'POS Gateway', 'Bar Ops') inside the supervisor cockpit swaps these panels non-destructively without wiping the active rendering logic code files.
+* **Continuous Metric Synchronization:** Bind all numeric values (puros remaining, active pours, table balances) directly to our root context database loops. The moment a staff member taps 'Add +' or deletes an entry via the Ticket Tapper modal, the changes must instantly flash and ripple through these three columns in real-time without screen reloads.
+
+---
+
+### 4. TACTILE TOUCH HARDWARE TUNING
+* Enforce hardware-accelerated touch physics event listeners (onTouchStart, onTouchMove, onTouchEnd) across all buttons, table cards, and sliders to eliminate the 300ms mobile touch delay entirely.
+
+Execute this full interface refactor to paint our production-grade terminal screen now.

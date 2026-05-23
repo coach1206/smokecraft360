@@ -589,57 +589,82 @@ export function CraftGrid({
         zIndex: 10,
         position: "relative",
       }}>
-        {/* Left: EAT logo + status */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14, paddingRight: 36, borderRight: "1px solid rgba(212,175,55,0.12)", flexShrink: 0 }}>
-          <img src={IMG("logo_eat.png")} alt="E.A.T System" style={{ height: 30, width: "auto", filter: "drop-shadow(0 0 8px rgba(212,175,55,0.40))" }} />
-          <div>
-            <p style={{ margin: 0, fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.32em", color: `${GOLD}55`, textTransform: "uppercase" }}>
-              {isAdminView ? "ENVIRONMENT · ASSET · TRANSACTION" : "SMOKECRAFT 360 · LUXURY CIGAR RITUAL"}
-            </p>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-              <motion.div animate={{ opacity: [1, 0.25, 1] }} transition={{ duration: 1.6, repeat: Infinity }}
-                style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
-              <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.24em", color: "#32B45Acc", textTransform: "uppercase" }}>REVENUE ENGINE ACTIVE</span>
+        {/* Left: NOVEE OS wordmark (guest) | E.A.T. System (admin) */}
+        {isAdminView ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 14, paddingRight: 36, borderRight: "1px solid rgba(212,175,55,0.12)", flexShrink: 0 }}>
+            <img src={IMG("logo_eat.png")} alt="E.A.T System" style={{ height: 30, width: "auto", filter: "drop-shadow(0 0 8px rgba(212,175,55,0.40))" }} />
+            <div>
+              <p style={{ margin: 0, fontFamily: "'Inter',sans-serif", fontSize: 8, letterSpacing: "0.32em", color: `${GOLD}55`, textTransform: "uppercase" }}>
+                ENVIRONMENT · ASSET · TRANSACTION
+              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+                <motion.div animate={{ opacity: [1, 0.25, 1] }} transition={{ duration: 1.6, repeat: Infinity }}
+                  style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
+                <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.24em", color: "#32B45Acc", textTransform: "uppercase" }}>REVENUE ENGINE ACTIVE</span>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 16, paddingRight: 36, borderRight: "1px solid rgba(212,175,55,0.10)", flexShrink: 0 }}>
+            <div>
+              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 20, fontWeight: 900, color: "#FFFFFF", letterSpacing: "0.10em", textTransform: "uppercase", lineHeight: 1 }}>
+                NOVEE OS
+              </div>
+              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}66`, textTransform: "uppercase", marginTop: 3 }}>
+                INTELLIGENCE THAT ELEVATES
+              </div>
+            </div>
+            <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2.0, repeat: Infinity }}
+              style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A", flexShrink: 0 }} />
+          </div>
+        )}
 
-        {/* Center: 3 command badges */}
+        {/* Center: EAT command badges (admin) | discovery pillars (guest) */}
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 14 }}>
-          {EAT_CMDS.map((cmd) => {
-            const isHov = hoveredEAT === cmd.key;
-            return (
-              <motion.button
-                key={cmd.code}
-                onHoverStart={() => setHoveredEAT(cmd.key)}
-                onHoverEnd={() => setHoveredEAT(null)}
-                onClick={() => onEAT?.(cmd.key)}
-                animate={{
-                  background: isHov ? "rgba(212,175,55,0.16)" : "rgba(212,175,55,0.06)",
-                  boxShadow: isHov ? "0 0 28px rgba(212,175,55,0.22)" : "0 0 0px transparent",
-                }}
-                whileTap={{ scale: 0.96 }}
-                style={{
-                  border: `1px solid ${isHov ? "rgba(212,175,55,0.70)" : "rgba(212,175,55,0.35)"}`,
-                  borderRadius: 10,
-                  padding: "10px 28px",
-                  cursor: "pointer",
-                  display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-                  minWidth: 148,
-                  fontFamily: "inherit",
-                  touchAction: "manipulation",
-                  transition: "border-color 0.2s",
-                }}
-              >
-                <span style={{ color: GOLD, fontSize: 18, fontWeight: 900, letterSpacing: "0.09em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-                  [ {cmd.code} ]
-                </span>
-                <span style={{ color: "rgba(240,228,196,0.42)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-                  {cmd.label}
-                </span>
-              </motion.button>
-            );
-          })}
+          {isAdminView ? (
+            <>
+              {EAT_CMDS.map((cmd) => {
+                const isHov = hoveredEAT === cmd.key;
+                return (
+                  <motion.button
+                    key={cmd.code}
+                    onHoverStart={() => setHoveredEAT(cmd.key)}
+                    onHoverEnd={() => setHoveredEAT(null)}
+                    onClick={() => onEAT?.(cmd.key)}
+                    animate={{
+                      background: isHov ? "rgba(212,175,55,0.16)" : "rgba(212,175,55,0.06)",
+                      boxShadow: isHov ? "0 0 28px rgba(212,175,55,0.22)" : "0 0 0px transparent",
+                    }}
+                    whileTap={{ scale: 0.96 }}
+                    style={{
+                      border: `1px solid ${isHov ? "rgba(212,175,55,0.70)" : "rgba(212,175,55,0.35)"}`,
+                      borderRadius: 10, padding: "10px 28px", cursor: "pointer",
+                      display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                      minWidth: 148, fontFamily: "inherit", touchAction: "manipulation",
+                      transition: "border-color 0.2s",
+                    }}
+                  >
+                    <span style={{ color: GOLD, fontSize: 18, fontWeight: 900, letterSpacing: "0.09em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                      [ {cmd.code} ]
+                    </span>
+                    <span style={{ color: "rgba(240,228,196,0.42)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                      {cmd.label}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
+              {["AI SOMMELIER", "IMMERSIVE DISCOVERY", "YOUR RESERVE"].map(tag => (
+                <div key={tag} style={{ textAlign: "center" }}>
+                  <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.30em", color: `${GOLD}66`, textTransform: "uppercase" }}>
+                    {tag}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Profound logo + live pulse */}
