@@ -31,6 +31,7 @@ import { S4_DesignStudio } from "@/pages/S4_DesignStudio";
 import ControlChamber from "@/pages/ControlChamber";
 import StaffTerminal from "@/pages/StaffTerminal";
 import MasterBlender from "@/pages/MasterBlender";
+import GesturalEngine from "@/pages/GesturalEngine";
 import { AmbientEmberField } from "@/components/AmbientEmberField";
 import { AshParticles } from "@/components/AshParticles";
 import { RevenueOptimizationOverlay } from "@/components/RevenueOptimizationOverlay";
@@ -1628,6 +1629,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; on
   if (phase === "upgrade_required")  return <UpgradeRequired />;
   if (phase === "master_blender")    return <MasterBlender />;
   if (phase === "pos_terminal")      return <StaffTerminal />;
+  if ((phase as string) === "gestural_engine") return <GesturalEngine />;
   if (S1_PHASES.has(phase))          return <S1_InitGate />;
   if (S2_PHASES.has(phase))          return <S2_TerroirMatrix />;
   if (S3_PHASES.has(phase))          return <S3_FormulationLab />;

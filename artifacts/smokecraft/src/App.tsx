@@ -132,6 +132,7 @@ const SystemValidation      = lazy(() => import('@/pages/SystemValidation'));
 const StaffFloorCockpit     = lazy(() => import('@/pages/StaffFloorCockpit'));
 const DevicesModule         = lazy(() => import('@/pages/DevicesModule'));
 const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
+const GesturalEngine        = lazy(() => import('@/pages/GesturalEngine'));
 const EnvironmentControl    = lazy(() => import('@/pages/EnvironmentControl'));
 const TransactionTerminal   = lazy(() => import('@/pages/TransactionTerminal'));
 const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
@@ -1234,6 +1235,9 @@ export default function App() {
           </Route>
           <Route path="/experience-center">
             <SubPageProviders><DemoExperienceCenter /></SubPageProviders>
+          </Route>
+          <Route path="/gestural-engine">
+            <Suspense fallback={null}><GesturalEngine /></Suspense>
           </Route>
           <Route path="/demo">
             <SubPageProviders><Demo /></SubPageProviders>
