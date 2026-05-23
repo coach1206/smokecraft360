@@ -738,7 +738,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
 
       <div style={{ flex:1, display:"flex", overflow:"hidden", position:"relative", zIndex:1 }}>
         <NavRail onBack={back} />
-        <div style={{ flex:1, display:"grid", gridTemplateColumns:"296px 1fr 276px", gap:10, padding:"10px 12px 10px 10px", overflow:"hidden" }}>
+        <div style={{ flex:1, display:"grid", gridTemplateColumns:"296px 340px 276px", gap:10, padding:"10px 12px 10px 10px", justifyContent:"center", overflow:"hidden" }}>
           <TelemetryCol />
           <TicketsCol tickets={tickets} activeId={activeId} onSelect={setActiveId} onUpdate={handleUpdate} />
           <LedgerCol   tickets={tickets} activeId={activeId} onRemove={handleRemove} />
