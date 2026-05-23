@@ -1,0 +1,38 @@
+We are shifting the entire architecture from a simulated prototype sandbox to a 100% Live Production-Ready enterprise deployment. Drop all mock timeouts, simulated boolean states, and hardcoded local JSON file arrays. Replace them immediately with actual, scalable Node.js/Express backend routes, live external API integrations, and secure database persistence layer protocols across SMOKECRAFT 360 and NOVEE OS.
+
+Implement the exact enterprise-grade production engineering architecture detailed below:
+
+---
+
+### 1. LIVE PRODUCTION POS API INTEGRATION & WEBHOOK RECEIVER
+* **Real API Infrastructure:** Completely refactor the '[P] POS Gateway' controller. Replace the client-side `setTimeout` simulation on the 'Test Connection & Sync Menu' button with an actual backend Axios/Fetch request targeting the live developer endpoints of Toast, Clover, or Lightspeed.
+* **Secure Credential Storage:** Ensure the input fields for API Access Tokens, Webhook Secret Keys, and Location IDs are encrypted on submission and handled securely in our server environment configurations using an actual token verification routine. 
+* **Live Webhook Route (`/api/v1/pos/webhook`):** Build a robust, production-ready POST route to catch true incoming POS transaction stream payloads. It must parse the external vendor JSON ticket data structure dynamically, read the itemized SKU numbers, match them to our catalog assets, and execute real-time state mutations to update the open lounge tab balances and active kitchen/bar queues natively.
+* **The Menu Stream Normalization Layer:** Write an asynchronous data synchronization engine that pulls down the live vendor menu database. It must map the physical inventory SKUs directly to SmokeCraft sensory assets, auto-populating our backend product tables based on product type string filters (e.g., auto-routing items containing 'Cigar' or 'Bourbon' into the pairing database matrix).
+
+---
+
+### 2. CLOUD DATABASE PERSISTENCE LAYER (SUPABASE/POSTGRESQL ROUTING)
+* **Persistent Storage Migration:** Eradicate temporary memory variables and local JSON mockup arrays for guest profiles and transaction data. Connect a persistent PostgreSQL, MongoDB, or Supabase relational database engine to the server.
+* **Guest Onboarding Mutations:** When a client completes the profile canvas (e.g., Mike Jones, Pepper & Spice preference, Regular Aficionado), clicking 'CONTINUE' must execute a strict database write mutation to a permanent `guest_profiles` table, generating a persistent, unique UUID.
+* **Live Session Binding:** Wire up a strict session manager that binds the generated Guest UUID directly to the active physical Tablet ID and Table Location Node. This data must continuously stream to the NOVEE OS manager views so staff are tracking real customer identities on the floor plan map.
+* **The Historical Ledger Vault:** Every transaction closed via the 'Close Tab' or 'Checkout' command bar action must execute a secure write operation to a `historical_ledger` table, computing exact sales metrics for end-of-night reconciliations and staff contest leaderboard tracking.
+
+---
+
+### 3. LIVE EXTERNAL MEDIA INGESTION & UPLOAD CHANNELS
+* **Live Distributor Media Kit API Engine:** Implement the backend service route (`/api/v1/assets/fetch-media`). When a manager registers an asset via UPC, SKU, or product name, the script must execute a server-side request to commercial distributor product image databases or media kit repositories, scrape the high-resolution product photography asset, programmatically trim whitespace background layers via sharp/canvas tools, and write the file path permanently into the local asset table.
+* **Production File Upload Stream:** Re-engineer the drag-and-drop media uploader component. It must use a file stream middleware handler (like Multer) on the server backend to receive incoming JPEG/PNG/WebP venue photos from the manager's hardware device, write them securely to a public disk directory or cloud storage bucket, and immediately update the database product URI to trigger instantaneous live UI updates across active client tablets.
+
+---
+
+### 4. DYNAMIC STATE STREAMING VIA WEBSOCKETS (E.A.T. BRAIN SYNCHRONIZATION)
+* **Production WebSocket Architecture:** Establish an active, continuous WebSocket server network (`ws://`). Replace local state polling with true event-driven data streaming.
+* **Continuous Cross-Component Sync:** Ensure that any real mutation across the operations grid—such as changing a kitchen item state from 'Cooking' to 'Ready', updating bar fluid pour levels, or tracking humidor inventory drops—instantly emits a global WebSocket broadcast payload. 
+* **Real-time UI Calculations:** The receiving components must instantly catch the socket event data packets to update the Table Node coloring on the Floor Plan map, recalculate the operational E.A.T. Intelligence Score numerical value, and rewrite the live reasoning text block container immediately without requiring a page reload or element refresh.
+
+---
+
+### 5. SECURE PRODUCTION ACCESS HOOKS & CODE DEPLOYMENT PREPARATION
+* **Staff Access Enforcement:** The 4-digit numeric staff PIN pad must function as a strict security barrier, validating inputs against hashed database credentials using standard server authentication middleware protocols.
+* **The Developer Reverse-Tunnel:** Implement an authenticated, secure remote WebSocket client connection endpoint exclusively accessible by the Developer role configuration to allow safe

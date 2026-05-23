@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const EAT_CMDS = [
@@ -77,9 +77,119 @@ const TILES = [
   },
 ];
 
+function useTactileTone() {
+  const ctxRef = useRef(null as AudioContext | null);
+  return useCallback(() => {
+    try {
+      if (!ctxRef.current || ctxRef.current.state === "closed") {
+        ctxRef.current = new AudioContext();
+      }
+      const ctx = ctxRef.current;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(3400, ctx.currentTime);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.5);
+    } catch (_e) { /* audio unavailable */ }
+  }, []);
+}
+
+const NAV_RAIL_ITEMS = [
+  { id: "HUB", label: "HUB" },
+  { id: "SC",  label: "SC"  },
+  { id: "PR",  label: "PR"  },
+  { id: "CH",  label: "CH"  },
+] as const;
+
+function ObsidianNavRail({ active = "HUB", onSC }: { active?: string; onSC?: () => void }) {
+  const playTone = useTactileTone();
+  return (
+    <div style={{
+      position:             "relative",
+      width:                64,
+      flexShrink:           0,
+      height:               "100%",
+      background:           "rgba(8,8,8,0.96)",
+      backdropFilter:       "blur(24px)",
+      WebkitBackdropFilter: "blur(24px)",
+      borderRight:          "1px solid rgba(212,175,55,0.18)",
+      display:              "flex",
+      flexDirection:        "column",
+      alignItems:           "center",
+      paddingTop:           24,
+      gap:                  8,
+      zIndex:               20,
+    }}>
+      <div style={{ marginBottom: 16 }}>
+        <svg width="32" height="32" viewBox="0 0 32 32">
+          <polygon points="16,2 29,9.5 29,22.5 16,30 3,22.5 3,9.5"
+            fill="none" stroke="#D4AF37" strokeWidth="1.5" opacity="0.7" />
+          <polygon points="16,7 24,11.5 24,20.5 16,25 8,20.5 8,11.5"
+            fill="none" stroke="#D4AF37" strokeWidth="0.8" opacity="0.35" />
+        </svg>
+      </div>
+      {NAV_RAIL_ITEMS.map(item => {
+        const isActive = active === item.id;
+        const locked   = item.id === "PR" || item.id === "CH";
+        return (
+          <motion.button
+            key={item.id}
+            whileTap={locked ? {} : { scale: 0.92 }}
+            onClick={() => {
+              if (locked) return;
+              playTone();
+              if (item.id === "SC" && onSC) onSC();
+            }}
+            style={{
+              width:           50,
+              height:          50,
+              borderRadius:    10,
+              border:          `1px solid ${isActive ? "#D4AF37" : "rgba(212,175,55,0.18)"}`,
+              background:      isActive ? "rgba(212,175,55,0.14)" : "rgba(255,255,255,0.03)",
+              backdropFilter:  "blur(8px)",
+              cursor:          locked ? "default" : "pointer",
+              display:         "flex",
+              flexDirection:   "column",
+              alignItems:      "center",
+              justifyContent:  "center",
+              gap:             2,
+              outline:         "none",
+              boxShadow:       isActive ? "0 0 18px rgba(212,175,55,0.22)" : "none",
+              opacity:         locked ? 0.38 : 1,
+              transition:      "border-color 0.2s, background 0.2s",
+            }}
+          >
+            <span style={{
+              fontFamily:    "'Inter', sans-serif",
+              fontSize:      11,
+              fontWeight:    800,
+              letterSpacing: "0.14em",
+              color:         isActive ? "#D4AF37" : "rgba(240,228,196,0.55)",
+              textTransform: "uppercase",
+              lineHeight:    1,
+            }}>{item.label}</span>
+            {locked && (
+              <span style={{ fontSize: 7, color: "rgba(212,175,55,0.30)", letterSpacing: "0.08em" }}>—</span>
+            )}
+          </motion.button>
+        );
+      })}
+    </div>
+  );
+}
+
 function BootSequence({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState<BootPhase>(1);
   const [visible, setVisible] = useState(true);
+  const playTone = useTactileTone();
+
+  useEffect(() => { playTone(); }, []);
 
   const advance = useCallback(() => {
     setVisible(false);
@@ -228,7 +338,12 @@ export function CraftGrid({ onSmokecraft, onEAT }: { onSmokecraft: () => void; o
   }, []);
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#010101", display: "flex", flexDirection: "column" }}>
+    <div style={{ position: "fixed", inset: 0, background: "#010101", display: "flex", flexDirection: "row" }}>
+      {/* ── Left Obsidian Nav Rail — 64px ── */}
+      <ObsidianNavRail active="HUB" onSC={onSmokecraft} />
+
+      {/* ── Main content area — pushed 64px right ── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
       {/* Ambient back-lit radial gradient */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, background: "radial-gradient(ellipse 70% 60% at 50% 80%, rgba(212,175,55,0.07) 0%, transparent 70%)" }} />
 
@@ -450,6 +565,8 @@ export function CraftGrid({ onSmokecraft, onEAT }: { onSmokecraft: () => void; o
           <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2.2, repeat: Infinity }}
             style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
         </div>
+      </div>
+      {/* ── end inner column ── */}
       </div>
     </div>
   );

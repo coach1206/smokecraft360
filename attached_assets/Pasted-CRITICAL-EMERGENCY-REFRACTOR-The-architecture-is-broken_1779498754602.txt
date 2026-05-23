@@ -1,0 +1,30 @@
+CRITICAL EMERGENCY REFRACTOR: The architecture is broken and rendering empty pages. You have built isolated components (BootIntro, CraftHub, TicketTapper, POSGateway) but completely failed to link them via the router engine or root state context. Nothing is wired sequentially. Fix the entire routing network, file inclusion structures, and page state triggers immediately.
+
+Implement the exact architectural layout map below:
+
+---
+
+### 1. THE MANDATORY GLOBAL TERMINAL ROUTER (NON-DESTRUCTIVE SWAPPING)
+* **The Root Switch Mechanism:** Re-engineer the root app layout container. The application must switch views dynamically based on an explicit, persistent string state variable (`currentStage`). 
+* Ensure that toggling `currentStage` or hitting sub-tabs inside the NOVEE OS manager dashboard DOES NOT erase, overwrite, or delete the underlying layout rendering code for the rest of the app.
+* **The 5-Stage Sequence Map:** Map the rendering states strictly to the sequential workflow variables:
+  - If `currentStage === 'STAGE_1_BOOT'` -> Force mount the fully integrated, 3-phase cinematic `BootIntro` sequence with the 3400Hz audio chime. It must auto-transition to Stage 2 upon sequence completion (7.5s) or immediately upon a touchscreen tap-to-skip gesture.
+  - If `currentStage === 'STAGE_2_CRAFTHUB'` -> Render the `CraftHub` launcher workspace (/craft-hub), completely isolated from admin metrics. Mount the Left Vertical Obsidian Navigation Rail and render the 4 interactive 58px glass tiles (SmokeCraft active; PourCraft, BeerCraft, WineCraft locked behind the brushed bronze 'COMING SOON' tags).
+  - If `currentStage === 'STAGE_3_SESSION_1'` -> Mount the active SmokeCraft onboarding experience, immediately rendering the 'Your Ritual Begins' chamber, sliding cleanly into the fully populated 'Pick Your Mentor' matrix upon tapping the CTA.
+  - If `currentStage === 'STAGE_4_SESSION_2'` -> Render the active `⚗ Your Reserve Workspace` featuring the permanent leaf-textured Maduro hero graphic, touchscreen gauge sliders, and the triple-axis interactive AI Sommelier Pairing Engine.
+  - If `currentStage === 'STAGE_5_OPERATIONS'` -> Trigger the Staff E.A.T. PIN Gate overlay. Upon entering verified credentials, fire the concentric touch-ripple transition and mount the high-velocity revenue control room, kitchen line queue, bar pour metrics, humidor ledger, and the gold-highlighted production-ready POS Gateway terminal.
+
+---
+
+### 2. CORE LAYOUT SYNCHRONIZATION & COLLISION CORRECTION
+* **Eliminate the Empty Viewports:** Scan every file container in the project workspace directory. If a file maps to one of the 5 stages listed above, verify that its import statement is active at the root level and ensure its functional return block is actively injecting code into our main glass panel viewport canvas. No more black, dead empty panes.
+* **Fix Visual Component Clutter:** Ensure that the 64px Left Vertical Obsidian Rail correctly pushes the main display panels exactly 64px to the right to guarantee zero layer overlaps. 
+* **The Ticket Tapper Ingestion:** Wire the newly generated interactive cross-platform `TicketTapper` elements directly to our persistent `GuestProfiles` table database. Ensure that the 'Add+' and 'Delete (-)' triggers on the guest rows directly execute live price additions and subtractions to the active global sidebar tab balance in real-time.
+
+---
+
+### 3. PRODUCTION INTEGRATION HOOKS
+* **E.A.T. Telemetry Isolation:** Strip the administrative E.A.T. Intelligence status bar and building stats metrics entirely off of consumer-facing screens, confining them strictly to the Stage 5 manager terminal.
+* **Database State Persistency:** Ensure all profile selections, selected mentors, inventory reductions, and transactional line items map directly to our root context store so user states never reset upon swapping between navigation tabs.
+
+Execute this root configuration refactor across all view scripts simultaneously to restore full application continuity.

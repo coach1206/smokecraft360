@@ -1,0 +1,43 @@
+We are overhauling the core software access and provisioning layers. Stop treating this project like a localized mockup. This system must scale smoothly as a commercial B2B product. We are implementing an absolute user role firewall, a comprehensive manager setup customizer, and a hidden multi-tenant Super-Admin developer dashboard immediately.
+
+Execute these backend routing models, state isolation rules, and layout updates concurrently across the workspace:
+
+---
+
+### 1. ABSOLUTE ROLE ISOLATION FIREWALL (FIX THE SCREEN SPLIT LEAK)
+Enforce a flawless visual and data boundary using the persistent 'isAdminView' boolean flag. Completely decouple our viewports to stop consumer and admin panels from rendering inside the same frame context:
+* **Staff/Manager View (Strict Admin Enclosure - `isAdminView === true`):**
+  - When authorized via the Staff PIN Gate, the interface must render 100% operational tools and revenue telemetry.
+  - Mount the POS Integration Gateway, the automated mapping progress bar graphs, and the full E.A.T. framework dashboards.
+  - STRIP OUT all customer onboarding elements, guest journey text fields, mentor selection cards, and 'Select Your Mentor' containers entirely from this view environment.
+* **Guest View (Pure Consumer Experience - `isAdminView === false`):**
+  - The customer tablet terminal must only display the immersive, full-screen guest journey lifecycle.
+  - Render the 'Pick Your Mentor' matrix with absolute zero reference to POS connections, database tokens, backend API routes, or menu mapping coverage metrics.
+  - Replace the 'E.A.T. System' top-left identifier string with 'NOVEE OS' or 'SMOKECRAFT 360' branding text.
+
+---
+
+### 2. THE VENUE CONFIGURATION MATRIX (MANAGER SETUP PORTAL)
+Build a dedicated 'Venue Control & Setup' sub-view inside the Stage 5 Admin Operations terminal. This dashboard must give an onsite venue manager the ability to configure the application to their exact physical building specifications without touching source code:
+* **The Room & Floor Plan Builder UI:** Create an interactive touch configuration editor canvas where a manager can define their physical space. They must be able to input the total number of tables, define distinct custom lounge zones (e.g., 'Main Floor', 'VIP Cigar Vault', 'Member's Patio'), and map individual tablet hardware IDs directly to specific layout nodes.
+* **Asset Catalog Schema Customizer:** Provide a clean data-entry form canvas allowing the manager to manage their inventory baselines:
+  - Add, edit, or remove premium Cigar selections, set humidor tracking alert margins, and input initial box stocks.
+  - Add, edit, or remove Spirit assets, track running bottle fluid levels, and assign custom pricing tiers.
+  - Map baseline flavor tags (e.g., body, wrapper types, proof strengths) that directly feed into the Pairing Engine's primary ranking logic.
+* **The Integration Provisioning Panel:** Expand the '[P] POS Gateway' view. Include form components where the manager can manually select a provider (Toast, Clover, Lightspeed, Custom), toggle inventory synchronization interval limits (5 mins, 15 mins, hourly), and update active Webhook endpoints securely.
+
+---
+
+### 3. THE GLOBAL SENSORY PROVISIONING DASHBOARD (DEVELOPER CONTROL)
+Build a completely separate, multi-tenant enterprise supervision console at an un-linked, secure route (`/developer-gate`). This panel sits ABOVE the venue layer and is designed exclusively for the platform owner to manage software licensing and infrastructure:
+* **The Master Access Lock:** Protect this route behind a strict, cryptographic Master Developer Access Key verification check, entirely independent of venue-specific 4-digit staff PIN codes. Style the view canvas in an ultra-premium 'Brushed Titanium' theme with glowing emerald accents.
+* **New Venue Onboarding Engine:** Create a functional multi-tenant creation portal with form controls for: Organization Name, Location Metadata (City, State, Country), and Licensing Tier Toggles ('SmokeCraft Tablet Only', 'Full E.A.T. Core Ops Suite', 'POS Integration Pack'). 
+* **Database & Tenant Isolation Spawner:** Tapping 'Provision Tenant' must dynamically generate a new unique `Tenant ID` and spin up an isolated memory context, ensuring different venues' guest profiles, inventories, and transaction tickets never cross-talk. Automatically output a unique master admin passkey for that lounge.
+* **Global Fleet Monitoring & Management Utilities:** Render an interactive real-time management matrix tracking all provisioned venues simultaneously, detailing total running devices, live cross-venue tab volumes ($), network ping statuses, and a master 'Flush Process Memory Stacks' command button that clears hanging backend process variables and memory leaks via our remote WebSocket tunnel instantly.
+
+---
+
+### 4. GLOBAL STATE ROUTING INTEGRATION & VISUAL INTEGRITY
+* **Dynamic Mutation:** Ensure all data values entered via either the Manager Setup Portal or the Developer Dashboard instantly mutate our root context state store, causing floor layout nodes, active humidor counts, and pairing arrays to rewrite themselves in real-time.
+* **Non-Destructive Navigation Layouts:** Toggling between navigation headers within the Stage 5 dashboard ('Venue Setup', 'POS Gateway', 'Kitchen Queue', 'Bar Ops') or the Developer Console tabs must be completely non-destructive. Never drop, delete, or overwrite the underlying component layout rendering blocks during view swaps.
+* **Luxury UI Polish:** Maintain our strict visual design framework: obsidian glass paneling, smoked chrome surfaces, gold typography accents, and hardware-accelerated touch physics events (`onTouchStart`, `onTouchMove`, `onTouchEnd`) across all active configuration and supervision states.
