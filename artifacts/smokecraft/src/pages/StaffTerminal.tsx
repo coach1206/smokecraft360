@@ -743,7 +743,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
   );
 
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", width:340, flexShrink:0 }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", width:390, flexShrink:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
         <div style={{ flex:1 }}>
@@ -3136,7 +3136,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           </motion.button>
         </div>
       )}
-      <div style={{ flex:1, width:"100%", display:"flex", flexDirection:"row", gap:16, padding:16, overflow:"hidden", position:"relative", zIndex:1 }}>
+      <div style={{ flex:1, width:"100%", display:"flex", flexDirection:"row", gap:16, padding:"16px 16px 16px 24px", overflow:"hidden", position:"relative", zIndex:1 }}>
         <NavRail
           onBack={back}
           isAdminView={isAdminView}
