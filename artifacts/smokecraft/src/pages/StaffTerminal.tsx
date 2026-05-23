@@ -209,6 +209,24 @@ const api = {
       return j.order ?? null;
     } catch { return null; }
   },
+  markFulfillmentReady: async (taskId: string): Promise<void> => {
+    try {
+      await fetch(`/api/fulfillment/${encodeURIComponent(taskId)}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "ready" }),
+      });
+    } catch { /* fire-and-forget — UI already updated optimistically */ }
+  },
+  logTableZone: async (tableId: number, zone: string): Promise<void> => {
+    try {
+      await fetch("/api/pos/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventType: "table_zone_reassigned", tableId, zone, ts: new Date().toISOString() }),
+      });
+    } catch { /* non-critical audit trail */ }
+  },
   logDayOneClick: async (venueId: string, referralUrl: string): Promise<void> => {
     try {
       await fetch("/api/dayone360/log-click", {
@@ -704,6 +722,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
 
   const markOrderReady = (id: string) => {
     setKitchenQueue(prev => prev.map(q => q.id === id ? { ...q, status:"ready" } : q));
+    void api.markFulfillmentReady(id);
     onKitchenReady();
   };
 
@@ -715,10 +734,10 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
 
   const mb = (val: string, label: string, icon: string) => (
     <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.03)", border:`1px solid ${C.chrome}`, borderRadius:7, padding:"9px 11px" }}>
-      <Icon d={icon} size={20} color={C.amber} />
+      <Icon d={icon} size={22} color={C.amber} />
       <div>
-        <div style={{ fontSize:20, fontWeight:800, color:C.white }}>{val}</div>
-        <div style={{ fontSize:18, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase" }}>{label}</div>
+        <div style={{ fontSize:24, fontWeight:800, color:C.white }}>{val}</div>
+        <div style={{ fontSize:20, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase" }}>{label}</div>
       </div>
     </div>
   );
@@ -756,8 +775,8 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       {/* HUMIDOR — qty from GET /api/products?category=cigar */}
       <div style={panel({ borderTop:`2px solid ${C.gold}`, flexShrink:0 })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
-          <Icon d={P.leaf} size={14} color={C.gold} />
-          <span style={{ fontSize:18, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 1: HUMIDOR</span>
+          <Icon d={P.leaf} size={16} color={C.gold} />
+          <span style={{ fontSize:24, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 1: HUMIDOR</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", minHeight:100 }}>
           <div style={{ padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
@@ -767,7 +786,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
               style={{ fontSize:56, fontWeight:900, color:C.amber, lineHeight:1 }}>
               {h.purosRemaining}
             </motion.div>
-            <div style={{ fontSize:16, fontWeight:700, color:C.muted, letterSpacing:"0.16em", marginTop:4 }}>PUROS REMAINING</div>
+            <div style={{ fontSize:20, fontWeight:700, color:C.muted, letterSpacing:"0.16em", marginTop:4 }}>PUROS REMAINING</div>
           </div>
           <div style={{ background:`url(${IMG("cedar_box.png")}) center/cover no-repeat,linear-gradient(135deg,#3D2510,#0F0A06)`, borderLeft:`1px solid ${C.chrome}` }} />
         </div>
@@ -783,10 +802,10 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
             <motion.div initial={{opacity:0}} animate={{opacity:[1,0.65,1]}} exit={{opacity:0}} transition={{duration:1.3,repeat:Infinity}}
               style={{ display:"flex", alignItems:"center", gap:8, background:thresh.humidorCritical?"rgba(192,57,43,0.35)":C.redLo, borderTop:`1px solid ${C.red}44`, padding:"8px 12px" }}>
               <Icon d={P.warn} size={13} color={C.redHi} />
-              <span style={{ flex:1, fontSize:11, fontWeight:800, color:C.redHi, letterSpacing:"0.14em" }}>
+              <span style={{ flex:1, fontSize:18, fontWeight:800, color:C.redHi, letterSpacing:"0.14em" }}>
                 {thresh.humidorCritical ? "CRITICAL: RESTOCK NOW" : "TARGET ALERT: LOW STOCK"}
               </span>
-              <span style={{ fontSize:14, color:C.redHi }}>›</span>
+              <span style={{ fontSize:18, color:C.redHi }}>›</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -795,13 +814,13 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       {/* BAR — alerts from GET /api/products?category=alcohol */}
       <div style={panel({ borderTop:"2px solid #3A6BC4", flexShrink:0 })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
-          <Icon d={P.cocktail} size={14} color={C.blue} />
-          <span style={{ fontSize:18, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 2: BAR METRICS</span>
+          <Icon d={P.cocktail} size={16} color={C.blue} />
+          <span style={{ fontSize:24, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 2: BAR METRICS</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr auto", alignItems:"center", padding:"10px 12px", gap:10 }}>
           <div>
             <div style={{ fontSize:48, fontWeight:900, color:C.white, lineHeight:1 }}>{b.activePourSessions}</div>
-            <div style={{ fontSize:14, fontWeight:700, color:C.muted, letterSpacing:"0.16em", marginTop:3 }}>ACTIVE POUR SESSIONS</div>
+            <div style={{ fontSize:20, fontWeight:700, color:C.muted, letterSpacing:"0.16em", marginTop:3 }}>ACTIVE POUR SESSIONS</div>
           </div>
           <div style={{ width:48, height:72, borderRadius:7, background:`url(${IMG("pour/pour_whiskey.png")}) center/cover no-repeat,#1A0A00`, border:`1px solid ${C.chrome}` }} />
         </div>
@@ -812,9 +831,9 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
             <div key={a.item} style={{ display:"flex", alignItems:"center", gap:8, background:C.redLo, borderTop:`1px solid ${C.red}44`, padding:"8px 12px" }}>
               <Icon d={P.warn} size={13} color={C.redHi} />
               <div style={{ flex:1 }}>
-                <div style={{ fontSize:16, fontWeight:800, color:C.redHi, letterSpacing:"0.14em" }}>LOW STOCK — {a.currentVolumePct}%</div>
-                <div style={{ fontSize:16, fontWeight:700, color:C.white }}>{a.item}</div>
-                <div style={{ fontSize:12, color:C.muted }}>{a.category}</div>
+                <div style={{ fontSize:20, fontWeight:800, color:C.redHi, letterSpacing:"0.14em" }}>LOW STOCK — {a.currentVolumePct}%</div>
+                <div style={{ fontSize:20, fontWeight:700, color:C.white }}>{a.item}</div>
+                <div style={{ fontSize:16, color:C.muted }}>{a.category}</div>
               </div>
               <motion.button whileTap={{scale:0.93}} {...T}
                 onTouchStart={e => { T.onTouchStart(e); fireOrder(pid, 6, a.item); }}
@@ -822,7 +841,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
                 style={{ height:58, padding:"0 14px", borderRadius:5, cursor:"pointer", flexShrink:0,
                   background: flashed ? "rgba(39,174,96,0.18)" : `linear-gradient(135deg,${C.amber},#A0620F)`,
                   border:`1px solid ${flashed ? C.green : C.amber}`,
-                  color: flashed ? C.green : "#000", fontSize:14, fontWeight:900,
+                  color: flashed ? C.green : "#000", fontSize:18, fontWeight:900,
                   letterSpacing:"0.1em", fontFamily:C.sans }}>
                 {flashed ? "ORDERED" : "GEN ORDER"}
               </motion.button>
@@ -834,14 +853,14 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
       {/* KITCHEN */}
       <div style={panel({ borderTop:"2px solid #7B5EA7", flex:1, display:"flex", flexDirection:"column" })}>
         <div style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 12px 7px", borderBottom:`1px solid ${C.chrome}` }}>
-          <Icon d={P.utensils} size={14} color={C.purple} />
-          <span style={{ fontSize:18, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 3: KITCHEN LINE</span>
+          <Icon d={P.utensils} size={16} color={C.purple} />
+          <span style={{ fontSize:24, fontWeight:700, color:C.muted, letterSpacing:"0.18em" }}>STATION 3: KITCHEN LINE</span>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, padding:"10px 12px" }}>
           {[{val:k.pendingOrders,label:"PENDING ORDERS",color:C.amber},{val:k.readyOrders,label:"READY ORDERS",color:C.green}].map(m => (
             <div key={m.label} style={{ background:`${m.color}0a`, border:`1px solid ${m.color}30`, borderRadius:7, padding:"10px 0", textAlign:"center" }}>
               <div style={{ fontSize:38, fontWeight:900, color:m.color, lineHeight:1 }}>{m.val}</div>
-              <div style={{ fontSize:14, fontWeight:600, color:C.muted, letterSpacing:"0.14em", marginTop:4 }}>{m.label}</div>
+              <div style={{ fontSize:18, fontWeight:600, color:C.muted, letterSpacing:"0.14em", marginTop:4 }}>{m.label}</div>
             </div>
           ))}
         </div>
@@ -903,9 +922,9 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
                         <Icon d={P.utensils} size={26} color={order.status==="ready"?C.green:C.purple} />
                       </div>
                       <div style={{ flex:1 }}>
-                        <div style={{ fontSize:18, fontWeight:800, color:C.white }}>Table {order.tableId}</div>
-                        <div style={{ fontSize:15, color:C.muted, marginTop:3 }}>{order.qty}x {order.itemName}</div>
-                        <div style={{ fontSize:11, fontFamily:C.mono, color:order.status==="ready"?C.green:C.amber, marginTop:4, letterSpacing:"0.14em" }}>
+                        <div style={{ fontSize:24, fontWeight:800, color:C.white }}>Table {order.tableId}</div>
+                        <div style={{ fontSize:20, color:C.muted, marginTop:3 }}>{order.qty}x {order.itemName}</div>
+                        <div style={{ fontSize:16, fontFamily:C.mono, color:order.status==="ready"?C.green:C.amber, marginTop:4, letterSpacing:"0.14em" }}>
                           {order.status==="ready" ? "✓ READY FOR PICKUP" : `⏱ PENDING · ${order.elapsed}`}
                         </div>
                       </div>
@@ -915,7 +934,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
                           onClick={() => markOrderReady(order.id)}
                           style={{ height:54, padding:"0 22px", borderRadius:10, cursor:"pointer", flexShrink:0,
                             background:`linear-gradient(135deg,${C.gold},#A67C00)`,
-                            border:"none", color:"#000", fontSize:14, fontWeight:900, letterSpacing:"0.10em",
+                            border:"none", color:"#000", fontSize:20, fontWeight:900, letterSpacing:"0.10em",
                             fontFamily:C.sans, boxShadow:`0 0 20px ${C.goldGlo}`, whiteSpace:"nowrap" }}>
                           MARK AS READY
                         </motion.button>
@@ -1033,20 +1052,20 @@ function TapperModal({ table, onClose, onUpdate }: {
         <div style={{ padding:"12px 20px", borderTop:`1px solid ${C.chrome}` }}>
           {[{l:"Subtotal",v:sub},{l:"Tax (8.5%)",v:tax}].map(r => (
             <div key={r.l} style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-              <span style={{ fontSize:12,color:C.muted }}>{r.l}</span>
-              <span style={{ fontSize:12,color:C.white }}>${r.v.toFixed(2)}</span>
+              <span style={{ fontSize:18,color:C.muted }}>{r.l}</span>
+              <span style={{ fontSize:18,color:C.white }}>${r.v.toFixed(2)}</span>
             </div>
           ))}
           <div style={{ display:"flex", justifyContent:"space-between", padding:"9px 0 0", borderTop:`1px solid ${C.chrome}` }}>
-            <span style={{ fontSize:15,fontWeight:900,color:C.white }}>TOTAL</span>
-            <span style={{ fontSize:18,fontWeight:900,color:C.amber }}>${(sub+tax).toFixed(2)}</span>
+            <span style={{ fontSize:20,fontWeight:900,color:C.white }}>TOTAL</span>
+            <span style={{ fontSize:24,fontWeight:900,color:C.amber }}>${(sub+tax).toFixed(2)}</span>
           </div>
         </div>
         <div style={{ padding:"12px 20px", display:"flex", gap:10 }}>
           <motion.button whileTap={{scale:0.97}} onClick={onClose}
-            style={{ flex:1,height:44,borderRadius:8,background:"rgba(255,255,255,0.04)",border:`1px solid ${C.chrome}`,color:C.muted,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:C.sans }}>CANCEL</motion.button>
+            style={{ flex:1,height:52,borderRadius:8,background:"rgba(255,255,255,0.04)",border:`1px solid ${C.chrome}`,color:C.muted,fontSize:18,fontWeight:700,cursor:"pointer",fontFamily:C.sans }}>CANCEL</motion.button>
           <motion.button whileTap={{scale:0.97}} onClick={confirm}
-            style={{ flex:2,height:44,borderRadius:8,background:`linear-gradient(135deg,${C.gold},#A67C00)`,border:"none",color:"#000",fontSize:12,fontWeight:900,letterSpacing:"0.08em",cursor:"pointer",fontFamily:C.sans }}>
+            style={{ flex:2,height:52,borderRadius:8,background:`linear-gradient(135deg,${C.gold},#A67C00)`,border:"none",color:"#000",fontSize:18,fontWeight:900,letterSpacing:"0.08em",cursor:"pointer",fontFamily:C.sans }}>
             CONFIRM & UPDATE TICKET
           </motion.button>
         </div>
@@ -1076,37 +1095,37 @@ function UpsellModal({ table, onAccept, onDecline }: {
         <div style={{ height:4, background:`linear-gradient(90deg,${C.gold},#A67C00,${C.gold})` }} />
         <div style={{ padding:"28px 32px" }}>
           <div style={{ fontFamily:C.mono, fontSize:9, color:C.gold, letterSpacing:"0.30em", marginBottom:8 }}>⭐ PREMIUM UPGRADE AVAILABLE</div>
-          <div style={{ fontSize:22, fontWeight:900, color:C.white, marginBottom:8 }}>Add a Premier Pairing?</div>
-          <div style={{ fontSize:14, color:C.muted, lineHeight:1.7, marginBottom:22 }}>
+          <div style={{ fontSize:28, fontWeight:900, color:C.white, marginBottom:8 }}>Add a Premier Pairing?</div>
+          <div style={{ fontSize:18, color:C.muted, lineHeight:1.7, marginBottom:22 }}>
             Elevate Table {table.id}'s experience with a curated{" "}
             <span style={{ color:C.amber, fontWeight:700 }}>Cigar & Spirit Special Pairing</span> — handpicked by the house.
           </div>
           <div style={{ background:"rgba(212,175,55,0.08)", border:`1px solid ${C.gold}44`, borderRadius:10, padding:"14px 18px", marginBottom:24 }}>
-            <div style={{ fontSize:16, fontWeight:700, color:C.white, marginBottom:10 }}>{UPGRADE_SKU_BASE.name}</div>
+            <div style={{ fontSize:20, fontWeight:700, color:C.white, marginBottom:10 }}>{UPGRADE_SKU_BASE.name}</div>
             {[{l:"Base price",v:`$${UPGRADE_SKU_BASE.price.toFixed(2)}`},{l:"Tax (8.46%)",v:`$${tax.toFixed(2)}`}].map(r=>(
               <div key={r.l} style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                <span style={{ fontSize:13, color:C.muted }}>{r.l}</span>
-                <span style={{ fontSize:13, color:C.white }}>{r.v}</span>
+                <span style={{ fontSize:18, color:C.muted }}>{r.l}</span>
+                <span style={{ fontSize:18, color:C.white }}>{r.v}</span>
               </div>
             ))}
             <div style={{ display:"flex", justifyContent:"space-between", marginTop:10, paddingTop:10, borderTop:`1px solid ${C.chrome}` }}>
-              <span style={{ fontSize:15, fontWeight:800, color:C.gold }}>TOTAL ADD</span>
-              <span style={{ fontSize:15, fontWeight:900, color:C.gold }}>${total.toFixed(2)}</span>
+              <span style={{ fontSize:20, fontWeight:800, color:C.gold }}>TOTAL ADD</span>
+              <span style={{ fontSize:20, fontWeight:900, color:C.gold }}>${total.toFixed(2)}</span>
             </div>
           </div>
           <div style={{ display:"flex", gap:10 }}>
             <motion.button whileTap={{scale:0.97}} onClick={onDecline}
-              style={{ flex:1, height:52, borderRadius:9, cursor:"pointer",
+              style={{ flex:1, height:58, borderRadius:9, cursor:"pointer",
                 background:"rgba(255,255,255,0.05)", border:`1px solid ${C.chrome}`,
-                color:C.muted, fontSize:14, fontWeight:700, fontFamily:C.sans }}>
+                color:C.muted, fontSize:20, fontWeight:700, fontFamily:C.sans }}>
               NO THANKS
             </motion.button>
             <motion.button whileTap={{scale:0.97}} {...T}
               onTouchStart={e => { T.onTouchStart(e); onAccept([...table.items, { ...UPGRADE_SKU_BASE, id:`upgrade_${Date.now()}` }]); }}
               onClick={() => onAccept([...table.items, { ...UPGRADE_SKU_BASE, id:`upgrade_${Date.now()}` }])}
-              style={{ flex:2, height:52, borderRadius:9, cursor:"pointer",
+              style={{ flex:2, height:58, borderRadius:9, cursor:"pointer",
                 background:`linear-gradient(135deg,${C.gold},#A67C00)`,
-                border:"none", color:"#000", fontSize:13, fontWeight:900,
+                border:"none", color:"#000", fontSize:20, fontWeight:900,
                 fontFamily:C.sans, letterSpacing:"0.06em", boxShadow:`0 0 24px ${C.goldGlo}` }}>
               YES — ADD UPGRADE ★
             </motion.button>
@@ -1149,25 +1168,25 @@ function TableCard({ table, isActive, onSelect, onTap }: {
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:3 }}>
               <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                <span style={{ fontSize:22, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
-                {isVip ? <VIP /> : <span style={{ fontSize:11, color:C.muted }}>{table.zone}</span>}
+                <span style={{ fontSize:26, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
+                {isVip ? <VIP /> : <span style={{ fontSize:16, color:C.muted }}>{table.zone}</span>}
               </div>
               <div style={{ textAlign:"right" }}>
-                <div style={{ fontSize:18, fontWeight:700, color:C.amber }}>{elapsed}</div>
-                <div style={{ fontSize:14, color:C.muted, letterSpacing:"0.12em" }}>TIME ACTIVE</div>
+                <div style={{ fontSize:24, fontWeight:700, color:C.amber }}>{elapsed}</div>
+                <div style={{ fontSize:18, color:C.muted, letterSpacing:"0.12em" }}>TIME ACTIVE</div>
               </div>
             </div>
-            <div style={{ fontSize:18, color:C.muted }}>Guest: {table.guest}</div>
+            <div style={{ fontSize:22, color:C.muted }}>Guest: {table.guest}</div>
           </div>
           <div>
-            <div style={{ fontSize:16, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" }}>CURRENT TAB</div>
-            <div style={{ fontSize:22, fontWeight:900, color:C.amber, lineHeight:1.1 }}>${cur.toFixed(2)}</div>
+            <div style={{ fontSize:20, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" }}>CURRENT TAB</div>
+            <div style={{ fontSize:26, fontWeight:900, color:C.amber, lineHeight:1.1 }}>${cur.toFixed(2)}</div>
           </div>
         </div>
       </div>
       <motion.button whileTap={{scale:0.98}} {...T} onClick={e=>{e.stopPropagation();onTap();}}
-        style={{ width:"100%", height:58, background:`linear-gradient(90deg,rgba(212,175,55,0.18),rgba(212,175,55,0.09))`, border:"none", borderTop:`1px solid ${C.gold}44`, color:C.gold, fontSize:16, fontWeight:900, letterSpacing:"0.12em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-        <Icon d={P.star} size={13} color={C.gold} />
+        style={{ width:"100%", height:62, background:`linear-gradient(90deg,rgba(212,175,55,0.18),rgba(212,175,55,0.09))`, border:"none", borderTop:`1px solid ${C.gold}44`, color:C.gold, fontSize:22, fontWeight:900, letterSpacing:"0.12em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+        <Icon d={P.star} size={15} color={C.gold} />
         OPEN TICKET TAPPER
         <Icon d={P.star} size={13} color={C.gold} />
       </motion.button>
@@ -1197,7 +1216,7 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
       <div style={{ display:"flex", gap:12, marginBottom:8, flexShrink:0, alignItems:"center", overflowX:"auto", overflowY:"hidden", whiteSpace:"nowrap" }}>
         {FILTER_TABS.map(t => (
           <motion.button key={t} whileTap={{scale:0.95}} onClick={()=>setFilter(t)}
-            style={{ height:44, padding:"0 12px", borderRadius:5, cursor:"pointer", flexShrink:0, background:filter===t?`linear-gradient(135deg,${C.gold},#A67C00)`:"rgba(255,255,255,0.04)", border:`1px solid ${filter===t?C.gold:C.chrome}`, color:filter===t?"#000":C.muted, fontSize:13, fontWeight:800, letterSpacing:"0.06em", fontFamily:C.sans, whiteSpace:"nowrap" }}>{t}</motion.button>
+            style={{ height:48, padding:"0 14px", borderRadius:5, cursor:"pointer", flexShrink:0, background:filter===t?`linear-gradient(135deg,${C.gold},#A67C00)`:"rgba(255,255,255,0.04)", border:`1px solid ${filter===t?C.gold:C.chrome}`, color:filter===t?"#000":C.muted, fontSize:18, fontWeight:800, letterSpacing:"0.06em", fontFamily:C.sans, whiteSpace:"nowrap" }}>{t}</motion.button>
         ))}
         <div style={{ marginLeft:"auto" }}><Icon d={P.filter} size={16} color={C.muted} /></div>
       </div>
@@ -1285,12 +1304,12 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
               <div style={{ width:38,height:38,borderRadius:6,flexShrink:0,border:`1px solid ${C.chrome}`,background:item.img?`url(${item.img}) center/cover,#1A1A1A`:"linear-gradient(135deg,#2A1810,#111)" }} />
               <div style={{ width:38,height:38,borderRadius:"50%",flexShrink:0,background:`linear-gradient(135deg,${C.gold},#A67C00)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:900,color:"#000" }}>{item.qty}x</div>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:20, fontWeight:700, color:C.white, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.name}</div>
-                <div style={{ fontSize:16, color:C.muted, fontStyle:"italic" }}>{item.category}</div>
+                <div style={{ fontSize:24, fontWeight:700, color:C.white, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{item.name}</div>
+                <div style={{ fontSize:18, color:C.muted, fontStyle:"italic" }}>{item.category}</div>
               </div>
-              <div style={{ fontSize:20, fontWeight:700, color:C.white, minWidth:50, textAlign:"right" }}>${item.price.toFixed(2)}</div>
+              <div style={{ fontSize:24, fontWeight:700, color:C.white, minWidth:55, textAlign:"right" }}>${item.price.toFixed(2)}</div>
               <motion.button whileTap={{scale:0.84}} {...T} onClick={()=>onRemove(table.id,item.id)}
-                style={{ width:32,height:32,borderRadius:"50%",background:C.goldDim,border:`1px solid ${C.gold}44`,color:C.gold,fontSize:16,lineHeight:"30px",textAlign:"center",cursor:"pointer",flexShrink:0 }}>×</motion.button>
+                style={{ width:36,height:36,borderRadius:"50%",background:C.goldDim,border:`1px solid ${C.gold}44`,color:C.gold,fontSize:20,lineHeight:"34px",textAlign:"center",cursor:"pointer",flexShrink:0 }}>×</motion.button>
             </motion.div>
           ))}
         </AnimatePresence>
@@ -1301,8 +1320,8 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
       <div style={panel({ padding:"13px 13px 0", flexShrink:0 })}>
         {[{l:"SUBTOTAL",v:subtotal},{l:"TAX",v:tax}].map(r => (
           <div key={r.l} style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-            <span style={{ fontSize:18, color:C.muted, letterSpacing:"0.14em" }}>{r.l}</span>
-            <span style={{ fontSize:18, color:C.white }}>${r.v.toFixed(2)}</span>
+            <span style={{ fontSize:22, color:C.muted, letterSpacing:"0.14em" }}>{r.l}</span>
+            <span style={{ fontSize:22, color:C.white }}>${r.v.toFixed(2)}</span>
           </div>
         ))}
         <div style={{ display:"flex", justifyContent:"space-between", padding:"9px 0 11px", borderTop:`1px solid ${C.chrome}` }}>
@@ -1310,8 +1329,9 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
           <span style={{ fontSize:32, fontWeight:900, color:C.amber, textShadow:`0 0 16px ${C.goldGlo}` }}>${total.toFixed(2)}</span>
         </div>
         <motion.button whileTap={{scale:0.97}} {...T}
-          style={{ width:"100%",height:52,marginBottom:8,background:"rgba(255,255,255,0.04)",border:`1px solid ${C.chrome}`,borderRadius:8,color:C.cream,fontSize:20,fontWeight:800,letterSpacing:"0.14em",cursor:"pointer",fontFamily:C.sans,display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
-          <Icon d={P.receipt} size={14} color={C.cream} />
+          onClick={() => window.open(`/receipt/${table.id}`, "_blank")}
+          style={{ width:"100%",height:56,marginBottom:8,background:"rgba(255,255,255,0.04)",border:`1px solid ${C.chrome}`,borderRadius:8,color:C.cream,fontSize:24,fontWeight:800,letterSpacing:"0.14em",cursor:"pointer",fontFamily:C.sans,display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
+          <Icon d={P.receipt} size={16} color={C.cream} />
           VIEW FULL LEDGER
           <span style={{ color:C.gold }}>›</span>
         </motion.button>
@@ -2918,6 +2938,7 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
         ...(prev.activeTables[tableId] ? { [tableId]: { ...prev.activeTables[tableId]!, zone } } : {}),
       },
     }));
+    void api.logTableZone(tableId, zone);
   }, []);
 
   const openTicketTapper  = useCallback(() => setVenueState(prev => ({ ...prev, isTicketTapperOpen: true  })), []);
