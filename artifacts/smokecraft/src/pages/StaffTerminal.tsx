@@ -724,7 +724,7 @@ function TelemetryCol({ tel, thresh, onKitchenReady, onOpenMapper, onOpenStaff, 
   );
 
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", flexBasis:"22%", flexShrink:0, flexGrow:0, minWidth:160 }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:7, height:"100%", overflow:"hidden", flexBasis:"22%", flexShrink:0, flexGrow:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0 }}>
         <Num n={1} />
         <div style={{ flex:1 }}>
@@ -1186,7 +1186,7 @@ function TicketsCol({ state, revenue, onSelect, onUpdate }: {
   const all = Object.values(state.activeTables);
   const list = filter==="ALL TABLES" ? all : all.filter(t => t.zone.toUpperCase().includes(filter.replace(" SECTION","").replace(" FLOOR","").replace(" LOUNGE","")));
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flex:1, minWidth:180 }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flex:1, minWidth:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={2} />
         <div>
@@ -1250,7 +1250,7 @@ function LedgerCol({ state, revenue, onRemove, onProcessPayment, coaching }: {
   const { subtotal, tax, total } = revenue.tableRevenue(state.selectedTableId);
   const isVip = table.zone.toLowerCase().includes("vip");
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flexBasis:"34%", flexShrink:0, flexGrow:0, minWidth:220 }}>
+    <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flexBasis:"34%", flexShrink:0, flexGrow:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={3} />
         <div>

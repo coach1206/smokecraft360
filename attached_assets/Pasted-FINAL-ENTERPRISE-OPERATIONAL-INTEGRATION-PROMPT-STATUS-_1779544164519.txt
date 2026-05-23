@@ -1,0 +1,441 @@
+FINAL — ENTERPRISE OPERATIONAL INTEGRATION PROMPT
+STATUS: NOT COMPLETE UNTIL ALL BUTTONS, PANELS, TELEMETRY, ROUTES, EVENTS, LEDGERS, POS ADAPTERS, COMMAND CENTER EVENTS, AND E.A.T SYSTEM ACTIONS ARE FULLY WIRED, VERIFIED, AND LIVE.
+
+====================================================================
+MISSING / REQUIRED SYSTEMS
+====================================================================
+
+1. Full Action Binding Audit
+   Every visible object, button, card, tab, panel, icon, queue item, ticket, and ledger action must be connected to live business logic and real backend mutations.
+
+2. Real-Time Event Synchronization
+   All telemetry and operational states must update live through websocket infrastructure or persistent event architecture.
+
+3. E.A.T System Wiring
+   Every transaction must update:
+   • Environment
+   • Assets
+   • Transactions
+   • Revenue Brain
+   • Inventory Intelligence
+   • Guest Intelligence
+   • Staff Analytics
+   • Venue Energy Metrics
+
+4. Command Center Synchronization
+   Every operational action must broadcast into NOVEE Command Center.
+
+5. POS Adapter Normalization Layer
+   Clover, Toast, Square, Lightspeed, Shopify adapters must function through a unified architecture.
+
+6. Ticket Lifecycle Engine
+   Table states and payment states must be true finite-state systems.
+
+7. Failure Recovery Architecture
+   Offline handling, retries, reconnect recovery, and event reconciliation must exist.
+
+8. Role Security Enforcement
+   All staff actions require role validation and tenant isolation.
+
+9. Audit Logging Layer
+   Every operational action must generate immutable audit events.
+
+10. Operational Verification Layer
+   Build a self-test diagnostics engine that validates every UI component and backend connection automatically.
+
+====================================================================
+FAILURE PREVENTION CHECKLIST
+====================================================================
+
+✔ No dead buttons
+✔ No placeholder actions
+✔ No fake telemetry
+✔ No disconnected modals
+✔ No frontend-only state
+✔ No unsynced inventory
+✔ No payment actions without reconciliation
+✔ No route accessible without RBAC validation
+✔ No duplicate ticket mutations
+✔ No websocket desync
+✔ No stale ledger states
+✔ No broken POS adapters
+✔ No static queue values
+✔ No fake kitchen status
+✔ No orphaned sessions
+✔ No fake alerts
+✔ No unlogged staff actions
+✔ No missing rollback handling
+✔ No unverified sync events
+✔ No frontend crashes during disconnects
+✔ No UI freeze during API delays
+✔ No hidden console errors
+✔ No unresolved promise states
+✔ No missing loading indicators
+✔ No overlap or touch-target failures
+✔ No missing command center broadcasts
+✔ No invalid tenant crossover
+✔ No unsynced E.A.T telemetry
+✔ No fake financial totals
+
+====================================================================
+MASTER EXECUTION PROMPT
+====================================================================
+
+EXECUTE FULL ENTERPRISE OPERATIONAL INTEGRATION FOR STAGE_5_OPERATIONS STAFF POS TERMINAL.
+
+This is NOT a UI redesign task.
+This is a FULL FUNCTIONAL SYSTEM WIRING, OPERATIONAL SYNCHRONIZATION, AND ENTERPRISE INTEGRATION TASK.
+
+Treat the current interface as a live hospitality operating system running inside NOVEE OS and powered by the E.A.T framework.
+
+The entire platform must function as a real operational environment with production-grade state management, telemetry, synchronization, event orchestration, RBAC security, and POS interoperability.
+
+====================================================================
+SECTION 1 — GLOBAL SYSTEM ARCHITECTURE
+====================================================================
+
+Convert all visible operational panels into live synchronized modules.
+
+Every visible interface component must connect to:
+• backend APIs
+• database mutations
+• websocket streams
+• telemetry engine
+• audit logging
+• E.A.T orchestration
+• command center broadcasting
+
+Use:
+• React + TypeScript frontend
+• Express + TypeScript backend
+• PostgreSQL + Drizzle ORM
+• Socket.IO or LISTEN/NOTIFY realtime architecture
+• JWT authentication
+• RBAC middleware
+• centralized event bus
+• transactional mutation guards
+
+====================================================================
+SECTION 2 — BUTTON + ACTION WIRING
+====================================================================
+
+Wire every visible button to real functionality.
+
+OPEN TICKET TAPPER:
+• create/open table session
+• assign ownership
+• sync ledger
+• sync telemetry
+• sync command center
+• push event notifications
+• load guest profile
+• load pairing recommendations
+• lock active session
+
+VIEW KITCHEN QUEUE:
+• open live kitchen dashboard
+• display ticket prep lifecycle
+• show SLA timers
+• show kitchen station assignment
+• allow ready/completed mutations
+
+PROCESS PAYMENT:
+• create payment intent
+• support split payments
+• support partial payments
+• update ledger
+• close session
+• push webhook reconciliation
+• update revenue analytics
+• update E.A.T transaction engine
+
+REMOVE ITEM BUTTON [X]:
+• rollback inventory
+• rollback tax calculations
+• rollback session totals
+• sync kitchen if item already fired
+• write audit log
+• broadcast ledger update
+
+LOW STOCK ALERT:
+• open inventory intelligence modal
+• display reorder recommendations
+• display supplier routing
+• allow manager escalation
+
+====================================================================
+SECTION 3 — REALTIME TELEMETRY ENGINE
+====================================================================
+
+Convert all telemetry values into live synchronized streams.
+
+Live data includes:
+• humidity
+• temperature
+• inventory
+• active pours
+• kitchen status
+• occupancy
+• bartender load
+• staff availability
+• venue energy
+• sales velocity
+• pairing success
+• active sessions
+
+Implement:
+• websocket subscriptions
+• optimistic UI updates
+• reconnect recovery
+• stale state protection
+• synchronization timestamps
+
+====================================================================
+SECTION 4 — COMMAND CENTER BROADCASTING
+====================================================================
+
+Every operational action must broadcast to NOVEE Command Center.
+
+Examples:
+• ticket opened
+• item added
+• item removed
+• payment completed
+• low stock triggered
+• staff reassigned
+• kitchen delayed
+• high-value guest detected
+
+Create centralized event pipeline:
+eventBus.emit()
+
+All events must:
+• timestamp
+• identify tenant
+• identify venue
+• identify staff member
+• identify table/session
+• identify affected assets
+
+====================================================================
+SECTION 5 — E.A.T SYSTEM INTEGRATION
+====================================================================
+
+Every operational event must update:
+ENVIRONMENT
+ASSETS
+TRANSACTIONS
+
+Examples:
+
+Selling bourbon:
+• deduct inventory
+• update venue spending metrics
+• update pairing analytics
+• update bartender performance
+• update guest taste profile
+• update supplier intelligence
+• update recommendation engine
+• update revenue forecasting
+
+Kitchen order:
+• update prep timing
+• update kitchen load
+• update staffing pressure
+• update venue pacing metrics
+
+====================================================================
+SECTION 6 — POS ADAPTER ENGINE
+====================================================================
+
+Implement normalized adapter architecture.
+
+Support:
+• Toast
+• Clover
+• Square
+• Lightspeed
+• Shopify
+
+Create:
+interface POSAdapter
+
+Functions:
+• pushOrder()
+• refundItem()
+• syncInventory()
+• closeTicket()
+• fetchMenu()
+• syncCatalog()
+• validateWebhook()
+
+All providers normalized through one operational layer.
+
+====================================================================
+SECTION 7 — SESSION + PAYMENT STATE MACHINES
+====================================================================
+
+TABLE SESSION STATES:
+• OPEN
+• ACTIVE
+• ORDERING
+• KITCHEN_PENDING
+• READY
+• SERVED
+• PAYMENT_PENDING
+• PAID
+• CLOSED
+• ARCHIVED
+
+PAYMENT STATES:
+• CREATED
+• AUTHORIZED
+• PROCESSING
+• PARTIAL
+• FAILED
+• RETRYING
+• COMPLETED
+• REFUNDED
+• DISPUTED
+
+Prevent invalid transitions.
+
+====================================================================
+SECTION 8 — ROLE SECURITY
+====================================================================
+
+Enforce RBAC.
+
+Roles:
+• server
+• bartender
+• kitchen
+• manager
+• admin
+• super_admin
+
+Protect:
+• pricing controls
+• refunds
+• voids
+• inventory changes
+• analytics
+• financial dashboards
+• venue configuration
+
+All routes require:
+• JWT validation
+• tenant validation
+• role validation
+
+====================================================================
+SECTION 9 — FAILURE RECOVERY SYSTEM
+====================================================================
+
+Implement:
+• offline mode
+• mutation queues
+• retry engine
+• websocket reconnect
+• stale sync protection
+• payment reconciliation
+• optimistic rollback
+• duplicate prevention
+• dead session cleanup
+
+System must NEVER freeze during API failure.
+
+====================================================================
+SECTION 10 — AUDIT LOGGING
+====================================================================
+
+Every operational action generates immutable audit logs.
+
+Examples:
+• who performed action
+• what changed
+• previous value
+• new value
+• timestamp
+• device
+• venue
+• session
+
+Create:
+audit_logs table
+
+====================================================================
+SECTION 11 — OPERATIONAL SELF-DIAGNOSTICS
+====================================================================
+
+Build a live diagnostics engine.
+
+Verify:
+• websocket health
+• API health
+• POS adapter connectivity
+• inventory synchronization
+• payment reconciliation
+• kitchen queue integrity
+• command center broadcasting
+• telemetry freshness
+• stale sessions
+• orphaned payments
+• inventory mismatch
+
+Create:
+SYSTEM STATUS PANEL
+inside Command Center.
+
+====================================================================
+SECTION 12 — PREMIUM UX OPERATIONAL FEEDBACK
+====================================================================
+
+Every action must visibly communicate:
+• syncing
+• loading
+• retrying
+• failed
+• success
+• processing
+• locked
+• updating
+
+Use:
+• cinematic motion
+• soft easing
+• glass transitions
+• subtle glow reactions
+• haptic-ready touch physics
+
+NO generic web animations.
+
+====================================================================
+SECTION 13 — FINAL VALIDATION
+====================================================================
+
+Before completion:
+• click every button
+• validate every route
+• test every websocket event
+• verify every mutation
+• confirm every telemetry update
+• verify tenant isolation
+• verify RBAC
+• verify rollback handling
+• verify payment reconciliation
+• verify inventory synchronization
+• verify audit logs
+• verify E.A.T broadcasts
+• verify Command Center events
+
+No placeholders.
+No fake interactions.
+No dead UI.
+
+This must operate like:
+Apple + Tesla + enterprise hospitality intelligence infrastructure.
+
+Treat NOVEE OS as:
+a living hospitality operating system,
+NOT a web dashboard.
