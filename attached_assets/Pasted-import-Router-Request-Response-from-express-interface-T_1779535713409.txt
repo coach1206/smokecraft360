@@ -1,0 +1,122 @@
+import { Router, Request, Response } from 'express';
+
+interface TenantProfile {
+  tenantId: string;
+  venueName: string;
+  salesTaxPct: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+interface ReplicaStatus {
+  nodeId: string;
+  role: 'PRIMARY_WRITE' | 'READ_REPLICA_MIRROR';
+  status: 'ONLINE' | 'DEGRADED' | 'STANDBY';
+  latencyMs: number;
+  lastSyncAt: string;
+}
+
+// In-Memory Multi-Tenant & High-Availability Kernel State
+let activeTenants: Record<string, TenantProfile> = {
+  'tenant_profound_001': {
+    tenantId: 'tenant_profound_001',
+    venueName: 'Profound Innovations Lounge',
+    salesTaxPct: 8.46,
+    isActive: true,
+    createdAt: new Date().toISOString()
+  }
+};
+
+let clusterNodes: Record<string, ReplicaStatus> = {
+  'master_cluster_node': { nodeId: 'master_cluster_node', role: 'PRIMARY_WRITE', status: 'ONLINE', latencyMs: 4, lastSyncAt: new Date().toISOString() },
+  'mirror_replica_node_01': { nodeId: 'mirror_replica_node_01', role: 'READ_REPLICA_MIRROR', status: 'ONLINE', latencyMs: 12, lastSyncAt: new Date().toISOString() }
+};
+
+export const multiTenantRouter = Router();
+
+/**
+ * @route POST /api/tenant/provision
+ * @desc Executes clean multi-tenant workspace partitioning and hydrates asset templates
+ */
+multiTenantRouter.post('/tenant/provision', (req: Request, res: Response) => {
+  const { venueName, salesTaxPct, hydrateTemplates } = req.body;
+
+  if (!venueName) {
+    return res.status(400).json({ success: false, error: 'Missing Required Venue Name Metadata' });
+  }
+
+  const generatedTenantId = `tenant_${Math.random().toString(36).substring(2, 11)}`;
+  
+  const newTenant: TenantProfile = {
+    tenantId: generatedTenantId,
+    venueName: venueName,
+    salesTaxPct: salesTaxPct || 8.46,
+    isActive: true,
+    createdAt: new Date().toISOString()
+  };
+
+  // Commit new lease profile to tenant table map
+  activeTenants[generatedTenantId] = newTenant;
+
+  // Simulate instant template asset hydration loop if toggled true
+  let hydratedSkuCount = 0;
+  if (hydrateTemplates) {
+    hydratedSkuCount = 24; // Pre-populates universal Cigar & Spirit metadata entries
+  }
+
+  return res.status(201).json({
+    success: true,
+    message: 'Multi-Tenant Partition Workspace Provisioned Successfully',
+    tenantId: generatedTenantId,
+    profile: newTenant,
+    recordsHydrated: hydratedSkuCount
+  });
+});
+
+/**
+ * @route GET /api/tenant/cluster-health
+ * @desc Returns live heartbeat metrics for database master and replica mirrors
+ */
+multiTenantRouter.get('/tenant/cluster-health', (req: Request, res: Response) => {
+  // Simulating minor cluster jitter on read operations
+  const readJitter = Math.floor(Math.random() * 5);
+  if (clusterNodes['mirror_replica_node_01']) {
+    clusterNodes['mirror_replica_node_01'].latencyMs = 10 + readJitter;
+    clusterNodes['mirror_replica_node_01'].lastSyncAt = new Date().toISOString();
+  }
+
+  return res.status(200).json({
+    success: true,
+    activeTenantCount: Object.keys(activeTenants).length,
+    clusterTopology: Object.values(clusterNodes)
+  });
+});
+
+/**
+ * @route POST /api/tenant/force-failover
+ * @desc Simulates high-availability hot-swap failover routing rules
+ */
+multiTenantRouter.post('/tenant/force-failover', (req: Request, res: Response) => {
+  console.warn('⚠️ CRITICAL ARCHITECTURE EVENT: INITIATING MANUAL FAILOVER CIRCUIT TEST.');
+
+  // Hot-swap roles instantly to promote replica mirror to primary write master
+  clusterNodes['master_cluster_node'] = {
+    ...clusterNodes['master_cluster_node'],
+    role: 'READ_REPLICA_MIRROR',
+    status: 'STANDBY',
+    latencyMs: 999 // Simulated dropout disconnect
+  };
+
+  clusterNodes['mirror_replica_node_01'] = {
+    ...clusterNodes['mirror_replica_node_01'],
+    role: 'PRIMARY_WRITE',
+    status: 'ONLINE',
+    latencyMs: 3 // Promoted node taking over low-latency writing operations
+  };
+
+  return res.status(200).json({
+    success: true,
+    message: 'Failover Successful. Replica Node 01 Promoted to PRIMARY WRITE MASTER. zero-downtime verified.',
+    currentClusterTopology: Object.values(clusterNodes)
+  });
+});

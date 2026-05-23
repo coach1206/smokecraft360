@@ -1,0 +1,35 @@
+COMMAND OVERRIDE: ENTERPRISE MULTI-TENANCY & HIGH-AVAILABILITY DEPLOYMENT. You are commanded to deploy the Multi-Tenant Venue Onboarding Engine and the High-Availability Database Replica Telemetry Router into our unified application architecture immediately. This must support complete isolation for hundreds of independent venues and offload non-critical telemetry to a read-replica monitoring state simulation layer. Do not break existing staff PIN gates or the 166 passing kernel tests.
+
+Execute this full architecture upgrade across the codebase right now:
+
+---
+
+### 1. INITIALIZE ENHANCED MULTI-TENANT LEASE SCHEMAS
+* Update our global state wrapper (`venueState`) to incorporate a top-level `tenant_id` (defaulting to "tenant_profound_001") and a `tenant_status` state tracker.
+* All state mutations across the 3 columns (opening tickets, changing humidor climate targets, or pulling live table items) must strictly scope their database transactions using this tenant lease token to guarantee complete data isolation between independent lounge groups.
+
+---
+
+### 2. DEPLOY THE SELF-SERVICE MULTI-TENANT ONBOARDING COCKPIT
+* Inside the Command Center interface, construct an isolated setup panel component titled "Tenant Provisioning Matrix".
+* Build touch-optimized, high-visibility 58px target input containers allowing a supervisor to initialize a brand-new venue profile:
+  - Input: Tenant Name (e.g., "Sovereign Lounge Group")
+  - Input: Default Local Sales Tax Parameter (pre-baked to 8.46%)
+  - Action Toggle: Provision Universal Luxury Asset Library Template (instantly hydrates the new tenant's inventory layout rows with standard premium Cigar/Spirit SKU templates).
+* Clicking the gold `[ 🚀 PROVISION NEW VENUE INTERFACE ➔ ]` button must commit a new tenant record row directly into a newly mounted `venue_tenants` database schema table.
+
+---
+
+### 3. CONSTRUCT THE DATABASE FAILOVER & REPLICA RECOVERY TRACKER
+* Create an operational telemetry telemetry monitor panel inside the Developer Dashboard titled "HA Replica Node Status Engine".
+* Render live reading vectors tracking our data lanes:
+  - `PRIMARY_WRITE_CLUSTER`: Display status as "CONNECTED / MASTER" with a pulsing vibrant green indicator dot.
+  - `REPLICA_MIRROR_01`: Display status as "SYNCHRONIZED / READ-ONLY" with an active data stream tracker showing sync delta age in milliseconds.
+* Simulating the Failover Circuit: Implement a large 58px action button labeled `[ FORCE REPLICA HOT-SWAP TEST ]`. Touching this target must execute an instantaneous state switch mutation, simulating an active master crash by rerouting all subsequent telemetry read queries to the mirrored replica array seamlessly without freezing the active `StaffTerminal` floor view.
+
+---
+
+### 4. VISUAL & UX SPECIFICATIONS
+* Enforce all luxury style specifications globally: True Obsidian (#020202) canvas backing plates, radiant gold frame strokes, and high-contrast upscaled typography sizes across the onboarding tables. Ensure absolute 58px footprint boundaries on all new configuration buttons.
+
+Compile this multi-tenant provisioning interface now and verify the TypeScript layers construct cleanly across both SmokeCraft and NOVEE environments.

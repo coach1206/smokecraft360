@@ -208,6 +208,30 @@ const api = {
       return j.order ?? null;
     } catch { return null; }
   },
+  provisionTenant: async (payload: { venueName: string; salesTaxPct?: number; hydrateTemplates?: boolean }): Promise<{ success: boolean; tenantId: string; recordsHydrated: number } | null> => {
+    try {
+      const r = await fetch("/api/tenant/provision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      return await r.json() as { success: boolean; tenantId: string; recordsHydrated: number };
+    } catch { return null; }
+  },
+  fetchClusterHealth: async (): Promise<{ activeTenantCount: number; clusterTopology: Array<{ nodeId: string; role: string; status: string; latencyMs: number; lastSyncAt: string }> } | null> => {
+    try {
+      const r = await fetch("/api/tenant/cluster-health");
+      if (!r.ok) return null;
+      return await r.json() as { activeTenantCount: number; clusterTopology: Array<{ nodeId: string; role: string; status: string; latencyMs: number; lastSyncAt: string }> };
+    } catch { return null; }
+  },
+  forceFailover: async (): Promise<{ success: boolean; message: string; currentClusterTopology: Array<{ nodeId: string; role: string; status: string; latencyMs: number; lastSyncAt: string }> } | null> => {
+    try {
+      const r = await fetch("/api/tenant/force-failover", { method: "POST" });
+      if (!r.ok) return null;
+      return await r.json() as { success: boolean; message: string; currentClusterTopology: Array<{ nodeId: string; role: string; status: string; latencyMs: number; lastSyncAt: string }> };
+    } catch { return null; }
+  },
   fetchZoneAssignments: async (): Promise<{ assignments: Array<{ staffId: string; staffName: string; assignedSection: string | null; assignedTables: string[] | null }> }> => {
     try {
       const r = await fetch("/api/staff/zone-assignments");
@@ -283,6 +307,8 @@ interface VenueState {
   isTicketTapperOpen: boolean;
   isUpsellModalOpen: boolean;
   dayone360ReferralUrl: string;
+  tenantId: string;
+  tenantStatus: "active" | "provisioning" | "suspended";
 }
 
 const ZONE_BG: Record<string, string> = {
@@ -298,6 +324,7 @@ const INITIAL: VenueState = {
   selectedTableId: 101, syncIntervalMinutes: 15, lastSyncAt: new Date(),
   isTicketTapperOpen: false, isUpsellModalOpen: false,
   dayone360ReferralUrl: "https://dayone360.com/ref?venue=profound-lounge-001",
+  tenantId: "tenant_profound_001", tenantStatus: "active" as const,
   activeTables: {
     101: { id: 101, guest: "John D.", zone: "VIP Section",
       timeStarted: new Date(Date.now() - 6_120_000).toISOString(),
@@ -1172,6 +1199,262 @@ function CoachingBadge({ coaching }: { coaching: CoachingSuggestion | null }) {
   );
 }
 
+// ── Tenant Provisioning Matrix ────────────────────────────────────────────────
+type ClusterNode = { nodeId: string; role: string; status: string; latencyMs: number; lastSyncAt: string };
+
+const MT = {
+  base:   "#020202",
+  gold:   "#D4AF37",
+  green:  "#22C55E",
+  amber:  "#E6A11D",
+  red:    "#E74C3C",
+  muted:  "#8A8A8A",
+  white:  "#F0EAD6",
+  mono:   "'JetBrains Mono', 'Courier New', monospace",
+  sans:   "'Inter', 'Helvetica Neue', sans-serif",
+  glass:  "rgba(255,255,255,0.03)",
+  border: "rgba(212,175,55,0.28)",
+};
+
+function mtPanel(extra?: React.CSSProperties): React.CSSProperties {
+  return {
+    background: MT.glass, border: `1px solid ${MT.border}`,
+    borderRadius: 12, backdropFilter: "blur(20px)",
+    ...extra,
+  };
+}
+
+function TenantProvisioningMatrix({ onClose }: { onClose: () => void }) {
+  const [venueName, setVenueName] = useState("");
+  const [salesTax,  setSalesTax]  = useState("8.46");
+  const [hydrate,   setHydrate]   = useState(false);
+  const [status,    setStatus]    = useState<"idle"|"busy"|"done"|"error">("idle");
+  const [result,    setResult]    = useState<{ tenantId: string; recordsHydrated: number } | null>(null);
+
+  const provision = async () => {
+    if (!venueName.trim() || status === "busy") return;
+    setStatus("busy");
+    const r = await api.provisionTenant({ venueName: venueName.trim(), salesTaxPct: parseFloat(salesTax) || 8.46, hydrateTemplates: hydrate });
+    if (r?.success) { setResult({ tenantId: r.tenantId, recordsHydrated: r.recordsHydrated }); setStatus("done"); }
+    else setStatus("error");
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", height: 58, background: "rgba(255,255,255,0.04)",
+    border: `1px solid ${MT.border}`, borderRadius: 10, color: MT.white,
+    fontSize: 16, fontWeight: 700, fontFamily: MT.sans,
+    padding: "0 18px", outline: "none", letterSpacing: "0.02em", boxSizing: "border-box",
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ position:"fixed", inset:0, background:"rgba(2,2,2,0.96)", zIndex:9000,
+        display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(12px)" }}>
+      <motion.div initial={{ scale:0.94, y:20 }} animate={{ scale:1, y:0 }}
+        style={{ width:"min(540px,94vw)", ...mtPanel({ padding:0, overflow:"hidden",
+          boxShadow:`0 0 80px rgba(212,175,55,0.15), 0 0 0 1px ${MT.gold}44` }) }}>
+        <div style={{ padding:"20px 24px 16px", borderBottom:`1px solid ${MT.border}`,
+          background:"rgba(212,175,55,0.04)" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <div>
+              <div style={{ fontSize:10, fontFamily:MT.mono, color:MT.gold, letterSpacing:"0.3em", marginBottom:4 }}>ENTERPRISE MULTI-TENANT</div>
+              <div style={{ fontSize:22, fontWeight:900, color:MT.white, letterSpacing:"0.04em" }}>TENANT PROVISIONING MATRIX</div>
+            </div>
+            <motion.button whileTap={{ scale:0.9 }} onClick={onClose}
+              style={{ width:38, height:38, borderRadius:8, background:"rgba(255,255,255,0.06)",
+                border:`1px solid ${MT.border}`, color:MT.muted, fontSize:18, cursor:"pointer",
+                display:"flex", alignItems:"center", justifyContent:"center" }}>✕</motion.button>
+          </div>
+          <div style={{ marginTop:8, fontSize:11, fontFamily:MT.mono, color:MT.muted, letterSpacing:"0.14em" }}>
+            TENANT LEASE: <span style={{ color:MT.gold }}>TENANT_PROFOUND_001</span> · <span style={{ color:MT.green }}>● ACTIVE</span>
+          </div>
+        </div>
+        <div style={{ padding:"24px" }}>
+          {status !== "done" ? (
+            <>
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:10, fontFamily:MT.mono, color:MT.muted, letterSpacing:"0.22em", marginBottom:8 }}>VENUE NAME *</div>
+                <input style={inputStyle} placeholder="e.g. Sovereign Lounge Group"
+                  value={venueName} onChange={e => setVenueName(e.target.value)} />
+              </div>
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:10, fontFamily:MT.mono, color:MT.muted, letterSpacing:"0.22em", marginBottom:8 }}>DEFAULT SALES TAX PARAMETER (%)</div>
+                <input style={inputStyle} type="number" step="0.01" min="0" max="25"
+                  value={salesTax} onChange={e => setSalesTax(e.target.value)} />
+              </div>
+              <motion.button whileTap={{ scale:0.97 }} onClick={() => setHydrate(p => !p)}
+                style={{ width:"100%", height:52, marginBottom:20, display:"flex", alignItems:"center",
+                  gap:14, padding:"0 18px", background: hydrate ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.03)",
+                  border:`1px solid ${hydrate ? MT.gold : MT.border}`, borderRadius:10, cursor:"pointer", transition:"all 0.2s" }}>
+                <div style={{ width:26, height:26, borderRadius:6, border:`2px solid ${hydrate ? MT.gold : MT.muted}`,
+                  background: hydrate ? MT.gold : "transparent", display:"flex", alignItems:"center",
+                  justifyContent:"center", flexShrink:0, transition:"all 0.2s" }}>
+                  {hydrate && <span style={{ fontSize:14, color:"#000", fontWeight:900 }}>✓</span>}
+                </div>
+                <div style={{ textAlign:"left" }}>
+                  <div style={{ fontSize:13, fontWeight:800, color:MT.white, letterSpacing:"0.04em" }}>PROVISION UNIVERSAL LUXURY ASSET LIBRARY</div>
+                  <div style={{ fontSize:10, color:MT.muted, fontFamily:MT.mono, marginTop:2 }}>Hydrates 24 standard Cigar & Spirit SKU templates instantly</div>
+                </div>
+              </motion.button>
+              {status === "error" && (
+                <div style={{ ...mtPanel({ padding:"10px 16px", marginBottom:16, border:`1px solid ${MT.red}55` }) }}>
+                  <span style={{ color:MT.red, fontSize:12, fontWeight:700 }}>Provisioning failed. Check venue name and retry.</span>
+                </div>
+              )}
+              <motion.button whileTap={{ scale:0.97 }} onClick={provision}
+                disabled={!venueName.trim() || status === "busy"}
+                style={{ width:"100%", height:58, borderRadius:10, cursor:"pointer",
+                  background: venueName.trim() ? `linear-gradient(135deg,${MT.gold},#A67C00)` : "rgba(255,255,255,0.05)",
+                  border:"none", color: venueName.trim() ? "#000" : MT.muted,
+                  fontSize:14, fontWeight:900, letterSpacing:"0.10em", fontFamily:MT.sans,
+                  boxShadow: venueName.trim() ? `0 0 28px ${MT.gold}44` : "none",
+                  display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+                {status === "busy"
+                  ? <motion.span animate={{ opacity:[1,0.5,1] }} transition={{ duration:1, repeat:Infinity }}>PROVISIONING...</motion.span>
+                  : <span>PROVISION NEW VENUE INTERFACE  &#8594;</span>}
+              </motion.button>
+            </>
+          ) : (
+            <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
+              style={{ textAlign:"center", padding:"12px 0 8px" }}>
+              <motion.div animate={{ scale:[1,1.15,1] }} transition={{ duration:0.5 }}
+                style={{ fontSize:48, marginBottom:12 }}>✓</motion.div>
+              <div style={{ fontSize:18, fontWeight:900, color:MT.gold, marginBottom:8 }}>WORKSPACE PROVISIONED</div>
+              <div style={{ ...mtPanel({ padding:"14px 18px", marginBottom:16, textAlign:"left" }) }}>
+                <div style={{ fontSize:10, fontFamily:MT.mono, color:MT.muted, marginBottom:6, letterSpacing:"0.2em" }}>TENANT ID</div>
+                <div style={{ fontSize:13, fontWeight:800, color:MT.white, fontFamily:MT.mono }}>{result?.tenantId}</div>
+                {(result?.recordsHydrated ?? 0) > 0 && (
+                  <div style={{ marginTop:10, fontSize:11, color:MT.green, fontFamily:MT.mono }}>✓ {result?.recordsHydrated} SKU templates hydrated</div>
+                )}
+              </div>
+              <motion.button whileTap={{ scale:0.97 }} onClick={onClose}
+                style={{ height:52, padding:"0 32px", borderRadius:10, background:`linear-gradient(135deg,${MT.gold},#A67C00)`,
+                  border:"none", color:"#000", fontSize:14, fontWeight:900, cursor:"pointer", letterSpacing:"0.1em" }}>
+                CLOSE MATRIX
+              </motion.button>
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── HA Replica Node Status Engine ─────────────────────────────────────────────
+function HaReplicaPanel({ onClose }: { onClose: () => void }) {
+  const [nodes,         setNodes]        = useState<ClusterNode[]>([]);
+  const [tenantCount,   setTenantCount]  = useState(0);
+  const [failoverState, setFailoverState]= useState<"idle"|"testing"|"swapped">("idle");
+  const [message,       setMessage]      = useState("");
+
+  useEffect(() => {
+    const poll = async () => {
+      const d = await api.fetchClusterHealth();
+      if (d) { setNodes(d.clusterTopology); setTenantCount(d.activeTenantCount); }
+    };
+    poll();
+    const id = setInterval(poll, 5_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const runFailover = async () => {
+    setFailoverState("testing"); setMessage("");
+    const r = await api.forceFailover();
+    if (r?.success) { setNodes(r.currentClusterTopology); setMessage(r.message); setFailoverState("swapped"); }
+    else setFailoverState("idle");
+  };
+
+  const isPrimary = (n: ClusterNode) => n.role === "PRIMARY_WRITE";
+  const nodeAccent = (n: ClusterNode) =>
+    n.status === "ONLINE" ? (isPrimary(n) ? MT.green : MT.amber) : n.status === "STANDBY" ? MT.muted : MT.red;
+
+  return (
+    <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
+      style={{ position:"fixed", inset:0, background:"rgba(2,2,2,0.96)", zIndex:9000,
+        display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(12px)" }}>
+      <motion.div initial={{ scale:0.94, y:20 }} animate={{ scale:1, y:0 }}
+        style={{ width:"min(560px,94vw)", ...mtPanel({ padding:0, overflow:"hidden",
+          boxShadow:`0 0 80px rgba(212,175,55,0.15), 0 0 0 1px ${MT.gold}44` }) }}>
+        <div style={{ padding:"20px 24px 16px", borderBottom:`1px solid ${MT.border}`,
+          background:"rgba(212,175,55,0.04)" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <div>
+              <div style={{ fontSize:10, fontFamily:MT.mono, color:MT.gold, letterSpacing:"0.3em", marginBottom:4 }}>DEVELOPER DASHBOARD — HA CLUSTER</div>
+              <div style={{ fontSize:22, fontWeight:900, color:MT.white, letterSpacing:"0.04em" }}>HA REPLICA NODE STATUS ENGINE</div>
+            </div>
+            <motion.button whileTap={{ scale:0.9 }} onClick={onClose}
+              style={{ width:38, height:38, borderRadius:8, background:"rgba(255,255,255,0.06)",
+                border:`1px solid ${MT.border}`, color:MT.muted, fontSize:18, cursor:"pointer",
+                display:"flex", alignItems:"center", justifyContent:"center" }}>✕</motion.button>
+          </div>
+          <div style={{ marginTop:8, fontSize:11, fontFamily:MT.mono, color:MT.muted, letterSpacing:"0.14em" }}>
+            ACTIVE TENANT PARTITIONS: <span style={{ color:MT.gold }}>{tenantCount}</span>
+          </div>
+        </div>
+        <div style={{ padding:"24px" }}>
+          <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom:20 }}>
+            {nodes.map(node => {
+              const accent = nodeAccent(node);
+              const syncDeltaMs = node.role === "READ_REPLICA_MIRROR"
+                ? Math.round(Date.now() - new Date(node.lastSyncAt).getTime()) : null;
+              return (
+                <div key={node.nodeId} style={{ ...mtPanel({
+                  padding:"16px 18px", border:`1px solid ${accent}44`, boxShadow:`0 0 18px ${accent}11` }) }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                      <motion.div animate={{ opacity: node.status === "STANDBY" ? 0.4 : [1, 0.3, 1] }}
+                        transition={{ duration:1.4, repeat:Infinity, ease:"easeInOut" }}
+                        style={{ width:12, height:12, borderRadius:"50%", background:accent, boxShadow:`0 0 8px ${accent}` }} />
+                      <div style={{ fontSize:10, fontFamily:MT.mono, color:accent, fontWeight:800, letterSpacing:"0.18em" }}>
+                        {isPrimary(node) ? "PRIMARY_WRITE_CLUSTER" : "REPLICA_MIRROR_01"}
+                      </div>
+                    </div>
+                    <div style={{ fontSize:9, fontFamily:MT.mono, color:MT.muted }}>{node.latencyMs}ms</div>
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    <div style={{ fontSize:13, fontWeight:800, color:MT.white }}>
+                      {isPrimary(node) ? "CONNECTED / MASTER" : "SYNCHRONIZED / READ-ONLY"}
+                    </div>
+                    <div style={{ fontSize:9, fontFamily:MT.mono, color:MT.muted }}>{node.status}</div>
+                  </div>
+                  {syncDeltaMs !== null && (
+                    <div style={{ marginTop:6, display:"flex", alignItems:"center", gap:8 }}>
+                      <motion.div animate={{ width:["0%","100%"] }}
+                        transition={{ duration:5, ease:"linear", repeat:Infinity }}
+                        style={{ height:2, flex:1, background:`linear-gradient(90deg,${accent},transparent)`, borderRadius:2 }} />
+                      <div style={{ fontSize:9, fontFamily:MT.mono, color:accent, flexShrink:0 }}>SYNC Δ {syncDeltaMs}ms</div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {nodes.length === 0 && (
+              <div style={{ textAlign:"center", color:MT.muted, fontFamily:MT.mono, fontSize:11, padding:"20px 0" }}>POLLING CLUSTER HEALTH...</div>
+            )}
+          </div>
+          {message && (
+            <motion.div initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }}
+              style={{ ...mtPanel({ padding:"12px 16px", marginBottom:16, border:`1px solid ${MT.green}44` }) }}>
+              <div style={{ fontSize:11, color:MT.green, fontFamily:MT.mono, lineHeight:1.5 }}>{message}</div>
+            </motion.div>
+          )}
+          <motion.button whileTap={{ scale:0.97 }} onClick={runFailover} disabled={failoverState === "testing"}
+            style={{ width:"100%", height:58, borderRadius:10, cursor:"pointer",
+              background: failoverState === "swapped" ? `linear-gradient(135deg,${MT.green},#16A34A)` : `linear-gradient(135deg,${MT.red},#991B1B)`,
+              border:"none", color:"#fff", fontSize:13, fontWeight:900, letterSpacing:"0.10em",
+              fontFamily:MT.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:10,
+              boxShadow:`0 0 28px ${failoverState === "swapped" ? MT.green : MT.red}44`,
+              opacity: failoverState === "testing" ? 0.6 : 1 }}>
+            {failoverState === "testing"
+              ? <motion.span animate={{ opacity:[1,0.4,1] }} transition={{ duration:0.8, repeat:Infinity }}>EXECUTING FAILOVER...</motion.span>
+              : failoverState === "swapped" ? "REPLICA PROMOTED — RE-TEST FAILOVER" : "FORCE REPLICA HOT-SWAP TEST"}
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── PIN Gate Overlay — dual-layer security authentication ─────────────────────
 function PinGateOverlay({
   target, onSuccess, onCancel,
@@ -1822,6 +2105,8 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
   const [pinTarget,        setPinTarget]         = useState<"supervisor" | "admin" | null>(null);
   const [sessionStart,     setSessionStart]      = useState<Date | null>(null);
   const [showZoneDynamics, setShowZoneDynamics]  = useState(false);
+  const [showTenantMatrix, setShowTenantMatrix]  = useState(false);
+  const [showHaPanel,      setShowHaPanel]       = useState(false);
 
   // ── Cross-layer sync hooks ─────────────────────────────────────────────────
   const zoneAssignments = useZoneSync(60_000);
@@ -2036,6 +2321,28 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
           />
         )}
       </AnimatePresence>
+      {isAdminView && (
+        <div style={{ position:"fixed", top:12, right:16, zIndex:1200, display:"flex", gap:8 }}>
+          <motion.button whileTap={{ scale:0.95 }}
+            onClick={() => setShowTenantMatrix(true)}
+            style={{ height:36, padding:"0 14px", borderRadius:8, cursor:"pointer",
+              background:"rgba(2,2,2,0.92)", border:`1px solid ${C.gold}`,
+              color:C.gold, fontSize:10, fontWeight:800, letterSpacing:"0.18em",
+              fontFamily:"'JetBrains Mono','Courier New',monospace",
+              backdropFilter:"blur(10px)", whiteSpace:"nowrap" }}>
+            TENANT MATRIX
+          </motion.button>
+          <motion.button whileTap={{ scale:0.95 }}
+            onClick={() => setShowHaPanel(true)}
+            style={{ height:36, padding:"0 14px", borderRadius:8, cursor:"pointer",
+              background:"rgba(2,2,2,0.92)", border:"1px solid #22C55E",
+              color:"#22C55E", fontSize:10, fontWeight:800, letterSpacing:"0.18em",
+              fontFamily:"'JetBrains Mono','Courier New',monospace",
+              backdropFilter:"blur(10px)", whiteSpace:"nowrap" }}>
+            HA STATUS
+          </motion.button>
+        </div>
+      )}
       <div style={{ flex:1, display:"flex", overflow:"hidden", position:"relative", zIndex:1 }}>
         <NavRail
           onBack={back}
@@ -2086,6 +2393,12 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
             onReassign={reassignZone}
           />
         )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showTenantMatrix && <TenantProvisioningMatrix onClose={() => setShowTenantMatrix(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showHaPanel && <HaReplicaPanel onClose={() => setShowHaPanel(false)} />}
       </AnimatePresence>
       <AnimatePresence>
         {pinTarget && (
