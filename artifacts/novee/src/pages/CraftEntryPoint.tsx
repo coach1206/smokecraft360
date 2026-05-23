@@ -411,9 +411,26 @@ export function CraftGrid({
           )}
           <img src={IMG("logo_novee_os.jpg")} alt="NOVEE OS" style={{ height: 40, width: "auto", objectFit: "contain", opacity: 0.85 }} />
           {!isAdminView && onStaffAccess && (
-            <button onClick={onStaffAccess} style={{ background: "none", border: "1px solid rgba(212,175,55,0.22)", borderRadius: 6, padding: "5px 12px", color: "rgba(212,175,55,0.40)", fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Inter',sans-serif" }}>
-              STAFF
-            </button>
+            <motion.button
+              onClick={onStaffAccess}
+              onTouchStart={onStaffAccess}
+              whileTap={{ scale: 0.96 }}
+              whileHover={{ boxShadow: "0 0 32px rgba(212,175,55,0.55), 0 0 8px rgba(212,175,55,0.80)" }}
+              style={{
+                height: 58, padding: "0 28px",
+                background: "linear-gradient(135deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.08) 100%)",
+                border: "2px solid #D4AF37",
+                borderRadius: 8,
+                color: "#D4AF37",
+                fontSize: 16, fontWeight: 900, letterSpacing: "0.14em",
+                textTransform: "uppercase", cursor: "pointer",
+                fontFamily: "'Inter',sans-serif",
+                display: "flex", alignItems: "center", gap: 10,
+                boxShadow: "0 0 18px rgba(212,175,55,0.28), inset 0 1px 0 rgba(212,175,55,0.20)",
+                whiteSpace: "nowrap",
+              }}>
+              ⚡ LAUNCH TERMINAL (POS 3)
+            </motion.button>
           )}
         </div>
       </div>

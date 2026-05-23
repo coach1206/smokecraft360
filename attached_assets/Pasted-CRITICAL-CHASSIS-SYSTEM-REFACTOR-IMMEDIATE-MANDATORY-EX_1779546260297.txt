@@ -1,0 +1,25 @@
+CRITICAL CHASSIS SYSTEM REFACTOR — IMMEDIATE MANDATORY EXECUTION. You are actively failing to maintain interface layout boundaries and ignoring critical view routing paths. Drop all background blocks, bypass any compilation guards, force-override the stylesheets, and execute this total system repair across both SmokeCraft and NOVEE OS immediately:
+
+1. FORCE ENTRY POINT UNLOCK (CRAFT HUB TO POS 3):
+Locate the top "★ STAFF AUTH" button on the Craft Hub layout screen. Tear out its inactive state completely. Wire it to a direct onClick / onTouchStart routing hook that immediately forces the global workspace state to switch layouts to the 3-column operational POS 3 terminal workspace. Re-skin its text label to read: "⚡ LAUNCH TERMINAL (POS 3)". Force it to render inside a thick, high-visibility 58px touch envelope with gold border accenting so it stands out immediately on the glass.
+
+2. REPAIR AND BALANCE THE 3-COLUMN LAYOUT (NO GRID FRACTIONS):
+Completely abandon the broken CSS grid layout fractions. Convert the main workstation container to a strict flexbox structure: 'display: flex', 'width: 100vw', 'height: 100vh', 'overflow: hidden', 'gap: 16px'. Lock the containers to absolute structural width walls:
+- Left Column (Telemetry): Hard 'width: 340px' and 'flex-shrink: 0' so it never cuts off Station 1: Humidor or Station 2: Bar metrics text headers.
+- Right Column (Active Ledger): Hard 'width: 480px' and 'flex-shrink: 0' so the invoice items never squeeze.
+- Middle Column (Ticket Overview): Force 'flex: 1' and 'min-width: 0' so it fills the exact center area perfectly without bleeding over adjacent columns. Add 'overflow-x: hidden' and 'display: flex', 'flex-direction: column' to all 3 root column wrappers.
+
+3. UN-MASH TICKET CARDS & FILTER TABS:
+- Force individual ticket cards in Column 2 into a clean horizontal flex row split. Set image components to a hard unchanging size: 'width: 140px !important', 'height: 100%', 'flex-shrink: 0 !important' to prevent clipping. Force the card text section to use 'flex: 1', 'min-width: 0', 'padding-left: 12px', 'display: flex', 'flex-direction: column', 'justify-content: space-between'.
+- Force the top filter navigation pills ("ALL TABLES", "VIP SECTION", etc.) into a clean row container with 'white-space: nowrap !important', 'overflow-x: auto !important', and a solid 'gap: 12px !important'. Give each pill button 'flex-shrink: 0'.
+
+4. TOUCHSCREEN TYPOGRAPHY BLOW-UP:
+Completely eliminate all tiny fonts on the screens. You are commanded to scale the text up to double its current size for high-velocity touch operations:
+- Increase the text layout engine size for the context engine badge string ("Current table has 3+ items...") from 6px directly up to a clear, bold 12px baseline text target.
+- Upscale all column sub-headers (Station 1, Station 2, Station 3) to 18px bold.
+- Blow up climate readouts ("68°F", "71%") to a heavy 18px minimum footprint.
+
+5. HARD INTEGRATION ASSURANCE:
+Ensure every button component, path router toggle, and touch action across both systems is fully wired, integrated, and functioning perfectly with zero dead states. Do not let child elements break out of their parent columns. 
+
+Re-compile the code files, clear the layout overlaps, open up the left-side text space, and update the live terminal preview interface immediately.
