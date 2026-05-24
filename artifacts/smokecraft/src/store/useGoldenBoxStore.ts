@@ -32,6 +32,11 @@ interface GoldenBoxState {
   mentorSelection: string | null;
   routeSnapshot: RouteSnapshot;
 
+  tickerSpeed: number;
+  tickerPaused: boolean;
+  tickerTestMessage: string | null;
+  tickerTestCategory: string | null;
+
   enableDeveloperMode: (name: string, code: string) => boolean;
   disableDeveloperMode: () => void;
   setDevPanelOpen: (open: boolean) => void;
@@ -41,6 +46,9 @@ interface GoldenBoxState {
   setSkipAnimations: (skip: boolean) => void;
   setMentorSelection: (mentor: string) => void;
   saveRoute: (snapshot: Partial<RouteSnapshot>) => void;
+  setTickerSpeed: (speed: number) => void;
+  setTickerPaused: (paused: boolean) => void;
+  setTickerTestMessage: (msg: string | null, category?: string | null) => void;
 }
 
 const DEFAULT_SNAPSHOT: RouteSnapshot = {
@@ -64,6 +72,11 @@ export const useGoldenBoxStore = create<GoldenBoxState>()(
       unlockedLevels: ["initiate"],
       mentorSelection: null,
       routeSnapshot: DEFAULT_SNAPSHOT,
+
+      tickerSpeed: 1.0,
+      tickerPaused: false,
+      tickerTestMessage: null,
+      tickerTestCategory: null,
 
       enableDeveloperMode: (name, code) => {
         if (code !== DEV_CODE) return false;
@@ -110,7 +123,6 @@ export const useGoldenBoxStore = create<GoldenBoxState>()(
         }),
 
       setSkipAnimations: (skip) => set({ skipAnimations: skip }),
-
       setMentorSelection: (mentor) => set({ mentorSelection: mentor }),
 
       saveRoute: (snapshot) =>
@@ -121,6 +133,11 @@ export const useGoldenBoxStore = create<GoldenBoxState>()(
             timestamp: Date.now(),
           },
         })),
+
+      setTickerSpeed: (speed) => set({ tickerSpeed: Math.max(0.2, Math.min(3.0, speed)) }),
+      setTickerPaused: (paused) => set({ tickerPaused: paused }),
+      setTickerTestMessage: (msg, category = null) =>
+        set({ tickerTestMessage: msg, tickerTestCategory: category }),
     }),
     {
       name: "golden-box-store",
@@ -133,6 +150,7 @@ export const useGoldenBoxStore = create<GoldenBoxState>()(
         unlockedLevels: state.unlockedLevels,
         mentorSelection: state.mentorSelection,
         routeSnapshot: state.routeSnapshot,
+        tickerSpeed: state.tickerSpeed,
       }),
     },
   ),

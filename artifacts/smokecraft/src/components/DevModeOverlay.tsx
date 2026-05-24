@@ -125,11 +125,14 @@ function CodeEntryModal({ onSuccess, onClose }: { onSuccess: () => void; onClose
 function DevPanel({ onClose }: { onClose: () => void }) {
   const [location, navigate] = useLocation();
   const [xpInput, setXpInput] = useState("500");
+  const [tickerMsg, setTickerMsg] = useState("");
+  const [tickerCat, setTickerCat] = useState("cigar");
   const [toast, setToast] = useState("");
   const {
     developerName, xp, unlockedLevels, skipAnimations,
     addXP, unlockAllLevels, resetSession, setSkipAnimations,
     disableDeveloperMode, routeSnapshot,
+    tickerSpeed, tickerPaused, setTickerSpeed, setTickerPaused, setTickerTestMessage,
   } = useGoldenBoxStore();
 
   const showToast = (msg: string) => {
@@ -270,6 +273,91 @@ function DevPanel({ onClose }: { onClose: () => void }) {
         {btn(`↩  Restore Previous Route${routeSnapshot.lastRoute ? ` (${routeSnapshot.lastRoute})` : ""}`,
           handleRestorePrev,
           !!routeSnapshot.lastRoute && routeSnapshot.lastRoute !== location)}
+
+        {section("Ticker Controls")}
+
+        {/* Speed slider */}
+        <div style={{ padding: "10px 12px", borderRadius: 8, border: `1px solid ${BORDER}`,
+          background: "rgba(255,255,255,0.025)", marginBottom: 6 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={{ fontFamily: MONO, fontSize: 11, color: TEXT_DIM, letterSpacing: "0.14em" }}>
+              TICKER SPEED
+            </span>
+            <span style={{ fontFamily: MONO, fontSize: 11, color: AMBER, fontWeight: 700 }}>
+              {tickerSpeed.toFixed(1)}×
+            </span>
+          </div>
+          <input
+            type="range" min={0.2} max={3.0} step={0.1}
+            value={tickerSpeed}
+            onChange={e => setTickerSpeed(parseFloat(e.target.value))}
+            style={{ width: "100%", accentColor: "#D48B00", cursor: "pointer" }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+            <span style={{ fontFamily: MONO, fontSize: 9, color: TEXT_DIM }}>SLOW 0.2×</span>
+            <span style={{ fontFamily: MONO, fontSize: 9, color: TEXT_DIM }}>FAST 3.0×</span>
+          </div>
+        </div>
+
+        {/* Pause toggle */}
+        <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "10px 12px", borderRadius: 8, border: `1px solid ${tickerPaused ? AMBER : BORDER}`,
+          background: tickerPaused ? "rgba(212,139,0,0.08)" : "rgba(255,255,255,0.025)", marginBottom: 6, cursor: "pointer" }}>
+          <span style={{ fontFamily: SANS, fontSize: 13, color: tickerPaused ? AMBER : TEXT }}>
+            {tickerPaused ? "⏸ Ticker Paused" : "▶ Ticker Running"}
+          </span>
+          <div onClick={() => setTickerPaused(!tickerPaused)}
+            style={{ width: 36, height: 20, borderRadius: 10,
+              background: tickerPaused ? AMBER : "rgba(255,255,255,0.12)",
+              border: `1px solid ${tickerPaused ? AMBER : BORDER}`,
+              display: "flex", alignItems: "center", padding: "2px",
+              transition: "all 0.2s", cursor: "pointer" }}>
+            <motion.div animate={{ x: tickerPaused ? 16 : 0 }}
+              style={{ width: 14, height: 14, borderRadius: "50%", background: "#fff" }} />
+          </div>
+        </label>
+
+        {/* Test message injector */}
+        <div style={{ padding: "10px 12px", borderRadius: 8, border: `1px solid ${BORDER}`,
+          background: "rgba(255,255,255,0.025)", marginBottom: 6 }}>
+          <div style={{ fontFamily: MONO, fontSize: 10, color: TEXT_DIM, letterSpacing: "0.14em", marginBottom: 8 }}>
+            INJECT TEST MESSAGE
+          </div>
+          <select
+            value={tickerCat}
+            onChange={e => setTickerCat(e.target.value)}
+            style={{ width: "100%", background: "#111", color: AMBER, border: `1px solid ${BORDER}`,
+              borderRadius: 6, padding: "6px 10px", fontSize: 12, fontFamily: MONO,
+              letterSpacing: "0.10em", marginBottom: 8, cursor: "pointer" }}
+          >
+            {["cigar","drinks","kitchen","rewards","system"].map(c => (
+              <option key={c} value={c}>{c.toUpperCase()}</option>
+            ))}
+          </select>
+          <div style={{ display: "flex", gap: 6 }}>
+            <input
+              type="text" placeholder="Enter test message..."
+              value={tickerMsg} onChange={e => setTickerMsg(e.target.value)}
+              style={{ flex: 1, background: "#111", color: TEXT, border: `1px solid ${BORDER}`,
+                borderRadius: 6, padding: "7px 10px", fontSize: 12, fontFamily: SANS,
+                outline: "none" }}
+            />
+            <motion.button whileTap={{ scale: 0.94 }}
+              onClick={() => {
+                if (tickerMsg.trim()) {
+                  setTickerTestMessage(tickerMsg.trim(), tickerCat);
+                  showToast("Test message injected");
+                  setTickerMsg("");
+                }
+              }}
+              style={{ padding: "7px 14px", borderRadius: 6, border: `1px solid ${AMBER}`,
+                background: "rgba(212,139,0,0.14)", color: AMBER, fontSize: 12, fontWeight: 700,
+                cursor: "pointer", whiteSpace: "nowrap" }}>
+              Fire
+            </motion.button>
+          </div>
+          {btn("✕ Clear Test Message", () => { setTickerTestMessage(null); showToast("Test message cleared"); })}
+        </div>
 
         {section("Config")}
         <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer",
