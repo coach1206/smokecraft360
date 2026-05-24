@@ -71,6 +71,7 @@ const DevConsole            = lazy(() => import('@/pages/DevConsole'));
 const CentralCommand        = lazy(() => import('@/pages/CentralCommand'));
 const PosMode               = lazy(() => import('@/pages/PosMode'));
 const StaffTerminal         = lazy(() => import('@/pages/StaffTerminal'));
+const EatPosModule          = lazy(() => import('@/pages/EatPosModule'));
 const PinLogin              = lazy(() => import('@/pages/PinLogin'));
 const Axiom360              = lazy(() => import('@/pages/Axiom360'));
 const StaffModule           = lazy(() => import('@/pages/StaffModule'));
@@ -1418,6 +1419,9 @@ export default function App() {
           </Route>
 
           {/* ── Root: SmokeCraft landing page ── */}
+          <Route path="/eat-pos">
+            <SubPageProviders><EatPosModule onBack={() => window.history.back()} /></SubPageProviders>
+          </Route>
           <Route path="/experiences">
             <SubPageProviders><ExperiencesModule /></SubPageProviders>
           </Route>

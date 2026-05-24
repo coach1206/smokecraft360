@@ -17,6 +17,7 @@ import UpgradeRequired from "@/pages/UpgradeRequired";
 import GoldenBoxPage from "@/pages/GoldenBoxPage";
 import CraftPortalHome from "@/pages/CraftPortalHome";
 import EATDashboard from "@/pages/EATDashboard";
+import EatPosModule  from "@/pages/EatPosModule";
 import ExecutiveCommandCenter from "@/pages/ExecutiveCommandCenter";
 import type { EATModuleFlags } from "@/pages/ExecutiveCommandCenter";
 import { DEFAULT_FLAGS } from "@/pages/ExecutiveCommandCenter";
@@ -1111,6 +1112,7 @@ const RAIL_ITEMS = [
   { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
   { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,               staffOnly: false, icon: "◆", isActive: (p: string) => p === "pairing_view" },
   { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: undefined,               staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
+  { id: "eat_pos",           label: "EAT POS",     abbr: "POS", targetPhase: "eat_pos_module" as Phase,   pinLevel: undefined,               staffOnly: true,  icon: "⊟", isActive: (p: string) => p === "eat_pos_module" },
   { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, staffOnly: true,  icon: "⟡", isActive: (p: string) => p === "executive_command" },
   { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,               staffOnly: true,  icon: "◯", isActive: (p: string) => p === "lounge_view" },
   { id: "coach_help",        label: "Coach Help",  abbr: "CH",  targetPhase: "coach_help" as Phase,       pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => p === "coach_help" },
@@ -1629,6 +1631,7 @@ function PhaseScreen({ eatFlags, onFlagsChange }: { eatFlags: EATModuleFlags; on
   if (phase === "upgrade_required")  return <UpgradeRequired />;
   if (phase === "master_blender")    return <MasterBlender />;
   if (phase === "pos_terminal")      return <StaffTerminal />;
+  if ((phase as string) === "eat_pos_module") return <EatPosModule />;
   if ((phase as string) === "gestural_engine") return <GesturalEngine />;
   if (S1_PHASES.has(phase))          return <S1_InitGate />;
   if (S2_PHASES.has(phase))          return <S2_TerroirMatrix />;

@@ -1,0 +1,26 @@
+Build a high-velocity, luxury POS UI and state architecture using React Native, Expo, and TypeScript. The interface must strictly adhere to an ultra-premium, "Porsche-engineered" minimalist aesthetic.
+
+### DESIGN CONSTANTS
+- Background Canvas: True Obsidian Black (#010101)
+- Surface Containers: Muted Charcoal/Glass (rgba(28, 28, 30, 0.75)) with high backdrop blur
+- Active/Alert Accents: Warm Amber (#FFB300) and Muted Gold (#D4AF37)
+- Typography: Clean, high-contrast sans-serif utilizing precise, variable weights
+- Motion: Physics-based, cinematic transitions (heavy mass, fluid damping) for all gesture-driven drawers and drag-and-drop elements.
+
+### SYSTEM LOGIC & STATE MACHINES TO IMPLEMENT
+
+1. ENVIRONMENT LAYER (CIGAR LOUNGE)
+- Implement an interactive floor map grid with ambient pulsing table indicators displaying service pacing.
+- Build a gesture-driven, translucent slide-out Member Sidebar. It must handle active humidor locker inventories and member ritual profiles seamlessly.
+- Create a 'Ritual Selection Matrix' for selected items that handles cut style (Straight, V-Cut, Punch) and lighting type (Cedar, Torch), dispatching a silent background payload to the lounge staging queue upon confirmation.
+
+2. ASSET LAYER (KITCHEN & CELLAR DISPLAY)
+- Build an inventory-aware state machine that maps menu items to a live countdown ledger.
+- Create reactive menu buttons: Items dropping below 3 units must display a micro amber ticker readout. Items hitting 0 units must trigger a soft-lock state transition (desaturated text, micro-lock icon, and Haptic feedback rejection on touch).
+
+3. TRANSACTION LAYER (CHECK SPLITTING & SHADOW PROCESSING)
+- Implement a 3-Tap Direct-Manipulation Split-Check interface. Servers must be able to drag-and-drop item icons or percentage values directly onto distinct guest seat targets with weighted, fluid physics animations.
+- Create a 'Shadow Mode' offline payment handler that tokenizes and locally encrypts transactions if network connectivity drops, queuing them to auto-flush back to the main ledger when connectivity is restored.
+- Build an isolated, pull-down 'My Shift Performance' dashboard layout displaying running credit card tip totals, automated tip pool allocations, and live table turn-around pacing metrics.
+
+Provide a fully modular code implementation consisting of the TypeScript State Machine (useEATSystem) and the responsive Frontend View Component.

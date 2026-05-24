@@ -1,0 +1,25 @@
+Build a high-velocity, premium POS module for a luxury venue powered by NOVEE OS, utilizing the E.A.T. (Environment, Asset, Transaction) architectural framework. 
+
+### DESIGN LANGUAGE & INTERFACE
+- Implement a high-end, ultra-minimalist, "Porsche-engineered" aesthetic.
+- Color Palette: True Obsidian (#010101) background, muted charcoal containers, with soft gold/amber accents for critical alerts, selections, and interactive states.
+- Motion: Apply fluid, cinematic, weighted physics for all transitions and drag-and-drop elements. Avoid sudden or blocky UI snaps.
+- Interaction Target: Ensure every core workflow can be fully executed in 3 taps or fewer. Use large, high-contrast touch zones.
+
+### CORE MODULES TO IMPLEMENT
+
+1. FRONT-OF-HOUSE: CIGAR LOUNGE & RITUAL SCREEN
+- Create a visual floor map optimized for micro-zones (Lounge Chairs, Bar, Private Lockers).
+- Integrate a "Member Profile" sidebar that surfaces humidor locker inventory, preferred cuts, and smoke preferences.
+- Add an automated experience trigger workflow: When a premium cigar item is tapped, generate a silent, synchronized background cue payload targeting the staging area for specific ritual tools (e.g., cedar spills, specific cutters, and SmokeCraft pairings).
+
+2. BACK-OF-HOUSE: PACING & KITCHEN INTELLIGENCE
+- Build a lightweight Kitchen Display System (KDS) state manager that syncs ticket pacing based on lounge service state (e.g., dynamically adjusting food delivery windows so dishes don't arrive while a guest is in the middle of a cigar ritual).
+- Implement a real-time "Asset Countdown Ledger." Provide a reactive state where items dropping below 3 units display a visual countdown ticker on the POS button, soft-locking completely when hitting zero to prevent duplicate ordering.
+
+3. BACK-END & TRANSACTION MOTOR
+- Implement a "Shadow Mode" offline payment queue handler. If connectivity dropped = true, securely tokenize and local-encrypt payment data, transitioning seamlessly back to cloud ledger settlement once a connection is re-established without halting the user flow.
+- Build a 3-tap "Direct Manipulation" Split-Check engine. Servers must be able to drag-and-drop items or percentage shares directly into distinct visual seat targets with a fluid, continuous gesture, confirming the total transaction instantly.
+- Create an isolated "My Shift Performance" server dashboard containing real-time tip tracking, tip pool distributions, and pacing metrics using clean typography and minimalist data visualizations.
+
+Provide the full clean frontend components using React/Expo (Native-friendly mobile responsive) along with the core TypeScript state management machines for handling the E.A.T. synchronization logic.
