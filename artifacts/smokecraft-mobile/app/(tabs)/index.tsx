@@ -154,6 +154,23 @@ export default function CraftHubScreen() {
             />
           ))}
 
+          {/* E.A.T. POS — staff portal (visible in STAFF_COCKPIT / ADMIN / KIOSK modes) */}
+          {deviceMode !== "GUEST_TABLET" && (
+            <Pressable
+              onPress={() => router.push("/eat-pos")}
+              style={[styles.eatPosPortal, { borderColor: "#C9922A44", backgroundColor: "#0D0D0D" }]}
+            >
+              <View style={styles.eatPosAccent} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.eatPosTitle}>E.A.T. POS SYSTEM</Text>
+                <Text style={[styles.eatPosSub, { color: colors.mutedForeground }]}>
+                  Environment · Asset · Transaction
+                </Text>
+              </View>
+              <Text style={[styles.eatPosArrow, { color: "#C9922A" }]}>›</Text>
+            </Pressable>
+          )}
+
           <Text style={[styles.footer, { color: colors.mutedForeground }]}>
             POWERED BY NOVEE OS · INTELLIGENCE THAT ELEVATES
           </Text>
@@ -224,5 +241,35 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 12,
     fontWeight: "600",
+  },
+  eatPosPortal: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 16,
+    marginTop: 12,
+    gap: 12,
+  },
+  eatPosAccent: {
+    width: 3,
+    height: 36,
+    borderRadius: 2,
+    backgroundColor: "#C9922A",
+  },
+  eatPosTitle: {
+    color: "#F0EDE8",
+    fontSize: 15,
+    fontWeight: "800",
+    letterSpacing: 1.2,
+  },
+  eatPosSub: {
+    fontSize: 11,
+    letterSpacing: 0.5,
+    marginTop: 3,
+  },
+  eatPosArrow: {
+    fontSize: 28,
+    fontWeight: "300",
   },
 });
