@@ -28,20 +28,20 @@ function hasSkipParam(): boolean {
 }
 
 // ── Timing constants (ms) ────────────────────────────────────────────────────
-const S1_FADE   = 1500;   // Profound: linear fade-in
-const S1_HOLD   = 3500;   // Profound: static hold after fade completes
-const S1_END    = S1_FADE + S1_HOLD;                         // 5 000 ms
+const S1_FADE   = 2500;   // Profound: linear fade-in
+const S1_HOLD   = 6500;   // Profound: static hold after fade completes
+const S1_END    = S1_FADE + S1_HOLD;                         // 9 000 ms
 
-const S2_TRANS  = 2000;   // Novee OS: slide transition
-const S2_HOLD   = 4000;   // Novee OS: static hold
-const S2_END    = S1_END  + S2_TRANS + S2_HOLD;              // 11 000 ms
+const S2_TRANS  = 2800;   // Novee OS: slide transition
+const S2_HOLD   = 6000;   // Novee OS: static hold
+const S2_END    = S1_END  + S2_TRANS + S2_HOLD;              // 17 800 ms
 
-const S3_TRANS  = 2000;   // CraftHub: scale-zoom transition
-const S3_HOLD   = 3500;   // CraftHub: static hold
-const S3_END    = S2_END  + S3_TRANS + S3_HOLD;              // 16 500 ms
+const S3_TRANS  = 2800;   // CraftHub: scale-zoom transition
+const S3_HOLD   = 5500;   // CraftHub: static hold
+const S3_END    = S2_END  + S3_TRANS + S3_HOLD;              // 26 100 ms
 
-const DISSOLVE  = 1900;   // Final sensory dissolve duration
-const UNMOUNT   = S3_END  + DISSOLVE;                        // 18 400 ms
+const DISSOLVE  = 2800;   // Final sensory dissolve duration
+const UNMOUNT   = S3_END  + DISSOLVE;                        // 28 900 ms
 
 // ── Stage enum ───────────────────────────────────────────────────────────────
 type Stage = "profound" | "novee" | "crafthub" | "dissolving";

@@ -130,7 +130,7 @@ export function S2_TerroirMatrix() {
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#050505", color: "#F0E8D4", fontFamily: "'Inter', sans-serif" }}>
       {/* S2 — Wrapper / Terroir cinematic background */}
       <img src={`${import.meta.env.BASE_URL}images/lounge_bg.jpg`} alt="" aria-hidden
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%", opacity: 0.28, pointerEvents: "none" }}
+        style={{ position: "absolute", inset: "6% 4%", width: "92%", height: "88%", objectFit: "contain", objectPosition: "center center", opacity: 0.22, pointerEvents: "none" }}
         onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
       />
       <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(5,5,5,0.72) 0%, rgba(5,5,5,0.55) 50%, rgba(5,5,5,0.85) 100%)", pointerEvents: "none" }} />

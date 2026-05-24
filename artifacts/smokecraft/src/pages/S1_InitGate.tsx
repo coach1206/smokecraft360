@@ -303,7 +303,7 @@ export function S1_InitGate() {
     if (!country1 || !country2) return;
     updateProfile({ blendCountry1: country1, blendCountry2: country2, mentor: country1 });
     setMentor(country1);
-    go("soil_calibration");
+    go("seed_canvas");
   }
 
   function startPilon() {
@@ -348,7 +348,7 @@ export function S1_InitGate() {
     setPhase("s2_terroir");
   }
 
-  const STEPS: Step[] = ["demo", "rules", "country_select", "soil_calibration", "pilon_game", "quiz", "posgate"];
+  const STEPS: Step[] = ["demo", "rules", "country_select", "seed_canvas", "quiz", "posgate"];
 
   return (
     <div style={{ position: "absolute", inset: 0, fontFamily: "'Inter', sans-serif", overflow: "hidden" }}>

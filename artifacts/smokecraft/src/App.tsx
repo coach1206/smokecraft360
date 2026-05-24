@@ -770,9 +770,9 @@ function SovereignBootFlow() {
 
   // Auto-advance through boot phases
   useEffect(() => {
-    if (phase === 'void'        && phaseAge >= 3)  setPhase('materialize');
-    if (phase === 'materialize' && phaseAge >= 4)  setPhase('calibrate');
-    if (phase === 'calibrate'   && phaseAge >= 4)  setPhase('environment');
+    if (phase === 'void'        && phaseAge >= 6)  setPhase('materialize');
+    if (phase === 'materialize' && phaseAge >= 8)  setPhase('calibrate');
+    if (phase === 'calibrate'   && phaseAge >= 7)  setPhase('environment');
   }, [phase, phaseAge]);
 
   const handleDwell   = useCallback((craft: string) => { setImmersionCraft(craft); setPhase('immersion'); }, []);

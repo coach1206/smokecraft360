@@ -1,0 +1,347 @@
+CRITICAL EXPERIENCE FLOW CORRECTION + ROLE LOCK + CINEMATIC PACE FIX
+
+You are drifting away from the approved SmokeCraft 360 guest experience architecture.
+
+The current implementation has multiple major logic and UX failures that must be corrected immediately WITHOUT rebuilding the system.
+
+==================================================
+DO NOT REBUILD
+==============
+
+DO NOT:
+
+* redesign the platform
+* change routing architecture
+* replace approved visuals
+* remove cinematic systems
+* alter branding hierarchy
+* simplify guest flow
+* touch unrelated backend systems
+* replace immersive atmosphere
+* rebuild the POS
+* alter Command Center logic
+
+This is a CONTROLLED EXPERIENCE RECOVERY PATCH ONLY.
+
+==================================================
+CRITICAL ISSUES TO FIX
+======================
+
+1. BOOT SYSTEM MOVES TOO FAST
+   The cinematic pacing is broken.
+
+Current boot timing feels rushed and destroys:
+
+* anticipation
+* luxury feel
+* immersion
+* emotional buildup
+
+FIX:
+
+* slow all transitions
+* increase dissolve timing
+* increase ambient hold timing
+* add breathing pauses between phases
+* allow visuals to fully materialize before progression
+
+TARGET FEEL:
+Apple cinematic pacing.
+Luxury lounge pacing.
+NOT rapid web-app transitions.
+
+REQUIRED:
+
+* slower fades
+* slower logo reveals
+* slower smoke movement
+* slower atmospheric transitions
+* smoother phase progression
+* softer easing curves
+
+==================================================
+2. COACH HELP IS ROUTING TO E.A.T SYSTEM (WRONG)
+================================================
+
+This is incorrect architecture.
+
+E.A.T. Intelligence is a MANAGEMENT / OPERATIONS layer.
+
+Guests and standard staff should NOT be routed into E.A.T.
+
+FIX ROLE ACCESS IMMEDIATELY:
+
+GUEST ACCESS:
+
+* SmokeCraft experience
+* mentors
+* education
+* Golden Box
+* pairing engine
+* recommendations
+* upsells
+* leaderboard
+
+STAFF ACCESS:
+
+* POS 3
+* guided assistance
+* Coach Help
+* session continuation
+* pairing assistance
+* inventory recommendation assistance
+
+MANAGEMENT ONLY:
+
+* E.A.T Intelligence
+* analytics
+* environmental controls
+* venue intelligence
+* operational dashboards
+* revenue systems
+* behavior analytics
+* command intelligence
+
+FIX:
+Coach Help must NEVER redirect to E.A.T.
+
+Coach Help should:
+
+* open educational overlay
+* mentor guidance overlay
+* tasting assistance
+* cigar terminology help
+* pairing assistance
+* tutorial systems
+* “how this affects score” explanations
+
+ONLY management PIN / role access can open E.A.T.
+
+==================================================
+3. IMAGES ARE TOO ZOOMED
+========================
+
+Current imagery is over-scaled and losing luxury presentation quality.
+
+FIX:
+
+* reduce zoom scale
+* restore composition framing
+* restore cinematic crop ratios
+* preserve image detail
+* allow breathing room around subjects
+* avoid aggressive background-size: cover cropping
+* improve focal point alignment
+
+The user should FEEL the environment.
+Not feel visually cramped.
+
+==================================================
+4. BLANK SCREEN AFTER NEXT CLICK
+================================
+
+Critical rendering failure exists after progression.
+
+Current behavior:
+
+* user clicks next
+* screen goes blank
+* no progression content loads
+
+This is likely:
+
+* broken state transition
+* missing component mount
+* failed conditional render
+* progression flow mismatch
+* undefined next phase state
+* preload timing issue
+
+AUDIT:
+
+* progression state machine
+* nextPhase mappings
+* route transitions
+* suspense/lazy loading
+* conditional render guards
+* animation completion callbacks
+* preloadReady states
+
+NO blank screens allowed.
+
+==================================================
+5. S1 EXPERIENCE FLOW IS INCOMPLETE
+===================================
+
+The current S1 flow is missing major approved gameplay and educational systems.
+
+RESTORE THE FULL EXPERIENCE FLOW:
+
+==================================================
+APPROVED EXPERIENCE FLOW
+========================
+
+PHASE 1 — DATA GATHERING
+
+* guest name + last initial
+* experience level
+* flavor preference
+* favorite drink
+* preferred strength
+* curiosity questions
+* mood / desired experience
+
+==================================================
+
+PHASE 2 — GOLDEN BOX INTRO
+
+* explain scoring
+* explain rankings
+* explain progression
+* explain XP
+* explain tasting bonuses
+* explain pairings affect score
+* explain loyalty system
+* explain unlock system
+
+==================================================
+
+PHASE 3 — MENTOR INTRODUCTION
+Guests meet mentors from different countries and traditions.
+
+Examples:
+
+* Cuba
+* Dominican Republic
+* Nicaragua
+* Honduras
+* Ecuador
+
+Each mentor should:
+
+* have personality
+* philosophy
+* specialty
+* preferred blends
+* flavor approach
+* pairing style
+
+USER SELECTS TWO MENTORS:
+
+* one primary mentor
+* one secondary mentor
+
+Mentors influence:
+
+* recommendations
+* scoring multipliers
+* educational guidance
+* pairings
+* challenges
+
+==================================================
+
+PHASE 4 — SEED + SOIL SYSTEM
+BEGIN REAL BLEND CONSTRUCTION
+
+FLOW:
+
+* seed selection
+* soil selection
+* terroir education
+* climate influence
+* wrapper selection
+* binder selection
+* filler construction
+* fermentation profile
+
+This should feel:
+educational + premium + interactive.
+
+==================================================
+
+PHASE 5 — PAIRING ENGINE + VENUE UPSALE
+THIS IS A CORE REVENUE SYSTEM.
+
+As the guest builds:
+the system compares their selections against REAL venue inventory.
+
+SHOW:
+
+* closest cigars in stock
+* matching bourbons
+* matching whiskey
+* matching cognac
+* matching rum
+* food pairings
+* dessert pairings
+
+The system should say:
+“Based on your build, here’s what the venue currently has closest to your profile.”
+
+THEN:
+Upsell tasting experiences.
+
+Example:
+“You can taste this pairing tonight. Tasting this pairing earns bonus score points.”
+
+This connects:
+
+* gameplay
+* education
+* venue revenue
+* inventory movement
+* customer engagement
+
+==================================================
+6. RESTORE MISSING S1 SYSTEMS
+=============================
+
+S1 is still missing:
+
+* educational layers
+* mentor systems
+* progression logic
+* venue integration
+* scoring explanation
+* emotional onboarding
+* guided immersion
+* tasting incentives
+* pairing intelligence
+
+Restore the COMPLETE approved S1 experience.
+
+==================================================
+FINAL VALIDATION
+================
+
+Before completion verify:
+
+* no blank screens
+* Coach Help no longer routes to E.A.T.
+* E.A.T. restricted to management only
+* staff access limited correctly
+* POS 3 accessible to staff
+* cinematic pacing slowed properly
+* images correctly framed
+* S1 flow fully restored
+* mentor selection working
+* seed/soil flow active
+* pairing engine active
+* venue upsell logic active
+* tasting bonus messaging restored
+* immersive luxury presentation intact
+
+The final experience must feel like:
+
+* a cinematic luxury cigar operating system
+* an educational ritual
+* a premium hospitality experience
+* a revenue-generating sensory platform
+
+NOT:
+
+* a rushed dashboard
+* a broken prototype
+* a disconnected slideshow
+* a generic web application

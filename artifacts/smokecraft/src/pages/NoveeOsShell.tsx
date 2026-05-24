@@ -1262,10 +1262,10 @@ const RAIL_ITEMS = [
   { id: "crafthub",          label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub" as Phase,          pinLevel: undefined,               staffOnly: false, icon: "⊹", isActive: (p: string) => p === "crafthub" },
   { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
   { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,               staffOnly: false, icon: "◆", isActive: (p: string) => p === "pairing_view" },
-  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: undefined,               staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
+  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "management" as PinRole, staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
   { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, staffOnly: true,  icon: "⟡", isActive: (p: string) => p === "executive_command" },
   { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,               staffOnly: true,  icon: "◯", isActive: (p: string) => p === "lounge_view" },
-  { id: "coach_help",        label: "Coach Help",  abbr: "CH",  targetPhase: "coach_help" as Phase,       pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => p === "coach_help" },
+  { id: "coach_help",        label: "Coach Help",  abbr: "CH",  targetPhase: "coach_help" as Phase,       pinLevel: undefined,               staffOnly: true,  icon: "◈", isActive: (p: string) => p === "coach_help" },
 ];
 
 function LeftRail() {
