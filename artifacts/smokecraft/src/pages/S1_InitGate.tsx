@@ -7,7 +7,7 @@ import { NoveePOSGateModal } from "@/components/NoveePOSGateModal";
 import { NoveeCheatCodeEngine } from "@/components/NoveeCheatCodeEngine";
 import { hapticMilestone, hapticError } from "@/hooks/useNoveeHaptic";
 import { NoveeCigarHero } from "@/components/NoveeCigarHero";
-import { submitScore } from "@/lib/leaderboardEngine";
+import { submitScore, getVenueLeaderboard } from "@/lib/leaderboardEngine";
 
 const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
@@ -1050,7 +1050,11 @@ export function S1_InitGate() {
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                     <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A", flexShrink: 0 }} />
                     <span style={{ fontSize: 22, fontWeight: 900, color: "#F0E8D4", letterSpacing: "0.18em", textTransform: "uppercase" }}>Live Leaderboard</span>
-                    <span style={{ fontSize: 12, color: "rgba(240,232,212,0.32)", letterSpacing: "0.18em", textTransform: "uppercase" }}>· Updated Just Now</span>
+                    <span style={{ fontSize: 12, color: "rgba(240,232,212,0.32)", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                      {getVenueLeaderboard("00000000-0000-0000-0000-000000000001").length > 0
+                        ? `· ${getVenueLeaderboard("00000000-0000-0000-0000-000000000001").length} Live Guests Ranked`
+                        : "· Updated Just Now"}
+                    </span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "52px 1fr 130px 110px 120px", gap: 0, padding: "0 4px" }}>
                     {["Rank","Contestant","Level","XP","Badges"].map(h => (
@@ -1060,18 +1064,42 @@ export function S1_InitGate() {
                 </div>
 
                 {/* Rows */}
-                {[
-                  { rank: 1,  handle: "TheCigarLion",   real: "Alex Martinez",      xp: 18750, tier: "Aficionado",  badge: "♛",  tColor: "#D4820A", badges: ["♛","",""], extra: "+3" },
-                  { rank: 2,  handle: "Aficionado_D",   real: "Darnell Washington", xp: 16420, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯",""], extra: "+2" },
-                  { rank: 3,  handle: "SmoothDraws",    real: "Marcus Tate",         xp: 14980, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯",""], extra: "+4" },
-                  { rank: 4,  handle: "Ash&Oak",        real: "Brandon Hill",        xp: 13250, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯"],       extra: "+1" },
-                  { rank: 5,  handle: "LeafScholar",    real: "Jasmine Cole",        xp: 12760, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["♛",""],       extra: "+2" },
-                  { rank: 6,  handle: "BourbonLeaf",    real: "Tyler Bennett",       xp: 10850, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛",""],       extra: "+1" },
-                  { rank: 7,  handle: "CigarSensei",    real: "Ethan Reynolds",      xp:  9430, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["",""],       extra: "+2" },
-                  { rank: 8,  handle: "PuffProfessor",  real: "Daniel Cooper",       xp:  8910, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["",""],       extra: "+1" },
-                  { rank: 9,  handle: "VintageVisions", real: "Robert King",         xp:  7650, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛",""],       extra: "+2" },
-                  { rank: 10, handle: "CedarRoomKing",  real: "Kevin Brooks",        xp:  6980, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: [""],            extra: "+1" },
-                ].map((row, i) => {
+                {(() => {
+                  type RowData = { rank: number; handle: string; real: string; xp: number; tier: string; badge: string; tColor: string; badges: string[]; extra: string };
+                  const TIER_META: Record<string, { label: string; badge: string; color: string }> = {
+                    beginner:   { label: "Novice",      badge: "",  color: "#C8322A" },
+                    apprentice: { label: "Enthusiast",  badge: "🕯", color: GOLD },
+                    blender:    { label: "Connoisseur", badge: "", color: "#9B59B6" },
+                    master:     { label: "Aficionado",  badge: "♛",  color: "#D4820A" },
+                    architect:  { label: "Aficionado",  badge: "♛",  color: "#D4820A" },
+                  };
+                  const DEMO: RowData[] = [
+                    { rank: 1,  handle: "TheCigarLion",   real: "Alex Martinez",      xp: 18750, tier: "Aficionado",  badge: "♛",  tColor: "#D4820A", badges: ["♛","",""], extra: "+3" },
+                    { rank: 2,  handle: "Aficionado_D",   real: "Darnell Washington", xp: 16420, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯",""], extra: "+2" },
+                    { rank: 3,  handle: "SmoothDraws",    real: "Marcus Tate",         xp: 14980, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯",""], extra: "+4" },
+                    { rank: 4,  handle: "Ash&Oak",        real: "Brandon Hill",        xp: 13250, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯"],       extra: "+1" },
+                    { rank: 5,  handle: "LeafScholar",    real: "Jasmine Cole",        xp: 12760, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["♛",""],       extra: "+2" },
+                    { rank: 6,  handle: "BourbonLeaf",    real: "Tyler Bennett",       xp: 10850, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛",""],       extra: "+1" },
+                    { rank: 7,  handle: "CigarSensei",    real: "Ethan Reynolds",      xp:  9430, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["",""],       extra: "+2" },
+                    { rank: 8,  handle: "PuffProfessor",  real: "Daniel Cooper",       xp:  8910, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["",""],       extra: "+1" },
+                    { rank: 9,  handle: "VintageVisions", real: "Robert King",         xp:  7650, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛",""],       extra: "+2" },
+                    { rank: 10, handle: "CedarRoomKing",  real: "Kevin Brooks",        xp:  6980, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: [""],            extra: "+1" },
+                  ];
+                  const liveEntries = getVenueLeaderboard("00000000-0000-0000-0000-000000000001");
+                  let rows: RowData[];
+                  if (liveEntries.length > 0) {
+                    const liveRows = liveEntries.map((e, idx) => {
+                      const m = TIER_META[e.tier] ?? TIER_META.beginner;
+                      const parts = e.name.split(" ");
+                      const handle = parts.length > 1 ? `${parts[0]}${parts.slice(1).join("").charAt(0)}` : e.name;
+                      return { rank: idx + 1, handle, real: e.name, xp: e.score, tier: m.label, badge: m.badge, tColor: m.color, badges: [] as string[], extra: "" };
+                    });
+                    rows = [...liveRows, ...DEMO.slice(liveRows.length)].slice(0, 10).map((r, idx) => ({ ...r, rank: idx + 1 }));
+                  } else {
+                    rows = DEMO;
+                  }
+                  return rows;
+                })().map((row, i) => {
                   const isTop3 = row.rank <= 3;
                   const rankColor = row.rank === 1 ? GOLD : row.rank === 2 ? "#C0C0C0" : row.rank === 3 ? "#CD7F32" : "rgba(240,232,212,0.30)";
                   return (
