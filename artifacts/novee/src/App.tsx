@@ -1113,7 +1113,7 @@ function useStaffMode() {
   return isStaff;
 }
 
-function OsNavBar() {
+function OsNavBar({ kiosk }: { kiosk: KioskRuntimeState }) {
   return (
     <div style={{
       width: "100%", flexShrink: 0, minHeight: 72,
@@ -1138,6 +1138,7 @@ function OsNavBar() {
       </div>
 
       <div style={{ flex: 1 }} />
+      <KioskRuntimePanel kiosk={kiosk} />
       <span style={{ fontSize: 9, color: "rgba(212,175,55,0.30)", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>v2.4</span>
     </div>
   );
@@ -1151,17 +1152,17 @@ function KioskRuntimePanel({ kiosk }: { kiosk: KioskRuntimeState }) {
     <div
       aria-label="Kiosk runtime status"
       style={{
-        position: "absolute",
-        top: 78,
-        right: 18,
-        zIndex: 260,
+        flexShrink: 1,
         display: "flex",
         alignItems: "center",
+        justifyContent: "flex-end",
+        flexWrap: "wrap",
         gap: 8,
-        minHeight: 44,
-        padding: "0 12px",
+        maxWidth: "min(760px, 58vw)",
+        minHeight: 36,
+        padding: "6px 10px",
         borderRadius: 8,
-        background: "rgba(6,4,2,0.78)",
+        background: "rgba(6,4,2,0.58)",
         border: `1px solid rgba(212,175,55,0.22)`,
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
@@ -1181,9 +1182,9 @@ function KioskRuntimePanel({ kiosk }: { kiosk: KioskRuntimeState }) {
           key={item.label}
           style={{
             fontFamily: "'Inter',sans-serif",
-            fontSize: 10,
+            fontSize: 9,
             fontWeight: 900,
-            letterSpacing: "0.14em",
+            letterSpacing: "0.12em",
             color: item.color,
             textTransform: "uppercase",
             whiteSpace: "nowrap",
@@ -1896,8 +1897,7 @@ function OsShell() {
         />
 
         {/* Top OS navigation bar */}
-        <OsNavBar />
-        <KioskRuntimePanel kiosk={kiosk} />
+        <OsNavBar kiosk={kiosk} />
 
         {/* Middle: Left Rail + Content Area */}
         <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden", position: "relative" }}>
