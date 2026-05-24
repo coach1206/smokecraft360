@@ -132,6 +132,12 @@ export function S3_FormulationLab() {
       overflow: "hidden",
       fontFamily: "'Inter', sans-serif",
     }}>
+      {/* S3 — Vitola / Formulation cinematic background */}
+      <img src={`${import.meta.env.BASE_URL}images/cigar_hero.jpg`} alt="" aria-hidden
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 60%", opacity: 0.26, pointerEvents: "none" }}
+        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+      />
+      <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(170deg, rgba(5,3,2,0.75) 0%, rgba(5,3,2,0.58) 45%, rgba(5,3,2,0.88) 100%)", pointerEvents: "none" }} />
       <BackButton />
 
       <AnimatePresence>

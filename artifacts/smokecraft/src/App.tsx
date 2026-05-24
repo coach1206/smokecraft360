@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
+import { SplashController } from '@/components/SplashController';
 import { Router, Route, Switch, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
 import TitanCraftDeck from '@/pages/TitanCraftDeck';
@@ -1448,6 +1449,10 @@ export default function App() {
 
 /* ── HELPERS ── */
 function RootRedirect() {
+  const [splashDone, setSplashDone] = useState(false);
+  if (!splashDone) {
+    return <SplashController onFinish={() => setSplashDone(true)} />;
+  }
   return <SovereignBootFlow />;
 }
 

@@ -1,0 +1,187 @@
+CRITICAL BRANDING RECOVERY DIRECTIVE — RESTORE MISSING IDENTITY SYSTEMS IMMEDIATELY
+
+You introduced a major visual regression during the boot-flow fixes.
+
+The following approved brand systems have been REMOVED or are no longer rendering correctly across S1–S4:
+
+MISSING SYSTEMS:
+
+* PROFOUND INNOVATIONS identity layer
+* NOVEE OS branding
+* CRAFT HUB branding
+* E.A.T. Intelligence footer system
+* approved cinematic image sets
+* distinct screen-specific imagery
+
+Current issue:
+The SAME S1 image/fallback state is being reused across multiple screens, while the original cinematic assets and branded identity layers are gone.
+
+This is NOT approved.
+
+==================================================
+DO NOT REBUILD
+==============
+
+DO NOT:
+
+* redesign the UI
+* simplify the experience
+* replace missing visuals with gradients
+* create placeholder logos
+* use temporary assets
+* alter typography hierarchy
+* replace cinematic screens with generic cards
+* remove existing animations
+* touch unrelated systems
+
+This is a CONTROLLED RECOVERY ONLY.
+
+==================================================
+MANDATORY RECOVERY TASKS
+========================
+
+1. RESTORE ORIGINAL BRAND LAYERS
+   Restore ALL approved:
+
+* PROFOUND INNOVATIONS overlays
+* NOVEE OS identity marks
+* CRAFT HUB headers
+* E.A.T. Intelligence footer system
+* luxury startup identity visuals
+* branded cinematic overlays
+
+Verify:
+
+* opacity
+* z-index
+* conditional rendering
+* preload timing
+* animation mount order
+
+2. RESTORE UNIQUE SCREEN IMAGERY
+   Each phase screen MUST have its OWN dedicated cinematic imagery.
+
+S1:
+
+* original intro cinematic imagery
+* tobacco atmosphere visuals
+* mentor/luxury composition visuals
+
+S2:
+
+* wrapper-specific tobacco leaf imagery
+* macro tobacco photography
+* wrapper texture visuals
+
+S3:
+
+* realistic vitola/cigar render imagery
+* dimensional cigar visuals
+* cigar body presentation
+
+S4:
+
+* cut mechanics visuals
+* anatomy overlays
+* draw/cut instructional imagery
+
+The SAME image must NOT repeat across S1–S4.
+
+3. REMOVE FALLBACK IMAGE REUSE
+   Find and eliminate:
+
+* shared fallback image references
+* duplicated placeholder asset mapping
+* emergency fallback rendering
+* inherited background reuse
+* broken image resolver logic
+
+4. VERIFY IMAGE IMPORTS
+   Audit:
+
+* src/assets
+* public/
+* alias imports
+* preload pipelines
+* lazy loading
+* suspense/image wrappers
+* asset manifests
+
+Detect:
+
+* broken paths
+* renamed files
+* overwritten imports
+* missing environment references
+
+5. VERIFY BRAND COMPONENTS ARE MOUNTING
+   Audit rendering of:
+
+* ProfoundIntroLayer
+* NoveeBrandLayer
+* CraftHubHeader
+* EatFooterOverlay
+* CinematicAtmosphereLayer
+* BootIdentitySequence
+
+The components may still exist but not be mounting due to:
+
+* state regression
+* z-index conflict
+* conditional gates
+* preload timing issues
+
+6. VERIFY CSS REGRESSION
+   Audit:
+
+* display:none
+* opacity:0
+* hidden classes
+* overflow clipping
+* absolute positioning conflicts
+* transform stacking
+* blend mode conflicts
+* backdrop blur layers
+
+7. PROTECT EVERYTHING ELSE
+   DO NOT MODIFY:
+
+* routing
+* POS systems
+* backend APIs
+* E.A.T. logic
+* dashboard systems
+* navigation flow
+* authentication
+* booking systems
+* Command Center integrations
+
+Only restore the damaged cinematic and branding layers.
+
+==================================================
+FINAL VALIDATION REQUIRED
+=========================
+
+Before completion verify:
+
+* PROFOUND INNOVATIONS branding visible
+* NOVEE OS branding visible
+* CRAFT HUB branding visible
+* E.A.T. footer restored
+* ALL S1–S4 screens have UNIQUE imagery
+* NO placeholder gradients remain
+* NO duplicate fallback image reuse remains
+* smoke/ember/atmosphere restored
+* cinematic luxury presentation fully restored
+
+The system must feel again like:
+
+* a luxury intelligent operating system
+* a cinematic sensory platform
+* a living environment
+
+NOT:
+
+* a fallback React dashboard
+* a wireframe
+* a placeholder prototype

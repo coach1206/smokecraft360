@@ -25,6 +25,7 @@ import DevConsole from "@/pages/DevConsole";
 import { StaffPinGate } from "@/components/StaffPinGate";
 import type { PinRole } from "@/components/StaffPinGate";
 import CraftEntryPoint, { CraftGrid } from "@/pages/CraftEntryPoint";
+import { SplashController } from "@/components/SplashController";
 import { S1_InitGate } from "@/pages/S1_InitGate";
 import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
 import { S3_FormulationLab } from "@/pages/S3_FormulationLab";
@@ -1831,6 +1832,7 @@ function OsShell() {
    Root app
 ───────────────────────────────────────────── */
 export default function App() {
+  const [splashDone, setSplashDone] = useState(false);
   const [bootDone, setBootDone] = useState(false);
 
   // ── Device heartbeat — keeps kiosk registered as ACTIVE in venue registry ──
@@ -1853,7 +1855,9 @@ export default function App() {
       <ThemeConfigProvider>
       <GuestProfileProvider>
         <AnimatePresence mode="wait">
-          {!bootDone ? (
+          {!splashDone ? (
+            <SplashController key="splash" onFinish={() => setSplashDone(true)} />
+          ) : !bootDone ? (
             <CraftEntryPoint key="boot" onComplete={handleBootComplete} />
           ) : (
             <motion.div key="shell"

@@ -115,6 +115,12 @@ export function S4_DesignStudio() {
       overflow: "hidden",
       fontFamily: "'Inter', sans-serif",
     }}>
+      {/* S4 — Cut / Design cinematic background */}
+      <img src={`${import.meta.env.BASE_URL}images/cigar1.png`} alt="" aria-hidden
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 50%", opacity: 0.22, pointerEvents: "none" }}
+        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+      />
+      <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.60) 40%, rgba(0,0,0,0.90) 100%)", pointerEvents: "none" }} />
       <NoveeBackButton />
 
       <div style={{

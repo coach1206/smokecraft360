@@ -1,0 +1,180 @@
+/* SplashController — 4-stage cinematic brand intro
+ * Design: pitch-black field, hardware-accelerated logo layers,
+ * zero transition blur, premium Apple-precision timing.
+ * ───────────────────────────────────────────────────────── */
+
+/* ── Root container ─────────────────────────────────────────────────────── */
+.root {
+  position:        fixed;
+  inset:           0;
+  width:           100%;
+  height:          100%;
+  background:      #000000;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  overflow:        hidden;
+  z-index:         9999;
+  cursor:          pointer;
+  user-select:     none;
+  /* Final sensory dissolve driven by .dissolving */
+  transition:      opacity 1.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dissolving {
+  opacity:        0;
+  pointer-events: none;
+}
+
+/* ── Stage layer (one per brand) ────────────────────────────────────────── */
+.stageLayer {
+  position:        absolute;
+  inset:           0;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  pointer-events:  none;
+}
+
+/* ── Image wrapper — GPU promotion, anti-blur ───────────────────────────── */
+.imgWrap {
+  display:             flex;
+  align-items:         center;
+  justify-content:     center;
+  max-width:           60vw;
+  max-height:          58vh;
+  /* Hardware acceleration — eliminates runtime transition blur */
+  transform:           translate3d(0, 0, 0);
+  will-change:         transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* ── Logo base ──────────────────────────────────────────────────────────── */
+.logo {
+  display:             block;
+  max-width:           100%;
+  max-height:          100%;
+  object-fit:          contain;
+  /* GPU promotion on each element */
+  transform:           translate3d(0, 0, 0);
+  will-change:         transform, opacity;
+  backface-visibility: hidden;
+  image-rendering:     -webkit-optimize-contrast;
+  /* Start invisible; animation class drives first render */
+  opacity:             0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STAGE 1 — Profound Innovation
+   linear 1.5 s fade-in → fill:forwards holds at opacity 1
+   exit: 2 s horizontal slide-dissolve to the left
+   ═══════════════════════════════════════════════════════════ */
+.s1Enter {
+  animation: s1FadeIn 1500ms linear forwards;
+}
+
+.s1Exit {
+  animation: s1SlideOut 2000ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes s1FadeIn {
+  0%   { opacity: 0;   transform: translate3d(0, 0, 0); }
+  100% { opacity: 1;   transform: translate3d(0, 0, 0); }
+}
+
+@keyframes s1SlideOut {
+  0%   { opacity: 1;   transform: translate3d(0, 0, 0); }
+  100% { opacity: 0;   transform: translate3d(-80px, 0, 0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STAGE 2 — Novee OS
+   2 s slide-in from the right + fade-in
+   exit: 2 s smooth fade-dissolve
+   ═══════════════════════════════════════════════════════════ */
+.s2Enter {
+  animation: s2SlideIn 2000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.s2Exit {
+  animation: s2FadeOut 2000ms ease forwards;
+}
+
+@keyframes s2SlideIn {
+  0%   { opacity: 0;   transform: translate3d(64px, 0, 0); }
+  100% { opacity: 1;   transform: translate3d(0, 0, 0); }
+}
+
+@keyframes s2FadeOut {
+  0%   { opacity: 1;   transform: translate3d(0, 0, 0); }
+  100% { opacity: 0;   transform: translate3d(0, 0, 0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STAGE 3 — CraftHub Gateway
+   2 s centered scale-zoom + fade-in (no exit — root dissolves)
+   ═══════════════════════════════════════════════════════════ */
+.s3Enter {
+  animation: s3ZoomIn 2000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes s3ZoomIn {
+  0%   { opacity: 0;   transform: translate3d(0, 0, 0) scale(0.74); }
+  100% { opacity: 1;   transform: translate3d(0, 0, 0) scale(1.00); }
+}
+
+/* ── Ambient gold radial pulse (always-on atmospheric layer) ────────────── */
+.pulse {
+  position:       absolute;
+  top:            50%;
+  left:           50%;
+  transform:      translate(-50%, -50%);
+  width:          380px;
+  height:         380px;
+  border-radius:  50%;
+  background:     radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.07) 0%,
+    rgba(212, 175, 55, 0.03) 45%,
+    transparent 70%
+  );
+  animation:      pulseBreathe 4.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index:        -1;
+}
+
+@keyframes pulseBreathe {
+  0%   { transform: translate(-50%, -50%) scale(0.82); opacity: 0;    }
+  18%  { opacity: 1; }
+  50%  { transform: translate(-50%, -50%) scale(1.18); opacity: 0.75; }
+  82%  { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.82); opacity: 0;    }
+}
+
+/* ── Tap hint ───────────────────────────────────────────────────────────── */
+.tapHint {
+  position:       absolute;
+  bottom:         32px;
+  font-family:    'Inter', system-ui, sans-serif;
+  font-size:      9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color:          rgba(255, 255, 255, 0.16);
+  opacity:        0;
+  animation:      hintFadeIn 0.7s ease 5.5s forwards;
+  pointer-events: none;
+  z-index:        1;
+}
+
+@keyframes hintFadeIn {
+  from { opacity: 0;    transform: translateY(4px); }
+  to   { opacity: 1;    transform: translateY(0);   }
+}
+
+/* ── Reduced motion — honour OS preference ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .root            { transition: none !important; }
+  .pulse           { animation: none !important; opacity: 0 !important; }
+  .logo            { animation: none !important; opacity: 1 !important; }
+  .tapHint         { animation: none !important; opacity: 1 !important; }
+}
