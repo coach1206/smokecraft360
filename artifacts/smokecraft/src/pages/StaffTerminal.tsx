@@ -94,6 +94,20 @@ interface LocalReservation {
 interface PurchaseOrderResult { id: string; productId: string; quantity: number; status: string; }
 type PaymentState = "idle" | "processing" | "success" | "error";
 
+// ── POS3 DB-sorted queue ticket shape (mirrors GET /api/pos/queue response) ──
+interface PosQueueTicket {
+  ticketNumber:  number;
+  id:            string;
+  tableNumber:   string | null;
+  status:        string;
+  paymentStatus: string;
+  totalCents:    number;
+  openedAt:      string;
+  notes:         string | null;
+  venueId:       string;
+  itemCount:     number;
+}
+
 // ── Product Catalog — local product registry for menu mapper ──────────────────
 const PRODUCT_CATALOG = [
   { sku: "sku_rp_1992",  productId: "cigar-005", name: "Rocky Patel Vintage 1992",  category: "Cigars"  },
@@ -345,6 +359,20 @@ const api = {
       });
       return r.ok || r.status === 401; // 401 = not authed but mapping saved locally
     } catch { return false; }
+  },
+
+  // ── DB-sorted POS3 queue — dual-layer FIFO sort enforced at the database level ──
+  // Rule 1 (primary):   opened_at ASC  → oldest active ticket always at top
+  // Rule 2 (secondary): id ASC         → deterministic tie-break on timestamp collision
+  fetchPosQueue: async (venueId?: string): Promise<PosQueueTicket[]> => {
+    try {
+      const params = new URLSearchParams({ terminal: "POS3" });
+      if (venueId) params.set("venueId", venueId);
+      const r = await fetch(`/api/pos/queue?${params}`);
+      if (!r.ok) return [];
+      const j = await r.json() as { queue: PosQueueTicket[] };
+      return j.queue ?? [];
+    } catch { return []; }
   },
 };
 
@@ -2957,6 +2985,9 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
   const [lastPayTotal, setLastPayTotal] = useState(0);
   const syncAge = Math.floor((Date.now() - venueState.lastSyncAt.getTime()) / 60_000);
 
+  // ── DB-sorted POS3 queue — dual-layer FIFO sort (opened_at ASC → id ASC) ───
+  const [posQueue, setPosQueue] = useState<PosQueueTicket[]>([]);
+
   // ── New operational panel state ────────────────────────────────────────────
   const [showMapper,       setShowMapper]       = useState(false);
   const [showStaffRoster,  setShowStaffRoster]  = useState(false);
@@ -3021,6 +3052,15 @@ export default function StaffTerminal({ onBack: onBackProp }: { onBack?: () => v
     refreshInventory();
     api.providers().then(setProviders);
   }, [refreshInventory]);
+
+  // ── DB-sorted POS3 queue polling — 30-second interval ─────────────────────
+  // Fetches GET /api/pos/queue which enforces the mandatory dual-layer sort at
+  // the database level: opened_at ASC (FIFO) → id ASC (tie-break).
+  useEffect(() => {
+    api.fetchPosQueue().then(setPosQueue);
+    const id = setInterval(() => api.fetchPosQueue().then(setPosQueue), 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   // ── 15-minute inventory sync engine ───────────────────────────────────────
   useEffect(() => {

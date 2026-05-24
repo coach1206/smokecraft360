@@ -29,6 +29,8 @@
 import { Router, type Request, type Response } from "express";
 import { createHmac, timingSafeEqual }          from "node:crypto";
 import { z }                                     from "zod";
+import { asc, eq, and, sql, inArray }            from "drizzle-orm";
+import { db, guestTabsTable, tabItemsTable }    from "@workspace/db";
 import { getIO }                                 from "../lib/socketServer";
 import { logger }                                from "../lib/logger";
 
@@ -262,6 +264,91 @@ router.post("/pos/webhook", (req: Request, res: Response) => {
   } catch (err) {
     req.log.warn({ err }, "Socket.io not ready for POS webhook broadcast");
     res.status(503).json({ error: "Real-time engine not ready" });
+  }
+});
+
+// ── GET /api/pos/queue — DB-sorted active ticket queue ───────────────────────
+//
+// Returns all open guest tabs sorted with the mandatory dual-layer rule:
+//   Rule 1 (primary):   opened_at ASC  — oldest active tickets always at top (FIFO)
+//   Rule 2 (secondary): id ASC         — deterministic tie-break when timestamps collide
+//
+// This is the Drizzle-ORM equivalent of:
+//   ORDER BY created_at ASC, ticket_number ASC
+//
+// Query params:
+//   ?venueId=<uuid>   — scope to a specific venue (required for production use)
+//   ?terminal=<id>    — informational tag returned in response (e.g. "POS3");
+//                       no terminal_id column exists in the schema yet, accepted
+//                       for forward-compatibility and response labeling only.
+
+router.get("/pos/queue", async (req: Request, res: Response) => {
+  const { venueId, terminal = "POS3" } = req.query as Record<string, string | undefined>;
+
+  try {
+    const where = venueId
+      ? and(eq(guestTabsTable.status, "open"), eq(guestTabsTable.venueId, venueId))
+      : eq(guestTabsTable.status, "open");
+
+    // Primary query: open tabs sorted FIFO then by UUID tie-break
+    const tabs = await db
+      .select({
+        id:            guestTabsTable.id,
+        tableNumber:   guestTabsTable.tableNumber,
+        status:        guestTabsTable.status,
+        paymentStatus: guestTabsTable.paymentStatus,
+        totalCents:    guestTabsTable.totalCents,
+        openedAt:      guestTabsTable.openedAt,
+        notes:         guestTabsTable.notes,
+        venueId:       guestTabsTable.venueId,
+      })
+      .from(guestTabsTable)
+      .where(where)
+      .orderBy(asc(guestTabsTable.openedAt), asc(guestTabsTable.id));
+
+    // Item counts per tab in a single batched query
+    const tabIds = tabs.map(t => t.id);
+    const itemCounts: Record<string, number> = {};
+
+    if (tabIds.length > 0) {
+      const counts = await db
+        .select({
+          tabId:     tabItemsTable.tabId,
+          itemCount: sql<number>`cast(count(*) as int)`,
+        })
+        .from(tabItemsTable)
+        .where(inArray(tabItemsTable.tabId, tabIds))
+        .groupBy(tabItemsTable.tabId);
+
+      for (const row of counts) itemCounts[row.tabId] = row.itemCount;
+    }
+
+    // Enrich with sequential ticket numbers — position in the sorted result IS
+    // the canonical ticket sequence, equivalent to ticket_number in the reference SQL.
+    const queue = tabs.map((tab, idx) => ({
+      ticketNumber:  idx + 1,
+      id:            tab.id,
+      tableNumber:   tab.tableNumber ?? null,
+      status:        tab.status,
+      paymentStatus: tab.paymentStatus,
+      totalCents:    tab.totalCents,
+      openedAt:      tab.openedAt,
+      notes:         tab.notes ?? null,
+      venueId:       tab.venueId,
+      itemCount:     itemCounts[tab.id] ?? 0,
+    }));
+
+    req.log.info({ terminal, venueId, count: queue.length }, "POS queue fetched");
+
+    res.json({
+      terminal:  terminal ?? "POS3",
+      sortedBy:  ["opened_at ASC", "id ASC"],
+      count:     queue.length,
+      queue,
+    });
+  } catch (err) {
+    req.log.error({ err, terminal, venueId }, "POS queue fetch failed");
+    res.status(500).json({ error: "queue_fetch_failed" });
   }
 });
 
