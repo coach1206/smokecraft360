@@ -2,6 +2,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { useGuest } from "@/context/GuestProfileContext";
 import { socket } from "@/lib/socket";
+import {
+  Award,
+  Badge,
+  BookOpen,
+  Box,
+  Crown,
+  Flame,
+  Gift,
+  LockKeyhole,
+  Medal,
+  Shield,
+  Sparkles,
+  Swords,
+  Trophy,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
 
 const GOLD  = "#D4AF37";
 const AMBER = "#C4860A";
@@ -38,36 +55,36 @@ const DEMO_LEADER: LeaderEntry[] = [
 ];
 
 const JOURNEY = [
-  { id: "initiate",    num: 1, title: "INITIATE",          sub: "The Beginning",       xpMin: 0,     color: "#6B8A9A", glow: "rgba(107,138,154,0.40)", icon: "🌱", desc: "Begin your mastery journey", xpLabel: "Start" },
-  { id: "novice",      num: 2, title: "NOVICE",            sub: "Learn the Leaf",      xpMin: 1000,  color: "#C84010", glow: "rgba(200,64,16,0.40)",   icon: "🔥", desc: "Build your foundation",      xpLabel: "1,000 XP" },
-  { id: "enthusiast",  num: 3, title: "ENTHUSIAST",        sub: "Sharpen Your Craft",  xpMin: 5000,  color: AMBER,     glow: "rgba(196,134,10,0.40)",  icon: "⚡", desc: "Deepen your knowledge",     xpLabel: "5,000 XP" },
-  { id: "connoisseur", num: 4, title: "CONNOISSEUR",       sub: "Refine Your Palate",  xpMin: 12000, color: "#9B59B6", glow: "rgba(155,89,182,0.40)",  icon: "💎", desc: "Compete with the elite",    xpLabel: "12,000 XP" },
-  { id: "aficionado",  num: 5, title: "AFICIONADO",        sub: "Command the Lounge",  xpMin: 20000, color: GOLD,      glow: "rgba(212,175,55,0.45)",  icon: "👑", desc: "Earn exclusive privileges", xpLabel: "20,000 XP" },
-  { id: "master",      num: 6, title: "MASTER OF THE LEAF",sub: "Legendary Status",    xpMin: 35000, color: "#FFD700", glow: "rgba(255,215,0,0.55)",   icon: "⭐", desc: "Become a NOVEE OS legend",  xpLabel: "35,000 XP" },
+  { id: "initiate",    num: 1, title: "INITIATE",          sub: "The Beginning",       xpMin: 0,     color: "#6B8A9A", glow: "rgba(107,138,154,0.40)", Icon: Medal,    desc: "Begin your mastery journey", xpLabel: "Start" },
+  { id: "novice",      num: 2, title: "NOVICE",            sub: "Learn the Leaf",      xpMin: 1000,  color: "#C84010", glow: "rgba(200,64,16,0.40)",   Icon: Flame,    desc: "Build your foundation",      xpLabel: "1,000 XP" },
+  { id: "enthusiast",  num: 3, title: "ENTHUSIAST",        sub: "Sharpen Your Craft",  xpMin: 5000,  color: AMBER,     glow: "rgba(196,134,10,0.40)",  Icon: Sparkles, desc: "Deepen your knowledge",     xpLabel: "5,000 XP" },
+  { id: "connoisseur", num: 4, title: "CONNOISSEUR",       sub: "Refine Your Palate",  xpMin: 12000, color: "#9B59B6", glow: "rgba(155,89,182,0.40)",  Icon: Award,    desc: "Compete with the elite",    xpLabel: "12,000 XP" },
+  { id: "aficionado",  num: 5, title: "AFICIONADO",        sub: "Command the Lounge",  xpMin: 20000, color: GOLD,      glow: "rgba(212,175,55,0.45)",  Icon: Crown,    desc: "Earn exclusive privileges", xpLabel: "20,000 XP" },
+  { id: "master",      num: 6, title: "MASTER OF THE LEAF",sub: "Legendary Status",    xpMin: 35000, color: "#FFD700", glow: "rgba(255,215,0,0.55)",   Icon: Trophy,   desc: "Become a NOVEE OS legend",  xpLabel: "35,000 XP" },
 ];
 
 const HOW_STEPS = [
-  { num: 1, icon: "⚔️", title: "Complete Challenges",   desc: "Take on daily & weekly challenges across the NOVEE OS platform" },
-  { num: 2, icon: "⚡", title: "Earn XP",               desc: "Every action, pairing, and tasting note awards you XP" },
-  { num: 3, icon: "↑",  title: "Rank Up",               desc: "Rise through 6 prestige tiers from Initiate to Master" },
-  { num: 4, icon: "🎁", title: "Unlock Rewards",        desc: "Exclusive collections, badges, and lounge privileges" },
-  { num: 5, icon: "◈",  title: "Compete",               desc: "Climb the live leaderboard and prove your mastery" },
+  { num: 1, Icon: Swords,     title: "Complete Challenges",   desc: "Take on daily & weekly challenges across the NOVEE OS platform" },
+  { num: 2, Icon: Sparkles,   title: "Earn XP",               desc: "Every action, pairing, and tasting note awards you XP" },
+  { num: 3, Icon: TrendingUp, title: "Rank Up",               desc: "Rise through 6 prestige tiers from Initiate to Master" },
+  { num: 4, Icon: Gift,       title: "Unlock Rewards",        desc: "Exclusive collections, badges, and lounge privileges" },
+  { num: 5, Icon: Trophy,     title: "Compete",               desc: "Climb the live leaderboard and prove your mastery" },
 ];
 
 const XP_ACTIONS = [
-  { icon: "☀️", label: "DAILY LOGIN",           xp: 50,  color: AMBER,     cta: "CLAIM" },
-  { icon: "🍷", label: "COMPLETE PAIRING",       xp: 300, color: "#9B59B6", cta: "GO"    },
-  { icon: "📝", label: "SUBMIT TASTING NOTES",   xp: 150, color: "#2ECC71", cta: "GO"    },
-  { icon: "🏆", label: "WIN WEEKLY CHALLENGE",   xp: 500, color: GOLD,      cta: "GO"    },
+  { Icon: Sparkles, label: "DAILY LOGIN",           xp: 50,  color: AMBER,     cta: "CLAIM" },
+  { Icon: Award,    label: "COMPLETE PAIRING",       xp: 300, color: "#9B59B6", cta: "GO"    },
+  { Icon: BookOpen, label: "SUBMIT TASTING NOTES",   xp: 150, color: "#2ECC71", cta: "GO"    },
+  { Icon: Trophy,   label: "WIN WEEKLY CHALLENGE",   xp: 500, color: GOLD,      cta: "GO"    },
 ];
 
 const REWARDS = [
-  { icon: "🃏", title: "Collectible Card",    desc: "First prestige card",       unlockAt: "NOVICE",            color: "#C84010", locked: false },
-  { icon: "🧭", title: "Mentor Unlock",       desc: "Your personal cigar guide", unlockAt: "ENTHUSIAST",        color: AMBER,     locked: true  },
-  { icon: "📦", title: "Elite Cigar Box",     desc: "Curated reserve collection",unlockAt: "CONNOISSEUR",       color: "#9B59B6", locked: true  },
-  { icon: "🛡",  title: "Rare Badge Set",      desc: "Collector tier emblems",    unlockAt: "CONNOISSEUR",       color: "#9B59B6", locked: true  },
-  { icon: "🚪", title: "Private Lounge Pass", desc: "VIP lounge access",         unlockAt: "AFICIONADO",        color: GOLD,      locked: true  },
-  { icon: "🌟", title: "Seasonal Collection", desc: "Limited edition blends",    unlockAt: "MASTER OF THE LEAF",color: "#FFD700", locked: true  },
+  { Icon: Badge,   title: "Collectible Card",    desc: "First prestige card",       unlockAt: "NOVICE",            color: "#C84010", locked: false },
+  { Icon: Medal,   title: "Mentor Unlock",       desc: "Your personal cigar guide", unlockAt: "ENTHUSIAST",        color: AMBER,     locked: true  },
+  { Icon: Box,     title: "Elite Cigar Box",     desc: "Curated reserve collection",unlockAt: "CONNOISSEUR",       color: "#9B59B6", locked: true  },
+  { Icon: Shield,  title: "Rare Badge Set",      desc: "Collector tier emblems",    unlockAt: "CONNOISSEUR",       color: "#9B59B6", locked: true  },
+  { Icon: Crown,   title: "Private Lounge Pass", desc: "VIP lounge access",         unlockAt: "AFICIONADO",        color: GOLD,      locked: true  },
+  { Icon: Sparkles,title: "Seasonal Collection", desc: "Limited edition blends",    unlockAt: "MASTER OF THE LEAF",color: "#FFD700", locked: true  },
 ];
 
 const CHALLENGES = [
@@ -167,13 +184,13 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
   }
 
   const NAV_ITEMS = [
-    { key: "dashboard",   icon: "⊞", label: "Dashboard"   },
-    { key: "leaderboard", icon: "◈", label: "Leaderboard" },
-    { key: "challenges",  icon: "◬", label: "Challenges"  },
-    { key: "rewards",     icon: "🎁", label: "Rewards"     },
-    { key: "badges",      icon: "🛡", label: "Badges"      },
-    { key: "progress",    icon: "↑", label: "My Progress"  },
-  ];
+    { key: "dashboard",   Icon: Box,        label: "Dashboard"   },
+    { key: "leaderboard", Icon: Trophy,     label: "Leaderboard" },
+    { key: "challenges",  Icon: Swords,     label: "Challenges"  },
+    { key: "rewards",     Icon: Gift,       label: "Rewards"     },
+    { key: "badges",      Icon: Shield,     label: "Badges"      },
+    { key: "progress",    Icon: TrendingUp, label: "My Progress"  },
+  ] as { key: string; Icon: LucideIcon; label: string }[];
 
   return (
     <div style={{
@@ -222,7 +239,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                 borderLeft: isActive ? `3px solid ${GOLD}` : "3px solid transparent",
                 transition: "background 0.2s",
               }}>
-              <span style={{ fontSize: 16, color: isActive ? GOLD : "rgba(240,232,212,0.38)", width: 20, textAlign: "center" }}>{item.icon}</span>
+              <item.Icon size={16} color={isActive ? GOLD : "rgba(240,232,212,0.42)"} style={{ width: 20 }} />
               <span style={{ fontSize: 14, fontWeight: isActive ? 800 : 500, color: isActive ? GOLD : "rgba(240,232,212,0.50)", letterSpacing: "0.03em" }}>{item.label}</span>
             </motion.div>
           );
@@ -230,7 +247,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
         <div style={{ flex: 1 }} />
         <div style={{ margin: "0 12px 16px", padding: "14px 12px", borderRadius: 10, background: `rgba(212,175,55,0.05)`, border: `1px solid ${GOLD}1A` }}>
           <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.20em", textTransform: "uppercase", marginBottom: 6, textAlign: "center" }}>THE GOLDEN BOX</div>
-          <div style={{ fontSize: 28, textAlign: "center", marginBottom: 8 }}>🏆</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}><Trophy size={28} color={GOLD} strokeWidth={1.8} /></div>
           <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", lineHeight: 1.6, textAlign: "center" }}>Study the leaf.<br />Earn your place.</div>
         </div>
       </div>
@@ -259,7 +276,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
           </motion.button>
           <motion.button type="button" whileTap={{ scale: 0.95 }}
             style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 14, fontWeight: 900, cursor: "pointer", letterSpacing: "0.12em", textTransform: "uppercase", boxShadow: `0 0 16px ${GOLD}40`, minHeight: 44 }}>
-            ⚡ LAUNCH TERMINAL (POS 3)
+            LAUNCH TERMINAL (POS 3)
           </motion.button>
           <motion.button type="button" whileTap={{ scale: 0.95 }}
             style={{ padding: "10px 20px", borderRadius: 8, border: `1px solid rgba(255,100,100,0.30)`, background: "rgba(255,100,100,0.06)", color: "rgba(255,140,140,0.80)", fontSize: 14, fontWeight: 800, cursor: "pointer", letterSpacing: "0.12em", textTransform: "uppercase", minHeight: 44 }}>
@@ -364,7 +381,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                               filter: isLocked ? "blur(0.3px)" : "none",
                               transition: "all 0.3s",
                             }}>
-                            <div style={{ fontSize: 36 }}>{lv.icon}</div>
+                            <lv.Icon size={36} color={isActive ? lv.color : isUnlocked ? "#32B45A" : "rgba(212,175,55,0.40)"} strokeWidth={1.7} />
                             <div style={{ fontSize: 11, fontWeight: 900, color: isActive ? lv.color : isUnlocked ? "#32B45A" : "rgba(212,175,55,0.40)", letterSpacing: "0.08em", marginTop: 2 }}>{lv.num}</div>
                           </motion.div>
                           <div style={{ textAlign: "center", marginTop: 14, padding: "0 6px" }}>
@@ -382,7 +399,9 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                               </motion.div>
                             )}
                             {isLocked && (
-                              <div style={{ marginTop: 6, fontSize: 14 }}>🔒</div>
+                              <div style={{ marginTop: 6, display: "flex", justifyContent: "center" }}>
+                                <LockKeyhole size={14} color="rgba(212,175,55,0.38)" strokeWidth={1.8} />
+                              </div>
                             )}
                           </div>
                         </div>
@@ -412,7 +431,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                         }}>
                         <div style={{ width: 56, height: 56, borderRadius: "50%", background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}30`,
                           display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, margin: "0 auto 14px" }}>
-                          {step.icon}
+                          <step.Icon size={24} color={GOLD} strokeWidth={1.8} />
                         </div>
                         <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.28em", marginBottom: 8 }}>STEP {step.num}</div>
                         <div style={{ fontSize: 18, fontWeight: 900, color: CREAM, letterSpacing: "0.04em", lineHeight: 1.2, marginBottom: 10 }}>{step.title}</div>
@@ -434,7 +453,9 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                     </div>
                     {XP_ACTIONS.map((action, idx) => (
                       <div key={idx} style={{ padding: "18px 24px", borderBottom: idx < XP_ACTIONS.length - 1 ? `1px solid rgba(212,175,55,0.07)` : "none", display: "flex", alignItems: "center", gap: 16 }}>
-                        <div style={{ width: 48, height: 48, borderRadius: 12, background: `${action.color}15`, border: `1px solid ${action.color}30`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{action.icon}</div>
+                        <div style={{ width: 48, height: 48, borderRadius: 12, background: `${action.color}15`, border: `1px solid ${action.color}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <action.Icon size={22} color={action.color} strokeWidth={1.8} />
+                        </div>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 15, fontWeight: 800, color: CREAM, letterSpacing: "0.04em", marginBottom: 3 }}>{action.label}</div>
                           <div style={{ height: 4, borderRadius: 2, background: "rgba(212,175,55,0.08)", overflow: "hidden" }}>
@@ -472,8 +493,8 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                             transition: "all 0.2s",
                           }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                            <div style={{ fontSize: 26 }}>{rw.icon}</div>
-                            {rw.locked && <div style={{ fontSize: 14 }}>🔒</div>}
+                            <rw.Icon size={26} color={rw.locked ? "rgba(240,232,212,0.36)" : rw.color} strokeWidth={1.8} />
+                            {rw.locked && <LockKeyhole size={14} color="rgba(212,175,55,0.38)" strokeWidth={1.8} />}
                           </div>
                           <div style={{ fontSize: 13, fontWeight: 800, color: rw.locked ? "rgba(240,232,212,0.40)" : CREAM, marginTop: 8, marginBottom: 3, lineHeight: 1.2 }}>{rw.title}</div>
                           <div style={{ fontSize: 10, color: "rgba(240,232,212,0.35)", marginBottom: 6, lineHeight: 1.4 }}>{rw.desc}</div>
@@ -529,7 +550,10 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                           <div style={{ textAlign: "right" }}>
                             <div style={{ fontSize: 22, fontWeight: 900, color: GOLD }}>{entry.totalXp.toLocaleString()} XP</div>
                             {entry.achievementCnt > 0 && (
-                              <div style={{ fontSize: 13, color: "rgba(240,232,212,0.45)", marginTop: 2 }}>🏅 {entry.achievementCnt} badges</div>
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 5, fontSize: 13, color: "rgba(240,232,212,0.45)", marginTop: 2 }}>
+                                <Medal size={13} color="rgba(240,232,212,0.45)" strokeWidth={1.8} />
+                                <span>{entry.achievementCnt} badges</span>
+                              </div>
                             )}
                           </div>
                         </motion.div>
@@ -596,7 +620,10 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                         </div>
                         <div style={{ fontSize: 14, fontWeight: 700, color: entry.tierColor ?? GOLD, letterSpacing: "0.06em" }}>{entry.tierLabel}</div>
                         <div style={{ fontSize: 18, fontWeight: 900, color: GOLD }}>{entry.totalXp.toLocaleString()}</div>
-                        <div style={{ fontSize: 16, color: "rgba(240,232,212,0.60)", fontWeight: 700 }}>🏅 {entry.achievementCnt}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 16, color: "rgba(240,232,212,0.60)", fontWeight: 700 }}>
+                          <Medal size={16} color="rgba(240,232,212,0.60)" strokeWidth={1.8} />
+                          <span>{entry.achievementCnt}</span>
+                        </div>
                       </motion.div>
                     );
                   })}
@@ -622,7 +649,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
           <div style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}66`, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 12 }}>YOUR CURRENT RANK</div>
           <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
             <div style={{ width: 60, height: 60, borderRadius: "50%", background: `radial-gradient(circle, ${tierData.color}30, ${tierData.color}08)`, border: `2px solid ${tierData.color}88`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>
-              {tierData.icon}
+              <tierData.Icon size={28} color={tierData.color} strokeWidth={1.8} />
             </div>
             <div>
               <div style={{ fontSize: 22, fontWeight: 900, color: tierData.color, letterSpacing: "0.04em", textShadow: `0 0 16px ${tierData.color}60`, lineHeight: 1.1 }}>{tier === "master" ? "MASTER" : tierData.title}</div>
@@ -650,7 +677,11 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
           <div style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}66`, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 12 }}>NEXT REWARD UNLOCKS AT</div>
           {REWARDS.filter(r => r.locked)[0] && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: "rgba(212,175,55,0.06)", border: `1px solid rgba(212,175,55,0.15)` }}>
-              <div style={{ fontSize: 28 }}>{REWARDS.filter(r => r.locked)[0].icon}</div>
+              {(() => {
+                const nextReward = REWARDS.filter(r => r.locked)[0];
+                const NextIcon = nextReward.Icon;
+                return <NextIcon size={28} color={nextReward.color} strokeWidth={1.8} />;
+              })()}
               <div>
                 <div style={{ fontSize: 15, fontWeight: 800, color: CREAM, marginBottom: 3 }}>{REWARDS.filter(r => r.locked)[0].title}</div>
                 <div style={{ fontSize: 11, color: `${GOLD}90`, fontWeight: 700 }}>{REWARDS.filter(r => r.locked)[0].unlockAt}</div>
@@ -663,7 +694,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
         <div style={{ padding: "18px 20px", borderBottom: `1px solid rgba(212,175,55,0.10)` }}>
           <div style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}66`, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 12 }}>CURRENT STREAK</div>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ fontSize: 40 }}>🔥</div>
+            <Flame size={40} color={AMBER} strokeWidth={1.7} />
             <div>
               <div style={{ fontSize: 34, fontWeight: 900, color: AMBER, lineHeight: 1 }}>3</div>
               <div style={{ fontSize: 13, color: "rgba(240,232,212,0.50)", marginTop: 2 }}>days in a row</div>
@@ -675,7 +706,9 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
         <div style={{ padding: "18px 20px", borderBottom: `1px solid rgba(212,175,55,0.10)` }}>
           <div style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}66`, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 12 }}>WEEKLY CHALLENGE</div>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
-            <div style={{ width: 46, height: 46, borderRadius: 10, background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}2A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>🎯</div>
+            <div style={{ width: 46, height: 46, borderRadius: 10, background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}2A`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <Swords size={22} color={GOLD} strokeWidth={1.8} />
+            </div>
             <div>
               <div style={{ fontSize: 16, fontWeight: 800, color: CREAM, marginBottom: 4 }}>Blend Master</div>
               <div style={{ fontSize: 12, color: "rgba(240,232,212,0.50)", lineHeight: 1.5 }}>Complete 5 challenges this week</div>
@@ -733,7 +766,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                       <div style={{ fontSize: 17, fontWeight: 900, color: ch.locked ? "rgba(240,232,212,0.50)" : CREAM }}>{ch.title}</div>
-                      {ch.locked && <div style={{ fontSize: 14 }}>🔒</div>}
+                      {ch.locked && <LockKeyhole size={14} color="rgba(212,175,55,0.42)" strokeWidth={1.8} />}
                     </div>
                     <div style={{ fontSize: 14, color: "rgba(240,232,212,0.45)", marginBottom: 6 }}>{ch.desc}</div>
                     <div style={{ fontSize: 12, fontWeight: 700, color: GOLD, letterSpacing: "0.10em" }}>{ch.diff}</div>

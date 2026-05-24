@@ -44,6 +44,35 @@ import { hapticClick } from "@/hooks/useHaptic";
 import { EnvironmentalSceneStack } from "@/lib/EnvironmentalSceneEngine";
 import { useKioskRuntime, type KioskRuntimeState } from "@/hooks/useKioskRuntime";
 import { POS_TERMINAL_CONFIG, formatProviderLabel } from "@/config/kioskPosConfig";
+import {
+  Armchair,
+  Activity,
+  BadgeHelp,
+  BarChart3,
+  BookOpen,
+  CircleDot,
+  CreditCard,
+  Flame,
+  Grid3X3,
+  Home,
+  KeyRound,
+  Lamp,
+  Monitor,
+  Music2,
+  Package,
+  Palette,
+  Plug,
+  Search,
+  Server,
+  Settings,
+  SlidersHorizontal,
+  Sofa,
+  TerminalSquare,
+  Users,
+  Utensils,
+  Wine,
+  type LucideIcon,
+} from "lucide-react";
 
 class EATErrorBoundary extends Component<
   { children: ReactNode },
@@ -143,12 +172,12 @@ interface PairingSuggestion {
 }
 
 const PAIRING_CATEGORIES = [
-  { id: "trending",         label: "Trending",         icon: "⟡" },
-  { id: "vip",              label: "VIP Pairings",     icon: "◈" },
-  { id: "rare",             label: "Rare Reserve",     icon: "◬" },
-  { id: "seasonal",         label: "Seasonal",         icon: "◎" },
-  { id: "lounge_favorites", label: "Lounge Favorites", icon: "◉" },
-  { id: "staff_picks",      label: "Staff Picks",      icon: "◆" },
+  { id: "trending",         label: "Trending",         icon: "SIGNAL" },
+  { id: "vip",              label: "VIP Pairings",     icon: "VIP" },
+  { id: "rare",             label: "Rare Reserve",     icon: "RESERVE" },
+  { id: "seasonal",         label: "Seasonal",         icon: "SEASON" },
+  { id: "lounge_favorites", label: "Lounge Favorites", icon: "LOUNGE" },
+  { id: "staff_picks",      label: "Staff Picks",      icon: "STAFF" },
 ] as const;
 type PairingCat = (typeof PAIRING_CATEGORIES)[number]["id"];
 
@@ -414,14 +443,14 @@ function PairingView() {
               </div>
 
               {([
-                { label: "Lighting",   value: "Evening Reserve",                                                                                                                      icon: "◐" },
-                { label: "Music",      value: "Jazz Quartet",                                                                                                                         icon: "♪" },
-                { label: "Humidity",   value: env ? `${env.warmthOverride ?? 68}%` : "68%",                                                                                          icon: "◌" },
-                { label: "Atmosphere", value: env ? (env.eventAtmosphere === "none" ? "Reserve" : env.eventAtmosphere.replace(/_/g, " ")) : "Reserve",                               icon: "◎" },
-                { label: "Seating",    value: "Humidor Lounge",                                                                                                                       icon: "▣" },
-              ] as { label: string; value: string; icon: string }[]).map(item => (
+                { label: "Lighting",   value: "Evening Reserve",                                                                                                                      Icon: Lamp },
+                { label: "Music",      value: "Jazz Quartet",                                                                                                                         Icon: Music2 },
+                { label: "Humidity",   value: env ? `${env.warmthOverride ?? 68}%` : "68%",                                                                                          Icon: CircleDot },
+                { label: "Atmosphere", value: env ? (env.eventAtmosphere === "none" ? "Reserve" : env.eventAtmosphere.replace(/_/g, " ")) : "Reserve",                               Icon: Flame },
+                { label: "Seating",    value: "Humidor Lounge",                                                                                                                       Icon: Sofa },
+              ] as { label: string; value: string; Icon: LucideIcon }[]).map(item => (
                 <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 54, padding: "8px 0", borderBottom: `1px solid rgba(255,255,255,0.05)` }}>
-                  <span style={{ fontSize: 15, color: `${GOLD}60`, width: 18, flexShrink: 0 }}>{item.icon}</span>
+                  <item.Icon size={16} color={`${GOLD}99`} style={{ width: 18, flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 9, color: `${GOLD}45`, letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>{item.label}</div>
                     <div style={{ fontSize: 13, color: "rgba(240,232,212,0.82)", fontFamily: "'Inter',sans-serif", fontWeight: 600 }}>{item.value}</div>
@@ -457,12 +486,12 @@ interface EnvState {
 const ENERGY_STATES = ["quiet_reserve","social_warmth","elevated_lounge","peak_energy","vip_session","late_night_reserve","event_atmosphere","mentor_session"] as const;
 
 const MOOD_PRESETS = [
-  { id: "social_warmth",       label: "Jazz Mode",    icon: "🎷", desc: "Warm, soulful atmosphere"   },
-  { id: "peak_energy",         label: "Sports Mode",  icon: "🏈", desc: "High energy, lively crowd"  },
-  { id: "vip_session",         label: "VIP Mode",     icon: "", desc: "Private reserve experience" },
-  { id: "event_atmosphere",    label: "Event Mode",   icon: "🎉", desc: "Special occasion setting"   },
-  { id: "late_night_reserve",  label: "After Hours",  icon: "🌙", desc: "Deep night, intimate glow"  },
-  { id: "quiet_reserve",       label: "Opening",      icon: "🌅", desc: "Soft morning atmosphere"    },
+  { id: "social_warmth",       label: "Jazz Mode",    icon: "JAZZ", desc: "Warm, soulful atmosphere"   },
+  { id: "peak_energy",         label: "Peak Mode",    icon: "PEAK", desc: "High energy, lively crowd"  },
+  { id: "vip_session",         label: "VIP Mode",     icon: "VIP", desc: "Private reserve experience" },
+  { id: "event_atmosphere",    label: "Event Mode",   icon: "EVENT", desc: "Special occasion setting"   },
+  { id: "late_night_reserve",  label: "After Hours",  icon: "NIGHT", desc: "Deep night, intimate glow"  },
+  { id: "quiet_reserve",       label: "Opening",      icon: "OPEN", desc: "Soft morning atmosphere"    },
 ] as const;
 
 const SCENT_PRESETS  = ["Tobacco", "Cedar", "Bergamot", "Vanilla", "Sandalwood", "Leather"];
@@ -545,7 +574,7 @@ function LoungeView() {
                   position: "relative", overflow: "hidden",
                 }}>
                 {active && <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 30% 30%, ${GOLD}12 0%, transparent 70%)`, pointerEvents: "none" }} />}
-                <span style={{ fontSize: 24, lineHeight: 1 }}>{mood.icon}</span>
+                <span style={{ fontSize: 9, lineHeight: 1, letterSpacing: "0.16em", color: `${GOLD}AA`, fontWeight: 900 }}>{mood.icon}</span>
                 <span style={{ fontSize: 13, fontWeight: 800, color: active ? GOLD : "rgba(240,232,212,0.85)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.08em", textTransform: "uppercase" }}>{mood.label}</span>
                 <span style={{ fontSize: 10, color: active ? `${GOLD}88` : "rgba(240,232,212,0.35)", fontFamily: "'Inter',sans-serif" }}>{mood.desc}</span>
               </motion.button>
@@ -642,19 +671,19 @@ function SettingsView() {
   const isStaff = useStaffMode();
 
   const SECTIONS = [
-    { id: "session",  label: "Session",        icon: "◈" },
-    { id: "audio",    label: "Audio & Media",  icon: "♪" },
-    { id: "device",   label: "Device Manager", icon: "⊞" },
-    { id: "api",      label: "API Config",     icon: "⟡" },
-    { id: "theme",    label: "Theme",          icon: "◐" },
-    { id: "roles",      label: "User Roles",        icon: "◆" },
-    { id: "knowledge",     label: "Knowledge Center",  icon: "◎" },
-    { id: "integrations",   label: "Integrations",      icon: "⟡" },
-    { id: "health",         label: "Health Monitor",   icon: "◎" },
-    { id: "int_analytics",  label: "Int. Analytics",   icon: "▦" },
-    { id: "global_controls",label: "API Controls",     icon: "⊛" },
-    { id: "system",        label: "System",            icon: "⊹" },
-  ];
+    { id: "session",         label: "Session",          Icon: Settings },
+    { id: "audio",           label: "Audio & Media",    Icon: Music2 },
+    { id: "device",          label: "Device Manager",   Icon: Monitor },
+    { id: "api",             label: "API Config",       Icon: KeyRound },
+    { id: "theme",           label: "Theme",            Icon: Palette },
+    { id: "roles",           label: "User Roles",       Icon: Users },
+    { id: "knowledge",       label: "Knowledge Center", Icon: BookOpen },
+    { id: "integrations",    label: "Integrations",     Icon: Plug },
+    { id: "health",          label: "Health Monitor",   Icon: Activity },
+    { id: "int_analytics",   label: "Int. Analytics",   Icon: BarChart3 },
+    { id: "global_controls", label: "API Controls",     Icon: SlidersHorizontal },
+    { id: "system",          label: "System",           Icon: Server },
+  ] as { id: string; label: string; Icon: LucideIcon }[];
 
   function SettingsRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
     return (
@@ -810,7 +839,8 @@ function SettingsView() {
               border: `1px solid ${activeSection === s.id ? GOLD + "66" : "rgba(255,255,255,0.07)"}`,
               boxShadow: activeSection === s.id ? `0 0 12px ${GOLD}22` : "none",
             }}>
-            {s.icon} {s.label}
+            <s.Icon size={13} strokeWidth={1.8} style={{ verticalAlign: "-2px", marginRight: 7 }} />
+            {s.label}
           </motion.button>
         ))}
       </div>
@@ -837,56 +867,56 @@ function SettingsView() {
    Coach Help View
 ───────────────────────────────────────────── */
 const INTEL_SECTIONS = [
-  { id: "guest_guidance", label: "Guest Guidance", icon: "⊹", color: "#D4AF37",
+  { id: "guest_guidance", label: "Guest Guidance", icon: "GUIDE", color: "#D4AF37",
     summary: "First-timer coaching, VIP handling, guest psychology, and service protocols.",
     items: [
       { title: "First-Time Smoker Protocol", body: "Recommend Connecticut or Dominican. Warn of nicotine on empty stomach. Pace at 1–2 draws/min. Frame it as a terroir experience — they're tasting the land of Nicaragua." },
       { title: "VIP Recognition Rules", body: "Use guest name within 30s. Anticipate preferences before they ask. The 3-minute engagement rule: no more than 3 minutes between seating and first engagement." },
       { title: "Emotional Pacing", body: "Celebratory guests: fast-paced enthusiasm. Contemplative guests: slow, deliberate guidance. Read the room — never rush either. Pacing drives repeat visits." },
     ] },
-  { id: "pairing_intelligence", label: "Pairing Intelligence", icon: "◆", color: "#C87028",
+  { id: "pairing_intelligence", label: "Pairing Intelligence", icon: "PAIR", color: "#C87028",
     summary: "Spirit, wine, and cuisine pairings by cigar profile with flavor bridge notes.",
     items: [
       { title: "Connecticut + Wheated Bourbon", body: "Caramel and vanilla mirror the mild creaminess. Pappy Van Winkle or W.L. Weller. The intensity bridge: match the strength of the spirit to the body of the cigar." },
       { title: "Maduro + High-Rye Bourbon", body: "Spice and fruit esters match the dark chocolate–espresso profile. Booker's or Four Roses Single Barrel. Bold on bold — reinforces, not overpowers." },
       { title: "Habano + Single Malt Scotch", body: "Rich oak and spice match the complexity. Macallan 18 or Eagle Rare. The sherry-cask sweetness bridges the earthy Habano mid-palette beautifully." },
     ] },
-  { id: "revenue_coaching", label: "Revenue Coaching", icon: "◈", color: "#32B45A",
+  { id: "revenue_coaching", label: "Revenue Coaching", icon: "REV", color: "#32B45A",
     summary: "Attachment selling, second-round timing, premium conversion, and ticket growth.",
     items: [
       { title: "Second-Round Timing", body: "At 75% of the first cigar, return to the table. 'Would you like to select your next smoke?' Target conversion rate: 65%. Never wait until the guest asks." },
       { title: "Premium Conversion", body: "Never say 'more expensive.' Use 'allocated,' 'reserve,' or 'signature.' Lead with the story: '500 boxes reached the US this year — we received 12.'" },
       { title: "Pairing Bridge Upsell", body: "'The experience changes significantly with the right spirit — may I suggest our Macallan 18?' Always a question. Permission-based selling drives 40% ticket increase." },
     ] },
-  { id: "recovery_guidance", label: "Recovery Guidance", icon: "◬", color: "#C84A4A",
+  { id: "recovery_guidance", label: "Recovery Guidance", icon: "CARE", color: "#C84A4A",
     summary: "Complaint recovery (L.A.S.T.), intoxication management, de-escalation.",
     items: [
       { title: "L.A.S.T. Recovery Framework", body: "Listen (no interruption) → Acknowledge ('You're absolutely right, I sincerely apologize') → Solve (immediate, concrete remedy) → Thank ('Thank you for telling us')." },
       { title: "Intoxication Protocol", body: "Slow the pace naturally. Redirect with food — compliments of the house. Bring water as a palate cleanser, no comment. Notify manager via SMS, never over radio in earshot." },
       { title: "De-escalation Technique", body: "Speak 20% below normal volume. Move to the guest's eye level. Remove audience by guiding to private area. Agree with feelings, not facts. Offer two acceptable options." },
     ] },
-  { id: "flavor_education", label: "Flavor Education", icon: "◉", color: "#7B5EA7",
+  { id: "flavor_education", label: "Flavor Education", icon: "LEAF", color: "#7B5EA7",
     summary: "Wrapper varieties, regional terroir, filler architecture, and cutting techniques.",
     items: [
       { title: "Wrapper Guide", body: "Connecticut: silky, mild, cedar, cream. Maduro: dark chocolate, espresso, dried fruit. Habano: spicy, complex, cedar. Corojo: earthy, oily. Cameroon: sweet, toothy, unique." },
       { title: "Filler Architecture", body: "Seco: combustion and balance (40%). Viso: flavor and complexity (40%). Ligero: strength and length (20% medium / 30% full). Ratio drives the strength trajectory." },
       { title: "Region Terroir", body: "Cuba (Vuelta Abajo): world's finest. Nicaragua (Jalapa): volcanic, complex. Dominican (Santiago): smooth, refined. Honduras (Danlí): hearty, earthy. Each region imprints the leaf." },
     ] },
-  { id: "vip_coaching", label: "VIP Coaching", icon: "⟡", color: "#C8960A",
+  { id: "vip_coaching", label: "VIP Coaching", icon: "VIP", color: "#C8960A",
     summary: "High-value guest retention, anticipatory service, and lifetime value thinking.",
     items: [
       { title: "Anticipatory Intelligence", body: "Repeat VIP + known preference = stage before they arrive. 'We received the Padron 1926 this week — I thought of you immediately.' That sentence is worth $500 in loyalty." },
       { title: "The Graceful Departure", body: "When a VIP is deep in conversation, a slow withdrawal and brief nod is preferred over verbal interruption. Never hover. Presence without intrusion is the highest service level." },
       { title: "VIP Recovery Investment", body: "A $15 cigar complaint resolves with a $50 credit and a personal follow-up call. The remedy must exceed the complaint for high-value guests. Think lifetime value, not transaction cost." },
     ] },
-  { id: "quick_answers", label: "Quick Answers", icon: "◎", color: "#4A9BC8",
+  { id: "quick_answers", label: "Quick Answers", icon: "FAQ", color: "#4A9BC8",
     summary: "Instant answers to the most common operational and guest service questions.",
     items: [
       { title: "How do I reset a session?", body: "Settings → Session → Reset Session. Clears the current profile and returns to CraftHub. Guest data is preserved in sessionStorage — they can return on the same device." },
       { title: "Humidor emergency (RH > 75%)", body: "Remove all Boveda packs immediately. Leave the humidor lid slightly ajar for 2 hours. Monitor every 30 minutes. Do not add any humidification until RH drops below 72%." },
       { title: "Staff PIN locked out?", body: "After 5 failed attempts: automatic 15-minute lockout. Reset via Settings → Security (management PIN required). Contact your venue administrator if management PIN is unavailable." },
     ] },
-  { id: "live_ai", label: "Live AI", icon: "⊞", color: "#D4AF37",
+  { id: "live_ai", label: "Live AI", icon: "AI", color: "#D4AF37",
     summary: "Ask the AI Coach anything about hospitality, operations, pairings, or guest situations.",
     items: [] },
 ];
@@ -1170,14 +1200,14 @@ function KioskRuntimePanel({ kiosk }: { kiosk: KioskRuntimeState }) {
    Left Vertical OS Rail
 ───────────────────────────────────────────── */
 const RAIL_ITEMS = [
-  { id: "crafthub",          label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub" as Phase,          pinLevel: undefined,               staffOnly: false, icon: "⊹", isActive: (p: string) => p === "crafthub" },
-  { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,               staffOnly: false, icon: "◈", isActive: (p: string) => SESSION_PHASES.has(p) },
-  { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,               staffOnly: false, icon: "◆", isActive: (p: string) => p === "pairing_view" },
-  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "management" as PinRole, staffOnly: true,  icon: "⊞", isActive: (p: string) => p === "eat_dashboard" },
-  { id: "eat_pos",           label: "EAT POS",     abbr: "POS", targetPhase: "eat_pos_module" as Phase,   pinLevel: undefined,               staffOnly: true,  icon: "⊟", isActive: (p: string) => p === "eat_pos_module" },
-  { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, staffOnly: true,  icon: "⟡", isActive: (p: string) => p === "executive_command" },
-  { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,               staffOnly: true,  icon: "◯", isActive: (p: string) => p === "lounge_view" },
-  { id: "coach_help",        label: "Coach Help",  abbr: "CH",  targetPhase: "coach_help" as Phase,       pinLevel: undefined,               staffOnly: true,  icon: "◈", isActive: (p: string) => p === "coach_help" },
+  { id: "crafthub",          label: "CraftHub",   abbr: "HUB", targetPhase: "crafthub" as Phase,          pinLevel: undefined,               staffOnly: false, Icon: Home,           isActive: (p: string) => p === "crafthub" },
+  { id: "smokecraft",        label: "SmokeCraft",  abbr: "SC",  targetPhase: "s1_demo" as Phase,           pinLevel: undefined,               staffOnly: false, Icon: Flame,          isActive: (p: string) => SESSION_PHASES.has(p) },
+  { id: "pairing",           label: "Pairing",     abbr: "PR",  targetPhase: "pairing_view" as Phase,     pinLevel: undefined,               staffOnly: false, Icon: Search,         isActive: (p: string) => p === "pairing_view" },
+  { id: "eat",               label: "E.A.T Intel", abbr: "EAT", targetPhase: "eat_dashboard" as Phase,    pinLevel: "management" as PinRole, staffOnly: true,  Icon: Grid3X3,        isActive: (p: string) => p === "eat_dashboard" },
+  { id: "eat_pos",           label: "EAT POS",     abbr: "POS", targetPhase: "eat_pos_module" as Phase,   pinLevel: undefined,               staffOnly: true,  Icon: CreditCard,     isActive: (p: string) => p === "eat_pos_module" },
+  { id: "executive_command", label: "CMD Center",  abbr: "EXC", targetPhase: "executive_command" as Phase, pinLevel: "management" as PinRole, staffOnly: true,  Icon: TerminalSquare, isActive: (p: string) => p === "executive_command" },
+  { id: "lounge",            label: "Lounge",      abbr: "LG",  targetPhase: "lounge_view" as Phase,      pinLevel: undefined,               staffOnly: true,  Icon: Armchair,       isActive: (p: string) => p === "lounge_view" },
+  { id: "coach_help",        label: "Coach Help",  abbr: "CH",  targetPhase: "coach_help" as Phase,       pinLevel: undefined,               staffOnly: true,  Icon: BadgeHelp,      isActive: (p: string) => p === "coach_help" },
 ];
 
 function LeftRail() {
@@ -1212,7 +1242,7 @@ function LeftRail() {
             {active && (
               <div style={{ position: "absolute", left: -1, top: "25%", bottom: "25%", width: 2, background: GOLD, borderRadius: "0 2px 2px 0", boxShadow: `0 0 8px ${GOLD}` }} />
             )}
-            <span style={{ fontSize: 18, color: active ? GOLD : "rgba(212,175,55,0.45)", lineHeight: 1, filter: active ? `drop-shadow(0 0 6px ${GOLD}88)` : "none" }}>{item.icon}</span>
+            <item.Icon size={19} strokeWidth={1.8} color={active ? GOLD : "rgba(212,175,55,0.48)"} style={{ filter: active ? `drop-shadow(0 0 6px ${GOLD}88)` : "none" }} />
             <span style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.08em", color: active ? GOLD : "rgba(212,175,55,0.45)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", textAlign: "center", lineHeight: 1.2, maxWidth: 52 }}>{item.abbr}</span>
             {item.pinLevel && (
               <div style={{ position: "absolute", top: 2, right: 2, width: 4, height: 4, borderRadius: "50%", background: item.pinLevel === "management" ? "#C87028" : GOLD, opacity: 0.7 }} />
@@ -1345,7 +1375,7 @@ function EATTelemetryBar() {
       {/* E.A.T label */}
       <div style={{ flexShrink: 0, padding: "0 16px", borderRight: `1px solid rgba(212,175,55,0.22)`, display: "flex", flexDirection: "row", alignItems: "center", gap: 8, height: "100%", background: "rgba(212,175,55,0.05)" }}>
         <div style={{ width: 22, height: 22, borderRadius: 5, background: `rgba(212,175,55,0.20)`, border: `1px solid ${GOLD}66`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 8px ${GOLD}33` }}>
-          <span style={{ fontSize: 10, fontWeight: 900, color: GOLD, fontFamily: "'Inter',sans-serif" }}>⊞</span>
+          <Grid3X3 size={12} color={GOLD} strokeWidth={1.9} />
         </div>
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
           <span style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.18em", color: GOLD, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>E.A.T INTELLIGENCE</span>
@@ -1500,9 +1530,9 @@ function POSCommandHub() {
     { n: 8, status: "occupied",  guests: 5, items: 4 },
   ];
   const metrics = [
-    { label: "Kitchen Orders",  value: String(kitchen),  unit: "ACTIVE",          icon: "⊹", color: "#F4A240" },
-    { label: "Bar Pour Level",  value: String(barPours), unit: "POURS TONIGHT",   icon: "◆", color: "#5BBFFF" },
-    { label: "Humidor Stock",   value: String(humidor),  unit: "PUROS REMAINING", icon: "◈", color: GOLD      },
+    { label: "Kitchen Orders",  value: String(kitchen),  unit: "ACTIVE",          Icon: Utensils, color: "#F4A240" },
+    { label: "Bar Pour Level",  value: String(barPours), unit: "POURS TONIGHT",   Icon: Wine,     color: "#5BBFFF" },
+    { label: "Humidor Stock",   value: String(humidor),  unit: "PUROS REMAINING", Icon: Package,  color: GOLD      },
   ];
   const overrideActions = [
     { key: "FORCE_HIGH_READABILITY",      label: "FORCE HIGH-READABILITY",      sub: "Upscales typography sizing patterns to 24pt base contrast", danger: false },
@@ -1518,7 +1548,7 @@ function POSCommandHub() {
       {/* Header */}
       <div style={{ flexShrink: 0, padding: "14px 20px", borderBottom: "1px solid rgba(212,175,55,0.18)", display: "flex", alignItems: "center", gap: 14, background: "rgba(4,2,0,0.94)", backdropFilter: "blur(20px)", flexWrap: "wrap" }}>
         <div style={{ width: 36, height: 36, flexShrink: 0, borderRadius: 9, background: "rgba(212,175,55,0.16)", border: "1.5px solid rgba(212,175,55,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: 18, color: GOLD }}>⊞</span>
+          <Grid3X3 size={18} color={GOLD} strokeWidth={1.8} />
         </div>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: "clamp(18px, 4vw, 30px)", fontWeight: 900, color: CREW, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em", lineHeight: 1 }}>E.A.T. COMMAND HUB</div>
@@ -1536,7 +1566,10 @@ function POSCommandHub() {
         {metrics.map((m, i) => (
           <div key={m.label} style={{ flex: "1 1 120px", padding: "14px 20px", borderLeft: i > 0 ? "1px solid rgba(212,175,55,0.14)" : "none", position: "relative", overflow: "hidden" }}>
             {i === 2 && <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.07) 0%, transparent 60%)", pointerEvents: "none" }} />}
-            <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(253,251,247,0.30)", textTransform: "uppercase", marginBottom: 6, fontWeight: 700 }}>{m.icon} {m.label}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 10, letterSpacing: "0.28em", color: "rgba(253,251,247,0.30)", textTransform: "uppercase", marginBottom: 6, fontWeight: 700 }}>
+              <m.Icon size={12} color={m.color} strokeWidth={1.8} />
+              <span>{m.label}</span>
+            </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
               <motion.span key={m.value} initial={{ opacity: 0.7, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} style={{ fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 900, color: m.color, fontFamily: "'Inter',sans-serif", lineHeight: 1, textShadow: `0 0 24px ${m.color}44` }}>{m.value}</motion.span>
               <span style={{ fontSize: 9, letterSpacing: "0.18em", color: `${m.color}66`, fontWeight: 800, textTransform: "uppercase" }}>{m.unit}</span>

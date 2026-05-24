@@ -8,6 +8,7 @@ import { CheatCodeEngine } from "@/components/CheatCodeEngine";
 import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
 import { CigarHero } from "@/components/CigarHero";
 import { submitScore, getVenueLeaderboard } from "@/lib/leaderboardEngine";
+import { Award, Crown, Flame, Gift, Medal, TrendingUp } from "lucide-react";
 
 const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
@@ -18,6 +19,19 @@ const PV = {
   exit:   { opacity: 0, x: -40, scale: 0.98 },
 };
 const PT = { type: "spring" as const, mass: 0.9, stiffness: 240, damping: 28 };
+
+type PrestigeKind = "seal" | "ember" | "crown" | "award" | "gift" | "trend";
+
+function PrestigeMark({ kind, color = GOLD, size = 20 }: { kind: PrestigeKind; color?: string; size?: number }) {
+  const Icon =
+    kind === "ember" ? Flame :
+    kind === "crown" ? Crown :
+    kind === "award" ? Award :
+    kind === "gift"  ? Gift :
+    kind === "trend" ? TrendingUp :
+    Medal;
+  return <Icon size={size} strokeWidth={1.8} color={color} />;
+}
 
 /* ─── Mentors ─── */
 const MENTORS = [
@@ -631,14 +645,14 @@ export function S1_InitGate() {
                 <p style={{ fontSize: 16, color: "rgba(240,232,212,0.42)", lineHeight: 1.6, margin: "0 0 24px" }}>
                   Every action is scored. Learn the system before you build your blend.
                 </p>
-                {[
-                  { icon: "◎", label: "Score Points",   sub: "Complete actions & challenges" },
-                  { icon: "▲", label: "Climb Ranks",    sub: "Earn XP to level up" },
-                  { icon: "◬", label: "Unlock Rewards", sub: "Badges, blends, gear & more" },
-                  { icon: "♛", label: "Earn Respect",   sub: "Compete. Be recognized. Lead." },
-                ].map(r => (
+                {([
+                  { icon: "award", label: "Score Points",   sub: "Complete actions & challenges" },
+                  { icon: "trend", label: "Climb Ranks",    sub: "Earn XP to level up" },
+                  { icon: "gift",  label: "Unlock Rewards", sub: "Badges, blends, gear & more" },
+                  { icon: "crown", label: "Earn Respect",   sub: "Compete. Be recognized. Lead." },
+                ] as { icon: PrestigeKind; label: string; sub: string }[]).map(r => (
                   <div key={r.label} style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 20 }}>
-                    <span style={{ fontSize: 20, color: GOLD, flexShrink: 0, marginTop: 2, opacity: 0.85 }}>{r.icon}</span>
+                    <span style={{ flexShrink: 0, marginTop: 2, opacity: 0.9 }}><PrestigeMark kind={r.icon} size={20} /></span>
                     <div>
                       <div style={{ fontSize: 18, fontWeight: 700, color: "#F0E8D4", marginBottom: 2 }}>{r.label}</div>
                       <div style={{ fontSize: 14, color: "rgba(240,232,212,0.40)", lineHeight: 1.4 }}>{r.sub}</div>
@@ -676,25 +690,25 @@ export function S1_InitGate() {
                     {
                       num: 1, name: "Novice", sub: "The Beginning",
                       xp: "0 – 999 XP", color: "#C8322A", glow: "rgba(200,50,42,0.28)",
-                      badge: "", desc: "You're learning the basics. Every decision builds your foundation.",
+                      badge: "seal" as PrestigeKind, desc: "You're learning the basics. Every decision builds your foundation.",
                       skills: ["Learn cigar basics", "Identify simple flavors", "Complete intro challenges"],
                     },
                     {
                       num: 2, name: "Enthusiast", sub: "Fueled by Passion",
                       xp: "1,000 – 4,999 XP", color: GOLD, glow: "rgba(212,175,55,0.28)",
-                      badge: "🕯", desc: "You understand more. Your palate is growing. Your choices matter.",
+                      badge: "ember" as PrestigeKind, desc: "You understand more. Your palate is growing. Your choices matter.",
                       skills: ["Understand regions", "Master pairings", "Score higher to climb"],
                     },
                     {
                       num: 3, name: "Connoisseur", sub: "Refined & Focused",
                       xp: "5,000 – 14,999 XP", color: "#9B59B6", glow: "rgba(155,89,182,0.28)",
-                      badge: "", desc: "You appreciate complexity. You see what others overlook.",
+                      badge: "award" as PrestigeKind, desc: "You appreciate complexity. You see what others overlook.",
                       skills: ["Identify flavor transitions", "Know aging & construction", "Compete at a higher level"],
                     },
                     {
                       num: 4, name: "Aficionado", sub: "The Ultimate Status",
                       xp: "15,000+ XP", color: "#D4820A", glow: "rgba(212,130,10,0.28)",
-                      badge: "♛", desc: "You live the culture. You don't just smoke — you understand the leaf.",
+                      badge: "crown" as PrestigeKind, desc: "You live the culture. You don't just smoke — you understand the leaf.",
                       skills: ["Master sensory analysis", "Lead & mentor others", "Top of the leaderboard"],
                     },
                   ].map((tier, i) => (
@@ -719,7 +733,7 @@ export function S1_InitGate() {
                           fontSize: 28, position: "relative",
                         }}>
                           <span style={{ position: "absolute", top: -10, right: -10, width: 22, height: 22, borderRadius: "50%", background: tier.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color: "#000", fontFamily: "'Inter',sans-serif" }}>{tier.num}</span>
-                          {tier.badge}
+                          <PrestigeMark kind={tier.badge} color={tier.color} size={28} />
                         </div>
                       </div>
 
@@ -774,7 +788,7 @@ export function S1_InitGate() {
                       border: `2px solid ${GOLD}55`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: 20,
-                    }}>🎩</div>
+                    }}><PrestigeMark kind="seal" size={22} /></div>
                     <div>
                       <div style={{ fontSize: 10, letterSpacing: "0.30em", color: "rgba(240,232,212,0.35)", textTransform: "uppercase", marginBottom: 2 }}>Your Progress</div>
                       <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, letterSpacing: "0.04em" }}>ENTHUSIAST</div>
@@ -796,14 +810,14 @@ export function S1_InitGate() {
                   <div>
                     <div style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(240,232,212,0.32)", textTransform: "uppercase", marginBottom: 8 }}>Earn Badges</div>
                     <div style={{ display: "flex", gap: 8 }}>
-                      {["","🕯","","♛"].map((b, i) => (
+                      {(["seal","ember","award","crown"] as PrestigeKind[]).map((b, i) => (
                         <div key={i} style={{
                           width: 36, height: 36, borderRadius: "50%", fontSize: 18,
                           display: "flex", alignItems: "center", justifyContent: "center",
                           background: i === 0 ? "rgba(200,50,42,0.20)" : "rgba(255,255,255,0.06)",
                           border: i === 0 ? "1px solid rgba(200,50,42,0.50)" : "1px solid rgba(255,255,255,0.10)",
                           boxShadow: i === 0 ? "0 0 14px rgba(200,50,42,0.30)" : "none",
-                        }}>{b}</div>
+                        }}><PrestigeMark kind={b} color={i === 0 ? "#C8322A" : "rgba(240,232,212,0.60)"} size={17} /></div>
                       ))}
                     </div>
                   </div>
@@ -906,15 +920,15 @@ export function S1_InitGate() {
                   <span style={{ fontSize: 11, letterSpacing: "0.44em", color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Rules of Play</span>
                   <div style={{ flex: 1, height: 1, background: `${GOLD}22` }} />
                 </div>
-                {[
-                  { icon: "◎", label: "Score Points", body: "Complete challenges, tasting rounds, mentor quizzes, and pairing decisions to earn XP." },
-                  { icon: "", label: "Climb the Ranks", body: "Advance through the four official SmokeCraft stages and prove your mastery." },
-                  { icon: "◬", label: "Earn Badges", body: "Unlock exclusive achievement badges that represent your knowledge, skill, and prestige." },
-                  { icon: "◬", label: "Unlock Rewards", body: "Higher ranks unlock rare blends, VIP experiences, exclusive events, and premium gear." },
-                  { icon: "⚠", label: "Penalties", body: "Poor decisions and incorrect selections may reduce your points. Not every move earns respect." },
-                ].map((r, i) => (
+                {([
+                  { icon: "award", label: "Score Points", body: "Complete challenges, tasting rounds, mentor quizzes, and pairing decisions to earn XP." },
+                  { icon: "trend", label: "Climb the Ranks", body: "Advance through the four official SmokeCraft stages and prove your mastery." },
+                  { icon: "seal", label: "Earn Badges", body: "Unlock exclusive achievement badges that represent your knowledge, skill, and prestige." },
+                  { icon: "gift", label: "Unlock Rewards", body: "Higher ranks unlock rare blends, VIP experiences, exclusive events, and premium gear." },
+                  { icon: "ember", label: "Penalties", body: "Poor decisions and incorrect selections may reduce your points. Not every move earns respect." },
+                ] as { icon: PrestigeKind; label: string; body: string }[]).map((r, i) => (
                   <div key={r.label} style={{ display: "flex", gap: 12, marginBottom: 14, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 18, color: i === 4 ? "#C8322A" : GOLD, flexShrink: 0, marginTop: 1 }}>{r.icon}</span>
+                    <span style={{ flexShrink: 0, marginTop: 1 }}><PrestigeMark kind={r.icon} color={i === 4 ? "#C8322A" : GOLD} size={18} /></span>
                     <div>
                       <div style={{ fontSize: 14, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.10em", textTransform: "uppercase", marginBottom: 3 }}>{r.label}</div>
                       <div style={{ fontSize: 14, color: "rgba(240,232,212,0.42)", lineHeight: 1.55 }}>{r.body}</div>
@@ -931,10 +945,10 @@ export function S1_InitGate() {
                   <div style={{ flex: 1, height: 1, background: `${GOLD}22` }} />
                 </div>
                 {[
-                  { badge: "", name: "Novice",       sub: "The Beginning",      xp: "0 – 999 XP",          color: "#C8322A", desc: "Learn cigar basics, flavor recognition, and foundational pairing techniques." },
-                  { badge: "🕯", name: "Enthusiast",   sub: "Fueled by Passion",  xp: "1,000 – 4,999 XP",   color: GOLD,      desc: "Understand regions, wrappers, construction, and pairing synergy." },
-                  { badge: "", name: "Connoisseur",  sub: "Refined & Focused",  xp: "5,000 – 14,999 XP",  color: "#9B59B6", desc: "Recognize flavor transitions, aging, fermentation, and advanced blend structure." },
-                  { badge: "♛",  name: "Aficionado",  sub: "The Ultimate Status", xp: "15,000+ XP",          color: "#D4820A", desc: "Master sensory analysis, pairing intelligence, cigar culture, and strategic competition." },
+                  { badge: "seal" as PrestigeKind, name: "Novice",       sub: "The Beginning",      xp: "0 – 999 XP",          color: "#C8322A", desc: "Learn cigar basics, flavor recognition, and foundational pairing techniques." },
+                  { badge: "ember" as PrestigeKind, name: "Enthusiast",   sub: "Fueled by Passion",  xp: "1,000 – 4,999 XP",   color: GOLD,      desc: "Understand regions, wrappers, construction, and pairing synergy." },
+                  { badge: "award" as PrestigeKind, name: "Connoisseur",  sub: "Refined & Focused",  xp: "5,000 – 14,999 XP",  color: "#9B59B6", desc: "Recognize flavor transitions, aging, fermentation, and advanced blend structure." },
+                  { badge: "crown" as PrestigeKind, name: "Aficionado",  sub: "The Ultimate Status", xp: "15,000+ XP",          color: "#D4820A", desc: "Master sensory analysis, pairing intelligence, cigar culture, and strategic competition." },
                 ].map(t => (
                   <div key={t.name} style={{
                     display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 14,
@@ -947,7 +961,7 @@ export function S1_InitGate() {
                       background: `radial-gradient(circle at 35% 30%, ${t.color}33, rgba(0,0,0,0.60))`,
                       border: `1.5px solid ${t.color}55`,
                       display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20,
-                    }}>{t.badge}</div>
+                    }}><PrestigeMark kind={t.badge} color={t.color} size={21} /></div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
                         <span style={{ fontSize: 16, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.08em", textTransform: "uppercase" }}>{t.name}</span>
@@ -1004,7 +1018,7 @@ export function S1_InitGate() {
                     background: "radial-gradient(circle at 35% 30%, rgba(212,175,55,0.38), rgba(0,0,0,0.70))",
                     border: `2px solid ${GOLD}55`,
                     display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
-                  }}>🎩</div>
+                  }}><PrestigeMark kind="seal" size={23} /></div>
                   <div>
                     <div style={{ fontSize: 10, letterSpacing: "0.36em", color: "rgba(240,232,212,0.35)", textTransform: "uppercase", marginBottom: 2 }}>Your Rank</div>
                     <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, letterSpacing: "0.06em" }}>ENTHUSIAST</div>
@@ -1065,25 +1079,25 @@ export function S1_InitGate() {
 
                 {/* Rows */}
                 {(() => {
-                  type RowData = { rank: number; handle: string; real: string; xp: number; tier: string; badge: string; tColor: string; badges: string[]; extra: string };
-                  const TIER_META: Record<string, { label: string; badge: string; color: string }> = {
-                    beginner:   { label: "Novice",      badge: "",  color: "#C8322A" },
-                    apprentice: { label: "Enthusiast",  badge: "🕯", color: GOLD },
-                    blender:    { label: "Connoisseur", badge: "", color: "#9B59B6" },
-                    master:     { label: "Aficionado",  badge: "♛",  color: "#D4820A" },
-                    architect:  { label: "Aficionado",  badge: "♛",  color: "#D4820A" },
+                  type RowData = { rank: number; handle: string; real: string; xp: number; tier: string; badge: PrestigeKind; tColor: string; badges: PrestigeKind[]; extra: string };
+                  const TIER_META: Record<string, { label: string; badge: PrestigeKind; color: string }> = {
+                    beginner:   { label: "Novice",      badge: "seal",  color: "#C8322A" },
+                    apprentice: { label: "Enthusiast",  badge: "ember", color: GOLD },
+                    blender:    { label: "Connoisseur", badge: "award", color: "#9B59B6" },
+                    master:     { label: "Aficionado",  badge: "crown", color: "#D4820A" },
+                    architect:  { label: "Aficionado",  badge: "crown", color: "#D4820A" },
                   };
                   const DEMO: RowData[] = [
-                    { rank: 1,  handle: "TheCigarLion",   real: "Alex Martinez",      xp: 18750, tier: "Aficionado",  badge: "♛",  tColor: "#D4820A", badges: ["♛","",""], extra: "+3" },
-                    { rank: 2,  handle: "Aficionado_D",   real: "Darnell Washington", xp: 16420, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯",""], extra: "+2" },
-                    { rank: 3,  handle: "SmoothDraws",    real: "Marcus Tate",         xp: 14980, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯",""], extra: "+4" },
-                    { rank: 4,  handle: "Ash&Oak",        real: "Brandon Hill",        xp: 13250, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["","🕯"],       extra: "+1" },
-                    { rank: 5,  handle: "LeafScholar",    real: "Jasmine Cole",        xp: 12760, tier: "Connoisseur", badge: "", tColor: "#9B59B6", badges: ["♛",""],       extra: "+2" },
-                    { rank: 6,  handle: "BourbonLeaf",    real: "Tyler Bennett",       xp: 10850, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛",""],       extra: "+1" },
-                    { rank: 7,  handle: "CigarSensei",    real: "Ethan Reynolds",      xp:  9430, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["",""],       extra: "+2" },
-                    { rank: 8,  handle: "PuffProfessor",  real: "Daniel Cooper",       xp:  8910, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["",""],       extra: "+1" },
-                    { rank: 9,  handle: "VintageVisions", real: "Robert King",         xp:  7650, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: ["♛",""],       extra: "+2" },
-                    { rank: 10, handle: "CedarRoomKing",  real: "Kevin Brooks",        xp:  6980, tier: "Enthusiast",  badge: "🕯", tColor: GOLD,      badges: [""],            extra: "+1" },
+                    { rank: 1,  handle: "TheCigarLion",   real: "Alex Martinez",      xp: 18750, tier: "Aficionado",  badge: "crown", tColor: "#D4820A", badges: ["crown","award"], extra: "+3" },
+                    { rank: 2,  handle: "Aficionado_D",   real: "Darnell Washington", xp: 16420, tier: "Connoisseur", badge: "award", tColor: "#9B59B6", badges: ["award","ember"], extra: "+2" },
+                    { rank: 3,  handle: "SmoothDraws",    real: "Marcus Tate",         xp: 14980, tier: "Connoisseur", badge: "award", tColor: "#9B59B6", badges: ["award","ember"], extra: "+4" },
+                    { rank: 4,  handle: "Ash&Oak",        real: "Brandon Hill",        xp: 13250, tier: "Connoisseur", badge: "award", tColor: "#9B59B6", badges: ["award","ember"], extra: "+1" },
+                    { rank: 5,  handle: "LeafScholar",    real: "Jasmine Cole",        xp: 12760, tier: "Connoisseur", badge: "award", tColor: "#9B59B6", badges: ["crown"], extra: "+2" },
+                    { rank: 6,  handle: "BourbonLeaf",    real: "Tyler Bennett",       xp: 10850, tier: "Enthusiast",  badge: "ember", tColor: GOLD,      badges: ["crown"], extra: "+1" },
+                    { rank: 7,  handle: "CigarSensei",    real: "Ethan Reynolds",      xp:  9430, tier: "Enthusiast",  badge: "ember", tColor: GOLD,      badges: ["ember"], extra: "+2" },
+                    { rank: 8,  handle: "PuffProfessor",  real: "Daniel Cooper",       xp:  8910, tier: "Enthusiast",  badge: "ember", tColor: GOLD,      badges: ["ember"], extra: "+1" },
+                    { rank: 9,  handle: "VintageVisions", real: "Robert King",         xp:  7650, tier: "Enthusiast",  badge: "ember", tColor: GOLD,      badges: ["crown"], extra: "+2" },
+                    { rank: 10, handle: "CedarRoomKing",  real: "Kevin Brooks",        xp:  6980, tier: "Enthusiast",  badge: "ember", tColor: GOLD,      badges: ["seal"], extra: "+1" },
                   ];
                   const liveEntries = getVenueLeaderboard("00000000-0000-0000-0000-000000000001");
                   let rows: RowData[];
@@ -1092,7 +1106,7 @@ export function S1_InitGate() {
                       const m = TIER_META[e.tier] ?? TIER_META.beginner;
                       const parts = e.name.split(" ");
                       const handle = parts.length > 1 ? `${parts[0]}${parts.slice(1).join("").charAt(0)}` : e.name;
-                      return { rank: idx + 1, handle, real: e.name, xp: e.score, tier: m.label, badge: m.badge, tColor: m.color, badges: [] as string[], extra: "" };
+                      return { rank: idx + 1, handle, real: e.name, xp: e.score, tier: m.label, badge: m.badge, tColor: m.color, badges: [] as PrestigeKind[], extra: "" };
                     });
                     rows = [...liveRows, ...DEMO.slice(liveRows.length)].slice(0, 10).map((r, idx) => ({ ...r, rank: idx + 1 }));
                   } else {
@@ -1134,7 +1148,7 @@ export function S1_InitGate() {
                           border: `1.5px solid ${row.tColor}44`,
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontSize: 16,
-                        }}>🎩</div>
+                        }}><PrestigeMark kind="seal" color={row.tColor} size={17} /></div>
                         <div>
                           <div style={{ fontSize: 17, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.02em" }}>{row.handle}</div>
                           <div style={{ fontSize: 13, color: "rgba(240,232,212,0.35)" }}>{row.real}</div>
@@ -1148,7 +1162,7 @@ export function S1_InitGate() {
                           border: `1.5px solid ${row.tColor}55`,
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontSize: 14,
-                        }}>{row.badge}</div>
+                        }}><PrestigeMark kind={row.badge} color={row.tColor} size={15} /></div>
                       </div>
                       {/* XP */}
                       <div style={{ fontSize: 17, fontWeight: 800, color: row.tColor, letterSpacing: "0.04em" }}>
@@ -1161,7 +1175,7 @@ export function S1_InitGate() {
                             width: 26, height: 26, borderRadius: "50%", fontSize: 12,
                             display: "flex", alignItems: "center", justifyContent: "center",
                             background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)",
-                          }}>{b}</div>
+                          }}><PrestigeMark kind={b} color="rgba(240,232,212,0.62)" size={13} /></div>
                         ))}
                         <span style={{ fontSize: 13, color: row.tColor, fontWeight: 700, marginLeft: 2 }}>{row.extra}</span>
                       </div>
@@ -1196,14 +1210,14 @@ export function S1_InitGate() {
               ],
               notes: ["Dark Chocolate","Cedar","Leather","Espresso","Black Pepper","Roasted Earth","Aged Oak","Cocoa Nib"],
               drinks: [
-                { icon:"🥃", label:"Aged Bourbon",   category:"Whiskey",  score:95, desc:"Vanilla and caramel notes mirror Criollo's earth tone. The wood char bridges the spice beautifully." },
-                { icon:"🥃", label:"Rye Whiskey",    category:"Whiskey",  score:88, desc:"Peppery rye grain amplifies Criollo's black pepper finish — a bold, layered combination." },
-                { icon:"🥃", label:"Cognac VSOP",    category:"Brandy",   score:84, desc:"Dried fruit and floral esters round out Criollo's heavier earth profile with sophistication." },
-                { icon:"🍷", label:"Dark Rum",       category:"Rum",      score:82, desc:"Molasses sweetness cuts through Criollo's leather without masking the spice complexity." },
-                { icon:"☕", label:"Espresso",        category:"Coffee",   score:80, desc:"Roasted intensity echoes Criollo's dark chocolate notes. A ritual pairing of the highest order." },
-                { icon:"🥃", label:"Añejo Tequila",  category:"Agave",    score:74, desc:"Barrel aging softens tequila's heat and introduces oak harmony with the Criollo wrapper." },
-                { icon:"🍺", label:"Imperial Stout", category:"Beer",     score:66, desc:"Roasted malt and dark fruit offer a heavy-handed but capable companion to Criollo's strength." },
-                { icon:"🥃", label:"Armagnac",       category:"Brandy",   score:60, desc:"A more rustic alternative to Cognac — earthy and assertive, a secondary option for bold palates." },
+                { icon:"SP", label:"Aged Bourbon",   category:"Whiskey",  score:95, desc:"Vanilla and caramel notes mirror Criollo's earth tone. The wood char bridges the spice beautifully." },
+                { icon:"SP", label:"Rye Whiskey",    category:"Whiskey",  score:88, desc:"Peppery rye grain amplifies Criollo's black pepper finish — a bold, layered combination." },
+                { icon:"BR", label:"Cognac VSOP",    category:"Brandy",   score:84, desc:"Dried fruit and floral esters round out Criollo's heavier earth profile with sophistication." },
+                { icon:"RU", label:"Dark Rum",       category:"Rum",      score:82, desc:"Molasses sweetness cuts through Criollo's leather without masking the spice complexity." },
+                { icon:"CF", label:"Espresso",        category:"Coffee",   score:80, desc:"Roasted intensity echoes Criollo's dark chocolate notes. A ritual pairing of the highest order." },
+                { icon:"AG", label:"Añejo Tequila",  category:"Agave",    score:74, desc:"Barrel aging softens tequila's heat and introduces oak harmony with the Criollo wrapper." },
+                { icon:"BE", label:"Imperial Stout", category:"Beer",     score:66, desc:"Roasted malt and dark fruit offer a heavy-handed but capable companion to Criollo's strength." },
+                { icon:"BR", label:"Armagnac",       category:"Brandy",   score:60, desc:"A more rustic alternative to Cognac — earthy and assertive, a secondary option for bold palates." },
               ],
               warning: "Avoid overly sweet citrus pairings — they suppress the spice complexity and collapse the finish.",
               masterNote: "Criollo '98 rewards patience. The second third reveals the true spice architecture beneath the earth-toned opening.",
@@ -1220,14 +1234,14 @@ export function S1_InitGate() {
               ],
               notes: ["Black Pepper","Cedar","Oak","Clove","Espresso","Dark Earth","Raw Tobacco","Charred Wood"],
               drinks: [
-                { icon:"🥃", label:"Islay Single Malt", category:"Scotch",   score:96, desc:"Peat smoke and brine from Islay scotch create an almost confrontational but harmonious match with Corojo's intensity." },
-                { icon:"🥃", label:"Aged Rum 18yr",     category:"Rum",      score:90, desc:"Long barrel aging softens rum's sweetness just enough to survive Corojo's full-body assault." },
-                { icon:"🥃", label:"Cognac XO",         category:"Brandy",   score:86, desc:"XO-grade concentration provides structure and fruit complexity that balances Corojo's pepper dominance." },
-                { icon:"🍷", label:"Mezcal Reposado",   category:"Agave",    score:82, desc:"Smoke-on-smoke intensity. Mezcal's agave oils amplify Corojo's deep earth and pepper architecture." },
-                { icon:"☕", label:"Black Coffee",      category:"Coffee",   score:80, desc:"Pure, uncut roast bitterness matches Corojo stride for stride — no sweetness to get in the way." },
-                { icon:"🍷", label:"Madeira Reserve",   category:"Fortified",score:74, desc:"Oxidative nuttiness and acidity provide a sharp contrast that momentarily tames Corojo's heat." },
-                { icon:"🍺", label:"Baltic Porter",     category:"Beer",     score:68, desc:"Dark malt gravity and residual sweetness offer a momentary reprieve between Corojo's pepper waves." },
-                { icon:"🥃", label:"Overproof Rum",     category:"Rum",      score:58, desc:"High-proof rum amplifies rather than moderates — only for those who seek maximum intensity." },
+                { icon:"SC", label:"Islay Single Malt", category:"Scotch",   score:96, desc:"Peat smoke and brine from Islay scotch create an almost confrontational but harmonious match with Corojo's intensity." },
+                { icon:"RU", label:"Aged Rum 18yr",     category:"Rum",      score:90, desc:"Long barrel aging softens rum's sweetness just enough to survive Corojo's full-body assault." },
+                { icon:"BR", label:"Cognac XO",         category:"Brandy",   score:86, desc:"XO-grade concentration provides structure and fruit complexity that balances Corojo's pepper dominance." },
+                { icon:"AG", label:"Mezcal Reposado",   category:"Agave",    score:82, desc:"Smoke-on-smoke intensity. Mezcal's agave oils amplify Corojo's deep earth and pepper architecture." },
+                { icon:"CF", label:"Black Coffee",      category:"Coffee",   score:80, desc:"Pure, uncut roast bitterness matches Corojo stride for stride — no sweetness to get in the way." },
+                { icon:"WI", label:"Madeira Reserve",   category:"Fortified",score:74, desc:"Oxidative nuttiness and acidity provide a sharp contrast that momentarily tames Corojo's heat." },
+                { icon:"BE", label:"Baltic Porter",     category:"Beer",     score:68, desc:"Dark malt gravity and residual sweetness offer a momentary reprieve between Corojo's pepper waves." },
+                { icon:"RU", label:"Overproof Rum",     category:"Rum",      score:58, desc:"High-proof rum amplifies rather than moderates — only for those who seek maximum intensity." },
               ],
               warning: "Pair with robust spirits only — mild or sweet pairings are completely overwhelmed by Corojo's intensity.",
               masterNote: "Corojo demands a palate that can take the heat. The pepper never relents — but beneath it lies extraordinary oil complexity.",
@@ -1244,14 +1258,14 @@ export function S1_InitGate() {
               ],
               notes: ["Cream","Hay","Vanilla","Floral","Cedar","Light Toast","Sweet Butter","White Tea"],
               drinks: [
-                { icon:"🥂", label:"Brut Champagne",  category:"Sparkling", score:96, desc:"Fine bubble acidity lifts Connecticut's creaminess into an extraordinarily refined tasting moment." },
-                { icon:"🥃", label:"Light Bourbon",   category:"Whiskey",   score:88, desc:"Low rye content and gentle sweetness complement Connecticut's vanilla and cream without overpowering." },
-                { icon:"🍵", label:"White Tea",       category:"Tea",       score:85, desc:"Floral, almost ephemeral character perfectly mirrors Connecticut's aromatic profile." },
-                { icon:"🍵", label:"Green Tea",       category:"Tea",       score:82, desc:"Grassy freshness and vegetal notes align naturally with Connecticut's hay and floral dimensions." },
-                { icon:"🥂", label:"Blanc de Blancs", category:"Sparkling", score:80, desc:"100% Chardonnay sparkle brings mineral elegance that elevates Connecticut's subtle complexity." },
-                { icon:"☕", label:"Milk Coffee",     category:"Coffee",    score:74, desc:"Cream and steamed milk soften any bitterness while the caramel notes sync with vanilla finish." },
-                { icon:"🍷", label:"Sauvignon Blanc", category:"Wine",      score:70, desc:"Citrus zest and herbaceous character add brightness without overwhelming the wrapper's delicacy." },
-                { icon:"🥂", label:"Dry Rosé",        category:"Wine",      score:64, desc:"Berry notes and crisp acidity offer a gentle, summery complement — best in lighter sessions." },
+                { icon:"SP", label:"Brut Champagne",  category:"Sparkling", score:96, desc:"Fine bubble acidity lifts Connecticut's creaminess into an extraordinarily refined tasting moment." },
+                { icon:"SP", label:"Light Bourbon",   category:"Whiskey",   score:88, desc:"Low rye content and gentle sweetness complement Connecticut's vanilla and cream without overpowering." },
+                { icon:"TE", label:"White Tea",       category:"Tea",       score:85, desc:"Floral, almost ephemeral character perfectly mirrors Connecticut's aromatic profile." },
+                { icon:"TE", label:"Green Tea",       category:"Tea",       score:82, desc:"Grassy freshness and vegetal notes align naturally with Connecticut's hay and floral dimensions." },
+                { icon:"SP", label:"Blanc de Blancs", category:"Sparkling", score:80, desc:"100% Chardonnay sparkle brings mineral elegance that elevates Connecticut's subtle complexity." },
+                { icon:"CF", label:"Milk Coffee",     category:"Coffee",    score:74, desc:"Cream and steamed milk soften any bitterness while the caramel notes sync with vanilla finish." },
+                { icon:"WI", label:"Sauvignon Blanc", category:"Wine",      score:70, desc:"Citrus zest and herbaceous character add brightness without overwhelming the wrapper's delicacy." },
+                { icon:"WI", label:"Dry Rosé",        category:"Wine",      score:64, desc:"Berry notes and crisp acidity offer a gentle, summery complement — best in lighter sessions." },
               ],
               warning: "Never pair with bold spirits — they will completely obliterate the delicate creaminess this wrapper is celebrated for.",
               masterNote: "Connecticut Shade is deceptive in its subtlety. What seems simple reveals layers of creaminess, floral notes, and a seamless burn.",
@@ -1262,9 +1276,9 @@ export function S1_InitGate() {
           const seed  = SEEDS.find(s => s.id === seedId) || SEEDS[0];
           const intel = INTEL[seedId] || INTEL.criollo;
           const FLAVOR_ICONS: Record<string, {sym:string;label:string}[]> = {
-            criollo:     [{sym:"🌍",label:"EARTH"},{sym:"🌿",label:"CEDAR"},{sym:"🍫",label:"COCOA"},{sym:"🌶",label:"PEPPER"}],
-            corojo:      [{sym:"🌶",label:"PEPPER"},{sym:"🌿",label:"CEDAR"},{sym:"⚡",label:"SPICE"},{sym:"🌳",label:"OAK"}],
-            connecticut: [{sym:"🥛",label:"CREAM"},{sym:"🌾",label:"HAY"},{sym:"",label:"VANILLA"},{sym:"🌸",label:"FLORAL"}],
+            criollo:     [{sym:"EA",label:"EARTH"},{sym:"CE",label:"CEDAR"},{sym:"CO",label:"COCOA"},{sym:"PE",label:"PEPPER"}],
+            corojo:      [{sym:"PE",label:"PEPPER"},{sym:"CE",label:"CEDAR"},{sym:"SP",label:"SPICE"},{sym:"OA",label:"OAK"}],
+            connecticut: [{sym:"CR",label:"CREAM"},{sym:"HA",label:"HAY"},{sym:"VA",label:"VANILLA"},{sym:"FL",label:"FLORAL"}],
           };
           const RADAR_VALS: Record<string,number[]> = {
             criollo:     [90,60,20,15,30,75,80,85],
@@ -1281,7 +1295,7 @@ export function S1_InitGate() {
             {id:"corojo",     name:"Corojo",            tag:"Bold · Peppery · Strong Finish",  s:95,f:90,b:55,sm:28},
             {id:"connecticut",name:"Connecticut Shade", tag:"Smooth · Creamy · Mild",          s:22,f:45,b:78,sm:92},
           ];
-          const FLAGS: Record<string,string> = {criollo:"🇩🇴",corojo:"🇳🇮",connecticut:"🇺🇸"};
+          const FLAGS: Record<string,string> = {criollo:"DR",corojo:"HN",connecticut:"US"};
           const RLABELS = ["EARTH","WOOD","CREAM","SWEET","NUT","COCOA","PEPPER","SPICE"];
           const rv  = RADAR_VALS[seedId] || RADAR_VALS.criollo;
           const rA  = (i:number) => (i*2*Math.PI/8) - Math.PI/2;
@@ -1348,7 +1362,7 @@ export function S1_InitGate() {
                         <div>
                           <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 40, fontWeight: 700, color: "#F0E8D4", lineHeight: 1, marginBottom: 4 }}>{seed.name}</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                            <span style={{ fontSize: 14 }}>{FLAGS[seedId] || "🌍"}</span>
+                            <span style={{ fontSize: 10, letterSpacing: "0.14em", color: GOLD, fontWeight: 900 }}>{FLAGS[seedId] || "OR"}</span>
                             <span style={{ fontSize: 12, letterSpacing: "0.26em", color: "rgba(212,175,55,0.65)", textTransform: "uppercase", fontWeight: 700 }}>{seed.origin}</span>
                           </div>
                           <div style={{ fontSize: 10, letterSpacing: "0.34em", color: "rgba(212,175,55,0.50)", textTransform: "uppercase", fontWeight: 800, marginBottom: 8 }}>Flavor Profile</div>
@@ -1384,7 +1398,7 @@ export function S1_InitGate() {
                             <div style={{ display: "flex", gap: 7 }}>
                               {top2.map(d => (
                                 <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 5, background: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.22)", borderRadius: 7, padding: "5px 9px" }}>
-                                  <span style={{ fontSize: 13 }}>{d.icon}</span>
+                                  <span style={{ fontSize: 9, letterSpacing: "0.12em", color: GOLD, fontWeight: 900 }}>{d.icon}</span>
                                   <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(240,232,212,0.70)" }}>{d.label}</span>
                                 </div>
                               ))}
@@ -1410,7 +1424,7 @@ export function S1_InitGate() {
                         <motion.button key={cs.id} type="button" onPointerDown={() => setSeedId(cs.id)} whileTap={{ scale: 0.97 }}
                           animate={{ background: act ? "rgba(212,175,55,0.13)" : "rgba(255,255,255,0.025)" }}
                           style={{ border: `1.5px solid ${act ? GOLD + "66" : "rgba(255,255,255,0.07)"}`, cursor: "pointer", borderRadius: 10, padding: "12px 14px", textAlign: "left", fontFamily: "'Inter',sans-serif", display: "flex", gap: 10, alignItems: "flex-start", transition: "border-color 0.20s" }}>
-                          <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, background: act ? `radial-gradient(circle at 35% 30%,${GOLD}44,rgba(0,0,0,0.65))` : "rgba(255,255,255,0.06)", border: `1.5px solid ${act ? GOLD + "66" : "rgba(255,255,255,0.10)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🍃</div>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, background: act ? `radial-gradient(circle at 35% 30%,${GOLD}44,rgba(0,0,0,0.65))` : "rgba(255,255,255,0.06)", border: `1.5px solid ${act ? GOLD + "66" : "rgba(255,255,255,0.10)"}`, display: "flex", alignItems: "center", justifyContent: "center" }}><PrestigeMark kind="ember" color={act ? GOLD : "rgba(240,232,212,0.45)"} size={16} /></div>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: 14, fontWeight: 800, color: act ? GOLD : "#F0E8D4", marginBottom: 1 }}>{cs.name}</div>
                             <div style={{ fontSize: 11, color: "rgba(240,232,212,0.36)", marginBottom: 8 }}>{cs.tag}</div>
@@ -1483,7 +1497,7 @@ export function S1_InitGate() {
                 {/* Burn Speed */}
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 7 }}>
-                    <span style={{ fontSize: 13 }}>🕯</span>
+                    <PrestigeMark kind="ember" size={13} />
                     <span style={{ fontSize: 10, letterSpacing: "0.28em", color: "rgba(212,175,55,0.55)", textTransform: "uppercase", fontWeight: 800 }}>Burn Speed</span>
                   </div>
                   <div style={{ height: 7, background: "rgba(255,255,255,0.07)", borderRadius: 4, overflow: "hidden" }}>
@@ -1502,16 +1516,16 @@ export function S1_InitGate() {
             <div style={{ flexShrink: 0, background: "rgba(3,2,0,1)", borderTop: "1px solid rgba(212,175,55,0.18)", display: "flex", height: 62 }}>
               <div style={{ flex: 1, display: "flex" }}>
                 {[
-                  { id: "leaf_ed", label: "LEAF EDUCATION",   sym: "🍃" },
-                  { id: "blend",   label: "BLENDING JOURNEY", sym: "🔬" },
-                  { id: "pairing", label: "PAIRING GUIDE",    sym: "🍷" },
-                  { id: "profile", label: "MY PROFILE",       sym: "👤" },
+                  { id: "leaf_ed", label: "LEAF EDUCATION",   sym: "LEAF" },
+                  { id: "blend",   label: "BLENDING JOURNEY", sym: "LAB" },
+                  { id: "pairing", label: "PAIRING GUIDE",    sym: "PAIR" },
+                  { id: "profile", label: "MY PROFILE",       sym: "ID" },
                 ].map(tab => {
                   const act = seedTab === tab.id;
                   return (
                     <motion.button key={tab.id} type="button" onPointerDown={() => setSeedTab(tab.id)} whileTap={{ scale: 0.97 }}
                       style={{ flex: 1, border: "none", cursor: "pointer", background: act ? "rgba(212,175,55,0.09)" : "transparent", borderBottom: act ? `2.5px solid ${GOLD}` : "2.5px solid transparent", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontFamily: "'Inter',sans-serif", transition: "background 0.18s,border-color 0.18s" }}>
-                      <span style={{ fontSize: 15 }}>{tab.sym}</span>
+                      <span style={{ fontSize: 9, letterSpacing: "0.14em", color: act ? GOLD : "rgba(240,232,212,0.40)", fontWeight: 900 }}>{tab.sym}</span>
                       <span style={{ fontSize: 11, fontWeight: act ? 800 : 500, letterSpacing: "0.16em", color: act ? GOLD : "rgba(240,232,212,0.32)", textTransform: "uppercase" }}>{tab.label}</span>
                     </motion.button>
                   );
