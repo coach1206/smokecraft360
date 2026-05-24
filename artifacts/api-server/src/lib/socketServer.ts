@@ -42,7 +42,7 @@ import { Server, type Socket } from "socket.io";
 import type { Server as HttpServer } from "http";
 import { logger } from "./logger";
 import { pool }   from "@workspace/db";
-import { assetInventory, commandCenterMetrics, pushTelemetry } from "./eatCommandState";
+import { assetInventory, commandCenterMetrics, pushTelemetry, recordPing } from "./eatCommandState";
 
 let _io: Server | null = null;
 
@@ -229,6 +229,14 @@ export function initSocketServer(httpServer: HttpServer): Server {
       logger.info({ socketId: socket.id }, "Sovereign session revoke broadcast sent via socket");
       // Broadcast to all OTHER sockets (caller keeps their own session)
       socket.broadcast.emit("SOVEREIGN_SESSION_REVOKED", { ts: Date.now(), reason: "OPERATOR_REVOKE" });
+    });
+
+    // ── WS ping-pong RTT measurement ─────────────────────────────────────────
+    // Client must respond: socket.emit("PONG", { serverTs })
+    socket.on("PONG", ({ serverTs }: { serverTs: number }) => {
+      const rttMs = Date.now() - serverTs;
+      recordPing(socket.id, rttMs);
+      logger.info({ socketId: socket.id, rttMs }, "WS ping RTT recorded");
     });
 
     socket.on("disconnect", (reason) => {

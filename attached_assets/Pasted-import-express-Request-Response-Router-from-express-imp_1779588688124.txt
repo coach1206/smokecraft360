@@ -1,0 +1,263 @@
+import express, { Request, Response, Router } from 'express';
+import { createServer } from 'http';
+import { WebSocket, Server as WebSocketServer } from 'ws';
+
+// ============================================================================
+// INFRASTRUCTURE SCHEMAS & INTERFACES
+// ============================================================================
+
+export interface POSItem {
+  id: string;
+  name: string;
+  price: number;
+  stockCount: number;
+  category: 'lounge' | 'kitchen' | 'cellar';
+}
+
+export interface TelemetryPacket {
+  timestamp: number;
+  system: 'EAT_ENGINE' | 'COMMAND_CENTER' | 'DEV_DASHBOARD';
+  level: 'INFO' | 'WARN' | 'CRITICAL';
+  message: string;
+  payload?: any;
+}
+
+// ============================================================================
+// SYSTEM LEDGER REAL-TIME MEMORY CORES
+// ============================================================================
+
+let assetInventory: POSItem[] = [
+  { id: '1', name: 'Arturo Fuente Opus X', price: 45.00, stockCount: 2, category: 'lounge' },
+  { id: '2', name: 'Davidoff Late Hour Churchill', price: 38.00, stockCount: 8, category: 'lounge' },
+  { id: '3', name: 'Wagyu Strip Steak A5', price: 120.00, stockCount: 0, category: 'kitchen' },
+  { id: '4', name: 'Macallan 25 Year Pour', price: 250.00, stockCount: 5, category: 'cellar' },
+];
+
+let commandCenterMetrics = {
+  activeTables: 4,
+  activeRituals: 0,
+  hourlyGross: 1420.00,
+  systemLatency: '1ms',
+};
+
+// In-Memory Cache for Touch Screen Idempotency Filtering
+const touchIdempotencyCache = new Map<string, number>();
+const DOUBLE_TAP_THRESHOLD_MS = 750;
+
+// Developer Dashboard Log Ring Buffer
+const developerLogBuffer: TelemetryPacket[] = [];
+const maxLogBufferSize = 50;
+
+function pushTelemetry(packet: TelemetryPacket) {
+  developerLogBuffer.unshift(packet);
+  if (developerLogBuffer.length > maxLogBufferSize) {
+    developerLogBuffer.pop();
+  }
+  console.log(`[${packet.system}][${packet.level}] ${packet.message}`);
+}
+
+// ============================================================================
+// NETWORK APPLICATION FRAMEWORK (EXPRESS + WEBSOCKET)
+// ============================================================================
+
+const app = express();
+app.use(express.json());
+
+const httpServer = createServer(app);
+const wss = new WebSocketServer({ server: httpServer });
+
+function broadcastToTouchNodes(type: string, data: any) {
+  const payload = JSON.stringify({ type, data, timestamp: Date.now() });
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(payload);
+    }
+  });
+}
+
+// ============================================================================
+// 1. E.A.T. MODULE PIPELINES & TOUCH HANDLERS
+// ============================================================================
+
+const eatRouter = Router();
+
+eatRouter.get('/assets', (req: Request, res: Response) => {
+  res.status(200).json({ success: true, assets: assetInventory });
+});
+
+// POST /api/eat/order - Atomic transactional order processing with touch protection
+eatRouter.post('/order', (req: Request, res: Response) => {
+  const { itemId, tableId } = req.body;
+  const metricsStart = performance.now();
+
+  // UNIQUE TOUCH INPUT VALIDATION KEYS
+  const idempotencyKey = `${tableId}_${itemId}`;
+  const now = Date.now();
+  const lastTapTime = touchIdempotencyCache.get(idempotencyKey);
+
+  // Filter Out Phantom Double Taps from Screen Friction or Moisture
+  if (lastTapTime && (now - lastTapTime < DOUBLE_TAP_THRESHOLD_MS)) {
+    pushTelemetry({
+      timestamp: now,
+      system: 'DEV_DASHBOARD',
+      level: 'WARN',
+      message: 'Friction filter block: Duplicate touch interaction suppressed',
+      payload: { tableId, itemId, interval: `${now - lastTapTime}ms` }
+    });
+    return res.status(429).json({ success: false, error: 'Touch interaction throttled' });
+  }
+
+  // Update touch execution memory state
+  touchIdempotencyCache.set(idempotencyKey, now);
+
+  const itemIndex = assetInventory.findIndex(i => i.id === itemId);
+  if (itemIndex === -1) {
+    return res.status(404).json({ success: false, error: 'Asset untracked' });
+  }
+
+  const item = assetInventory[itemIndex];
+
+  if (item.stockCount <= 0) {
+    return res.status(422).json({ success: false, error: 'Asset fully depleted' });
+  }
+
+  // OPTIMISTIC LOOK AHEAD LOCK FOR FRONTEND GESTURES
+  broadcastToTouchNodes('TOUCH_TARGET_LOCK', { itemId, tableId });
+
+  // Deduct inventory level cleanly
+  item.stockCount -= 1;
+  commandCenterMetrics.hourlyGross += item.price;
+
+  const executionTime = (performance.now() - metricsStart).toFixed(2);
+
+  pushTelemetry({
+    timestamp: Date.now(),
+    system: 'EAT_ENGINE',
+    level: 'INFO',
+    message: `Atomic asset state mutated: ${item.name}`,
+    payload: { currentStock: item.stockCount, internalLatency: `${executionTime}ms` },
+  });
+
+  // ENVIRONMENT/SENSORY RITUAL HANDLERS
+  if (item.category === 'lounge') {
+    commandCenterMetrics.activeRituals += 1;
+    
+    broadcastToTouchNodes('RITUAL_HARDWARE_TRIGGER', {
+      tableId,
+      deviceGroup: 'Lounge_Staging_Display_1',
+      ritualPayload: 'PREP_CEDAR_SPILL_AND_CUTTER',
+    });
+  }
+
+  // Synchronize state changes globally across all screens
+  broadcastToTouchNodes('INVENTORY_SYNC', assetInventory);
+  broadcastToTouchNodes('METRICS_SYNC', commandCenterMetrics);
+
+  return res.status(200).json({ success: true, updatedAsset: item });
+});
+
+// ============================================================================
+// 2. COMMAND CENTER METRICS PIPELINES
+// ============================================================================
+
+const commandRouter = Router();
+
+commandRouter.get('/metrics', (req: Request, res: Response) => {
+  res.status(200).json({ success: true, metrics: commandCenterMetrics });
+});
+
+commandRouter.post('/settle', (req: Request, res: Response) => {
+  const { amount, transactionToken, isOfflineSync } = req.body;
+
+  pushTelemetry({
+    timestamp: Date.now(),
+    system: 'COMMAND_CENTER',
+    level: 'INFO',
+    message: isOfflineSync ? 'Shadow Mode offline batch sync packet resolved' : 'Live digital payment transaction finalized',
+    payload: { amount, securityToken: transactionToken },
+  });
+
+  res.status(200).json({ success: true, status: 'LEDGER_FINALIZED' });
+});
+
+// ============================================================================
+// 3. DEVELOPER DASHBOARD DIAGNOSTIC BUS
+// ============================================================================
+
+const devRouter = Router();
+
+devRouter.get('/telemetry-bus', (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    bufferDepth: developerLogBuffer.length,
+    logs: developerLogBuffer,
+  });
+});
+
+// ============================================================================
+// MIDDLEWARE CONFIGURATION & SERVER MOUNTING
+// ============================================================================
+
+app.use('/api/eat', eatRouter);
+app.use('/api/command', commandRouter);
+app.use('/api/developer', devRouter);
+
+wss.on('connection', (ws: WebSocket) => {
+  pushTelemetry({
+    timestamp: Date.now(),
+    system: 'DEV_DASHBOARD',
+    level: 'INFO',
+    message: 'Handheld touchscreen device handshake established over socket link',
+  });
+
+  ws.send(JSON.stringify({ type: 'INITIAL_STATE', data: { assets: assetInventory, metrics: commandCenterMetrics } }));
+
+  ws.on('message', (messageData) => {
+    try {
+      const msg = JSON.parse(messageData.toString());
+      pushTelemetry({
+        timestamp: Date.now(),
+        system: 'DEV_DASHBOARD',
+        level: 'INFO',
+        message: `Inbound system socket command received: ${msg.type}`,
+      });
+    } catch (err) {
+      pushTelemetry({
+        timestamp: Date.now(),
+        system: 'DEV_DASHBOARD',
+        level: 'CRITICAL',
+        message: 'Malformed network frame rejected from telemetry pipeline',
+      });
+    }
+  });
+
+  ws.on('close', () => {
+    pushTelemetry({
+      timestamp: Date.now(),
+      system: 'DEV_DASHBOARD',
+      level: 'WARN',
+      message: 'Touchscreen device link dropped (Apron pocket timeout or power event)',
+    });
+  });
+});
+
+app.use((err: any, req: Request, res: Response, next: any) => {
+  pushTelemetry({
+    timestamp: Date.now(),
+    system: 'DEV_DASHBOARD',
+    level: 'CRITICAL',
+    message: 'Unhandled platform core panic context captured',
+    payload: { errorStack: err.message },
+  });
+  res.status(500).json({ success: false, error: 'Internal Core Engine Exception' });
+});
+
+const CONSOLE_PORT = process.env.PORT || 5000;
+httpServer.listen(CONSOLE_PORT, () => {
+  pushTelemetry({
+    timestamp: Date.now(),
+    system: 'DEV_DASHBOARD',
+    level: 'INFO',
+    message: `NOVEE OS Kernel Engine online. Serving infrastructure interfaces on port: ${CONSOLE_PORT}`,
+  });
+});
