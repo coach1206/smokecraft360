@@ -7,6 +7,7 @@ import { POSGateModal } from "@/components/POSGateModal";
 import { CheatCodeEngine } from "@/components/CheatCodeEngine";
 import { hapticMilestone, hapticError } from "@/hooks/useHaptic";
 import { CigarHero } from "@/components/CigarHero";
+import { submitScore } from "@/lib/leaderboardEngine";
 
 const IMG = (n: string) => `${import.meta.env.BASE_URL}images/${n}`;
 
@@ -338,7 +339,19 @@ export function S1_InitGate() {
     else { hapticError(); setWrongFlash(true); setTimeout(() => setWrongFlash(false), 700); applyPenalty(q.pen); }
     setTimeout(() => {
       if (qIdx < QUIZ.length - 1) setQIdx(i => i + 1);
-      else { updateProfile({ quizScore: quizPts + (good ? 20 : 0) }); go("posgate"); }
+      else {
+        const finalScore = profile.points + (good ? 20 : 0);
+        updateProfile({ quizScore: quizPts + (good ? 20 : 0) });
+        submitScore({
+          name: `${profile.firstName} ${profile.lastName}`.trim() || "Guest",
+          score: finalScore,
+          tier: profile.difficultyTier,
+          venueId: "00000000-0000-0000-0000-000000000001",
+          region: "North America",
+          sessionType: "session",
+        });
+        go("posgate");
+      }
     }, 880);
   }
 

@@ -69,15 +69,15 @@ function ProductCard({ product, onAdd, disabled }: { product: Product; onAdd: ()
         category={product.category}
         style={{ width: "100%", aspectRatio: "1" }}
       />
-      <div style={{ padding: "10px 12px", textAlign: "left", flex: 1 }}>
+      <div style={{ padding: "13px 14px", textAlign: "left", flex: 1 }}>
         <div style={{
-          fontSize: 13, fontWeight: 600, color: "#1A1A1B",
+          fontSize: 14, fontWeight: 600, color: "#1A1A1B",
           lineHeight: 1.3, marginBottom: 4,
           overflow: "hidden", textOverflow: "ellipsis",
           display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const,
         }}>{product.name}</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 16, fontWeight: 700, color: accent }}>
+          <span style={{ fontSize: 17, fontWeight: 700, color: accent }}>
             ${product.price}
           </span>
           <span style={{
@@ -412,7 +412,7 @@ export default function PosMode() {
     }}>
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)",
+        padding: "16px 24px", borderBottom: "1px solid rgba(26,26,27,0.08)",
         background: "rgba(245,242,237,0.8)", backdropFilter: "blur(8px)",
         flexShrink: 0,
       }}>
@@ -450,15 +450,15 @@ export default function PosMode() {
         flex: 1, display: "flex", overflow: "hidden", minHeight: 0,
       }}>
         <div style={{
-          width: 240, flexShrink: 0, borderRight: "1px solid rgba(26,26,27,0.08)",
+          width: 268, flexShrink: 0, borderRight: "1px solid rgba(26,26,27,0.08)",
           display: "flex", flexDirection: "column", overflow: "hidden",
         }}>
           <div style={{
-            padding: "14px 16px 10px",
+            padding: "18px 20px 14px",
             fontSize: 12, textTransform: "uppercase", letterSpacing: "0.15em",
             color: "rgba(212,139,0,0.5)", fontWeight: 600,
           }}>Order History</div>
-          <div style={{ flex: 1, overflowY: "auto", padding: "0 12px 12px" }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "0 14px 14px" }}>
             {pos.orders.length === 0 ? (
               <div style={{
                 padding: 20, textAlign: "center",
@@ -473,7 +473,7 @@ export default function PosMode() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     style={{
-                      padding: "12px 14px", marginBottom: 8,
+                      padding: "14px 16px", marginBottom: 10,
                       background: "rgba(26,26,27,0.05)",
                       border: `1px solid ${statusColor}25`,
                       borderRadius: 12,
@@ -563,7 +563,7 @@ export default function PosMode() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveCategory(cat.id)}
                 style={{
-                  padding: "10px 20px", borderRadius: 12,
+                  padding: "12px 26px", borderRadius: 12,
                   fontSize: 14, fontWeight: 600,
                   background: activeCategory === cat.id
                     ? "linear-gradient(135deg, #D48B00, #a98828)"
@@ -578,10 +578,10 @@ export default function PosMode() {
           </div>
 
           <div style={{
-            flex: 1, overflowY: "auto", padding: "4px 16px 16px",
+            flex: 1, overflowY: "auto", padding: "8px 20px 20px",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-            gap: 12, alignContent: "start",
+            gridTemplateColumns: "repeat(auto-fill, minmax(172px, 1fr))",
+            gap: 16, alignContent: "start",
           }}>
             {filtered.map(product => (
               <motion.div
@@ -596,17 +596,17 @@ export default function PosMode() {
         </div>
 
         <div style={{
-          width: 300, flexShrink: 0,
+          width: 336, flexShrink: 0,
           borderLeft: "1px solid rgba(26,26,27,0.08)",
           display: "flex", flexDirection: "column", overflow: "hidden",
         }}>
           <div style={{
-            padding: "14px 16px 10px",
+            padding: "18px 20px 14px",
             fontSize: 12, textTransform: "uppercase", letterSpacing: "0.15em",
             color: "rgba(212,139,0,0.5)", fontWeight: 600,
           }}>Current Order</div>
 
-          <div style={{ flex: 1, overflowY: "auto", padding: "0 12px" }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "0 14px" }}>
             <AnimatePresence mode="popLayout">
               {pos.cart.length === 0 ? (
                 <motion.div
@@ -627,8 +627,8 @@ export default function PosMode() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20, height: 0 }}
                     style={{
-                      display: "flex", alignItems: "center", gap: 10,
-                      padding: "10px 12px", marginBottom: 8,
+                      display: "flex", alignItems: "center", gap: 14,
+                      padding: "14px 14px", marginBottom: 10,
                       background: "rgba(26,26,27,0.05)",
                       border: "1px solid rgba(26,26,27,0.08)",
                       borderRadius: 12,
@@ -650,7 +650,7 @@ export default function PosMode() {
                         whileTap={{ scale: 0.85 }}
                         onClick={() => pos.updateQuantity(item.product.id, -1)}
                         style={{
-                          width: 36, height: 36, borderRadius: 10,
+                          width: 40, height: 40, borderRadius: 10,
                           background: "rgba(26,26,27,0.06)",
                           border: "1px solid rgba(26,26,27,0.10)",
                           color: "#1A1A1B", cursor: "pointer",
@@ -665,7 +665,7 @@ export default function PosMode() {
                         whileTap={{ scale: 0.85 }}
                         onClick={() => pos.updateQuantity(item.product.id, 1)}
                         style={{
-                          width: 36, height: 36, borderRadius: 10,
+                          width: 40, height: 40, borderRadius: 10,
                           background: "rgba(26,26,27,0.06)",
                           border: "1px solid rgba(26,26,27,0.10)",
                           color: "#1A1A1B", cursor: "pointer",
@@ -718,7 +718,7 @@ export default function PosMode() {
           </AnimatePresence>
 
           <div style={{
-            padding: 16, borderTop: "1px solid rgba(26,26,27,0.08)",
+            padding: 20, borderTop: "1px solid rgba(26,26,27,0.08)",
             flexShrink: 0,
           }}>
             <div style={{
@@ -748,7 +748,7 @@ export default function PosMode() {
             )}
             <div style={{
               display: "flex", justifyContent: "space-between",
-              marginBottom: 16, fontSize: 20, fontWeight: 700, color: "#1A1A1B",
+              marginBottom: 16, fontSize: 22, fontWeight: 700, color: "#1A1A1B",
             }}>
               <span>Total</span>
               <span>${rewardEligible ? (cartTotal * 0.9).toFixed(2) : cartTotal.toFixed(2)}</span>
