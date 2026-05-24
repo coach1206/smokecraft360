@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth }      from "../middleware/auth";
 import { requireSovereign } from "../middleware/requireSovereign";
+import { developerLogBuffer } from "../lib/eatCommandState";
 
 interface GlobalArrSummary {
   totalCombinedArrCents: number;
@@ -76,5 +77,19 @@ developerRouter.put('/developer/tenant-override/:id', requireAuth, requireSovere
     message: `Tenant ${tenantId} operational license updated successfully.`,
     updatedTenantId: tenantId,
     currentStatus: newStatus,
+  });
+});
+
+/**
+ * @route GET /api/developer/telemetry-bus
+ * @desc Returns the live ring buffer of system telemetry packets (EAT_ENGINE /
+ *       COMMAND_CENTER / DEV_DASHBOARD) captured since server boot, newest first.
+ *       Max depth: 100 entries.
+ */
+developerRouter.get('/developer/telemetry-bus', (req: Request, res: Response) => {
+  return res.status(200).json({
+    success:     true,
+    bufferDepth: developerLogBuffer.length,
+    logs:        developerLogBuffer,
   });
 });

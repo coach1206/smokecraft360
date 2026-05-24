@@ -42,6 +42,7 @@ import { Server, type Socket } from "socket.io";
 import type { Server as HttpServer } from "http";
 import { logger } from "./logger";
 import { pool }   from "@workspace/db";
+import { assetInventory, commandCenterMetrics, pushTelemetry } from "./eatCommandState";
 
 let _io: Server | null = null;
 
@@ -65,6 +66,20 @@ export function initSocketServer(httpServer: HttpServer): Server {
     // Confirm connection to the client immediately — LiveEngineController
     // uses this to know the socket is live and can stop the local simulator.
     socket.emit("connected", { ok: true, ts: Date.now() });
+
+    // Push absolute system state to the client immediately on connect
+    // so handheld terminals are fully synced without a round-trip request.
+    socket.emit("EAT_INITIAL_STATE", {
+      assets:  assetInventory,
+      metrics: commandCenterMetrics,
+    });
+
+    pushTelemetry({
+      timestamp: Date.now(),
+      system:    "DEV_DASHBOARD",
+      level:     "INFO",
+      message:   "Handheld terminal runtime connection handshake established",
+    });
 
     // Allow clients to self-assign to a venue room for venue-scoped broadcasts.
     socket.on("join_venue", ({ venueId }: { venueId: string }) => {
@@ -218,6 +233,12 @@ export function initSocketServer(httpServer: HttpServer): Server {
 
     socket.on("disconnect", (reason) => {
       logger.info({ socketId: socket.id, reason }, "Kiosk client disconnected");
+      pushTelemetry({
+        timestamp: Date.now(),
+        system:    "DEV_DASHBOARD",
+        level:     "WARN",
+        message:   "Handheld connection dropped or lifecycle terminated",
+      });
     });
   });
 

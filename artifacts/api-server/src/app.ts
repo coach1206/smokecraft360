@@ -555,6 +555,7 @@ import deploymentRouter                  from "./routes/deployment";
 import noveeEngineRouter                 from "./routes/noveeEngine";
 import { eatKernelRouter }              from "./routes/eatKernel";
 import eatPosRouterModule              from "./routes/eatPosRouter";
+import { eatCommandRouter, commandCenterRouter } from "./routes/eatCommandModule";
 app.use("/api/mentor",        aiLimiter, mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
@@ -630,8 +631,10 @@ app.use("/api/integration-kernel", integrationKernelRouter);
 app.use("/api",           platformAdminRouter);
 app.use("/api",           deploymentRouter);
 app.use("/api",           noveeEngineRouter);
-app.use("/api",           eatKernelRouter);
+app.use("/api",               eatKernelRouter);
 app.use("/api/eat/pos-router", eatPosRouterModule);
+app.use("/api/eat",           eatCommandRouter);
+app.use("/api/command",       commandCenterRouter);
 
 // ── Universal POS Integration Layer ───────────────────────────────────────────
 // Connections CRUD, credential vault, OAuth flow, on-demand sync
