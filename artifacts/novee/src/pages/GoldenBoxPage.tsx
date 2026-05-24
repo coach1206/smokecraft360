@@ -6,225 +6,132 @@ import { socket } from "@/lib/socket";
 const GOLD  = "#D4AF37";
 const AMBER = "#C4860A";
 const CREAM = "#F0E8D4";
-const DARK  = "#0A0700";
+const DARK  = "#060400";
 const EASE  = [0.22, 1, 0.36, 1] as const;
 
-export type GBTier = "novice" | "enthusiast" | "connoisseur" | "aficionado" | "expert";
+export type GBTier = "initiate" | "novice" | "enthusiast" | "connoisseur" | "aficionado" | "master";
 
 interface LeaderEntry {
-  rank:           number;
+  rank: number;
   guestProfileId: string | null;
-  firstName:      string;
-  lastInitial:    string;
-  craftScore:     number;
-  totalXp:        number;
+  firstName: string;
+  lastInitial: string;
+  craftScore: number;
+  totalXp: number;
   achievementCnt: number;
-  tier:           string;
-  tierLabel:      string;
-  tierColor:      string;
+  tier: string;
+  tierLabel: string;
+  tierColor: string;
 }
 
-const TIER_CFG: Record<string, { num: number; color: string; label: string }> = {
-  explorer:   { num: 1, color: "#6B8A9A", label: "INITIATE"    },
-  enthusiast: { num: 2, color: "#7EC8A0", label: "ENTHUSIAST"  },
-  specialist: { num: 3, color: "#D48B00", label: "SPECIALIST"  },
-  aficionado: { num: 4, color: "#CE93D8", label: "CONNOISSEUR" },
-  golden_box: { num: 5, color: "#FFD700", label: "GOLDEN BOX"  },
-};
+const BASE_URL = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL?.replace(/\/$/, "") ?? "";
 
 const DEMO_LEADER: LeaderEntry[] = [
-  { rank: 1, guestProfileId: "d1", firstName: "TheCigarLion",  lastInitial: "",  craftScore: 100, totalXp: 18750, achievementCnt: 7, tier: "golden_box", tierLabel: "Golden Box",  tierColor: "#FFD700" },
-  { rank: 2, guestProfileId: "d2", firstName: "Aficionado",    lastInitial: "D", craftScore:  87, totalXp: 16420, achievementCnt: 6, tier: "golden_box", tierLabel: "Golden Box",  tierColor: "#FFD700" },
-  { rank: 3, guestProfileId: "d3", firstName: "SmoothDraws",   lastInitial: "",  craftScore:  76, totalXp: 14980, achievementCnt: 8, tier: "aficionado", tierLabel: "Aficionado", tierColor: "#CE93D8" },
-  { rank: 4, guestProfileId: "d4", firstName: "Ash&Oak",       lastInitial: "",  craftScore:  67, totalXp: 13250, achievementCnt: 5, tier: "aficionado", tierLabel: "Aficionado", tierColor: "#CE93D8" },
-  { rank: 5, guestProfileId: "d5", firstName: "LeafScholar",   lastInitial: "",  craftScore:  63, totalXp: 12760, achievementCnt: 6, tier: "aficionado", tierLabel: "Aficionado", tierColor: "#CE93D8" },
+  { rank: 1, guestProfileId: "d1", firstName: "TheCigarLion",  lastInitial: "",  craftScore: 100, totalXp: 38750, achievementCnt: 7, tier: "master",     tierLabel: "Master",     tierColor: "#FFD700" },
+  { rank: 2, guestProfileId: "d2", firstName: "AficionadoD",   lastInitial: "D", craftScore:  87, totalXp: 26420, achievementCnt: 6, tier: "aficionado",  tierLabel: "Aficionado", tierColor: GOLD      },
+  { rank: 3, guestProfileId: "d3", firstName: "SmoothDraws",   lastInitial: "",  craftScore:  76, totalXp: 18980, achievementCnt: 8, tier: "connoisseur", tierLabel: "Connoisseur",tierColor: "#CE93D8" },
+  { rank: 4, guestProfileId: "d4", firstName: "Ash & Oak",     lastInitial: "",  craftScore:  67, totalXp: 13250, achievementCnt: 5, tier: "connoisseur", tierLabel: "Connoisseur",tierColor: "#CE93D8" },
+  { rank: 5, guestProfileId: "d5", firstName: "LeafScholar",   lastInitial: "",  craftScore:  63, totalXp:  7760, achievementCnt: 6, tier: "enthusiast",  tierLabel: "Enthusiast", tierColor: AMBER     },
+  { rank: 6, guestProfileId: "d6", firstName: "CigarSensei",   lastInitial: "",  craftScore:  58, totalXp:  6200, achievementCnt: 4, tier: "enthusiast",  tierLabel: "Enthusiast", tierColor: AMBER     },
+  { rank: 7, guestProfileId: "d7", firstName: "PuffProfessor", lastInitial: "",  craftScore:  51, totalXp:  3800, achievementCnt: 3, tier: "novice",      tierLabel: "Novice",     tierColor: "#C84010" },
+  { rank: 8, guestProfileId: "d8", firstName: "VintageVisions",lastInitial: "",  craftScore:  44, totalXp:  2100, achievementCnt: 2, tier: "novice",      tierLabel: "Novice",     tierColor: "#C84010" },
 ];
 
-function getTier(xp: number): GBTier {
-  if (xp >= 20000) return "expert";
-  if (xp >= 15000) return "aficionado";
-  if (xp >= 5000)  return "connoisseur";
-  if (xp >= 1000)  return "enthusiast";
-  return "novice";
-}
+const JOURNEY = [
+  { id: "initiate",    num: 1, title: "INITIATE",          sub: "The Beginning",       xpMin: 0,     color: "#6B8A9A", glow: "rgba(107,138,154,0.40)", icon: "🌱", desc: "Begin your mastery journey", xpLabel: "Start" },
+  { id: "novice",      num: 2, title: "NOVICE",            sub: "Learn the Leaf",      xpMin: 1000,  color: "#C84010", glow: "rgba(200,64,16,0.40)",   icon: "🔥", desc: "Build your foundation",      xpLabel: "1,000 XP" },
+  { id: "enthusiast",  num: 3, title: "ENTHUSIAST",        sub: "Sharpen Your Craft",  xpMin: 5000,  color: AMBER,     glow: "rgba(196,134,10,0.40)",  icon: "⚡", desc: "Deepen your knowledge",     xpLabel: "5,000 XP" },
+  { id: "connoisseur", num: 4, title: "CONNOISSEUR",       sub: "Refine Your Palate",  xpMin: 12000, color: "#9B59B6", glow: "rgba(155,89,182,0.40)",  icon: "💎", desc: "Compete with the elite",    xpLabel: "12,000 XP" },
+  { id: "aficionado",  num: 5, title: "AFICIONADO",        sub: "Command the Lounge",  xpMin: 20000, color: GOLD,      glow: "rgba(212,175,55,0.45)",  icon: "👑", desc: "Earn exclusive privileges", xpLabel: "20,000 XP" },
+  { id: "master",      num: 6, title: "MASTER OF THE LEAF",sub: "Legendary Status",    xpMin: 35000, color: "#FFD700", glow: "rgba(255,215,0,0.55)",   icon: "⭐", desc: "Become a NOVEE OS legend",  xpLabel: "35,000 XP" },
+];
 
-function getNextMilestone(xp: number): { label: string; needed: number } {
-  if (xp >= 20000) return { label: "PINNACLE", needed: 0 };
-  if (xp >= 15000) return { label: "EXPERT",      needed: 20000 - xp };
-  if (xp >= 5000)  return { label: "AFICIONADO",  needed: 15000 - xp };
-  if (xp >= 1000)  return { label: "CONNOISSEUR", needed: 5000  - xp };
-  return                  { label: "ENTHUSIAST",  needed: 1000  - xp };
-}
+const HOW_STEPS = [
+  { num: 1, icon: "⚔️", title: "Complete Challenges",   desc: "Take on daily & weekly challenges across the NOVEE OS platform" },
+  { num: 2, icon: "⚡", title: "Earn XP",               desc: "Every action, pairing, and tasting note awards you XP" },
+  { num: 3, icon: "↑",  title: "Rank Up",               desc: "Rise through 6 prestige tiers from Initiate to Master" },
+  { num: 4, icon: "🎁", title: "Unlock Rewards",        desc: "Exclusive collections, badges, and lounge privileges" },
+  { num: 5, icon: "◈",  title: "Compete",               desc: "Climb the live leaderboard and prove your mastery" },
+];
 
-function FlameEmblem() {
-  return (
-    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-      <circle cx="36" cy="36" r="34" stroke="rgba(200,80,20,0.60)" strokeWidth="1.5" fill="rgba(200,80,20,0.08)" />
-      <circle cx="36" cy="36" r="28" stroke="rgba(200,80,20,0.35)" strokeWidth="1" fill="none" />
-      <path d="M36 16 C36 16 44 26 44 34 C44 40 40 44 36 46 C32 44 28 40 28 34 C28 26 36 16 36 16Z" fill="url(#nflame1)" opacity="0.9" />
-      <path d="M36 26 C36 26 40 32 40 36 C40 39 38 41 36 42 C34 41 32 39 32 36 C32 32 36 26 36 26Z" fill="rgba(255,200,80,0.80)" />
-      <defs>
-        <linearGradient id="nflame1" x1="36" y1="16" x2="36" y2="46" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FF6020" /><stop offset="1" stopColor="#C84010" />
-        </linearGradient>
-      </defs>
-      <text x="36" y="64" textAnchor="middle" fontSize="8" fontWeight="900" fill="rgba(200,80,20,0.70)" fontFamily="'Inter',sans-serif" letterSpacing="2">I</text>
-    </svg>
-  );
-}
+const XP_ACTIONS = [
+  { icon: "☀️", label: "DAILY LOGIN",           xp: 50,  color: AMBER,     cta: "CLAIM" },
+  { icon: "🍷", label: "COMPLETE PAIRING",       xp: 300, color: "#9B59B6", cta: "GO"    },
+  { icon: "📝", label: "SUBMIT TASTING NOTES",   xp: 150, color: "#2ECC71", cta: "GO"    },
+  { icon: "🏆", label: "WIN WEEKLY CHALLENGE",   xp: 500, color: GOLD,      cta: "GO"    },
+];
 
-function TorchEmblem() {
-  return (
-    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-      <circle cx="36" cy="36" r="34" stroke={`${AMBER}88`} strokeWidth="1.5" fill={`${AMBER}0D`} />
-      <circle cx="36" cy="36" r="28" stroke={`${AMBER}44`} strokeWidth="1" fill="none" />
-      <rect x="33" y="34" width="6" height="18" rx="2" fill={`${AMBER}CC`} />
-      <path d="M36 18 C36 18 42 26 42 31 C42 35 39 37 36 37 C33 37 30 35 30 31 C30 26 36 18 36 18Z" fill="url(#ntorch1)" />
-      <path d="M36 24 C36 24 39 29 39 31.5 C39 33 37.5 34 36 34 C34.5 34 33 33 33 31.5 C33 29 36 24 36 24Z" fill="rgba(255,220,100,0.85)" />
-      <defs>
-        <linearGradient id="ntorch1" x1="36" y1="18" x2="36" y2="37" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FFA040" /><stop offset="1" stopColor="#C06810" />
-        </linearGradient>
-      </defs>
-      <text x="36" y="64" textAnchor="middle" fontSize="8" fontWeight="900" fill={`${AMBER}99`} fontFamily="'Inter',sans-serif" letterSpacing="2">II</text>
-    </svg>
-  );
-}
-
-function GemEmblem() {
-  return (
-    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-      <circle cx="36" cy="36" r="34" stroke="rgba(140,80,200,0.55)" strokeWidth="1.5" fill="rgba(120,60,180,0.08)" />
-      <circle cx="36" cy="36" r="28" stroke="rgba(140,80,200,0.30)" strokeWidth="1" fill="none" />
-      <path d="M36 18 L50 30 L44 50 L28 50 L22 30 Z" fill="url(#ngem1)" opacity="0.90" />
-      <path d="M36 18 L50 30 L36 26 Z" fill="rgba(200,160,255,0.50)" />
-      <path d="M28 50 L36 26 L44 50 Z" fill="rgba(160,80,220,0.30)" />
-      <defs>
-        <linearGradient id="ngem1" x1="36" y1="18" x2="36" y2="50" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#C080FF" /><stop offset="1" stopColor="#7020C0" />
-        </linearGradient>
-      </defs>
-      <text x="36" y="64" textAnchor="middle" fontSize="8" fontWeight="900" fill="rgba(160,80,220,0.80)" fontFamily="'Inter',sans-serif" letterSpacing="2">III</text>
-    </svg>
-  );
-}
-
-function LionEmblem() {
-  return (
-    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-      <circle cx="36" cy="36" r="34" stroke={`${GOLD}88`} strokeWidth="1.5" fill={`${GOLD}0A`} />
-      <circle cx="36" cy="36" r="28" stroke={`${GOLD}44`} strokeWidth="1" fill="none" />
-      <path d="M24 32 L24 28 L29 31 L36 24 L43 31 L48 28 L48 32 Z" fill={GOLD} opacity="0.90" />
-      <rect x="24" y="32" width="24" height="10" rx="2" fill={GOLD} opacity="0.70" />
-      <path d="M16 42 Q18 36 22 38 Q18 44 16 42Z" fill="rgba(212,175,55,0.45)" />
-      <path d="M16 48 Q19 42 23 45 Q19 50 16 48Z" fill="rgba(212,175,55,0.40)" />
-      <path d="M56 42 Q54 36 50 38 Q54 44 56 42Z" fill="rgba(212,175,55,0.45)" />
-      <path d="M56 48 Q53 42 49 45 Q53 50 56 48Z" fill="rgba(212,175,55,0.40)" />
-      <text x="36" y="64" textAnchor="middle" fontSize="8" fontWeight="900" fill={`${GOLD}CC`} fontFamily="'Inter',sans-serif" letterSpacing="1">IV</text>
-    </svg>
-  );
-}
-
-function ExpertEmblem() {
-  return (
-    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-      <circle cx="36" cy="36" r="34" stroke={`${GOLD}BB`} strokeWidth="1.5" fill={`${GOLD}12`} />
-      <circle cx="36" cy="36" r="28" stroke={`${GOLD}66`} strokeWidth="1" fill="none" />
-      <path d="M36 18 L39.2 28.2 L50 28.2 L41.4 34.4 L44.6 44.6 L36 38.4 L27.4 44.6 L30.6 34.4 L22 28.2 L32.8 28.2 Z" fill="url(#nexpert1)" opacity="0.90" />
-      <defs>
-        <linearGradient id="nexpert1" x1="36" y1="18" x2="36" y2="45" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FFE080" /><stop offset="1" stopColor={GOLD} />
-        </linearGradient>
-      </defs>
-      <text x="36" y="64" textAnchor="middle" fontSize="8" fontWeight="900" fill={`${GOLD}CC`} fontFamily="'Inter',sans-serif" letterSpacing="1">V</text>
-    </svg>
-  );
-}
-
-const LEVELS = [
-  {
-    id: "novice" as GBTier, num: 1, badge: <FlameEmblem />,
-    title: "NOVICE", sub: "THE BEGINNING", color: "#C84010", glow: "rgba(200,64,16,0.35)",
-    desc: "Learn the basics. Score points and build your foundation.",
-    skills: ["Learn cigar basics", "Identify simple flavors", "Complete intro challenges"],
-    xpRange: "0 – 999 XP", xpMin: 0, xpMax: 999,
-  },
-  {
-    id: "enthusiast" as GBTier, num: 2, badge: <TorchEmblem />,
-    title: "ENTHUSIAST", sub: "THE APPRENTICE", color: AMBER, glow: `rgba(196,134,10,0.35)`,
-    desc: "Sharpen your skills. Take on more challenges.",
-    skills: ["Complete 5 challenges", "Build your first blend", "Beat the daily record"],
-    xpRange: "1,000 – 4,999 XP", xpMin: 1000, xpMax: 4999,
-  },
-  {
-    id: "connoisseur" as GBTier, num: 3, badge: <GemEmblem />,
-    title: "CONNOISSEUR", sub: "THE REFINED", color: "#9B59B6", glow: "rgba(155,89,182,0.35)",
-    desc: "Refine your knowledge. Compete with skilled minds.",
-    skills: ["Master pairing notes", "Top-10 leaderboard", "Unlock rare blends"],
-    xpRange: "5,000 – 14,999 XP", xpMin: 5000, xpMax: 14999,
-  },
-  {
-    id: "aficionado" as GBTier, num: 4, badge: <LionEmblem />,
-    title: "AFICIONADO", sub: "THE MASTER", color: GOLD, glow: `rgba(212,175,55,0.40)`,
-    desc: "Master advanced techniques. Earn exclusive rewards.",
-    skills: ["Lead the leaderboard", "Mentor a Novice", "Unlock VIP experiences"],
-    xpRange: "15,000 – 19,999 XP", xpMin: 15000, xpMax: 19999,
-  },
-  {
-    id: "expert" as GBTier, num: 5, badge: <ExpertEmblem />,
-    title: "EXPERT", sub: "THE PINNACLE", color: GOLD, glow: `rgba(212,175,55,0.55)`,
-    desc: "Reach the top. Become a true SmokeCraft legend.",
-    skills: ["Hold #1 rank", "Earn Founder's Badge", "Invitation-only access"],
-    xpRange: "20,000+ XP", xpMin: 20000, xpMax: Infinity,
-  },
+const REWARDS = [
+  { icon: "🃏", title: "Collectible Card",    desc: "First prestige card",       unlockAt: "NOVICE",            color: "#C84010", locked: false },
+  { icon: "🧭", title: "Mentor Unlock",       desc: "Your personal cigar guide", unlockAt: "ENTHUSIAST",        color: AMBER,     locked: true  },
+  { icon: "📦", title: "Elite Cigar Box",     desc: "Curated reserve collection",unlockAt: "CONNOISSEUR",       color: "#9B59B6", locked: true  },
+  { icon: "🛡",  title: "Rare Badge Set",      desc: "Collector tier emblems",    unlockAt: "CONNOISSEUR",       color: "#9B59B6", locked: true  },
+  { icon: "🚪", title: "Private Lounge Pass", desc: "VIP lounge access",         unlockAt: "AFICIONADO",        color: GOLD,      locked: true  },
+  { icon: "🌟", title: "Seasonal Collection", desc: "Limited edition blends",    unlockAt: "MASTER OF THE LEAF",color: "#FFD700", locked: true  },
 ];
 
 const CHALLENGES = [
-  { id: "c1", title: "The First Draw",       xp: 50,   desc: "Experience your first cigar blend",      diff: "NOVICE",      locked: false },
-  { id: "c2", title: "The Blend Master",     xp: 250,  desc: "Create a custom wrapper + filler combo",  diff: "ENTHUSIAST",  locked: false },
-  { id: "c3", title: "Spirit Harmony",       xp: 500,  desc: "Match a cigar with a premium spirit",     diff: "CONNOISSEUR", locked: false },
-  { id: "c4", title: "Reserve Collection",   xp: 1200, desc: "Sample 3 rare reserve blends",            diff: "CONNOISSEUR", locked: false },
-  { id: "c5", title: "The Grand Aficionado", xp: 3000, desc: "Complete all VIP experience challenges",  diff: "AFICIONADO",  locked: true  },
-  { id: "c6", title: "Founder's Trial",      xp: 5000, desc: "Invitation only — summit-level mastery", diff: "EXCLUSIVE",   locked: true  },
+  { id: "c1", title: "The First Draw",       xp: 50,   desc: "Experience your first cigar blend",     diff: "INITIATE",   locked: false },
+  { id: "c2", title: "The Blend Master",     xp: 250,  desc: "Create a custom wrapper + filler combo", diff: "NOVICE",     locked: false },
+  { id: "c3", title: "Spirit Harmony",       xp: 500,  desc: "Match a cigar with a premium spirit",    diff: "ENTHUSIAST", locked: false },
+  { id: "c4", title: "Reserve Collection",   xp: 1200, desc: "Sample 3 rare reserve blends",           diff: "CONNOISSEUR",locked: false },
+  { id: "c5", title: "The Grand Aficionado", xp: 3000, desc: "Complete all VIP experience challenges", diff: "AFICIONADO", locked: true  },
+  { id: "c6", title: "Founder's Trial",      xp: 5000, desc: "Invitation only — summit-level mastery", diff: "EXCLUSIVE",  locked: true  },
 ];
 
-const STAT_COMPARE = [
-  { label: "Blends Tried",   you: 12,  avg: 7,   unit: ""    },
-  { label: "Pairings Saved", you: 5,   avg: 3,   unit: ""    },
-  { label: "XP Earned",      you: 840, avg: 520, unit: " XP" },
-  { label: "Sessions",       you: 9,   avg: 5,   unit: ""    },
-  { label: "Match Score",    you: 88,  avg: 71,  unit: "%"   },
-  { label: "Rare Blends",    you: 3,   avg: 1,   unit: ""    },
-];
+function getTier(xp: number): GBTier {
+  if (xp >= 35000) return "master";
+  if (xp >= 20000) return "aficionado";
+  if (xp >= 12000) return "connoisseur";
+  if (xp >= 5000)  return "enthusiast";
+  if (xp >= 1000)  return "novice";
+  return "initiate";
+}
 
-const BASE_URL = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL?.replace(/\/$/, "") ?? "";
+function getXpPercent(xp: number, tier: GBTier): number {
+  if (tier === "initiate")    return Math.round((xp / 1000) * 100);
+  if (tier === "novice")      return Math.round(((xp - 1000)  / 4000)  * 100);
+  if (tier === "enthusiast")  return Math.round(((xp - 5000)  / 7000)  * 100);
+  if (tier === "connoisseur") return Math.round(((xp - 12000) / 8000)  * 100);
+  if (tier === "aficionado")  return Math.round(((xp - 20000) / 15000) * 100);
+  return 100;
+}
+
+function getNextLabel(tier: GBTier): string {
+  if (tier === "initiate")    return "NOVICE";
+  if (tier === "novice")      return "ENTHUSIAST";
+  if (tier === "enthusiast")  return "CONNOISSEUR";
+  if (tier === "connoisseur") return "AFICIONADO";
+  if (tier === "aficionado")  return "MASTER OF THE LEAF";
+  return "PINNACLE";
+}
+
+function getXpNeeded(xp: number, tier: GBTier): number {
+  if (tier === "initiate")    return 1000  - xp;
+  if (tier === "novice")      return 5000  - xp;
+  if (tier === "enthusiast")  return 12000 - xp;
+  if (tier === "connoisseur") return 20000 - xp;
+  if (tier === "aficionado")  return 35000 - xp;
+  return 0;
+}
 
 interface GoldenBoxPageProps { onBack: () => void; }
 
 export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
   const { profile } = useGuest();
-  const xp        = profile.points ?? 0;
-  const tier      = getTier(xp);
-  const milestone = getNextMilestone(xp);
-  const tierLabel = LEVELS.find(l => l.id === tier)?.title ?? "NOVICE";
+  const xp       = profile.points ?? 183;
+  const tier     = getTier(xp);
+  const tierData = JOURNEY.find(j => j.id === tier) ?? JOURNEY[0];
+  const xpPct    = getXpPercent(xp, tier);
+  const xpNeeded = getXpNeeded(xp, tier);
+  const nextLabel = getNextLabel(tier);
 
-  const [challengeOpen,   setChallengeOpen]   = useState(false);
-  const [statsOpen,       setStatsOpen]       = useState(false);
-  const [activeChallenge, setActiveChallenge] = useState<string | null>(null);
-  const [activeNav,       setActiveNav]       = useState<"dashboard" | "leaderboard">("dashboard");
-
+  const [activeNav,      setActiveNav]      = useState<"dashboard" | "leaderboard">("dashboard");
+  const [challengeOpen,  setChallengeOpen]  = useState(false);
   const [leaderEntries,  setLeaderEntries]  = useState<LeaderEntry[]>([]);
   const [leaderLoading,  setLeaderLoading]  = useState(true);
   const [leaderUpdated,  setLeaderUpdated]  = useState("just now");
   const prevRanks = useRef<Map<string, number>>(new Map());
-
-  const xpPercent = (() => {
-    if (tier === "novice")      return Math.round((xp / 1000) * 100);
-    if (tier === "enthusiast")  return Math.round(((xp - 1000)  / 4000)  * 100);
-    if (tier === "connoisseur") return Math.round(((xp - 5000)  / 10000) * 100);
-    if (tier === "aficionado")  return Math.round(((xp - 15000) / 5000)  * 100);
-    return 100;
-  })();
 
   function applyEntries(incoming: LeaderEntry[]) {
     incoming.forEach(e => { if (e.guestProfileId) prevRanks.current.set(e.guestProfileId, e.rank); });
@@ -240,711 +147,608 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
         if (!res.ok || cancelled) return;
         const data = await res.json() as { entries?: LeaderEntry[] };
         applyEntries(data.entries ?? []);
-      } catch { /* fallback to demo */ }
+      } catch { /* use demo */ }
       finally { if (!cancelled) setLeaderLoading(false); }
     }
     fetchLeaderboard();
     const interval = setInterval(fetchLeaderboard, 30_000);
-
     function onUpdate(data: { entries?: LeaderEntry[] }) {
       if (!cancelled) applyEntries(data.entries ?? []);
     }
     socket.on("leaderboard_update", onUpdate);
-
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-      socket.off("leaderboard_update", onUpdate);
-    };
+    return () => { cancelled = true; clearInterval(interval); socket.off("leaderboard_update", onUpdate); };
   }, []);
 
   const displayEntries = leaderEntries.length > 0 ? leaderEntries : DEMO_LEADER;
-  const topThree = displayEntries.slice(0, 3);
-
-  const NAV = [
-    { key: "dashboard",    icon: "⊞", label: "Dashboard" },
-    { key: "learn",        icon: "📖", label: "Learn" },
-    { key: "challenges",   icon: "⬡",  label: "Challenges" },
-    { key: "leaderboard",  icon: "◈",  label: "Leaderboard" },
-    { key: "rewards",      icon: "🎁", label: "Rewards" },
-    { key: "badges",       icon: "🛡",  label: "Badges" },
-    { key: "progress",     icon: "↑",  label: "My Progress" },
-    { key: "settings",     icon: "⚙",  label: "Settings" },
-  ];
-
-  function handleNavClick(key: string) {
-    if (key === "leaderboard") setActiveNav("leaderboard");
-    else if (key === "challenges") setChallengeOpen(true);
-    else setActiveNav("dashboard");
-  }
 
   function handleBack() {
     if (activeNav !== "dashboard") { setActiveNav("dashboard"); return; }
     onBack();
   }
 
-  const RightPanel = () => (
-    <div style={{ width: 238, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14 }}>
-      {/* YOUR JOURNEY */}
-      <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
-        <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 14 }}>YOUR JOURNEY</div>
-        {LEVELS.slice().reverse().map((lv, i) => {
-          const isActive = lv.id === tier;
-          const isPast   = xp >= lv.xpMin && !isActive;
-          return (
-            <div key={lv.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < LEVELS.length - 1 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
-              <div style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
-                background: isActive ? `linear-gradient(135deg, ${lv.color}CC, ${lv.color}77)` : isPast ? "rgba(50,180,90,0.14)" : "rgba(212,175,55,0.07)",
-                border: `1.5px solid ${isActive ? lv.color : isPast ? "rgba(50,180,90,0.38)" : "rgba(212,175,55,0.18)"}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, fontWeight: 900,
-                color: isActive ? "#000" : isPast ? "#32B45A" : "rgba(212,175,55,0.40)",
-              }}>
-                {LEVELS.length - i}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: isActive ? 900 : 600, color: isActive ? lv.color : isPast ? CREAM : "rgba(240,232,212,0.40)", letterSpacing: "0.05em" }}>{lv.title}</div>
-                {!isActive && (
-                  <div style={{ fontSize: 10, color: "rgba(240,232,212,0.28)", letterSpacing: "0.07em", marginTop: 1 }}>
-                    {lv.xpMin > 0 ? `${lv.xpMin.toLocaleString()} XP` : "0 XP"}
-                  </div>
-                )}
-              </div>
-              {isActive && (
-                <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}88`, letterSpacing: "0.05em", flexShrink: 0 }}>{xp.toLocaleString()} XP</div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* WEEKLY CHALLENGE */}
-      <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
-        <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 3 }}>WEEKLY CHALLENGE</div>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginTop: 12, marginBottom: 12 }}>
-          <div style={{ width: 42, height: 42, borderRadius: 10, background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}2A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🎯</div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: CREAM, letterSpacing: "0.03em", marginBottom: 3 }}>Blend Master</div>
-            <div style={{ fontSize: 11, color: "rgba(240,232,212,0.46)", lineHeight: 1.45 }}>Complete 5 challenges</div>
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
-          <div style={{ flex: 1, height: 4, borderRadius: 2, background: "rgba(212,175,55,0.10)", overflow: "hidden" }}>
-            <motion.div initial={{ width: 0 }} animate={{ width: "30%" }} transition={{ duration: 1.2, ease: EASE }}
-              style={{ height: "100%", background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, borderRadius: 2 }} />
-          </div>
-          <div style={{ fontSize: 10, color: "rgba(240,232,212,0.40)", flexShrink: 0 }}>30%</div>
-        </div>
-        <div style={{ fontSize: 10, color: "rgba(240,232,212,0.30)", marginBottom: 13 }}>2 / 5 challenges</div>
-        <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => setChallengeOpen(true)}
-          style={{ width: "100%", padding: "11px", borderRadius: 9, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.07)", color: GOLD, fontSize: 12, fontWeight: 900, cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase" }}>
-          VIEW CHALLENGES
-        </motion.button>
-      </div>
-    </div>
-  );
+  const NAV_ITEMS = [
+    { key: "dashboard",   icon: "⊞", label: "Dashboard"   },
+    { key: "leaderboard", icon: "◈", label: "Leaderboard" },
+    { key: "challenges",  icon: "⬡", label: "Challenges"  },
+    { key: "rewards",     icon: "🎁", label: "Rewards"     },
+    { key: "badges",      icon: "🛡", label: "Badges"      },
+    { key: "progress",    icon: "↑", label: "My Progress"  },
+  ];
 
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 900,
-      background: "#060400",
+      background: DARK,
       display: "flex",
       fontFamily: "'Inter','Helvetica Neue',sans-serif",
       overflow: "hidden",
     }}>
-      {/* ── AMBIENT BG ── */}
+      {/* ── AMBIENT BACKGROUND ── */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 80% 55% at 50% 0%, ${GOLD}09 0%, transparent 60%)` }} />
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "35%", background: `radial-gradient(ellipse 100% 80% at 50% 100%, ${AMBER}0A 0%, transparent 70%)` }} />
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, rgba(255,255,255,0.012) 1px, transparent 2px, transparent 14px)", opacity: 0.4 }} />
+        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 70% 50% at 50% 0%, ${GOLD}0B 0%, transparent 65%)` }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%", background: `radial-gradient(ellipse 100% 80% at 50% 100%, ${AMBER}09 0%, transparent 70%)` }} />
+        <motion.div animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: "absolute", top: "10%", left: "20%", width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, ${GOLD}06 0%, transparent 70%)`, filter: "blur(40px)" }} />
+        <motion.div animate={{ opacity: [0.2, 0.5, 0.2] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          style={{ position: "absolute", top: "30%", right: "15%", width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${AMBER}08 0%, transparent 70%)`, filter: "blur(30px)" }} />
       </div>
 
       {/* ── LEFT SIDEBAR ── */}
       <div style={{
-        width: 162, flexShrink: 0,
-        background: "rgba(0,0,0,0.68)",
-        borderRight: `1px solid rgba(212,175,55,0.11)`,
+        width: 176, flexShrink: 0,
+        background: "rgba(0,0,0,0.72)",
+        borderRight: `1px solid rgba(212,175,55,0.13)`,
         display: "flex", flexDirection: "column",
         zIndex: 10, position: "relative",
-        overflowY: "auto",
       }}>
-        <div style={{ padding: "18px 14px 14px", borderBottom: `1px solid rgba(212,175,55,0.09)` }}>
-          <div style={{ fontSize: 17, fontWeight: 900, color: GOLD, letterSpacing: "0.04em", lineHeight: 1.1 }}>NOVEE <span style={{ color: CREAM }}>OS</span></div>
-          <div style={{ fontSize: 8, fontWeight: 900, letterSpacing: "0.32em", color: `${GOLD}44`, textTransform: "uppercase", marginTop: 4 }}>KIOSK EDITION</div>
+        <div style={{ padding: "22px 16px 16px", borderBottom: `1px solid rgba(212,175,55,0.10)` }}>
+          <div style={{ fontSize: 18, fontWeight: 900, color: GOLD, letterSpacing: "0.05em", lineHeight: 1.1 }}>NOVEE</div>
+          <div style={{ fontSize: 18, fontWeight: 900, color: CREAM, letterSpacing: "0.05em" }}>OS</div>
+          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.28em", color: `${GOLD}50`, textTransform: "uppercase", marginTop: 5 }}>KIOSK EDITION</div>
         </div>
-        {NAV.map(item => {
-          const navActive = item.key === activeNav || (item.key === "leaderboard" && activeNav === "leaderboard") || (item.key === "dashboard" && activeNav === "dashboard");
+        {NAV_ITEMS.map(item => {
+          const isActive = item.key === activeNav;
           return (
-            <div key={item.key} onClick={() => handleNavClick(item.key)} style={{
-              display: "flex", alignItems: "center", gap: 10,
-              padding: "11px 14px",
-              background: navActive ? `rgba(212,175,55,0.09)` : "transparent",
-              borderLeft: navActive ? `3px solid ${GOLD}` : "3px solid transparent",
-              cursor: "pointer",
-              transition: "background 0.18s",
-            }}>
-              <span style={{ fontSize: 14, color: navActive ? GOLD : "rgba(240,232,212,0.38)", width: 18, textAlign: "center" }}>{item.icon}</span>
-              <span style={{ fontSize: 13, fontWeight: navActive ? 800 : 500, color: navActive ? GOLD : "rgba(240,232,212,0.50)", letterSpacing: "0.03em" }}>{item.label}</span>
-            </div>
+            <motion.div key={item.key} whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                if (item.key === "challenges") { setChallengeOpen(true); return; }
+                if (item.key === "leaderboard") { setActiveNav("leaderboard"); return; }
+                setActiveNav("dashboard");
+              }}
+              style={{
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "14px 16px", cursor: "pointer",
+                background: isActive ? `rgba(212,175,55,0.10)` : "transparent",
+                borderLeft: isActive ? `3px solid ${GOLD}` : "3px solid transparent",
+                transition: "background 0.2s",
+              }}>
+              <span style={{ fontSize: 16, color: isActive ? GOLD : "rgba(240,232,212,0.38)", width: 20, textAlign: "center" }}>{item.icon}</span>
+              <span style={{ fontSize: 14, fontWeight: isActive ? 800 : 500, color: isActive ? GOLD : "rgba(240,232,212,0.50)", letterSpacing: "0.03em" }}>{item.label}</span>
+            </motion.div>
           );
         })}
-        <div style={{ margin: "auto 12px 14px", padding: "12px 10px", borderRadius: 10, background: `rgba(212,175,55,0.05)`, border: `1px solid ${GOLD}1A` }}>
-          <div style={{ fontSize: 10, fontWeight: 900, color: GOLD, letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 4 }}>THE GOLDEN BOX</div>
-          <div style={{ fontSize: 8, color: `${GOLD}50`, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10 }}>COMPETE. LEARN. ASCEND.</div>
-          <div style={{ width: "100%", height: 56, borderRadius: 8, background: `linear-gradient(160deg, ${GOLD}14, ${AMBER}09)`, border: `1px solid ${GOLD}1A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 8 }}>🏆</div>
-          <div style={{ fontSize: 9, color: "rgba(240,232,212,0.38)", lineHeight: 1.55, textAlign: "center" }}>Study the leaf. Build wisely. Earn your place.</div>
+        <div style={{ flex: 1 }} />
+        <div style={{ margin: "0 12px 16px", padding: "14px 12px", borderRadius: 10, background: `rgba(212,175,55,0.05)`, border: `1px solid ${GOLD}1A` }}>
+          <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.20em", textTransform: "uppercase", marginBottom: 6, textAlign: "center" }}>THE GOLDEN BOX</div>
+          <div style={{ fontSize: 28, textAlign: "center", marginBottom: 8 }}>🏆</div>
+          <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", lineHeight: 1.6, textAlign: "center" }}>Study the leaf.<br />Earn your place.</div>
         </div>
       </div>
 
       {/* ── MAIN AREA ── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", zIndex: 10 }}>
 
-        {/* TOP HEADER BAR */}
-        <div style={{ padding: "11px 20px", borderBottom: `1px solid rgba(212,175,55,0.11)`, display: "flex", alignItems: "center", gap: 10, flexShrink: 0, background: "rgba(0,0,0,0.35)" }}>
+        {/* ── TOP HEADER BAR ── */}
+        <div style={{
+          padding: "12px 24px", borderBottom: `1px solid rgba(212,175,55,0.12)`,
+          display: "flex", alignItems: "center", gap: 12, flexShrink: 0,
+          background: "rgba(0,0,0,0.40)",
+        }}>
           <motion.button type="button" onClick={handleBack} whileTap={{ scale: 0.94 }}
-            style={{ padding: "8px 16px", borderRadius: 8, background: "rgba(212,175,55,0.08)", border: `1px solid ${GOLD}44`, color: GOLD, fontSize: 12, fontWeight: 800, cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase" }}>
+            style={{ padding: "10px 20px", borderRadius: 8, background: "rgba(212,175,55,0.08)", border: `1px solid ${GOLD}44`, color: GOLD, fontSize: 14, fontWeight: 800, cursor: "pointer", letterSpacing: "0.14em", textTransform: "uppercase", minHeight: 44 }}>
             {activeNav === "dashboard" ? "← BACK" : "← DASHBOARD"}
           </motion.button>
           <div style={{ flex: 1 }} />
-          <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setStatsOpen(true)}
-            style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.07)", color: GOLD, fontSize: 12, fontWeight: 800, cursor: "pointer", letterSpacing: "0.13em", textTransform: "uppercase" }}>
-            ◈ COMPARE STATS
-          </motion.button>
           <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setChallengeOpen(true)}
-            style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 12, fontWeight: 900, cursor: "pointer", letterSpacing: "0.13em", textTransform: "uppercase", boxShadow: `0 0 14px ${GOLD}33` }}>
-            ⬡ OPEN CHALLENGE
+            style={{ padding: "10px 20px", borderRadius: 8, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.07)", color: GOLD, fontSize: 14, fontWeight: 800, cursor: "pointer", letterSpacing: "0.12em", textTransform: "uppercase", minHeight: 44 }}>
+            RESET BLEND
           </motion.button>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-            <div style={{ width: 30, height: 30, borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 900, color: DARK, flexShrink: 0 }}>
+          <motion.button type="button" whileTap={{ scale: 0.95 }}
+            style={{ padding: "10px 20px", borderRadius: 8, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.07)", color: GOLD, fontSize: 14, fontWeight: 800, cursor: "pointer", letterSpacing: "0.12em", textTransform: "uppercase", minHeight: 44 }}>
+            COACH HELP
+          </motion.button>
+          <motion.button type="button" whileTap={{ scale: 0.95 }}
+            style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 14, fontWeight: 900, cursor: "pointer", letterSpacing: "0.12em", textTransform: "uppercase", boxShadow: `0 0 16px ${GOLD}40`, minHeight: 44 }}>
+            ⚡ LAUNCH TERMINAL (POS 3)
+          </motion.button>
+          <motion.button type="button" whileTap={{ scale: 0.95 }}
+            style={{ padding: "10px 20px", borderRadius: 8, border: `1px solid rgba(255,100,100,0.30)`, background: "rgba(255,100,100,0.06)", color: "rgba(255,140,140,0.80)", fontSize: 14, fontWeight: 800, cursor: "pointer", letterSpacing: "0.12em", textTransform: "uppercase", minHeight: 44 }}>
+            PROFILE RESET
+          </motion.button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 12px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div style={{ width: 34, height: 34, borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 900, color: DARK }}>
               {profile.firstName?.[0]?.toUpperCase() ?? "G"}
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, lineHeight: 1, letterSpacing: "0.02em" }}>{profile.firstName || "Guest"}</div>
-              <div style={{ fontSize: 9, color: `${GOLD}66`, letterSpacing: "0.12em", marginTop: 1 }}>Rank Contestant</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: CREAM }}>{profile.firstName ?? "Guest"}</div>
+              <div style={{ fontSize: 11, color: `${GOLD}88`, fontWeight: 600 }}>{tierData.title}</div>
             </div>
           </div>
-        </div>
-
-        {/* RANK BAR */}
-        <div style={{ padding: "13px 20px", borderBottom: `1px solid rgba(212,175,55,0.09)`, display: "flex", alignItems: "center", gap: 0, flexShrink: 0, background: "rgba(0,0,0,0.38)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14, paddingRight: 22, borderRight: `1px solid rgba(212,175,55,0.13)`, marginRight: 22 }}>
-            <div style={{ width: 46, height: 46, borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD}20, ${AMBER}0E)`, border: `1.5px solid ${GOLD}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>♛</div>
-            <div>
-              <div style={{ fontSize: 9, color: "rgba(240,232,212,0.40)", letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 1 }}>Your Rank</div>
-              <div style={{ fontSize: 24, fontWeight: 900, color: GOLD, letterSpacing: "0.07em", lineHeight: 1 }}>{tierLabel}</div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(240,232,212,0.50)", marginTop: 2 }}>{xp.toLocaleString()} XP</div>
-              <div style={{ marginTop: 5, height: 3, width: 110, borderRadius: 2, background: "rgba(212,175,55,0.13)", overflow: "hidden" }}>
-                <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(xpPercent, 100)}%` }} transition={{ duration: 1.2, ease: EASE }}
-                  style={{ height: "100%", borderRadius: 2, background: `linear-gradient(90deg, ${AMBER}, ${GOLD})` }} />
-              </div>
-              <div style={{ fontSize: 9, color: "rgba(240,232,212,0.32)", marginTop: 3, letterSpacing: "0.09em" }}>Next Rank: <span style={{ color: `${GOLD}99` }}>{milestone.label}</span></div>
-            </div>
-          </div>
-          <div style={{ paddingRight: 22, borderRight: `1px solid rgba(212,175,55,0.13)`, marginRight: 22 }}>
-            <div style={{ fontSize: 9, color: "rgba(240,232,212,0.38)", letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 3 }}>Next Rank</div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: "#9B59B6", letterSpacing: "0.05em" }}>{milestone.label}</div>
-            <div style={{ fontSize: 11, color: "rgba(240,232,212,0.45)", marginTop: 2 }}>
-              {milestone.needed > 0 ? `${milestone.needed.toLocaleString()} XP to go` : "PEAK ACHIEVED"}
-            </div>
-          </div>
-          <div style={{ paddingRight: 22, borderRight: `1px solid rgba(212,175,55,0.13)`, marginRight: 22, textAlign: "center" }}>
-            <div style={{ fontSize: 22, marginBottom: 4 }}>🎁</div>
-            <div style={{ fontSize: 11, color: `${GOLD}77`, letterSpacing: "0.11em", cursor: "pointer" }}>View rewards</div>
-          </div>
-          <div style={{ paddingRight: 22, borderRight: `1px solid rgba(212,175,55,0.13)`, marginRight: 22, textAlign: "center" }}>
-            <div style={{ fontSize: 22, marginBottom: 4 }}>🛡️</div>
-            <div style={{ fontSize: 11, color: `${GOLD}77`, letterSpacing: "0.11em", cursor: "pointer" }}>View badges</div>
-          </div>
-          <div style={{ flex: 1 }} />
-          <motion.div whileTap={{ scale: 0.97 }} style={{ padding: "12px 20px", borderRadius: 10, background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, cursor: "pointer", textAlign: "center", boxShadow: `0 0 22px ${GOLD}2A` }}>
-            <div style={{ fontSize: 15, fontWeight: 900, color: DARK, letterSpacing: "0.11em", textTransform: "uppercase" }}>SELECT MENTOR →</div>
-            <div style={{ fontSize: 9, color: `${DARK}88`, marginTop: 3, letterSpacing: "0.10em" }}>Get guidance. Climb faster.</div>
-          </motion.div>
         </div>
 
         {/* ── SCROLLABLE BODY ── */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "16px 18px 16px", display: "flex", gap: 16 }}>
+        <div style={{ flex: 1, overflowY: "auto", position: "relative" }}>
+          <AnimatePresence mode="wait">
 
-          {/* ══════════════════════════════════════════
-              LEADERBOARD VIEW
-          ══════════════════════════════════════════ */}
-          {activeNav === "leaderboard" && (
-            <>
-              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+            {/* ═══════════════════════════════════════
+                DASHBOARD VIEW
+            ═══════════════════════════════════════ */}
+            {activeNav === "dashboard" && (
+              <motion.div key="dashboard"
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, ease: EASE }}>
 
-                {/* Header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <motion.div
-                      animate={{ opacity: [0.4, 1, 0.4] }}
-                      transition={{ duration: 1.6, repeat: Infinity }}
-                      style={{ width: 9, height: 9, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 7px #32B45A" }}
-                    />
-                    <div style={{ fontSize: 19, fontWeight: 900, color: CREAM, letterSpacing: "0.20em", textTransform: "uppercase" }}>LIVE LEADERBOARD</div>
-                    <div style={{ fontSize: 12, color: "rgba(240,232,212,0.35)", letterSpacing: "0.08em" }}>· UPDATED {leaderUpdated.toUpperCase()}</div>
-                  </div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(240,232,212,0.30)", letterSpacing: "0.24em", textTransform: "uppercase" }}>RANK &nbsp; CONTESTANT</div>
+                {/* ── HERO SECTION ── */}
+                <div style={{ position: "relative", padding: "52px 40px 44px", textAlign: "center", overflow: "hidden", borderBottom: `1px solid rgba(212,175,55,0.10)` }}>
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(212,175,55,0.05) 0%, transparent 100%)", pointerEvents: "none" }} />
+                  <motion.div animate={{ opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ position: "absolute", top: -40, left: "50%", transform: "translateX(-50%)", width: 500, height: 200, borderRadius: "50%", background: `radial-gradient(circle, ${GOLD}18 0%, transparent 70%)`, filter: "blur(20px)", pointerEvents: "none" }} />
+                  <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}>
+                    <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: "0.40em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 16 }}>NOVEE OS — KIOSK EDITION</div>
+                    <div style={{ fontSize: 68, fontWeight: 900, color: GOLD, letterSpacing: "0.06em", lineHeight: 1.0, textTransform: "uppercase",
+                      textShadow: `0 0 60px ${GOLD}50, 0 0 120px ${GOLD}20`,
+                      fontFamily: "'Cormorant Garamond','Georgia',serif" }}>
+                      THE GOLDEN BOX
+                    </div>
+                    <div style={{ fontSize: 22, fontWeight: 300, color: "rgba(240,232,212,0.65)", letterSpacing: "0.30em", textTransform: "uppercase", marginTop: 14 }}>
+                      Compete. Learn. Ascend.
+                    </div>
+                  </motion.div>
                 </div>
 
-                {/* Table */}
-                <div style={{ borderRadius: 14, border: `1px solid rgba(212,175,55,0.13)`, background: "rgba(0,0,0,0.52)", overflow: "hidden" }}>
+                {/* ── RANK PROGRESS BAR ── */}
+                <div style={{ padding: "24px 40px", background: "rgba(0,0,0,0.30)", borderBottom: `1px solid rgba(212,175,55,0.10)`, display: "flex", alignItems: "center", gap: 28 }}>
+                  <div style={{ textAlign: "center", minWidth: 140 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}66`, letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 4 }}>YOUR RANK</div>
+                    <div style={{ fontSize: 28, fontWeight: 900, color: tierData.color, letterSpacing: "0.04em", textShadow: `0 0 20px ${tierData.color}60` }}>{tierData.title}</div>
+                    <div style={{ fontSize: 13, color: "rgba(240,232,212,0.50)", marginTop: 2 }}>{xp.toLocaleString()} XP</div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(240,232,212,0.55)" }}>{tierData.title}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: GOLD }}>{xpNeeded > 0 ? `${xpNeeded.toLocaleString()} XP to ${nextLabel}` : "MAX RANK ACHIEVED"}</span>
+                    </div>
+                    <div style={{ height: 10, borderRadius: 5, background: "rgba(212,175,55,0.10)", overflow: "hidden" }}>
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(xpPct, 100)}%` }}
+                        transition={{ duration: 1.4, ease: EASE, delay: 0.3 }}
+                        style={{ height: "100%", background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, borderRadius: 5, boxShadow: `0 0 12px ${GOLD}60` }} />
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "center", minWidth: 140 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}66`, letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 4 }}>NEXT RANK</div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: "rgba(240,232,212,0.40)", letterSpacing: "0.04em" }}>{nextLabel}</div>
+                  </div>
+                  <motion.button type="button" whileTap={{ scale: 0.96 }}
+                    style={{ padding: "16px 28px", borderRadius: 10, border: `1px solid ${GOLD}55`, background: `linear-gradient(135deg, rgba(212,175,55,0.12), rgba(196,134,10,0.06))`, color: GOLD, fontSize: 14, fontWeight: 900, cursor: "pointer", letterSpacing: "0.14em", textTransform: "uppercase", minHeight: 56, whiteSpace: "nowrap" }}>
+                    SELECT MENTOR →
+                  </motion.button>
+                </div>
 
-                  {/* Column headers */}
-                  <div style={{ display: "grid", gridTemplateColumns: "54px 1fr 180px 160px 130px", padding: "10px 18px", borderBottom: `1px solid rgba(212,175,55,0.08)`, background: "rgba(0,0,0,0.30)" }}>
-                    {["#", "CONTESTANT", "LEVEL", "XP", "BADGES"].map(h => (
-                      <div key={h} style={{ fontSize: 10, fontWeight: 700, color: "rgba(240,232,212,0.30)", letterSpacing: "0.22em", textTransform: "uppercase" }}>{h}</div>
+                {/* ── YOUR JOURNEY — HORIZONTAL PATHWAY ── */}
+                <div style={{ padding: "40px 40px 36px" }}>
+                  <div style={{ marginBottom: 28, textAlign: "center" }}>
+                    <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.36em", textTransform: "uppercase", marginBottom: 6 }}>YOUR MASTERY JOURNEY</div>
+                    <div style={{ fontSize: 34, fontWeight: 900, color: CREAM, letterSpacing: "0.02em" }}>THE PATH TO ELITE STATUS</div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 0 }}>
+                    {JOURNEY.map((lv, idx) => {
+                      const isActive   = lv.id === tier;
+                      const isUnlocked = xp >= lv.xpMin;
+                      const isLocked   = !isUnlocked;
+                      return (
+                        <div key={lv.id} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+                          {idx < JOURNEY.length - 1 && (
+                            <div style={{ position: "absolute", top: 52, left: "50%", width: "100%", height: 3, zIndex: 0,
+                              background: isUnlocked && xp >= JOURNEY[idx + 1].xpMin
+                                ? `linear-gradient(90deg, ${lv.color}, ${JOURNEY[idx + 1].color})`
+                                : isUnlocked ? `linear-gradient(90deg, ${lv.color}, rgba(212,175,55,0.15))` : "rgba(212,175,55,0.08)" }} />
+                          )}
+                          <motion.div animate={isActive ? { boxShadow: [`0 0 0 0 ${lv.color}60`, `0 0 0 12px ${lv.color}00`] } : {}}
+                            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                            style={{
+                              width: 104, height: 104, borderRadius: "50%", zIndex: 1,
+                              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                              background: isActive ? `radial-gradient(circle, ${lv.color}30, ${lv.color}10)` : isUnlocked ? `rgba(50,180,90,0.08)` : "rgba(212,175,55,0.05)",
+                              border: isActive ? `2px solid ${lv.color}` : isUnlocked ? `2px solid rgba(50,180,90,0.50)` : `2px solid rgba(212,175,55,0.15)`,
+                              opacity: isLocked ? 0.45 : 1,
+                              filter: isLocked ? "blur(0.3px)" : "none",
+                              transition: "all 0.3s",
+                            }}>
+                            <div style={{ fontSize: 36 }}>{lv.icon}</div>
+                            <div style={{ fontSize: 11, fontWeight: 900, color: isActive ? lv.color : isUnlocked ? "#32B45A" : "rgba(212,175,55,0.40)", letterSpacing: "0.08em", marginTop: 2 }}>{lv.num}</div>
+                          </motion.div>
+                          <div style={{ textAlign: "center", marginTop: 14, padding: "0 6px" }}>
+                            <div style={{ fontSize: lv.id === "master" ? 11 : 13, fontWeight: 900, color: isActive ? lv.color : isUnlocked ? CREAM : "rgba(240,232,212,0.35)", letterSpacing: "0.06em", textTransform: "uppercase", lineHeight: 1.2, marginBottom: 4 }}>
+                              {lv.title}
+                            </div>
+                            <div style={{ fontSize: 11, color: "rgba(240,232,212,0.40)", letterSpacing: "0.06em", marginBottom: 6 }}>{lv.sub}</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: isActive ? lv.color : isUnlocked ? "#32B45A" : "rgba(212,175,55,0.30)", letterSpacing: "0.05em" }}>
+                              {lv.xpMin === 0 ? "START" : lv.xpMin.toLocaleString() + " XP"}
+                            </div>
+                            {isActive && (
+                              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+                                style={{ marginTop: 6, padding: "3px 10px", borderRadius: 20, background: `${lv.color}22`, border: `1px solid ${lv.color}55`, display: "inline-block", fontSize: 10, fontWeight: 900, color: lv.color, letterSpacing: "0.14em" }}>
+                                CURRENT
+                              </motion.div>
+                            )}
+                            {isLocked && (
+                              <div style={{ marginTop: 6, fontSize: 14 }}>🔒</div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ── HOW IT WORKS ── */}
+                <div style={{ padding: "0 40px 40px", borderTop: `1px solid rgba(212,175,55,0.08)` }}>
+                  <div style={{ paddingTop: 40, marginBottom: 28, textAlign: "center" }}>
+                    <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.36em", textTransform: "uppercase", marginBottom: 6 }}>THE SYSTEM</div>
+                    <div style={{ fontSize: 34, fontWeight: 900, color: CREAM }}>HOW IT WORKS</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 16 }}>
+                    {HOW_STEPS.map((step, idx) => (
+                      <motion.div key={idx}
+                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.08, duration: 0.5, ease: EASE }}
+                        whileHover={{ y: -4, boxShadow: `0 8px 32px ${GOLD}22` }}
+                        style={{
+                          flex: 1, padding: "28px 20px 24px", borderRadius: 14,
+                          background: "rgba(0,0,0,0.45)",
+                          border: `1px solid rgba(212,175,55,0.15)`,
+                          textAlign: "center", cursor: "default",
+                          transition: "all 0.25s",
+                        }}>
+                        <div style={{ width: 56, height: 56, borderRadius: "50%", background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}30`,
+                          display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, margin: "0 auto 14px" }}>
+                          {step.icon}
+                        </div>
+                        <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.28em", marginBottom: 8 }}>STEP {step.num}</div>
+                        <div style={{ fontSize: 18, fontWeight: 900, color: CREAM, letterSpacing: "0.04em", lineHeight: 1.2, marginBottom: 10 }}>{step.title}</div>
+                        <div style={{ fontSize: 13, color: "rgba(240,232,212,0.50)", lineHeight: 1.6 }}>{step.desc}</div>
+                        <div style={{ width: 28, height: 2, background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, margin: "14px auto 0", borderRadius: 1 }} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── XP ACTION CENTER + REWARD PREVIEW ── */}
+                <div style={{ padding: "0 40px 40px", display: "flex", gap: 24 }}>
+
+                  {/* XP ACTION CENTER */}
+                  <div style={{ flex: 1.2, borderRadius: 14, background: "rgba(0,0,0,0.45)", border: `1px solid rgba(212,175,55,0.14)`, overflow: "hidden" }}>
+                    <div style={{ padding: "22px 24px 18px", borderBottom: `1px solid rgba(212,175,55,0.09)` }}>
+                      <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.30em", textTransform: "uppercase", marginBottom: 4 }}>LIVE XP ACTION CENTER</div>
+                      <div style={{ fontSize: 24, fontWeight: 900, color: CREAM }}>EARN XP RIGHT NOW</div>
+                    </div>
+                    {XP_ACTIONS.map((action, idx) => (
+                      <div key={idx} style={{ padding: "18px 24px", borderBottom: idx < XP_ACTIONS.length - 1 ? `1px solid rgba(212,175,55,0.07)` : "none", display: "flex", alignItems: "center", gap: 16 }}>
+                        <div style={{ width: 48, height: 48, borderRadius: 12, background: `${action.color}15`, border: `1px solid ${action.color}30`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{action.icon}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 15, fontWeight: 800, color: CREAM, letterSpacing: "0.04em", marginBottom: 3 }}>{action.label}</div>
+                          <div style={{ height: 4, borderRadius: 2, background: "rgba(212,175,55,0.08)", overflow: "hidden" }}>
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${20 + idx * 15}%` }}
+                              transition={{ duration: 1.2, delay: 0.4 + idx * 0.1, ease: EASE }}
+                              style={{ height: "100%", background: `linear-gradient(90deg, ${action.color}88, ${action.color})`, borderRadius: 2 }} />
+                          </div>
+                        </div>
+                        <div style={{ textAlign: "right", flexShrink: 0 }}>
+                          <div style={{ fontSize: 20, fontWeight: 900, color: action.color, letterSpacing: "0.02em" }}>+{action.xp} XP</div>
+                        </div>
+                        <motion.button type="button" whileTap={{ scale: 0.94 }}
+                          style={{ padding: "10px 20px", minWidth: 72, minHeight: 44, borderRadius: 9, border: `1px solid ${action.color}50`, background: `${action.color}12`, color: action.color, fontSize: 13, fontWeight: 900, cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase", flexShrink: 0 }}>
+                          {action.cta}
+                        </motion.button>
+                      </div>
                     ))}
                   </div>
 
-                  {/* Rows */}
-                  <AnimatePresence mode="popLayout">
-                    {(leaderLoading ? DEMO_LEADER : displayEntries).map((entry, idx) => {
-                      const tierInfo = TIER_CFG[entry.tier] ?? { num: 1, color: "#6B8A9A", label: entry.tierLabel };
-                      const rankColor = idx === 0 ? "#FFD700" : idx === 1 ? "#C0C0C0" : idx === 2 ? "#CD7F32" : "rgba(240,232,212,0.30)";
-                      const shownBadges = Math.min(entry.achievementCnt, 4);
-                      const extraBadges = entry.achievementCnt - shownBadges;
-                      return (
-                        <motion.div
-                          key={entry.guestProfileId ?? `row-${idx}`}
-                          layout
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 8 }}
-                          transition={{ duration: 0.30, delay: idx * 0.04 }}
+                  {/* REWARD PREVIEW */}
+                  <div style={{ flex: 1, borderRadius: 14, background: "rgba(0,0,0,0.45)", border: `1px solid rgba(212,175,55,0.14)`, overflow: "hidden" }}>
+                    <div style={{ padding: "22px 24px 18px", borderBottom: `1px solid rgba(212,175,55,0.09)` }}>
+                      <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.30em", textTransform: "uppercase", marginBottom: 4 }}>EXCLUSIVE REWARDS</div>
+                      <div style={{ fontSize: 24, fontWeight: 900, color: CREAM }}>WHAT YOU'RE CHASING</div>
+                    </div>
+                    <div style={{ padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      {REWARDS.map((rw, idx) => (
+                        <motion.div key={idx} whileHover={{ scale: 1.02 }}
                           style={{
-                            display: "grid", gridTemplateColumns: "54px 1fr 180px 160px 130px",
-                            padding: "13px 18px", alignItems: "center",
-                            borderBottom: idx < displayEntries.length - 1 ? `1px solid rgba(212,175,55,0.06)` : "none",
-                            background: "transparent",
-                            transition: "background 0.2s",
-                          }}
-                        >
-                          {/* Rank badge */}
-                          <div style={{
-                            width: 32, height: 32, borderRadius: "50%",
-                            background: idx < 3 ? `radial-gradient(circle, ${rankColor}33, ${rankColor}11)` : "rgba(255,255,255,0.04)",
-                            border: `1.5px solid ${rankColor}`,
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 13, fontWeight: 900, color: rankColor, flexShrink: 0,
+                            padding: "14px 12px", borderRadius: 10,
+                            background: rw.locked ? "rgba(0,0,0,0.30)" : `${rw.color}10`,
+                            border: `1px solid ${rw.locked ? "rgba(212,175,55,0.10)" : rw.color + "40"}`,
+                            filter: rw.locked ? "brightness(0.60)" : "none",
+                            cursor: rw.locked ? "default" : "pointer",
+                            transition: "all 0.2s",
                           }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            <div style={{ fontSize: 26 }}>{rw.icon}</div>
+                            {rw.locked && <div style={{ fontSize: 14 }}>🔒</div>}
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: 800, color: rw.locked ? "rgba(240,232,212,0.40)" : CREAM, marginTop: 8, marginBottom: 3, lineHeight: 1.2 }}>{rw.title}</div>
+                          <div style={{ fontSize: 10, color: "rgba(240,232,212,0.35)", marginBottom: 6, lineHeight: 1.4 }}>{rw.desc}</div>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: rw.locked ? "rgba(212,175,55,0.35)" : rw.color, letterSpacing: "0.10em" }}>
+                            {rw.locked ? `Unlock at ${rw.unlockAt}` : "✓ AVAILABLE"}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── TOP LEADERBOARD ── */}
+                <div style={{ padding: "0 40px 48px" }}>
+                  <div style={{ borderRadius: 14, background: "rgba(0,0,0,0.45)", border: `1px solid rgba(212,175,55,0.14)`, overflow: "hidden" }}>
+                    <div style={{ padding: "24px 32px 20px", borderBottom: `1px solid rgba(212,175,55,0.09)`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.30em", textTransform: "uppercase", marginBottom: 4 }}>LIVE LEADERBOARD</div>
+                        <div style={{ fontSize: 30, fontWeight: 900, color: CREAM }}>TOP COMPETITORS</div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <div style={{ fontSize: 12, color: "rgba(240,232,212,0.40)" }}>Updated {leaderUpdated}</div>
+                        {leaderLoading && <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                          style={{ width: 16, height: 16, borderRadius: "50%", border: `2px solid ${GOLD}`, borderTopColor: "transparent" }} />}
+                        <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setActiveNav("leaderboard")}
+                          style={{ padding: "12px 24px", minHeight: 48, borderRadius: 9, border: `1px solid ${GOLD}55`, background: `linear-gradient(135deg, ${GOLD}18, ${AMBER}0A)`, color: GOLD, fontSize: 14, fontWeight: 900, cursor: "pointer", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+                          VIEW FULL LEADERBOARD →
+                        </motion.button>
+                      </div>
+                    </div>
+                    {displayEntries.slice(0, 5).map((entry, idx) => {
+                      const rankColors: string[] = ["#FFD700", "#C0C0C0", "#CD7F32", GOLD, "rgba(240,232,212,0.60)"];
+                      const rc = rankColors[idx] ?? "rgba(240,232,212,0.50)";
+                      return (
+                        <motion.div key={entry.guestProfileId ?? idx}
+                          initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.06, duration: 0.4, ease: EASE }}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 24, padding: "20px 32px",
+                            borderBottom: idx < 4 ? `1px solid rgba(212,175,55,0.07)` : "none",
+                            background: idx === 0 ? `linear-gradient(90deg, rgba(255,215,0,0.05), transparent)` : "transparent",
+                          }}>
+                          <div style={{ fontSize: 36, fontWeight: 900, color: rc, minWidth: 56, textAlign: "center", textShadow: idx < 3 ? `0 0 16px ${rc}80` : "none" }}>
                             {entry.rank}
                           </div>
-
-                          {/* Contestant */}
-                          <div style={{ display: "flex", alignItems: "center", gap: 11, minWidth: 0 }}>
-                            <div style={{
-                              width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                              background: `linear-gradient(135deg, ${tierInfo.color}33, ${tierInfo.color}11)`,
-                              border: `1.5px solid ${tierInfo.color}55`,
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 14, fontWeight: 900, color: tierInfo.color,
-                            }}>
-                              {(entry.firstName[0] ?? "?").toUpperCase()}
-                            </div>
-                            <div style={{ minWidth: 0 }}>
-                              <div style={{ fontSize: 14, fontWeight: 700, color: CREAM, letterSpacing: "0.02em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                {entry.firstName}{entry.lastInitial ? ` ${entry.lastInitial}.` : ""}
-                              </div>
-                              <div style={{ fontSize: 11, color: "rgba(240,232,212,0.35)", marginTop: 2, letterSpacing: "0.06em" }}>{tierInfo.label}</div>
-                            </div>
+                          <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg, ${entry.tierColor ?? GOLD}55, ${entry.tierColor ?? AMBER}22)`, border: `2px solid ${entry.tierColor ?? GOLD}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, color: DARK, flexShrink: 0 }}>
+                            {entry.firstName[0]?.toUpperCase() ?? "?"}
                           </div>
-
-                          {/* Level */}
-                          <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                            <div style={{
-                              width: 30, height: 30, borderRadius: 8,
-                              background: `${tierInfo.color}22`,
-                              border: `1.5px solid ${tierInfo.color}55`,
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 13, fontWeight: 900, color: tierInfo.color, flexShrink: 0,
-                            }}>
-                              {tierInfo.num}
-                            </div>
-                            <div>
-                              <div style={{ fontSize: 13, fontWeight: 800, color: tierInfo.color, letterSpacing: "0.07em" }}>{tierInfo.label}</div>
-                              <div style={{ width: 56, height: 2, borderRadius: 1, background: "rgba(255,255,255,0.08)", overflow: "hidden", marginTop: 4 }}>
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${entry.craftScore}%` }}
-                                  transition={{ duration: 0.7, delay: idx * 0.05 }}
-                                  style={{ height: "100%", background: tierInfo.color, borderRadius: 1 }}
-                                />
-                              </div>
-                            </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: CREAM, letterSpacing: "0.02em" }}>{entry.firstName}{entry.lastInitial ? ` ${entry.lastInitial}.` : ""}</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: entry.tierColor ?? GOLD, letterSpacing: "0.08em", marginTop: 2 }}>{entry.tierLabel}</div>
                           </div>
-
-                          {/* XP */}
-                          <div>
-                            <div style={{ fontSize: 16, fontWeight: 900, color: GOLD, letterSpacing: "0.04em" }}>
-                              {entry.totalXp.toLocaleString()} XP
-                            </div>
-                            <div style={{ fontSize: 10, color: "rgba(240,232,212,0.30)", marginTop: 2 }}>Craft Score: {entry.craftScore}</div>
-                          </div>
-
-                          {/* Badges */}
-                          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                            {Array.from({ length: shownBadges }).map((_, bi) => (
-                              <div key={bi} style={{
-                                width: 22, height: 22, borderRadius: "50%",
-                                background: `linear-gradient(135deg, ${tierInfo.color}44, ${tierInfo.color}22)`,
-                                border: `1px solid ${tierInfo.color}55`,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                fontSize: 11,
-                              }}>
-                                {["⬡","★","◈","✦"][bi % 4]}
-                              </div>
-                            ))}
-                            {extraBadges > 0 && (
-                              <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(240,232,212,0.38)", marginLeft: 2 }}>+{extraBadges}</div>
+                          <div style={{ textAlign: "right" }}>
+                            <div style={{ fontSize: 22, fontWeight: 900, color: GOLD }}>{entry.totalXp.toLocaleString()} XP</div>
+                            {entry.achievementCnt > 0 && (
+                              <div style={{ fontSize: 13, color: "rgba(240,232,212,0.45)", marginTop: 2 }}>🏅 {entry.achievementCnt} badges</div>
                             )}
                           </div>
                         </motion.div>
                       );
                     })}
-                  </AnimatePresence>
+                  </div>
                 </div>
 
-                {/* VIEW FULL LEADERBOARD button */}
-                <motion.button type="button" whileTap={{ scale: 0.97 }}
-                  style={{ width: "100%", padding: "13px", borderRadius: 10, border: `1px solid ${GOLD}3A`, background: "rgba(212,175,55,0.05)", color: GOLD, fontSize: 13, fontWeight: 900, cursor: "pointer", letterSpacing: "0.22em", textTransform: "uppercase" }}>
-                  VIEW FULL LEADERBOARD
-                </motion.button>
-              </div>
+              </motion.div>
+            )}
 
-              <RightPanel />
-            </>
-          )}
+            {/* ═══════════════════════════════════════
+                FULL LEADERBOARD VIEW
+            ═══════════════════════════════════════ */}
+            {activeNav === "leaderboard" && (
+              <motion.div key="leaderboard"
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, ease: EASE }}
+                style={{ padding: "32px 40px 48px" }}>
 
-          {/* ══════════════════════════════════════════
-              DASHBOARD VIEW
-          ══════════════════════════════════════════ */}
-          {activeNav === "dashboard" && (
-            <>
-              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 16 }}>
-
-                {/* CONTEST LEVELS */}
-                <div>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 13 }}>
-                    <div style={{ fontSize: 17, fontWeight: 900, color: CREAM, letterSpacing: "0.22em", textTransform: "uppercase" }}>CONTEST LEVELS</div>
-                    <div style={{ fontSize: 11, color: "rgba(240,232,212,0.38)", letterSpacing: "0.10em" }}>Progress through the ranks. Master the leaf.</div>
+                <div style={{ marginBottom: 28, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.36em", textTransform: "uppercase", marginBottom: 6 }}>LIVE RANKINGS</div>
+                    <div style={{ fontSize: 42, fontWeight: 900, color: CREAM }}>FULL LEADERBOARD</div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
-                    {LEVELS.map((lv, i) => {
-                      const isActive = lv.id === tier;
-                      const isPast   = xp >= lv.xpMin;
-                      return (
-                        <motion.div key={lv.id}
-                          initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.06 + i * 0.07, duration: 0.48, ease: EASE }}
-                          style={{
-                            borderRadius: 12,
-                            border: isActive ? `1.5px solid ${lv.color}88` : `1px solid rgba(212,175,55,${isPast ? "0.20" : "0.08"})`,
-                            background: isActive ? `linear-gradient(160deg, rgba(0,0,0,0.97), ${lv.color}0E)` : "rgba(8,5,1,0.80)",
-                            boxShadow: isActive ? `0 0 22px ${lv.glow}` : "none",
-                            padding: "14px 10px 12px",
-                            display: "flex", flexDirection: "column", alignItems: "center",
-                            position: "relative",
-                          }}>
-                          {isActive && <div style={{ position: "absolute", top: -1, left: "18%", right: "18%", height: 2, background: `linear-gradient(90deg, transparent, ${lv.color}, transparent)` }} />}
-                          <div style={{ fontSize: 11, fontWeight: 900, color: `${lv.color}88`, letterSpacing: "0.20em", marginBottom: 8 }}>{lv.num}</div>
-                          <div style={{ marginBottom: 8, transform: "scale(0.60)", transformOrigin: "center" }}>{lv.badge}</div>
-                          <div style={{ fontSize: 13, fontWeight: 900, color: isActive ? lv.color : "rgba(240,232,212,0.72)", letterSpacing: "0.09em", textAlign: "center", marginBottom: 4 }}>{lv.title}</div>
-                          <div style={{ fontSize: 9, color: "rgba(240,232,212,0.38)", textAlign: "center", lineHeight: 1.55, marginBottom: isActive ? 10 : 0 }}>{lv.desc}</div>
-                          {isActive && (
-                            <div style={{ width: "100%", height: 3, borderRadius: 2, background: "rgba(212,175,55,0.14)", overflow: "hidden", marginTop: "auto" }}>
-                              <div style={{ width: `${Math.min(xpPercent, 100)}%`, height: "100%", background: `linear-gradient(90deg, ${lv.color}88, ${lv.color})`, borderRadius: 2 }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "rgba(240,232,212,0.40)" }}>
+                    <motion.div animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 2, repeat: Infinity }}>●</motion.div>
+                    LIVE · Updated {leaderUpdated}
+                  </div>
+                </div>
+
+                <div style={{ borderRadius: 14, background: "rgba(0,0,0,0.45)", border: `1px solid rgba(212,175,55,0.14)`, overflow: "hidden" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "80px 60px 1fr 160px 140px 80px", gap: 16, padding: "16px 28px", borderBottom: `1px solid rgba(212,175,55,0.12)`, background: "rgba(212,175,55,0.05)" }}>
+                    {["RANK", "LEVEL", "COMPETITOR", "TIER", "XP", "BADGES"].map(h => (
+                      <div key={h} style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.24em", textTransform: "uppercase" }}>{h}</div>
+                    ))}
+                  </div>
+                  {displayEntries.map((entry, idx) => {
+                    const prev  = prevRanks.current.get(entry.guestProfileId ?? "") ?? entry.rank;
+                    const moved = prev - entry.rank;
+                    return (
+                      <motion.div key={entry.guestProfileId ?? idx}
+                        initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.03, duration: 0.35, ease: EASE }}
+                        style={{
+                          display: "grid", gridTemplateColumns: "80px 60px 1fr 160px 140px 80px", gap: 16,
+                          padding: "18px 28px", alignItems: "center",
+                          borderBottom: idx < displayEntries.length - 1 ? `1px solid rgba(212,175,55,0.06)` : "none",
+                          background: idx < 3 ? `rgba(212,175,55,${0.04 - idx * 0.01})` : "transparent",
+                        }}>
+                        <div style={{ fontSize: 24, fontWeight: 900, color: idx === 0 ? "#FFD700" : idx === 1 ? "#C0C0C0" : idx === 2 ? "#CD7F32" : "rgba(240,232,212,0.55)" }}>
+                          #{entry.rank}
+                        </div>
+                        <div style={{ width: 44, height: 44, borderRadius: "50%", background: `${entry.tierColor ?? GOLD}22`, border: `1.5px solid ${entry.tierColor ?? GOLD}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 900, color: DARK }}>
+                          {entry.firstName[0]?.toUpperCase() ?? "?"}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 18, fontWeight: 700, color: CREAM }}>{entry.firstName}{entry.lastInitial ? ` ${entry.lastInitial}.` : ""}</div>
+                          {moved !== 0 && (
+                            <div style={{ fontSize: 12, color: moved > 0 ? "#32B45A" : "#E74C3C", fontWeight: 700, marginTop: 2 }}>
+                              {moved > 0 ? `▲ +${moved}` : `▼ ${moved}`}
                             </div>
                           )}
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* HOW IT WORKS */}
-                <div style={{ padding: "15px 18px", borderRadius: 12, background: "rgba(0,0,0,0.42)", border: `1px solid rgba(212,175,55,0.09)` }}>
-                  <div style={{ fontSize: 12, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 14 }}>HOW IT WORKS</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
-                    {[
-                      { icon: "XP", label: "Earn Points",    desc: "Complete actions & challenges to earn XP." },
-                      { icon: "↑",  label: "Climb Ranks",    desc: "Gain XP to move up and unlock new levels." },
-                      { icon: "🔓", label: "Unlock Rewards", desc: "New blends, gear, and experiences await." },
-                      { icon: "🏆", label: "Win",            desc: "Reach the top and earn exclusive status." },
-                    ].map(step => (
-                      <div key={step.label} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
-                        <div style={{ width: 34, height: 34, borderRadius: 8, background: `rgba(212,175,55,0.09)`, border: `1px solid ${GOLD}2A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color: GOLD, flexShrink: 0 }}>{step.icon}</div>
-                        <div>
-                          <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, marginBottom: 3, letterSpacing: "0.03em" }}>{step.label}</div>
-                          <div style={{ fontSize: 11, color: "rgba(240,232,212,0.42)", lineHeight: 1.55 }}>{step.desc}</div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* BOTTOM ROW */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 158px", gap: 14 }}>
-
-                  {/* LIVE LEADERBOARD preview */}
-                  <div style={{ padding: "15px 16px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)` }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.6, repeat: Infinity }}
-                          style={{ width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 5px #32B45A" }} />
-                        <div style={{ fontSize: 13, fontWeight: 900, color: CREAM, letterSpacing: "0.15em", textTransform: "uppercase" }}>Live Leaderboard</div>
-                      </div>
-                      <div style={{ fontSize: 10, color: "rgba(240,232,212,0.28)", letterSpacing: "0.14em" }}>Updated {leaderUpdated}</div>
-                    </div>
-                    {topThree.map((entry, i) => {
-                      const tc = TIER_CFG[entry.tier] ?? { color: GOLD };
-                      return (
-                        <div key={entry.guestProfileId ?? i} style={{ display: "flex", alignItems: "center", gap: 9, padding: "8px 0", borderBottom: i < 2 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
-                          <div style={{ width: 22, height: 22, borderRadius: "50%", background: i === 0 ? `linear-gradient(135deg, ${GOLD}, ${AMBER})` : "rgba(212,175,55,0.10)", border: `1px solid ${i === 0 ? GOLD : "rgba(212,175,55,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: i === 0 ? DARK : GOLD, flexShrink: 0 }}>{i + 1}</div>
-                          <div style={{ width: 26, height: 26, borderRadius: "50%", background: `${tc.color}22`, border: `1px solid ${tc.color}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color: tc.color, flexShrink: 0 }}>{(entry.firstName[0] ?? "?").toUpperCase()}</div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{entry.firstName}{entry.lastInitial ? ` ${entry.lastInitial}.` : ""}</div>
-                          </div>
-                          <div style={{ fontSize: 13, fontWeight: 900, color: GOLD, flexShrink: 0 }}>{entry.totalXp.toLocaleString()} XP</div>
-                        </div>
-                      );
-                    })}
-                    <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => setActiveNav("leaderboard")}
-                      style={{ marginTop: 12, width: "100%", padding: "9px", borderRadius: 8, border: `1px solid ${GOLD}3A`, background: "rgba(212,175,55,0.05)", color: GOLD, fontSize: 11, fontWeight: 800, cursor: "pointer", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-                      VIEW FULL LEADERBOARD
-                    </motion.button>
-                  </div>
-
-                  {/* EARN XP TODAY */}
-                  <div style={{ padding: "15px 16px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)` }}>
-                    <div style={{ fontSize: 13, fontWeight: 900, color: CREAM, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 13 }}>EARN XP TODAY</div>
-                    {[
-                      { label: "Complete a Challenge",  xp: 250, done: false },
-                      { label: "Submit a Tasting Note", xp: 100, done: false },
-                      { label: "Daily Login",            xp: 50,  done: true  },
-                      { label: "Help Another Member",    xp: 75,  done: false },
-                    ].map((item, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 9, padding: "8px 0", borderBottom: i < 3 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
-                        <div style={{ width: 20, height: 20, borderRadius: 5, background: "rgba(255,255,255,0.03)", border: `1px solid rgba(212,175,55,0.16)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 10, color: GOLD }}>⬡</div>
-                        <div style={{ flex: 1, fontSize: 12, color: "rgba(240,232,212,0.68)", letterSpacing: "0.01em" }}>{item.label}</div>
-                        <div style={{ fontSize: 12, fontWeight: 800, color: GOLD, flexShrink: 0 }}>+{item.xp} XP</div>
-                        {item.done ? (
-                          <div style={{ width: 26, height: 26, borderRadius: 6, background: "rgba(50,180,90,0.14)", border: "1px solid rgba(50,180,90,0.28)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#32B45A", flexShrink: 0 }}>✓</div>
-                        ) : (
-                          <motion.button type="button" whileTap={{ scale: 0.94 }} onClick={() => setChallengeOpen(true)}
-                            style={{ width: 26, height: 26, borderRadius: 6, background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, border: "none", color: DARK, fontSize: 9, fontWeight: 900, cursor: "pointer", flexShrink: 0 }}>GO</motion.button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* YOUR PROGRESS circle */}
-                  <div style={{ padding: "15px 12px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)`, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <div style={{ fontSize: 11, fontWeight: 900, color: CREAM, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 14 }}>YOUR PROGRESS</div>
-                    <div style={{ position: "relative", width: 108, height: 108 }}>
-                      <svg width="108" height="108" viewBox="0 0 108 108">
-                        <circle cx="54" cy="54" r="43" fill="none" stroke="rgba(212,175,55,0.10)" strokeWidth="8" />
-                        <circle cx="54" cy="54" r="43" fill="none" stroke={GOLD} strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${Math.min(xpPercent, 100) * 2.703} 270.3`}
-                          strokeDashoffset="67.6"
-                          style={{ filter: `drop-shadow(0 0 5px ${GOLD}55)`, transition: "stroke-dasharray 1.2s ease" }} />
-                      </svg>
-                      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                        <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, lineHeight: 1 }}>{xp.toLocaleString()}</div>
-                        <div style={{ fontSize: 9, color: "rgba(240,232,212,0.42)", letterSpacing: "0.18em", marginTop: 3 }}>XP</div>
-                      </div>
-                    </div>
-                    <div style={{ marginTop: 10, fontSize: 12, fontWeight: 800, color: GOLD, textAlign: "center", letterSpacing: "0.07em" }}>{tierLabel}</div>
-                    {milestone.needed > 0 && (
-                      <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", textAlign: "center", marginTop: 4, lineHeight: 1.45 }}>
-                        {milestone.needed.toLocaleString()} XP<br />to {milestone.label}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* RIGHT PANEL */}
-              <div style={{ width: 238, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14 }}>
-                <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
-                  <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 14 }}>YOUR JOURNEY</div>
-                  {LEVELS.slice().reverse().map((lv, i) => {
-                    const isActive = lv.id === tier;
-                    const isPast   = xp >= lv.xpMin && !isActive;
-                    return (
-                      <div key={lv.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < LEVELS.length - 1 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
-                        <div style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
-                          background: isActive ? `linear-gradient(135deg, ${lv.color}CC, ${lv.color}77)` : isPast ? "rgba(50,180,90,0.14)" : "rgba(212,175,55,0.07)",
-                          border: `1.5px solid ${isActive ? lv.color : isPast ? "rgba(50,180,90,0.38)" : "rgba(212,175,55,0.18)"}`,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 11, fontWeight: 900,
-                          color: isActive ? "#000" : isPast ? "#32B45A" : "rgba(212,175,55,0.40)",
-                        }}>
-                          {LEVELS.length - i}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 13, fontWeight: isActive ? 900 : 600, color: isActive ? lv.color : isPast ? CREAM : "rgba(240,232,212,0.40)", letterSpacing: "0.05em" }}>{lv.title}</div>
-                        </div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: isActive ? `${GOLD}88` : "rgba(240,232,212,0.28)", letterSpacing: "0.05em" }}>
-                          {isActive ? `${xp.toLocaleString()} XP` : lv.xpMin > 0 ? `${lv.xpMin.toLocaleString()} XP` : "0 XP"}
-                        </div>
-                      </div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: entry.tierColor ?? GOLD, letterSpacing: "0.06em" }}>{entry.tierLabel}</div>
+                        <div style={{ fontSize: 18, fontWeight: 900, color: GOLD }}>{entry.totalXp.toLocaleString()}</div>
+                        <div style={{ fontSize: 16, color: "rgba(240,232,212,0.60)", fontWeight: 700 }}>🏅 {entry.achievementCnt}</div>
+                      </motion.div>
                     );
                   })}
                 </div>
+              </motion.div>
+            )}
 
-                <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
-                  <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 3 }}>NEXT REWARD</div>
-                  <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", letterSpacing: "0.14em", marginBottom: 13 }}>At {milestone.label} Rank</div>
-                  <div style={{ width: "100%", height: 78, borderRadius: 9, background: `linear-gradient(160deg, ${GOLD}12, ${AMBER}07)`, border: `1px solid ${GOLD}1A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 12 }}>🎁</div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: CREAM, marginBottom: 4, letterSpacing: "0.03em" }}>Premium Tasting Kit</div>
-                  <div style={{ fontSize: 11, color: "rgba(240,232,212,0.46)", lineHeight: 1.55, marginBottom: 13 }}>Exclusive blend collection &amp; accessories.</div>
-                  {milestone.needed > 0 && (
-                    <>
-                      <div style={{ height: 4, borderRadius: 2, background: "rgba(212,175,55,0.10)", overflow: "hidden", marginBottom: 5 }}>
-                        <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(xpPercent, 100)}%` }} transition={{ duration: 1.2, ease: EASE }}
-                          style={{ height: "100%", background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, borderRadius: 2 }} />
-                      </div>
-                      <div style={{ fontSize: 10, color: "rgba(240,232,212,0.36)", textAlign: "right", letterSpacing: "0.10em" }}>{milestone.needed.toLocaleString()} to go</div>
-                    </>
-                  )}
-                </div>
+          </AnimatePresence>
+        </div>
+      </div>
 
-                <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => setActiveNav("leaderboard")}
-                  style={{ width: "100%", padding: "13px", borderRadius: 10, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.07)", color: GOLD, fontSize: 12, fontWeight: 900, cursor: "pointer", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-                  VIEW LEADERBOARD
-                </motion.button>
+      {/* ── RIGHT SIDEBAR ── */}
+      <div style={{
+        width: 258, flexShrink: 0,
+        background: "rgba(0,0,0,0.60)",
+        borderLeft: `1px solid rgba(212,175,55,0.12)`,
+        display: "flex", flexDirection: "column",
+        zIndex: 10, position: "relative",
+        overflowY: "auto",
+      }}>
+        {/* Current Rank Card */}
+        <div style={{ padding: "22px 20px 18px", borderBottom: `1px solid rgba(212,175,55,0.10)` }}>
+          <div style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}66`, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 12 }}>YOUR CURRENT RANK</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+            <div style={{ width: 60, height: 60, borderRadius: "50%", background: `radial-gradient(circle, ${tierData.color}30, ${tierData.color}08)`, border: `2px solid ${tierData.color}88`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>
+              {tierData.icon}
+            </div>
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: tierData.color, letterSpacing: "0.04em", textShadow: `0 0 16px ${tierData.color}60`, lineHeight: 1.1 }}>{tier === "master" ? "MASTER" : tierData.title}</div>
+              <div style={{ fontSize: 12, color: "rgba(240,232,212,0.50)", marginTop: 3 }}>{xp.toLocaleString()} XP earned</div>
+            </div>
+          </div>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <span style={{ fontSize: 12, color: "rgba(240,232,212,0.50)" }}>Progress to {nextLabel}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: GOLD }}>{Math.min(xpPct, 100)}%</span>
+            </div>
+            <div style={{ height: 8, borderRadius: 4, background: "rgba(212,175,55,0.10)", overflow: "hidden" }}>
+              <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(xpPct, 100)}%` }}
+                transition={{ duration: 1.4, ease: EASE, delay: 0.5 }}
+                style={{ height: "100%", background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, borderRadius: 4, boxShadow: `0 0 8px ${GOLD}50` }} />
+            </div>
+            <div style={{ fontSize: 12, color: "rgba(240,232,212,0.40)", marginTop: 5 }}>
+              {xpNeeded > 0 ? `${xpNeeded.toLocaleString()} XP needed` : "Max rank achieved"}
+            </div>
+          </div>
+        </div>
+
+        {/* Next Reward */}
+        <div style={{ padding: "18px 20px", borderBottom: `1px solid rgba(212,175,55,0.10)` }}>
+          <div style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}66`, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 12 }}>NEXT REWARD UNLOCKS AT</div>
+          {REWARDS.filter(r => r.locked)[0] && (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: "rgba(212,175,55,0.06)", border: `1px solid rgba(212,175,55,0.15)` }}>
+              <div style={{ fontSize: 28 }}>{REWARDS.filter(r => r.locked)[0].icon}</div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: CREAM, marginBottom: 3 }}>{REWARDS.filter(r => r.locked)[0].title}</div>
+                <div style={{ fontSize: 11, color: `${GOLD}90`, fontWeight: 700 }}>{REWARDS.filter(r => r.locked)[0].unlockAt}</div>
               </div>
-            </>
+            </div>
           )}
         </div>
 
-        {/* STATUS BAR */}
-        <div style={{ flexShrink: 0, borderTop: `1px solid rgba(212,175,55,0.09)`, padding: "7px 18px", background: "rgba(0,0,0,0.58)", display: "flex", alignItems: "center", gap: 22, overflow: "hidden" }}>
-          {[
-            { icon: "⚙",  label: "E.A.T. INTELLIGENCE", sub: "Environmental · Asset · Transaction" },
-            { icon: "🌡", label: "LOUNGE TEMP",          sub: "68°F" },
-            { icon: "💧", label: "HUMIDITY",             sub: "72%" },
-            { icon: "⬡",  label: "HUMIDOR COUNT",        sub: "145 Puros" },
-            { icon: "✓",  label: "LOUNGE MODE",          sub: "Active" },
-            { icon: "⚡", label: "POS TRANSACTION",      sub: "Authenticated" },
-          ].map(item => (
-            <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
-              <span style={{ fontSize: 13, color: GOLD }}>{item.icon}</span>
-              <div>
-                <div style={{ fontSize: 7, fontWeight: 900, color: `${GOLD}55`, letterSpacing: "0.24em", textTransform: "uppercase" }}>{item.label}</div>
-                <div style={{ fontSize: 10, color: "rgba(240,232,212,0.50)", letterSpacing: "0.07em" }}>{item.sub}</div>
-              </div>
+        {/* Current Streak */}
+        <div style={{ padding: "18px 20px", borderBottom: `1px solid rgba(212,175,55,0.10)` }}>
+          <div style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}66`, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 12 }}>CURRENT STREAK</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ fontSize: 40 }}>🔥</div>
+            <div>
+              <div style={{ fontSize: 34, fontWeight: 900, color: AMBER, lineHeight: 1 }}>3</div>
+              <div style={{ fontSize: 13, color: "rgba(240,232,212,0.50)", marginTop: 2 }}>days in a row</div>
             </div>
-          ))}
-          <div style={{ flex: 1 }} />
-          <div style={{ fontSize: 10, color: `${GOLD}44`, letterSpacing: "0.16em", cursor: "pointer", flexShrink: 0 }}>OPEN COMMAND CENTER ›</div>
+          </div>
         </div>
+
+        {/* Weekly Challenge */}
+        <div style={{ padding: "18px 20px", borderBottom: `1px solid rgba(212,175,55,0.10)` }}>
+          <div style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}66`, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 12 }}>WEEKLY CHALLENGE</div>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
+            <div style={{ width: 46, height: 46, borderRadius: 10, background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}2A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>🎯</div>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: CREAM, marginBottom: 4 }}>Blend Master</div>
+              <div style={{ fontSize: 12, color: "rgba(240,232,212,0.50)", lineHeight: 1.5 }}>Complete 5 challenges this week</div>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+            <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(212,175,55,0.10)", overflow: "hidden" }}>
+              <motion.div initial={{ width: 0 }} animate={{ width: "40%" }} transition={{ duration: 1.2, ease: EASE }}
+                style={{ height: "100%", background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, borderRadius: 3 }} />
+            </div>
+            <div style={{ fontSize: 12, color: "rgba(240,232,212,0.45)", flexShrink: 0 }}>2 / 5</div>
+          </div>
+          <div style={{ fontSize: 12, color: `${GOLD}70`, fontWeight: 700, marginBottom: 14 }}>+500 XP on completion</div>
+          <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => setChallengeOpen(true)}
+            style={{ width: "100%", padding: "14px", minHeight: 52, borderRadius: 9, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.08)", color: GOLD, fontSize: 14, fontWeight: 900, cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase" }}>
+            VIEW CHALLENGES
+          </motion.button>
+        </div>
+
+        {/* View Leaderboard CTA */}
+        {activeNav === "dashboard" && (
+          <div style={{ padding: "18px 20px" }}>
+            <motion.button type="button" whileTap={{ scale: 0.96 }} onClick={() => setActiveNav("leaderboard")}
+              style={{ width: "100%", padding: "18px", minHeight: 64, borderRadius: 10, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 16, fontWeight: 900, cursor: "pointer", letterSpacing: "0.14em", textTransform: "uppercase", boxShadow: `0 4px 24px ${GOLD}40` }}>
+              VIEW LEADERBOARD →
+            </motion.button>
+          </div>
+        )}
       </div>
 
       {/* ── CHALLENGE MODAL ── */}
       <AnimatePresence>
         {challengeOpen && (
-          <motion.div key="challenge-modal"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.82)", backdropFilter: "blur(12px)" }}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.82)", display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }}
             onClick={() => setChallengeOpen(false)}>
-            <motion.div
-              initial={{ opacity: 0, y: 32, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }}
-              transition={{ duration: 0.45, ease: [0.22,1,0.36,1] }}
-              style={{ width: "min(720px, 95vw)", background: "linear-gradient(160deg, #0E0900 0%, #060400 100%)", borderRadius: 18, border: `1px solid ${GOLD}44`, boxShadow: `0 0 60px ${GOLD}22`, overflow: "hidden" }}
-              onClick={e => e.stopPropagation()}>
-              <div style={{ padding: "20px 24px 14px", borderBottom: `1px solid ${GOLD}22`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              onClick={e => e.stopPropagation()}
+              style={{ width: "100%", maxWidth: 680, maxHeight: "85vh", overflowY: "auto", background: "#0D0B06", borderRadius: 18, border: `1px solid ${GOLD}33`, padding: 36 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
                 <div>
-                  <div style={{ fontSize: 28, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>AVAILABLE CHALLENGES</div>
-                  <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.18em", textTransform: "uppercase", marginTop: 2 }}>Select a challenge to begin your ascent</div>
+                  <div style={{ fontSize: 11, fontWeight: 900, color: `${GOLD}70`, letterSpacing: "0.30em", textTransform: "uppercase", marginBottom: 6 }}>GOLDEN BOX</div>
+                  <div style={{ fontSize: 34, fontWeight: 900, color: CREAM }}>CHALLENGES</div>
                 </div>
-                <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={() => setChallengeOpen(false)}
-                  style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.08)", color: GOLD, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</motion.button>
+                <motion.button type="button" whileTap={{ scale: 0.94 }} onClick={() => setChallengeOpen(false)}
+                  style={{ padding: "10px 18px", borderRadius: 8, border: `1px solid rgba(240,232,212,0.15)`, background: "transparent", color: "rgba(240,232,212,0.55)", fontSize: 14, cursor: "pointer" }}>
+                  ✕ CLOSE
+                </motion.button>
               </div>
-              <div style={{ padding: "18px 24px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
-                {CHALLENGES.map(ch => {
-                  const isActive = activeChallenge === ch.id;
-                  return (
-                    <motion.div key={ch.id} whileTap={ch.locked ? {} : { scale: 0.98 }}
-                      onClick={() => !ch.locked && setActiveChallenge(isActive ? null : ch.id)}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 16, padding: "14px 18px", borderRadius: 12,
-                        background: isActive ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${isActive ? GOLD + "66" : ch.locked ? "rgba(255,255,255,0.06)" : GOLD + "22"}`,
-                        cursor: ch.locked ? "not-allowed" : "pointer", opacity: ch.locked ? 0.45 : 1,
-                        boxShadow: isActive ? `0 0 18px ${GOLD}22` : "none",
-                      }}>
-                      <div style={{ width: 48, height: 48, borderRadius: 10, background: ch.locked ? "rgba(255,255,255,0.04)" : `rgba(212,175,55,0.12)`, border: `1px solid ${ch.locked ? "rgba(255,255,255,0.08)" : GOLD + "33"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <span style={{ fontSize: 22 }}>{ch.locked ? "🔒" : "⬡"}</span>
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 18, fontWeight: 800, color: ch.locked ? "rgba(240,232,212,0.40)" : CREAM, letterSpacing: "0.06em", marginBottom: 3 }}>{ch.title}</div>
-                        <div style={{ fontSize: 13, color: ch.locked ? "rgba(240,232,212,0.25)" : "rgba(240,232,212,0.55)", lineHeight: 1.4 }}>{ch.desc}</div>
-                      </div>
-                      <div style={{ flexShrink: 0, textAlign: "right" }}>
-                        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: ch.locked ? "rgba(212,175,55,0.30)" : `${GOLD}77`, textTransform: "uppercase", marginBottom: 4 }}>{ch.diff}</div>
-                        <div style={{ fontSize: 16, fontWeight: 900, color: ch.locked ? "rgba(212,175,55,0.30)" : GOLD }}>+{ch.xp.toLocaleString()} XP</div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-                {activeChallenge && (
-                  <motion.button type="button" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} whileTap={{ scale: 0.97 }}
-                    onClick={() => { setChallengeOpen(false); setActiveChallenge(null); }}
-                    style={{ marginTop: 8, padding: "16px", borderRadius: 10, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 18, fontWeight: 900, cursor: "pointer", letterSpacing: "0.14em", textTransform: "uppercase", boxShadow: `0 4px 24px ${GOLD}44` }}>
-                    BEGIN CHALLENGE — {CHALLENGES.find(c => c.id === activeChallenge)?.title}
-                  </motion.button>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── STATS MODAL ── */}
-      <AnimatePresence>
-        {statsOpen && (
-          <motion.div key="stats-modal"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.82)", backdropFilter: "blur(12px)" }}
-            onClick={() => setStatsOpen(false)}>
-            <motion.div
-              initial={{ opacity: 0, y: 32, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }}
-              transition={{ duration: 0.45, ease: [0.22,1,0.36,1] }}
-              style={{ width: "min(580px, 95vw)", background: "linear-gradient(160deg, #0E0900 0%, #060400 100%)", borderRadius: 18, border: `1px solid ${GOLD}44`, boxShadow: `0 0 60px ${GOLD}22`, overflow: "hidden" }}
-              onClick={e => e.stopPropagation()}>
-              <div style={{ padding: "20px 24px 14px", borderBottom: `1px solid ${GOLD}22`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ fontSize: 28, fontWeight: 900, color: GOLD, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>YOUR STATS</div>
-                  <div style={{ fontSize: 13, color: `${GOLD}60`, letterSpacing: "0.18em", textTransform: "uppercase", marginTop: 2 }}>vs. Average Member — {tierLabel}</div>
-                </div>
-                <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={() => setStatsOpen(false)}
-                  style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.08)", color: GOLD, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</motion.button>
-              </div>
-              <div style={{ padding: "20px 24px 28px" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, marginBottom: 14, padding: "8px 12px" }}>
-                  {(["METRIC", "YOU", "AVG"] as const).map(h => (
-                    <div key={h} style={{ fontSize: 10, fontWeight: 900, color: `${GOLD}55`, letterSpacing: "0.22em", textTransform: "uppercase", textAlign: h === "METRIC" ? "left" : "center" }}>{h}</div>
-                  ))}
-                </div>
-                {STAT_COMPARE.map((s, i) => {
-                  const better = s.you >= s.avg;
-                  return (
-                    <motion.div key={s.label}
-                      initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06, duration: 0.35 }}
-                      style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, padding: "12px 12px", borderRadius: 8, marginBottom: 4, background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent", alignItems: "center" }}>
-                      <div style={{ fontSize: 15, color: "rgba(240,232,212,0.72)", letterSpacing: "0.04em" }}>{s.label}</div>
-                      <div style={{ fontSize: 20, fontWeight: 900, color: better ? "#32B45A" : GOLD, textAlign: "center" }}>{s.you}{s.unit}</div>
-                      <div style={{ fontSize: 16, fontWeight: 600, color: "rgba(240,232,212,0.40)", textAlign: "center" }}>{s.avg}{s.unit}</div>
-                    </motion.div>
-                  );
-                })}
-                <div style={{ marginTop: 18, padding: "14px 16px", borderRadius: 10, background: `rgba(50,180,90,0.07)`, border: "1px solid rgba(50,180,90,0.20)" }}>
-                  <div style={{ fontSize: 13, fontWeight: 900, color: "#32B45A", letterSpacing: "0.14em", marginBottom: 5 }}>YOUR STANDING</div>
-                  <div style={{ fontSize: 16, color: "rgba(240,232,212,0.70)", lineHeight: 1.5 }}>You are performing above average in {STAT_COMPARE.filter(s => s.you >= s.avg).length} of {STAT_COMPARE.length} categories. Keep ascending.</div>
-                </div>
-              </div>
+              {CHALLENGES.map((ch, idx) => (
+                <motion.div key={ch.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.06, duration: 0.35 }}
+                  style={{ display: "flex", alignItems: "center", gap: 20, padding: "20px 22px", borderRadius: 12, background: ch.locked ? "rgba(255,255,255,0.02)" : "rgba(212,175,55,0.05)", border: `1px solid ${ch.locked ? "rgba(255,255,255,0.06)" : GOLD + "22"}`, marginBottom: 12, opacity: ch.locked ? 0.55 : 1 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <div style={{ fontSize: 17, fontWeight: 900, color: ch.locked ? "rgba(240,232,212,0.50)" : CREAM }}>{ch.title}</div>
+                      {ch.locked && <div style={{ fontSize: 14 }}>🔒</div>}
+                    </div>
+                    <div style={{ fontSize: 14, color: "rgba(240,232,212,0.45)", marginBottom: 6 }}>{ch.desc}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: GOLD, letterSpacing: "0.10em" }}>{ch.diff}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: GOLD }}>+{ch.xp.toLocaleString()} XP</div>
+                    {!ch.locked && (
+                      <motion.button type="button" whileTap={{ scale: 0.94 }}
+                        style={{ marginTop: 8, padding: "10px 20px", minHeight: 44, borderRadius: 8, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 13, fontWeight: 900, cursor: "pointer", letterSpacing: "0.12em" }}>
+                        START
+                      </motion.button>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
           </motion.div>
         )}
