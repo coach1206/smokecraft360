@@ -465,6 +465,11 @@ function useElapsed(iso: string) {
   const m  = Math.floor((ms % 3_600_000) / 60_000);
   return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}h`;
 }
+function useMinutesActive(iso: string) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => { const id = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(id); }, []);
+  return Math.floor((now - new Date(iso).getTime()) / 60_000);
+}
 
 // ── POS Webhook → Real-Time Inventory Sync Hook ───────────────────────────────
 function usePosEventSync(
@@ -1262,15 +1267,26 @@ type FilterTab = typeof FILTER_TABS[number];
 function TableCard({ table, isActive, onSelect, onTap }: {
   table: VenueTable; isActive: boolean; onSelect:()=>void; onTap:()=>void;
 }) {
-  const elapsed = useElapsed(table.timeStarted);
-  const cur = table.items.reduce((s,i)=>s+i.price*i.qty,0);
-  const isVip = table.zone.toLowerCase().includes("vip");
+  const elapsed  = useElapsed(table.timeStarted);
+  const mins     = useMinutesActive(table.timeStarted);
+  const cur      = table.items.reduce((s,i)=>s+i.price*i.qty,0);
+  const isVip    = table.zone.toLowerCase().includes("vip");
   const borderColor = table.reserved ? C.gold : isActive ? C.gold : C.chrome;
+
+  // Urgency colour: green < 30 min, amber 30–60 min, red > 60 min
+  const urgency = mins < 30 ? "#32B45A" : mins < 60 ? C.amber : "#EF4444";
+
   return (
-    <motion.div whileTap={{scale:0.99}} onClick={onSelect}
-      animate={{ boxShadow: table.reserved ? `0 0 18px ${C.gold}55` : isActive ? `0 0 20px ${C.goldGlo}` : "0 0 0 transparent" }}
-      style={{ ...panel(), border:`1px solid ${borderColor}`, flexShrink:0, cursor:"pointer", position:"relative" }}>
-      {/* RESERVED badge overlay */}
+    <motion.div
+      layout
+      whileTap={{scale:0.99}} onClick={onSelect}
+      initial={{ opacity:0, y:12 }}
+      animate={{ opacity:1, y:0, boxShadow: table.reserved ? `0 0 18px ${C.gold}55` : isActive ? `0 0 20px ${C.goldGlo}` : "0 0 0 transparent" }}
+      exit={{ opacity:0, x:-24, height:0, marginBottom:0, transition:{ duration:0.28, ease:"easeInOut" } }}
+      transition={{ layout:{ type:"spring", stiffness:380, damping:32 } }}
+      style={{ ...panel(), border:`1px solid ${borderColor}`, flexShrink:0, cursor:"pointer", position:"relative", overflow:"hidden" }}>
+
+      {/* RESERVED badge */}
       {table.reserved && (
         <div style={{ position:"absolute", top:0, left:0, zIndex:10,
           background:`linear-gradient(135deg,${C.gold}DD,#A67C00CC)`,
@@ -1281,33 +1297,63 @@ function TableCard({ table, isActive, onSelect, onTap }: {
           </span>
         </div>
       )}
-      <div style={{ display:"flex", height:118, overflow:"hidden" }}>
-        <div style={{ width:140, flexShrink:0, background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}` }} />
-        <div style={{ flex:1, minWidth:0, padding:"10px 12px", display:"flex", flexDirection:"column", justifyContent:"space-between", overflow:"hidden" }}>
-          <div>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:3 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                <span style={{ fontSize:26, fontWeight:800, color:C.white }}>TABLE {table.id}</span>
-                {isVip ? <VIP /> : <span style={{ fontSize:16, color:C.muted }}>{table.zone}</span>}
-              </div>
-              <div style={{ textAlign:"right" }}>
-                <div style={{ fontSize:24, fontWeight:700, color:C.amber }}>{elapsed}</div>
-                <div style={{ fontSize:18, color:C.muted, letterSpacing:"0.12em" }}>TIME ACTIVE</div>
-              </div>
-            </div>
-            <div style={{ fontSize:22, color:C.muted }}>Guest: {table.guest}</div>
-          </div>
-          <div>
-            <div style={{ fontSize:20, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" }}>CURRENT TAB</div>
-            <div style={{ fontSize:26, fontWeight:900, color:C.amber, lineHeight:1.1 }}>${cur.toFixed(2)}</div>
+
+      <div style={{ display:"flex", overflow:"hidden" }}>
+        {/* Zone thumbnail */}
+        <div style={{ width:110, flexShrink:0, background:`url(${zoneBg(table.zone)}) center/cover no-repeat,linear-gradient(135deg,#2D1A0F,#080808)`, borderRight:`1px solid ${C.chrome}`, position:"relative" }}>
+          {/* Large ticket number stamped over thumbnail */}
+          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.52)" }}>
+            <div style={{ fontSize:11, fontFamily:C.mono, color:`${C.gold}99`, letterSpacing:"0.22em", lineHeight:1 }}>TICKET</div>
+            <div style={{ fontSize:38, fontWeight:900, color:C.gold, lineHeight:1, letterSpacing:"-0.02em", textShadow:`0 0 20px ${C.gold}88` }}>#{table.id}</div>
           </div>
         </div>
+
+        {/* Main content */}
+        <div style={{ flex:1, minWidth:0, padding:"10px 14px", display:"flex", flexDirection:"column", gap:6 }}>
+
+          {/* Row 1 — Table label + VIP + zone */}
+          <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" as const }}>
+            <span style={{ fontSize:22, fontWeight:900, color:C.white, letterSpacing:"0.04em" }}>TABLE {table.id}</span>
+            {isVip && <VIP />}
+            {!isVip && <span style={{ fontSize:13, color:C.muted, letterSpacing:"0.10em" }}>{table.zone}</span>}
+          </div>
+
+          {/* Row 2 — Guest name */}
+          <div style={{ fontSize:18, color:C.muted, lineHeight:1 }}>
+            {table.guest}
+          </div>
+
+          {/* Row 3 — Time + Tab */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:2 }}>
+
+            {/* Minutes-active badge */}
+            <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+              <div style={{ display:"flex", alignItems:"baseline", gap:3, background:`${urgency}14`, border:`1px solid ${urgency}55`, borderRadius:6, padding:"4px 10px" }}>
+                <span style={{ fontSize:26, fontWeight:900, color:urgency, lineHeight:1, fontFamily:C.mono }}>{mins}</span>
+                <span style={{ fontSize:11, color:urgency, fontWeight:700, letterSpacing:"0.14em" }}>MIN</span>
+              </div>
+              <div style={{ fontSize:13, color:C.muted, lineHeight:1.2 }}>
+                <div style={{ letterSpacing:"0.12em" }}>ELAPSED</div>
+                <div style={{ fontSize:12, color:`${C.muted}88`, fontFamily:C.mono }}>{elapsed}</div>
+              </div>
+            </div>
+
+            {/* Current tab */}
+            <div style={{ textAlign:"right" }}>
+              <div style={{ fontSize:11, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" as const }}>Current Tab</div>
+              <div style={{ fontSize:26, fontWeight:900, color:C.amber, lineHeight:1 }}>${cur.toFixed(2)}</div>
+            </div>
+          </div>
+
+        </div>
       </div>
+
+      {/* Ticket Tapper CTA */}
       <motion.button whileTap={{scale:0.98}} {...T} onClick={e=>{e.stopPropagation();onTap();}}
-        style={{ width:"100%", height:62, background:`linear-gradient(90deg,rgba(212,175,55,0.18),rgba(212,175,55,0.09))`, border:"none", borderTop:`1px solid ${C.gold}44`, color:C.gold, fontSize:22, fontWeight:900, letterSpacing:"0.12em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-        <Icon d={P.star} size={15} color={C.gold} />
-        OPEN TICKET TAPPER
+        style={{ width:"100%", height:52, background:`linear-gradient(90deg,rgba(212,175,55,0.18),rgba(212,175,55,0.08))`, border:"none", borderTop:`1px solid ${C.gold}33`, color:C.gold, fontSize:20, fontWeight:900, letterSpacing:"0.14em", cursor:"pointer", fontFamily:C.sans, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
         <Icon d={P.star} size={13} color={C.gold} />
+        OPEN TICKET TAPPER
+        <Icon d={P.star} size={11} color={C.gold} />
       </motion.button>
     </motion.div>
   );
@@ -1323,14 +1369,25 @@ function TicketsCol({ state, revenue, onSelect, onUpdate, onAddTable }: {
   const [tapTable,     setTapTable]     = useState<VenueTable|null>(null);
   const [upsellTarget, setUpsellTarget] = useState<VenueTable|null>(null);
   const all = Object.values(state.activeTables);
-  const list = filter==="ALL TABLES" ? all : all.filter(t => t.zone.toUpperCase().includes(filter.replace(" SECTION","").replace(" FLOOR","").replace(" LOUNGE","")));
+  // ── Dual-layer sort: primary = oldest timeStarted ASC (FIFO), secondary = table id ASC (tie-breaker) ──
+  const sorted = (filter==="ALL TABLES" ? all : all.filter(t => t.zone.toUpperCase().includes(filter.replace(" SECTION","").replace(" FLOOR","").replace(" LOUNGE",""))))
+    .slice()
+    .sort((a, b) => {
+      const dt = new Date(a.timeStarted).getTime() - new Date(b.timeStarted).getTime();
+      return dt !== 0 ? dt : a.id - b.id;
+    });
   return (
     <div style={{ display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", flex:1, minWidth:0, overflowX:"hidden" }}>
       <div style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, marginBottom:8 }}>
         <Num n={2} />
-        <div>
+        <div style={{ flex:1 }}>
           <div style={{ fontSize:32, fontWeight:800, color:C.white, letterSpacing:"0.05em" }}>HIGH-SPEED TICKET OVERVIEW</div>
-          <div style={{ fontSize:20, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>ACTIVE LOUNGE TABLES & QUEUES</div>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <div style={{ fontSize:20, fontFamily:C.mono, color:C.gold, letterSpacing:"0.26em" }}>ACTIVE LOUNGE TABLES & QUEUES</div>
+            <div style={{ fontSize:11, fontFamily:C.mono, color:C.muted, letterSpacing:"0.18em", background:"rgba(255,255,255,0.04)", border:`1px solid ${C.chrome}`, borderRadius:4, padding:"2px 8px" }}>
+              SORTED: OLDEST FIRST · #{sorted[0]?.id ?? "—"} → #{sorted[sorted.length-1]?.id ?? "—"}
+            </div>
+          </div>
         </div>
       </div>
       <div style={{ display:"flex", gap:12, marginBottom:8, flexShrink:0, alignItems:"center", overflowX:"auto", overflowY:"hidden", whiteSpace:"nowrap" }}>
@@ -1352,10 +1409,12 @@ function TicketsCol({ state, revenue, onSelect, onUpdate, onAddTable }: {
         ➕ OPEN NEW TICKET / TABLE
       </motion.button>
       <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", gap:7 }}>
-        {list.map(t => (
-          <TableCard key={t.id} table={t} isActive={t.id===state.selectedTableId}
-            onSelect={()=>onSelect(t.id)} onTap={()=>setUpsellTarget(t)} />
-        ))}
+        <AnimatePresence mode="popLayout">
+          {sorted.map(t => (
+            <TableCard key={t.id} table={t} isActive={t.id===state.selectedTableId}
+              onSelect={()=>onSelect(t.id)} onTap={()=>setUpsellTarget(t)} />
+          ))}
+        </AnimatePresence>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", background:C.glass2, border:`1px solid ${C.chrome}`, borderRadius:7, marginTop:7, flexShrink:0 }}>
         {[
