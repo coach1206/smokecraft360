@@ -10,6 +10,8 @@ import {
   getWsPingStats,
   pushTelemetry,
 } from "../lib/eatCommandState";
+import { getHardwareSnapshot }  from "../lib/hardwareTelemetry";
+import { getTouchCacheStats }   from "../lib/touchPacingLayer";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // DEVELOPER DASHBOARD TELEMETRY ROUTER
@@ -129,8 +131,27 @@ eatTelemetryRouter.post("/developer/ws-ping", (_req: Request, res: Response) => 
 });
 
 /**
+ * GET /api/developer/hardware-lifecycle
+ * Full hardware telemetry snapshot: active devices, screen-toggle + pocket-placement
+ * counters, recent disconnect log, and detection thresholds.
+ */
+eatTelemetryRouter.get("/developer/hardware-lifecycle", (_req: Request, res: Response) => {
+  return res.status(200).json({ ok: true, ts: Date.now(), ...getHardwareSnapshot() });
+});
+
+/**
+ * GET /api/developer/touch-cache
+ * Current state of the double-tap idempotency cache — active locks, server-lifetime
+ * accept/reject counters, and the 750ms debounce window config.
+ */
+eatTelemetryRouter.get("/developer/touch-cache", (_req: Request, res: Response) => {
+  return res.status(200).json({ ok: true, ts: Date.now(), ...getTouchCacheStats() });
+});
+
+/**
  * GET /api/developer/system-snapshot
  * Single-call full developer dashboard snapshot — minimises mobile round-trips.
+ * Includes hardware lifecycle + touch pacing stats alongside the existing suite.
  */
 eatTelemetryRouter.get("/developer/system-snapshot", (_req: Request, res: Response) => {
   const io = getIO();
@@ -143,18 +164,20 @@ eatTelemetryRouter.get("/developer/system-snapshot", (_req: Request, res: Respon
     mutationStats: getMutationStats(100),
     wsPingStats:   getWsPingStats(50),
     payloadHealth: {
-      total:     mutationLog.length,
+      total:      mutationLog.length,
       invalidPct: mutationLog.length
         ? Number(((mutationLog.filter((m) => !m.payloadValid).length / mutationLog.length) * 100).toFixed(1))
         : 0,
     },
     telemetry: {
-      bufferDepth:  developerLogBuffer.length,
-      recentLogs:   developerLogBuffer.slice(0, 5),
+      bufferDepth: developerLogBuffer.length,
+      recentLogs:  developerLogBuffer.slice(0, 5),
     },
     shadowQueue: {
       depth:   shadowQueue.length,
       pending: shadowQueue.filter((q) => q.status === "pending").length,
     },
+    hardware:   getHardwareSnapshot(),
+    touchCache: getTouchCacheStats(),
   });
 });

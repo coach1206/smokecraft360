@@ -2,6 +2,7 @@ import { Router, type Request, type Response } from "express";
 import { z } from "zod";
 import { getIO } from "../lib/socketServer";
 import { pushTelemetry, trackMutation } from "../lib/eatCommandState";
+import { touchGuard, emitTouchUnlock } from "../lib/touchPacingLayer";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // CONSTANTS & ENVIRONMENT STATE
@@ -123,7 +124,13 @@ eatEnvironmentRouter.post("/environment", (req: Request, res: Response) => {
  * Socket.IO broadcast fires synchronously before HTTP response returns.
  * Auto-elevates zone preset from CASUAL → RITUAL when a lounge ritual begins.
  */
-eatEnvironmentRouter.post("/ritual", (req: Request, res: Response) => {
+eatEnvironmentRouter.post(
+  "/ritual",
+  touchGuard(
+    (req) => (req.body as Record<string, unknown>)?.tableId as string | undefined,
+    (req) => (req.body as Record<string, unknown>)?.ritualCode as string | undefined,
+  ),
+  (req: Request, res: Response) => {
   const t0 = performance.now();
   const parsed = RitualSchema.safeParse(req.body);
 
@@ -157,6 +164,8 @@ eatEnvironmentRouter.post("/ritual", (req: Request, res: Response) => {
   const latencyMs = performance.now() - t0;
   trackMutation({ timestamp: Date.now(), route: "/api/eat/ritual", method: "POST", latencyMs, statusCode: 200, payloadValid: true });
 
+  // Release hit zone immediately after dispatch
+  emitTouchUnlock(tableId, ritualCode, "ok");
   return res.status(200).json({
     ok: true,
     ritualCode,
@@ -164,7 +173,8 @@ eatEnvironmentRouter.post("/ritual", (req: Request, res: Response) => {
     currentPreset: envState.preset,
     latencyMs: Number(latencyMs.toFixed(2)),
   });
-});
+  }
+);
 
 /**
  * POST /api/eat/ritual/batch

@@ -1,0 +1,247 @@
+import express, { Request, Response, Router } from 'express';
+import { createServer } from 'http';
+import { WebSocket, Server as WebSocketServer } from 'ws';
+
+// ============================================================================
+// STRUCTURAL SCHEMAS & LEDGER DEFINITIONS
+// ============================================================================
+
+export interface InventoryAsset {
+  id: string;
+  name: string;
+  price: number;
+  stockCount: number;
+  category: 'kitchen' | 'humidor' | 'bar' | 'cellar';
+}
+
+export interface HumidorLocker {
+  lockerId: string;
+  memberName: string;
+  activeSticksCount: number;
+  storedBrands: string[];
+}
+
+export interface StagingPayload {
+  ticketId: string;
+  tableId: number;
+  staffId: string;
+  status: 'QUEUED' | 'STAGING' | 'FIRED' | 'COMPLETE';
+  details: string;
+}
+
+export interface TelemetryPacket {
+  timestamp: number;
+  system: 'EAT_ENGINE' | 'COMMAND_CENTER' | 'DEV_DASHBOARD';
+  level: 'INFO' | 'WARN' | 'CRITICAL';
+  message: string;
+  payload?: any;
+}
+
+// ============================================================================
+// REAL-TIME MEMORY STORAGE LEDGERS
+// ============================================================================
+
+let globalInventory: InventoryAsset[] = [
+  { id: 'inv_1', name: 'Arturo Fuente Opus X', price: 45.00, stockCount: 5, category: 'humidor' },
+  { id: 'inv_2', name: 'Davidoff Late Hour Churchill', price: 38.00, stockCount: 12, category: 'humidor' },
+  { id: 'inv_3', name: 'Wagyu Strip Steak A5', price: 120.00, stockCount: 14, category: 'kitchen' },
+  { id: 'inv_4', name: 'Macallan 25 Year Pour', price: 250.00, stockCount: 3, category: 'bar' },
+];
+
+let humidorLockers: HumidorLocker[] = [
+  { lockerId: 'L-42', memberName: 'John Manuel', activeSticksCount: 8, storedBrands: ['Opus X', 'Padron 1926'] },
+  { lockerId: 'L-88', memberName: 'Tony Fleet', activeSticksCount: 3, storedBrands: ['Cohiba Behike'] },
+];
+
+let activeStagingQueue: StagingPayload[] = [];
+let developerLogBuffer: TelemetryPacket[] = [];
+
+const touchIdempotencyCache = new Map<string, number>();
+const DOUBLE_TAP_THRESHOLD_MS = 750;
+const maxLogBufferSize = 50;
+
+let commandCenterMetrics = {
+  activeTables: 4,
+  activeRituals: 0,
+  hourlyGross: 1420.00,
+  systemLatency: '1ms',
+};
+
+// ============================================================================
+// CORE NETWORKING & TELEMETRY APPARATUS
+// ============================================================================
+
+const app = express();
+app.use(express.json());
+
+const httpServer = createServer(app);
+const wss = new WebSocketServer({ server: httpServer });
+
+function pushTelemetry(packet: TelemetryPacket) {
+  developerLogBuffer.unshift(packet);
+  if (developerLogBuffer.length > maxLogBufferSize) developerLogBuffer.pop();
+  console.log(`[${packet.system}][${packet.level}] ${packet.message}`);
+}
+
+function broadcastToEcosystem(type: string, data: any) {
+  const messageFrame = JSON.stringify({ type, data, timestamp: Date.now() });
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(messageFrame);
+    }
+  });
+}
+
+// ============================================================================
+// 1. E.A.T. CORE OPERATIONS ENGINE (THE NERVE CENTER)
+// ============================================================================
+
+const eatRouter = Router();
+
+eatRouter.get('/sync-state', (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    inventory: globalInventory,
+    lockers: humidorLockers,
+    activeQueue: activeStagingQueue,
+    metrics: commandCenterMetrics
+  });
+});
+
+eatRouter.post('/process-tap', (req: Request, res: Response) => {
+  const { assetId, tableId, staffId, memberLockerId } = req.body;
+  const timestamp = Date.now();
+  const performanceStart = performance.now();
+
+  // Screen Debounce Guard (Filter out water drops/frantic screen taps)
+  const rateLimitKey = `${staffId}_${assetId}_${tableId}`;
+  const lastTap = doubleTapProtectionCache.get(rateLimitKey);
+  if (lastTap && (timestamp - lastTap < DOUBLE_TAP_THRESHOLD_MS)) {
+    pushTelemetry({ timestamp, system: 'DEV_DASHBOARD', level: 'WARN', message: 'Friction filter block: Supressed ghost touch input payload.' });
+    return res.status(429).json({ success: false, error: 'Touch velocity limit tripped' });
+  }
+  touchIdempotencyCache.set(rateLimitKey, timestamp);
+
+  const assetIndex = globalInventory.findIndex(i => i.id === assetId);
+  if (assetIndex === -1) return res.status(404).json({ success: false, error: 'Asset unlisted' });
+
+  const asset = globalInventory[assetIndex];
+  if (asset.stockCount <= 0) return res.status(422).json({ success: false, error: `Asset 86ed: ${asset.name}` });
+
+  // OPTIMISTIC LOOKAHEAD HARDWARE LOCK
+  broadcastToEcosystem('TOUCH_TARGET_LOCK', { assetId, tableId });
+
+  // Atomic state deduction across local files
+  asset.stockCount -= 1;
+  commandCenterMetrics.hourlyGross += item.price;
+
+  // Humidor Subsystem Manipulation
+  if (asset.category === 'humidor' && memberLockerId) {
+    const locker = humidorLockers.find(l => l.lockerId === memberLockerId);
+    if (locker && locker.activeSticksCount > 0) locker.activeSticksCount -= 1;
+  }
+
+  // Dynamic Staging Experience Router (CraftHub Framework Integration)
+  const newTicketId = `tkt_${timestamp}`;
+  let stagingDetails = `Standard service for ${asset.name}`;
+
+  if (asset.category === 'humidor') {
+    commandCenterMetrics.activeRituals += 1;
+    stagingDetails = `SmokeCraft Alert: Retrieve ${asset.name}. Prep cedar spills, select cutter, polish obsidian tray.`;
+  } else if (asset.category === 'bar') {
+    stagingDetails = `PourCraft Alert: Pour ${asset.name}. Match with hand-cut crystal cube geometry.`;
+  } else if (asset.category === 'kitchen') {
+    stagingDetails = `Kitchen Display Sync: Fire line ticket for ${asset.name}.`;
+  }
+
+  const waitStaffPayload: StagingPayload = {
+    ticketId: newTicketId,
+    tableId,
+    staffId,
+    status: 'QUEUED',
+    details: stagingDetails
+  };
+
+  activeStagingQueue.push(waitStaffPayload);
+
+  const totalExecutionTime = (performance.now() - performanceStart).toFixed(2);
+  pushTelemetry({
+    timestamp,
+    system: 'EAT_ENGINE',
+    level: 'INFO',
+    message: `State mutation synchronized: ${asset.name}`,
+    payload: { databaseLatency: `${totalExecutionTime}ms` }
+  });
+
+  // Global Sync across all terminal frames
+  broadcastToEcosystem('STATE_MUTATION_SYNC', {
+    inventory: globalInventory,
+    lockers: humidorLockers,
+    activeQueue: activeStagingQueue,
+    metrics: commandCenterMetrics
+  });
+
+  return res.status(200).json({ success: true, allocatedTicket: waitStaffPayload });
+});
+
+// ============================================================================
+// 2. PACING & LIFECYCLE MANAGEMENT FOR MANAGER COMMAND CENTER
+// ============================================================================
+
+const stagingRouter = Router();
+
+stagingRouter.post('/advance-status', (req: Request, res: Response) => {
+  const { ticketId, nextStatus } = req.body;
+  const ticketIndex = activeStagingQueue.findIndex(t => t.ticketId === ticketId);
+  
+  if (ticketIndex === -1) return res.status(404).json({ success: false, error: 'Active tracking node missing' });
+  
+  if (nextStatus === 'COMPLETE') {
+    const ticket = activeStagingQueue[ticketIndex];
+    if (ticket.details.includes('SmokeCraft')) {
+      commandCenterMetrics.activeRituals = Math.max(0, commandCenterMetrics.activeRituals - 1);
+    }
+    activeStagingQueue.splice(ticketIndex, 1);
+  } else {
+    activeStagingQueue[ticketIndex].status = nextStatus;
+  }
+
+  pushTelemetry({ timestamp: Date.now(), system: 'COMMAND_CENTER', level: 'INFO', message: `Ticket operational status shifted: ${nextStatus}` });
+  
+  broadcastToEcosystem('STATE_MUTATION_SYNC', {
+    inventory: globalInventory,
+    lockers: humidorLockers,
+    activeQueue: activeStagingQueue,
+    metrics: commandCenterMetrics
+  });
+
+  return res.status(200).json({ success: true });
+});
+
+// ============================================================================
+// 3. DEVELOPER ANALYTICS ROUTER
+// ============================================================================
+
+const devRouter = Router();
+devRouter.get('/telemetry-bus', (req: Request, res: Response) => {
+  res.status(200).json({ success: true, logs: developerLogBuffer });
+});
+
+// Mount Platform Subsystems
+app.use('/api/eat', eatRouter);
+app.use('/api/staging', stagingRouter);
+app.use('/api/developer', devRouter);
+
+// WebSocket Stream Loop
+wss.on('connection', (ws: WebSocket) => {
+  pushTelemetry({ timestamp: Date.now(), system: 'DEV_DASHBOARD', level: 'INFO', message: 'Handheld touchscreen device synced over live WebSocket link.' });
+  ws.send(JSON.stringify({
+    type: 'INITIAL_STATE',
+    data: { inventory: globalInventory, lockers: humidorLockers, activeQueue: activeStagingQueue, metrics: commandCenterMetrics }
+  }));
+});
+
+const APP_PORT = process.env.PORT || 5000;
+httpServer.listen(APP_PORT, () => {
+  pushTelemetry({ timestamp: Date.now(), system: 'DEV_DASHBOARD', level: 'INFO', message: `NOVEE OS Kernel Engine online. Serving interfaces on port: ${APP_PORT}` });
+});

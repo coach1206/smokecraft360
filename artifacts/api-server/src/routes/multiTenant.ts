@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { logger } from "../logger";
+import { logger } from "../lib/logger";
 
 interface TenantProfile {
   tenantId: string;

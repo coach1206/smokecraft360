@@ -45,6 +45,11 @@ interface EnvironmentState {
     diffusion_interval_sec:  number;
     atomization_density_pct: number;
   };
+  hardware_sliders: {
+    spatial_lux_level:             number;
+    scent_atomization_volume_pct:  number;
+    [key: string]: number;
+  };
 }
 
 interface AssetItem {
@@ -100,6 +105,10 @@ let environmentState: EnvironmentState = {
     active_fluid_profile:    "Terrane Woods 04",
     diffusion_interval_sec:  12,
     atomization_density_pct: 40.0,
+  },
+  hardware_sliders: {
+    spatial_lux_level:            3.0,
+    scent_atomization_volume_pct: 40.0,
   },
 };
 

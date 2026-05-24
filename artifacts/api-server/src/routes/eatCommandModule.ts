@@ -12,8 +12,10 @@ import {
   syncAssetLocks,
   type SessionMetric,
   type ShadowQueueEntry,
+  type TablePacingEntry,
 } from "../lib/eatCommandState";
 import { getIO } from "../lib/socketServer";
+import { touchGuard, emitTouchUnlock } from "../lib/touchPacingLayer";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // ZOD SCHEMAS
@@ -92,7 +94,13 @@ eatCommandRouter.get("/assets/:id", (req: Request, res: Response) => {
  * Lounge items trigger RITUAL_HARDWARE_TRIGGER + CEDAR_FLOW_INIT broadcast.
  * All orders fan INVENTORY_SYNC + METRICS_SYNC to every connected node.
  */
-eatCommandRouter.post("/order", (req: Request, res: Response) => {
+eatCommandRouter.post(
+  "/order",
+  touchGuard(
+    (req) => (req.body as Record<string, unknown>)?.tableId as string | undefined,
+    (req) => (req.body as Record<string, unknown>)?.itemId  as string | undefined,
+  ),
+  (req: Request, res: Response) => {
   const t0 = performance.now();
   const parsed = OrderSchema.safeParse(req.body);
 
@@ -151,8 +159,11 @@ eatCommandRouter.post("/order", (req: Request, res: Response) => {
   const latencyMs = performance.now() - t0;
   trackMutation({ timestamp: Date.now(), route: "/api/eat/order", method: "POST", latencyMs, statusCode: 200, payloadValid: true });
 
+  // Release client hit zone as fast as possible — don't wait for TTL expiry
+  emitTouchUnlock(tableId, itemId, "ok");
   return res.status(200).json({ ok: true, asset: item, latencyMs: Number(latencyMs.toFixed(2)) });
-});
+  }
+);
 
 // ══════════════════════════════════════════════════════════════════════════════
 // 2. COMMAND CENTER ROUTER  (/api/command/*)
@@ -183,18 +194,16 @@ commandCenterRouter.get("/pacing", (_req: Request, res: Response) => {
  */
 commandCenterRouter.patch("/pacing/:tableId", (req: Request, res: Response) => {
   const t0 = performance.now();
-  const { tableId } = req.params;
+  const tableId = req.params.tableId as string;
   const parsed = TablePacingUpdateSchema.safeParse(req.body);
 
   if (!parsed.success) {
     return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
   }
 
-  let entry = tablePacing.get(tableId);
-  if (!entry) {
-    entry = { tableId, status: "idle", seatedAt: null, coverCount: 0, grossCents: 0, lastUpdated: Date.now() };
-    tablePacing.set(tableId, entry);
-  }
+  const existing = tablePacing.get(tableId);
+  const entry: TablePacingEntry = existing ?? { tableId, status: "idle", seatedAt: null, coverCount: 0, grossCents: 0, lastUpdated: Date.now() };
+  if (!existing) tablePacing.set(tableId, entry);
 
   const { status, coverCount, grossCents } = parsed.data;
   if (status === "seated" && entry.status !== "seated") entry.seatedAt = Date.now();
@@ -263,7 +272,7 @@ commandCenterRouter.post("/session", (req: Request, res: Response) => {
  */
 commandCenterRouter.patch("/session/:sessionId", (req: Request, res: Response) => {
   const t0 = performance.now();
-  const { sessionId } = req.params;
+  const sessionId = req.params.sessionId as string;
   const session = activeSessions.get(sessionId);
 
   if (!session) {

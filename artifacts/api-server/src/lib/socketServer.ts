@@ -43,6 +43,13 @@ import type { Server as HttpServer } from "http";
 import { logger } from "./logger";
 import { pool }   from "@workspace/db";
 import { assetInventory, commandCenterMetrics, pushTelemetry, recordPing } from "./eatCommandState";
+import {
+  registerDevice,
+  unregisterDevice,
+  recordDeviceMessage,
+  annotateDevice,
+  type DeviceType,
+} from "./hardwareTelemetry";
 
 let _io: Server | null = null;
 
@@ -63,6 +70,16 @@ export function initSocketServer(httpServer: HttpServer): Server {
   _io.on("connection", (socket: Socket) => {
     logger.info({ socketId: socket.id }, "Kiosk client connected");
 
+    // ── Hardware lifecycle registration ──────────────────────────────────────
+    // Type is initially UNKNOWN; client should emit DEVICE_ANNOUNCE to classify.
+    registerDevice(socket.id, null, "UNKNOWN");
+
+    // Per-message middleware — resets the idle clock for pocket-placement detection
+    socket.use((_packet, next) => {
+      recordDeviceMessage(socket.id);
+      next();
+    });
+
     // Confirm connection to the client immediately — LiveEngineController
     // uses this to know the socket is live and can stop the local simulator.
     socket.emit("connected", { ok: true, ts: Date.now() });
@@ -79,6 +96,19 @@ export function initSocketServer(httpServer: HttpServer): Server {
       system:    "DEV_DASHBOARD",
       level:     "INFO",
       message:   "Handheld terminal runtime connection handshake established",
+    });
+
+    // ── DEVICE_ANNOUNCE — client self-identification ──────────────────────────
+    // Sent by kiosks/tablets after connect to classify device type and persist
+    // the deviceId for screen-toggle detection across reconnects.
+    socket.on("DEVICE_ANNOUNCE", ({
+      deviceId,
+      deviceType,
+    }: { deviceId: string; deviceType: DeviceType }) => {
+      if (typeof deviceId === "string" && deviceId.length > 0) {
+        annotateDevice(socket.id, deviceId, deviceType ?? "UNKNOWN");
+        logger.info({ socketId: socket.id, deviceId, deviceType }, "Device announced");
+      }
     });
 
     // Allow clients to self-assign to a venue room for venue-scoped broadcasts.
@@ -241,12 +271,9 @@ export function initSocketServer(httpServer: HttpServer): Server {
 
     socket.on("disconnect", (reason) => {
       logger.info({ socketId: socket.id, reason }, "Kiosk client disconnected");
-      pushTelemetry({
-        timestamp: Date.now(),
-        system:    "DEV_DASHBOARD",
-        level:     "WARN",
-        message:   "Handheld connection dropped or lifecycle terminated",
-      });
+      // unregisterDevice classifies the drop (pocket-placement vs normal lifecycle)
+      // and internally emits the appropriate telemetry packet.
+      unregisterDevice(socket.id, reason);
     });
   });
 
