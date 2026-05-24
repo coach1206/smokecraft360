@@ -42,6 +42,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#080604" } }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="experience/[craft]" />
+      <Stack.Screen name="staff" />
     </Stack>
   );
 }

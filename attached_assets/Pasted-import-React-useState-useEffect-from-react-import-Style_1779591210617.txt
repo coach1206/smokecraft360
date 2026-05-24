@@ -1,0 +1,578 @@
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Dimensions, Animated, PanResponder } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+
+// Strongly Typed Payload Frameworks
+interface POSItem {
+  id: string;
+  name: string;
+  price: number;
+  category: 'bar' | 'humidor' | 'kitchen';
+  isLocked?: boolean;
+}
+
+interface MemberLockerProfile {
+  lockerId: string;
+  name: string;
+  preferredCut: string;
+  preferredLight: string;
+  stickInventory: string[];
+}
+
+// Sample Static Data Mapping
+const HIGH_VELOCITY_WELLS: POSItem[] = [
+  { id: 'inv_4', name: 'Macallan 25 Year Pour', price: 250.00, category: 'bar' },
+  { id: 'well_2', name: 'House Old Fashioned', price: 18.00, category: 'bar' },
+  { id: 'well_3', name: 'Reposado Tequila Neat', price: 16.00, category: 'bar' },
+  { id: 'well_4', name: 'Premium Craft Draught', price: 9.00, category: 'bar' },
+];
+
+const EXTENDED_ASSETS: POSItem[] = [
+  { id: 'inv_1', name: 'Arturo Fuente Opus X', price: 45.00, category: 'humidor' },
+  { id: 'inv_2', name: 'Davidoff Late Hour Churchill', price: 38.00, category: 'humidor' },
+  { id: 'inv_3', name: 'Wagyu Strip Steak A5', price: 120.00, category: 'kitchen', isLocked: true },
+];
+
+const ACTIVE_MEMBER: MemberLockerProfile = {
+  lockerId: 'L-42',
+  name: 'John Manuel',
+  preferredCut: 'V-Cut',
+  preferredLight: 'Cedar Spill',
+  stickInventory: ['Opus X x 3', 'Padron 1926 x 5']
+};
+
+export default function TouchPOS3App() {
+  // System State Observables
+  const [activeTicket, setActiveTicket] = useState<POSItem[]>([]);
+  const [isLockerDrawerOpen, setIsLockerDrawerOpen] = useState(false);
+  const [optimisticLockedId, setOptimisticLockedId] = useState<string | null>(null);
+  const [networkMode, setNetworkMode] = useState<'CLOUD' | 'SHADOW'>('CLOUD');
+  
+  // Slide Drawer Animation Node
+  const drawerAnimationValue = useState(new Animated.Value(width))[0];
+
+  // Toggle Humidor/Member Glass Drawer with Weighted Damping Kinematics
+  const toggleMemberDrawer = (open: boolean) => {
+    setIsLockerDrawerOpen(open);
+    Animated.spring(drawerAnimationValue, {
+      toValue: open ? width * 0.35 : width,
+      useNativeDriver: true,
+      bounciness: 4,
+      speed: 12,
+    }).start();
+  };
+
+  // Simulate Production API Socket.IO TOUCH_LOCK TTL Hook
+  const handleHighVelocityTap = (item: POSItem) => {
+    if (item.isLocked || optimisticLockedId) return;
+
+    // Trigger Optimistic Frontend Lock State instantly upon touch contact
+    setOptimisticLockedId(item.id);
+
+    // Simulate standard production Socket.IO TTL timeout release loop
+    setTimeout(() => {
+      setActiveTicket(prev => [...prev, item]);
+      setOptimisticLockedId(null); // Auto-release lock (TOUCH_UNLOCK frame)
+    }, 250); // Fast 250ms infrastructure processing turn-around
+  };
+
+  const calculateTotal = () => activeTicket.reduce((acc, item) => acc + item.price, 0);
+
+  return (
+    <View style={styles.canvasContainer}>
+      
+      {/* HEADER NAVIGATION BAR LAYOUT */}
+      <View style={styles.headerStatusBar}>
+        <View>
+          <Text style={styles.platformBrandMark}>NOVEE OS</Text>
+          <Text style={styles.operatorSessionLabel}>FOH CONSOLE // STAFF_JC_01</Text>
+        </View>
+        
+        <TouchableOpacity 
+          style={[styles.networkBadgeFrame, { borderColor: networkMode === 'CLOUD' ? '#D4AF37' : '#FF3B30' }]}
+          onPress={() => setNetworkMode(prev => prev === 'CLOUD' ? 'SHADOW' : 'CLOUD')}
+        >
+          <Text style={[styles.networkBadgeText, { color: networkMode === 'CLOUD' ? '#D4AF37' : '#FF3B30' }]}>
+            {networkMode === 'CLOUD' ? 'E.A.T. SYNCHRONIZED' : 'SHADOW MODE ACTIVE'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* CORE WORKSPACE PANELS */}
+      <View style={styles.mainWorkspaceLayout}>
+        
+        {/* LEFT COLUMN: HIGH-VELOCITY FAST BAR WELL (40% VIEWPORT WIDTH) */}
+        <View style={styles.fastBarWellColumn}>
+          <Text style={styles.sectionClusterHeading}>High-Velocity Bar Well</Text>
+          <View style={styles.fastBarGrid}>
+            {HIGH_VELOCITY_WELLS.map((wellItem) => {
+              const isLockedByTTL = optimisticLockedId === wellItem.id;
+              return (
+                <TouchableOpacity
+                  key={wellItem.id}
+                  style={[styles.touchTargetItemButton, isLockedByTTL && styles.itemButtonOptimisticLocked]}
+                  onPress={() => handleHighVelocityTap(wellItem)}
+                  activeOpacity={0.6}
+                >
+                  <Text style={styles.wellItemTextName}>{wellItem.name}</Text>
+                  <Text style={styles.wellItemTextPrice}>${wellItem.price.toFixed(2)}</Text>
+                  {isLockedByTTL && <View style={styles.ttlProcessingOverlay} />}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <Text style={styles.sectionClusterHeading}>Extended Venue Assets</Text>
+          <ScrollView contentContainerStyle={styles.extendedAssetStack}>
+            {EXTENDED_ASSETS.map((assetItem) => {
+              const is86ed = assetItem.isLocked;
+              return (
+                <TouchableOpacity
+                  key={assetItem.id}
+                  style={[styles.extendedRowButton, is86ed && styles.extendedRowButton86ed]}
+                  onPress={() => handleHighVelocityTap(assetItem)}
+                  disabled={is86ed}
+                >
+                  <View>
+                    <Text style={[styles.extendedRowName, is86ed && styles.textMuted86]}>{assetItem.name}</Text>
+                    <Text style={styles.extendedRowMeta}>{assetItem.category.toUpperCase()} STATE</Text>
+                  </View>
+                  {is86ed ? (
+                    <Text style={styles.badgeLockedText86}>86'ED</Text>
+                  ) : (
+                    <Text style={styles.extendedRowPrice}>${assetItem.price.toFixed(2)}</Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        {/* RIGHT COLUMN: CURRENT ACTIVE TICKET RUNNER & CHECK OVERVIEW (60% VIEWPORT WIDTH) */}
+        <View style={styles.activeCheckColumn}>
+          <View style={styles.checkHeaderRow}>
+            <Text style={styles.sectionClusterHeading}>Active Check — Table 03</Text>
+            <TouchableOpacity style={styles.memberProfileTriggerButton} onPress={() => toggleMemberDrawer(true)}>
+              <Text style={styles.memberTriggerText}>VIEW MEMBER LOCKER</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.activeItemsScrollArea}>
+            {activeTicket.length === 0 ? (
+              <View style={styles.emptyCheckStateFrame}>
+                <Text style={styles.emptyCheckStateText}>Terminal context clear. Tap assets to fire order.</Text>
+              </View>
+            ) : (
+              activeTicket.map((ticketItem, index) => (
+                <View key={index} style={styles.ticketItemRowLine}>
+                  <Text style={styles.ticketLineItemName}>{ticketItem.name}</Text>
+                  <Text style={styles.ticketLineItemPrice}>${ticketItem.price.toFixed(2)}</Text>
+                </View>
+              ))
+            )}
+          </ScrollView>
+
+          {/* LOWER TRANSACTION REVENUE CONTROL BLOCK */}
+          <View style={styles.transactionControlFooter}>
+            <View style={styles.revenueSummaryRow}>
+              <Text style={styles.revenueTotalLabel}>Ledger Total Balance</Text>
+              <Text style={styles.revenueTotalValue}>${calculateTotal().toFixed(2)}</Text>
+            </View>
+            <View style={styles.actionButtonGroupRow}>
+              <TouchableOpacity style={styles.splitBillButtonTouch} onPress={() => alert('3-Tap Split Engine Engaged')}>
+                <Text style={styles.splitButtonLabel}>SPLIT CHECK</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.settleBillButtonTouch} 
+                onPress={() => {
+                  alert('Ledger Settled Globally');
+                  setActiveTicket([]);
+                }}
+              >
+                <Text style={styles.settleButtonLabel}>SETTLE TRANSACTION</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+      </View>
+
+      {/* TRANSFLUENT MEMBER PROFILE & HUMIDOR STATUS DRAWER FRAME */}
+      <Animated.View style={[styles.obsidianMemberDrawerPanel, { transform: [{ translateX: drawerAnimationValue }] }]}>
+        <View style={styles.drawerHeaderFrame}>
+          <Text style={styles.drawerHeaderTitle}>HUMIDOR MEMBER LOG</Text>
+          <TouchableOpacity style={styles.drawerCloseButtonTouch} onPress={() => toggleMemberDrawer(false)}>
+            <Text style={styles.drawerCloseButtonText}>✕ CLOSE</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView style={styles.drawerContentScrollBody}>
+          <Text style={styles.drawerProfileNameText}>{ACTIVE_MEMBER.name}</Text>
+          <Text style={styles.drawerProfileLockerIdLabel}>Humidor Asset Container: {ACTIVE_MEMBER.lockerId}</Text>
+          
+          <View style={styles.drawerMetadataDividerLine} />
+          
+          <Text style={styles.drawerSubSectionHeading}>PREFERENCE MATRIX</Text>
+          <Text style={styles.drawerMetadataBodyText}>Ritual Cut Specification: {ACTIVE_MEMBER.preferredCut}</Text>
+          <Text style={styles.drawerMetadataBodyText}>Sensory Ignition Routine: {ACTIVE_MEMBER.preferredLight}</Text>
+
+          <View style={styles.drawerMetadataDividerLine} />
+
+          <Text style={styles.drawerSubSectionHeading}>CURRENT LOCKER TRACKING BALANCE</Text>
+          {ACTIVE_MEMBER.stickInventory.map((stick, i) => (
+            <View key={i} style={styles.drawerInventoryRowItem}>
+              <Text style={styles.drawerInventoryItemText}>{stick}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </Animated.View>
+
+    </View>
+  );
+}
+
+// ============================================================================
+// ULTRA-PREMIUM TOUCHSCREEN STYLING ARCHITECTURE
+// ============================================================================
+const styles = StyleSheet.create({
+  canvasContainer: {
+    flex: 1,
+    backgroundColor: '#010101',
+    paddingTop: 40,
+  },
+  headerStatusBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  platformBrandMark: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '300',
+    letterSpacing: 4,
+  },
+  operatorSessionLabel: {
+    color: 'rgba(255, 255, 255, 0.3)',
+    fontSize: 9,
+    fontWeight: '600',
+    letterSpacing: 1,
+    marginTop: 2,
+  },
+  networkBadgeFrame: {
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 2,
+  },
+  networkBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+  },
+  mainWorkspaceLayout: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  fastBarWellColumn: {
+    width: '42%',
+    borderRightWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  activeCheckColumn: {
+    width: '58%',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    justifyContent: 'space-between',
+  },
+  sectionClusterHeading: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 14,
+  },
+  fastBarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  touchTargetItemButton: {
+    width: '48%',
+    height: 90, // Large 48x48dp standard protective boundary
+    backgroundColor: 'rgba(28, 28, 30, 0.75)',
+    borderRadius: 6,
+    padding: 14,
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.03)',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  itemButtonOptimisticLocked: {
+    borderColor: '#D4AF37',
+    backgroundColor: 'rgba(212, 175, 55, 0.05)',
+  },
+  ttlProcessingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+  },
+  wellItemTextName: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '500',
+    lineHeight: 18,
+  },
+  wellItemTextPrice: {
+    color: '#D4AF37',
+    fontSize: 12,
+    fontWeight: '400',
+  },
+  extendedAssetStack: {
+    gap: 8,
+  },
+  extendedRowButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(28, 28, 30, 0.75)',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.02)',
+    height: 56, // Complies with structural touchscreen parameters
+  },
+  extendedRowButton86ed: {
+    backgroundColor: 'rgba(20, 20, 22, 0.4)',
+    borderColor: 'transparent',
+  },
+  extendedRowName: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  extendedRowMeta: {
+    color: 'rgba(255, 255, 255, 0.3)',
+    fontSize: 8,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  extendedRowPrice: {
+    color: '#D4AF37',
+    fontSize: 13,
+  },
+  textMuted86: {
+    color: 'rgba(255, 255, 255, 0.15)',
+    textDecorationLine: 'line-through',
+  },
+  badgeLockedText86: {
+    color: '#FF3B30',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  checkHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  memberProfileTriggerButton: {
+    borderWidth: 1,
+    borderColor: '#FFB300',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 179, 0, 0.05)',
+  },
+  memberTriggerText: {
+    color: '#FFB300',
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+  activeItemsScrollArea: {
+    flex: 1,
+    backgroundColor: 'rgba(10, 10, 12, 0.5)',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.02)',
+    padding: 16,
+    marginBottom: 20,
+  },
+  emptyCheckStateFrame: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 80,
+  },
+  emptyCheckStateText: {
+    color: 'rgba(255, 255, 255, 0.2)',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  ticketItemRowLine: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  ticketLineItemName: {
+    color: '#E5E5EA',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  ticketLineItemPrice: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  transactionControlFooter: {
+    borderTopWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    paddingTop: 16,
+  },
+  revenueSummaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  revenueTotalLabel: {
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontSize: 14,
+    letterSpacing: 0.5,
+  },
+  revenueTotalValue: {
+    color: '#FFFFFF',
+    fontSize: 32,
+    fontWeight: '300',
+  },
+  actionButtonGroupRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  splitBillButtonTouch: {
+    width: '32%',
+    height: 54,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  splitButtonLabel: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+  settleBillButtonTouch: {
+    width: '64%',
+    height: 54,
+    backgroundColor: '#D4AF37',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settleButtonLabel: {
+    color: '#010101',
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  obsidianMemberDrawerPanel: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: width * 0.65,
+    backgroundColor: 'rgba(15, 15, 18, 0.96)',
+    borderLeftWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    paddingTop: 50,
+    paddingHorizontal: 24,
+    elevation: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: -10, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 15,
+  },
+  drawerHeaderFrame: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  drawerHeaderTitle: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2,
+  },
+  drawerCloseButtonTouch: {
+    padding: 6,
+  },
+  drawerCloseButtonText: {
+    color: '#FF3B30',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  drawerContentScrollBody: {
+    flex: 1,
+  },
+  drawerProfileNameText: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '300',
+  },
+  drawerProfileLockerIdLabel: {
+    color: '#D4AF37',
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 4,
+  },
+  drawerMetadataDividerLine: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginVertical: 24,
+  },
+  drawerSubSectionHeading: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    marginBottom: 12,
+  },
+  drawerMetadataBodyText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 13,
+    lineHeight: 22,
+    marginBottom: 6,
+  },
+  drawerInventoryRowItem: {
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    padding: 12,
+    borderRadius: 4,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  drawerInventoryItemText: {
+    color: '#E5E5EA',
+    fontSize: 13,
+  },
+});

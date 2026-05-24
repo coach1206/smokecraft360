@@ -19,6 +19,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: "basket", selected: "basket.fill" }} />
         <Label>Orders</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="staff">
+        <Icon sf={{ default: "terminal", selected: "terminal.fill" }} />
+        <Label>Staff POS</Label>
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
         <Icon sf={{ default: "person.circle", selected: "person.circle.fill" }} />
         <Label>Profile</Label>
@@ -75,6 +79,18 @@ function ClassicTabLayout() {
               <SymbolView name="basket.fill" tintColor={color} size={22} />
             ) : (
               <Ionicons name="basket-outline" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="staff"
+        options={{
+          title: "Staff POS",
+          tabBarIcon: ({ color }) =>
+            isIOS ? (
+              <SymbolView name="terminal.fill" tintColor={color} size={22} />
+            ) : (
+              <Ionicons name="briefcase-outline" size={22} color={color} />
             ),
         }}
       />
