@@ -14,8 +14,9 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
+import { SovereignOrchestrator } from "@/lib/SovereignExperienceOrchestrator";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
-import { Sparkles, Cpu, Activity, RotateCcw, X } from "lucide-react";
+import { RotateCcw, X } from "lucide-react";
 import craftHubLogo from "@assets/0E1669EB-2BD9-41AE-9549-BA48F6D0EFBB_1779139780515.png";
 import eatLogo from "@assets/C8BC12ED-E541-4EC4-A879-A25E40D9E908_1779139780515.png";
 import { AudioWaveToggle } from "@/contexts/AudioContext";
@@ -444,11 +445,43 @@ function LiquidTileBg({ craftId, color }: { craftId: string; color: string }) {
 
 // ── Mood options ──────────────────────────────────────────────────────────────
 
+// ── Mood mark SVGs — premium engraved marks, no emoji ────────────────────────
+function MoodMark({ id, color }: { id: string; color: string }) {
+  if (id === "chill") return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="9" r="4.5" stroke={color} strokeWidth="1.2" />
+      {[0,45,90,135,180,225,270,315].map(deg => {
+        const r = deg * Math.PI / 180;
+        const x1 = 9 + 5.5 * Math.cos(r); const y1 = 9 + 5.5 * Math.sin(r);
+        const x2 = 9 + 7.5 * Math.cos(r); const y2 = 9 + 7.5 * Math.sin(r);
+        return <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="1.2" strokeLinecap="round" />;
+      })}
+    </svg>
+  );
+  if (id === "deep") return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M13.5 9.5C13.5 12.538 11.037 15 8 15C4.962 15 2.5 12.538 2.5 9.5C2.5 6.735 4.518 4.45 7.18 4.03C6.5 5.02 6.1 6.21 6.1 7.5C6.1 10.538 8.562 13 11.6 13C12.26 13 12.9 12.882 13.5 12.67C13.5 11.96 13.5 10.73 13.5 9.5Z" stroke={color} strokeWidth="1.2" strokeLinejoin="round" />
+    </svg>
+  );
+  if (id === "premium") return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M9 2L10.5 6.5H15.5L11.5 9.5L13 14L9 11L5 14L6.5 9.5L2.5 6.5H7.5L9 2Z" stroke={color} strokeWidth="1.1" strokeLinejoin="round" />
+    </svg>
+  );
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="6.5" cy="9" r="2.5" stroke={color} strokeWidth="1.1" />
+      <circle cx="11.5" cy="9" r="2.5" stroke={color} strokeWidth="1.1" />
+      <line x1="9" y1="9" x2="9" y2="9" stroke={color} strokeWidth="1.1" />
+    </svg>
+  );
+}
+
 const MOOD_OPTIONS = [
-  { id: "chill",   label: "Chill Mode",   icon: "☀️" },
-  { id: "deep",    label: "Deep Session", icon: "🌙" },
-  { id: "premium", label: "Premium",      icon: "✦"  },
-  { id: "social",  label: "Social",       icon: "" },
+  { id: "chill",   label: "Chill Mode"   },
+  { id: "deep",    label: "Deep Session" },
+  { id: "premium", label: "Premium"      },
+  { id: "social",  label: "Social"       },
 ];
 
 // ── CraftCard — premium genre-isolated portal tile ───────────────────────────
@@ -1026,121 +1059,6 @@ function AmbientCigar() {
   );
 }
 
-// ── Art of the Cigar overlay — fires on SMOKECRAFT 360 tap ───────────────────
-function ArtOfCigarOverlay({ onClose, onBegin, onReturning }: { onClose: () => void; onBegin: () => void; onReturning: () => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.85 }}
-      style={{
-        position: "fixed", inset: 0, zIndex: 9995, overflow: "hidden",
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        /* Layer 0 fallback — never flat black, always textured dark amber gradient */
-        background: "linear-gradient(135deg, #050505 0%, #120e08 50%, #050505 100%)",
-      }}
-    >
-      {/* ── Layer 1: Cinematic background photo ── */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute", inset: 0, zIndex: 1,
-          backgroundImage: "url(/images/craft/smoke-1.png)",
-          backgroundSize: "cover",
-          backgroundPosition: "center 55%",
-          filter: "saturate(1.05) contrast(1.08) brightness(0.82)",
-        }}
-      />
-
-      {/* ── Layer 2: Cinematic gradient overlay — max 0.25 opacity ── */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-          background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.18) 45%, rgba(0,0,0,0.25) 100%)",
-        }}
-      />
-
-      {/* ── Edge vignette — max 0.25 opacity ── */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-          background:
-            "radial-gradient(ellipse at 50% 50%, transparent 42%, rgba(0,0,0,0.25) 100%)",
-        }}
-      />
-
-      {/* ── Layer 3: Diffused amber/gold glow core behind the typography ── */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          top: "50%", left: "50%",
-          transform: "translate(-50%, -52%)",
-          width: "80vw", height: "55vh",
-          background: "radial-gradient(ellipse at center, rgba(212,175,55,0.16) 0%, transparent 65%)",
-          filter: "blur(72px)",
-          zIndex: 3, pointerEvents: "none",
-        }}
-      />
-
-      {/* Particle / ambient layers sit above the depth stack */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 4 }}>
-        <SmokeCanvas />
-        <AmbientCigar />
-      </div>
-
-      {/* ── Layer 4: Interactive UI foreground ── */}
-      <div style={{ position: "relative", zIndex: 10, textAlign: "center", maxWidth: 520, padding: "0 36px" }}>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.9 }}
-          style={{ fontSize: 13, letterSpacing: "0.52em", textTransform: "uppercase", color: "rgba(212,175,55,0.55)", marginBottom: 20, fontFamily: "inherit" }}
-        >
-          NOVEE OS · SmokeCraft 360
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
-          style={{ fontFamily: "var(--app-font-serif,'Cormorant Garamond',Georgia,serif)", fontSize: "clamp(2.4rem,5.5vw,4.4rem)", fontWeight: 300, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F0E8D4", margin: "0 0 48px", lineHeight: 1.05, textShadow: "0 2px 48px rgba(212,175,55,0.18)" }}
-        >
-          The Art of the Cigar
-        </motion.h1>
-
-        {/* BEGIN MASTERCLASS JOURNEY */}
-        <motion.button
-          initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.8 }}
-          whileHover={{ scale: 1.02, boxShadow: "0 0 64px rgba(212,175,55,0.42),0 4px 28px rgba(0,0,0,0.6)" }}
-          whileTap={{ scale: 0.97, y: 2 }}
-          onClick={() => { playTactile(); onBegin(); }}
-          style={{ display: "block", width: "100%", padding: "28px 40px", marginBottom: 18, background: "linear-gradient(135deg,rgba(212,175,55,0.26) 0%,rgba(212,139,0,0.18) 100%)", border: "2px solid rgba(212,175,55,0.78)", borderRadius: 14, cursor: "pointer", fontSize: 18, fontWeight: 900, color: "#D4AF37", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: "inherit", boxShadow: "0 0 44px rgba(212,175,55,0.30),0 4px 20px rgba(0,0,0,0.5)", minHeight: 86, touchAction: "manipulation", backdropFilter: "blur(12px)" }}
-        >
-          BEGIN MASTERCLASS JOURNEY
-        </motion.button>
-
-        {/* RETURNING MASTERCLASS GUEST */}
-        <motion.button
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.8 }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={onReturning}
-          style={{ display: "block", width: "100%", padding: "18px 32px", background: "rgba(0,0,0,0.38)", border: "1px solid rgba(212,175,55,0.30)", borderRadius: 10, cursor: "pointer", fontSize: 14, fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(240,232,212,0.62)", fontFamily: "inherit", touchAction: "manipulation", backdropFilter: "blur(10px)" }}
-        >
-          RETURNING MASTERCLASS GUEST
-        </motion.button>
-      </div>
-
-      <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
-        onClick={onClose}
-        style={{ position: "absolute", top: 22, left: 22, background: "none", border: "none", color: "rgba(255,255,255,0.35)", cursor: "pointer", fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", padding: "8px 14px", zIndex: 20 }}
-      >
-        ← Back
-      </motion.button>
-    </motion.div>
-  );
-}
-
 // ── Generic cinematic landing overlay — PourCraft / BrewCraft / WineCraft ─────
 interface CraftLandingConfig {
   genreKey:   "pour" | "brew" | "wine";
@@ -1482,7 +1400,6 @@ function CraftHubInner() {
   const { guestProfile } = useGuestProfile();
   const [showReturn,   setShowReturn]  = useState(false);
   const [portal,       setPortal]      = useState<{ route: string; color: string } | null>(null);
-  const [artOfCigar,   setArtOfCigar]  = useState(false);
   const [craftOverlay, setCraftOverlay] = useState<{ genreKey: "pour" | "brew" | "wine"; route: string; color: string } | null>(null);
   const [mood,         setMood]        = useState("deep");
   const [showPinModal, setShowPinModal] = useState(false);
@@ -1715,7 +1632,7 @@ function CraftHubInner() {
               whileHover={{ boxShadow: "0 0 28px rgba(212,175,55,0.30)" }}
               onClick={() => navigate("/gate")}
               style={{ background: "rgba(212,175,55,0.12)", border: "1.5px solid rgba(212,175,55,0.60)", borderRadius: 10, cursor: "pointer", fontSize: 20, fontWeight: 900, color: C.gold, letterSpacing: "0.09em", textTransform: "uppercase" as const, padding: "10px 20px", fontFamily: "inherit", whiteSpace: "nowrap", touchAction: "manipulation" }}>
-              ⬡ GATE
+              GATE
             </motion.button>
             <AudioWaveToggle />
           </div>
@@ -1757,6 +1674,8 @@ function CraftHubInner() {
             isPrimary
             onTrigger={() => {
               ExperienceFlowEngine.startCraft(CRAFT_MODULES[0]!.id);
+              SovereignOrchestrator.startCraft("smoke");
+              void SovereignOrchestrator.transitionTo("ritual_intro");
               navigate("/master-blender");
             }}
           />
@@ -1815,17 +1734,6 @@ function CraftHubInner() {
         {showPinModal && <PinModal onClose={() => setShowPinModal(false)} />}
       </AnimatePresence>
 
-      {/* ── Art of the Cigar overlay — fires on SMOKECRAFT 360 tap ── */}
-      <AnimatePresence>
-        {artOfCigar && (
-          <ArtOfCigarOverlay
-            onClose={() => setArtOfCigar(false)}
-            onBegin={() => { setArtOfCigar(false); navigate("/master-blender"); }}
-            onReturning={() => { setArtOfCigar(false); setShowReturn(true); }}
-          />
-        )}
-      </AnimatePresence>
-
       {/* ── Genre landing overlays — fire on PourCraft / BrewCraft / WineCraft tap ── */}
       <AnimatePresence>
         {craftOverlay && (
@@ -1864,7 +1772,10 @@ function CraftHubInner() {
           boxShadow:            "0 0 28px rgba(212,175,55,0.24), 0 4px 14px rgba(0,0,0,0.55)",
         }}
       >
-        <span style={{ fontSize: 22, lineHeight: 1 }}>⬡</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ marginBottom: 2 }}>
+          <polygon points="10,2 17.3,6 17.3,14 10,18 2.7,14 2.7,6" stroke={C.gold} strokeWidth="1.2" fill="none" />
+          <polygon points="10,5 14.5,7.5 14.5,12.5 10,15 5.5,12.5 5.5,7.5" stroke={C.gold} strokeWidth="0.7" fill="none" opacity="0.45" />
+        </svg>
         <span style={{
           fontSize:      14,
           fontWeight:    800,

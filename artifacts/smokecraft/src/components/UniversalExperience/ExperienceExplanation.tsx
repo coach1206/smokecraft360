@@ -28,7 +28,7 @@ const EXPLANATIONS: Record<CraftType, CraftExplanation> = {
     pillars: [
       { icon: "◈", title: "Unlock Hidden Journeys",    desc: "Reserve experiences only reveal themselves to those who seek them." },
       { icon: "◎", title: "Evolve Your Taste Identity", desc: "Every selection refines your palate signature. Nothing is forgotten." },
-      { icon: "⬡", title: "Discover Reserve Pours",    desc: "Rare bottles and limited expressions surface as you progress." },
+      { icon: "◬", title: "Discover Reserve Pours",    desc: "Rare bottles and limited expressions surface as you progress." },
       { icon: "✦", title: "Build a Sensory Profile",   desc: "The engine learns what moves you and crafts the perfect path forward." },
     ],
   },
@@ -38,7 +38,7 @@ const EXPLANATIONS: Record<CraftType, CraftExplanation> = {
     pillars: [
       { icon: "⊕", title: "Master Flavor Families",     desc: "From bitter horizons to barrel-aged warmth — your spectrum expands." },
       { icon: "◉", title: "Unlock Seasonal Rarities",   desc: "Limited batches and cellared flights appear only when earned." },
-      { icon: "⬡", title: "Build Your Brewery Profile", desc: "Your tasting history shapes every future recommendation." },
+      { icon: "◬", title: "Build Your Brewery Profile", desc: "Your tasting history shapes every future recommendation." },
       { icon: "✦", title: "Create Your Signature Path", desc: "No two journeys are alike. Yours begins right now." },
     ],
   },
@@ -58,7 +58,7 @@ const EXPLANATIONS: Record<CraftType, CraftExplanation> = {
     pillars: [
       { icon: "○", title: "Map Your Palate",           desc: "From light Pinot to bold Cab — your taste signature is permanent." },
       { icon: "◇", title: "Explore Terroir",           desc: "Region, vintage, climate — every detail shapes the glass." },
-      { icon: "⬡", title: "Unlock Cellar Reserves",    desc: "Rare vintages surface as your profile deepens." },
+      { icon: "◬", title: "Unlock Cellar Reserves",    desc: "Rare vintages surface as your profile deepens." },
       { icon: "✶", title: "Master the Varietal Map",   desc: "A full spectrum of discovery awaits the discerning palate." },
     ],
   },

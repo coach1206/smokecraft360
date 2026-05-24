@@ -138,7 +138,7 @@ export default function AssistedDiscoveryOverlay({ guestProfileId, craftType }: 
                 textShadow: `0 0 20px ${accent}`,
               }}
             >
-              ⬡
+              ◬
             </motion.div>
 
             {/* Staff note */}

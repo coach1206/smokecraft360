@@ -24,7 +24,7 @@ const PLAYGROUND_CONFIG: PlaygroundConfig = {
     { id: "spark",   label: "Spark ⚡"  },
     { id: "drop",    label: "Drop ◉"    },
     { id: "wave",    label: "Wave ∿"    },
-    { id: "crystal", label: "Crystal ⬡" },
+    { id: "crystal", label: "Crystal ◬" },
   ],
   colorSwatches: [
     { id: "violet",    label: "Violet",  primary: "#1A0828", accent: "#B496E6" },

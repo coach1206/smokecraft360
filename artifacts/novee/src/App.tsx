@@ -142,7 +142,7 @@ interface PairingSuggestion {
 const PAIRING_CATEGORIES = [
   { id: "trending",         label: "Trending",         icon: "⟡" },
   { id: "vip",              label: "VIP Pairings",     icon: "◈" },
-  { id: "rare",             label: "Rare Reserve",     icon: "⬡" },
+  { id: "rare",             label: "Rare Reserve",     icon: "◬" },
   { id: "seasonal",         label: "Seasonal",         icon: "◎" },
   { id: "lounge_favorites", label: "Lounge Favorites", icon: "◉" },
   { id: "staff_picks",      label: "Staff Picks",      icon: "◆" },
@@ -851,7 +851,7 @@ const INTEL_SECTIONS = [
       { title: "Premium Conversion", body: "Never say 'more expensive.' Use 'allocated,' 'reserve,' or 'signature.' Lead with the story: '500 boxes reached the US this year — we received 12.'" },
       { title: "Pairing Bridge Upsell", body: "'The experience changes significantly with the right spirit — may I suggest our Macallan 18?' Always a question. Permission-based selling drives 40% ticket increase." },
     ] },
-  { id: "recovery_guidance", label: "Recovery Guidance", icon: "⬡", color: "#C84A4A",
+  { id: "recovery_guidance", label: "Recovery Guidance", icon: "◬", color: "#C84A4A",
     summary: "Complaint recovery (L.A.S.T.), intoxication management, de-escalation.",
     items: [
       { title: "L.A.S.T. Recovery Framework", body: "Listen (no interruption) → Acknowledge ('You're absolutely right, I sincerely apologize') → Solve (immediate, concrete remedy) → Thank ('Thank you for telling us')." },

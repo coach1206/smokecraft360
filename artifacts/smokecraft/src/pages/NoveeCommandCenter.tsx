@@ -813,7 +813,7 @@ export default function CommandCenter() {
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
                 {[
                   { graph:"Behavioral",     desc:"Guest ↔ product ↔ session relations",     icon:"◎" },
-                  { graph:"Venue",          desc:"Cross-venue guest affinity network",        icon:"⬡" },
+                  { graph:"Venue",          desc:"Cross-venue guest affinity network",        icon:"◬" },
                   { graph:"Recommendation", desc:"Pairing graph + acceptance rates",          icon:"◈" },
                   { graph:"Environmental",  desc:"Scene → engagement → craft mappings",       icon:"◉" },
                   { graph:"Operational",    desc:"Rule → trigger → action chains",            icon:"◆" },

@@ -24,7 +24,7 @@ const BASE_WAYPOINTS: Record<CraftType, [string, Waypoint[]]> = {
       { icon: "◉", label: "Discovery Pour",       desc: "Your palate, mapped" },
       { icon: "◈", label: "Flavor Expansion",     desc: "Beyond the familiar" },
       { icon: "✦", label: "Signature Cocktail",   desc: "Crafted for your profile" },
-      { icon: "⬡", label: "Reserve Unlock",       desc: "If the session earns it" },
+      { icon: "◬", label: "Reserve Unlock",       desc: "If the session earns it" },
     ],
   ],
   brew: [
@@ -32,7 +32,7 @@ const BASE_WAYPOINTS: Record<CraftType, [string, Waypoint[]]> = {
     [
       { icon: "⊕", label: "Regional Discovery",  desc: "Origins and terroir" },
       { icon: "◉", label: "Barrel Exploration",  desc: "Aged character revealed" },
-      { icon: "⬡", label: "Rare Brew Unlock",    desc: "Limited — earned by palate" },
+      { icon: "◬", label: "Rare Brew Unlock",    desc: "Limited — earned by palate" },
       { icon: "✦", label: "Pairing Finish",      desc: "The complete experience" },
     ],
   ],
@@ -50,7 +50,7 @@ const BASE_WAYPOINTS: Record<CraftType, [string, Waypoint[]]> = {
     [
       { icon: "○", label: "Varietal Discovery",    desc: "Your palate mapped" },
       { icon: "◈", label: "Terroir Exploration",    desc: "Region and vintage calibrated" },
-      { icon: "⬡", label: "Cellar Access",          desc: "Reserve tier unlocked" },
+      { icon: "◬", label: "Cellar Access",          desc: "Reserve tier unlocked" },
       { icon: "✶", label: "Signature Vintage",      desc: "Your perfect expression awaits" },
     ],
   ],
@@ -59,7 +59,7 @@ const BASE_WAYPOINTS: Record<CraftType, [string, Waypoint[]]> = {
     [
       { icon: "∿", label: "Palate Mapping",       desc: "Strength and body calibrated" },
       { icon: "◈", label: "Strength Discovery",   desc: "Your range, established" },
-      { icon: "⬡", label: "Reserve Introduction", desc: "Premium access unlocked" },
+      { icon: "◬", label: "Reserve Introduction", desc: "Premium access unlocked" },
       { icon: "✦", label: "Signature Moment",     desc: "Your perfect pairing awaits" },
     ],
   ],

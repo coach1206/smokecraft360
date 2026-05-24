@@ -47,8 +47,8 @@ const CRAFT_ICONS: Record<string, string> = {
 };
 
 const SOVEREIGN_TILES = [
-  { id: "craft",    label: "CRAFT MODULES",     sub: "Swipe · Build · Reveal",       icon: "◈" },
-  { id: "eat",      label: "E.A.T. ENGINE",      sub: "Telemetry · Engagement",       icon: "⬡" },
+  { id: "craft",    label: "CRAFT MODULES",     sub: "Swipe · Build · Reveal",        icon: "◈" },
+  { id: "eat",      label: "E.A.T. ENGINE",      sub: "Telemetry · Engagement",        icon: "◬" },
   { id: "pulse",    label: "NOVEE PULSE",         sub: "Venue vitals · AI predictions", icon: "◉" },
   { id: "ops",      label: "OPERATIONS",          sub: "POS · Inventory · Staff",       icon: "⚙" },
   { id: "revenue",  label: "REVENUE BRAIN",       sub: "Forecasting · Margin",          icon: "▲" },
@@ -57,7 +57,7 @@ const SOVEREIGN_TILES = [
 
 const ESSENTIAL_TILES = [
   { id: "craft", label: "CRAFT MODULES", sub: "Active experience modules",  icon: "◈" },
-  { id: "eat",   label: "E.A.T. ENGINE", sub: "Telemetry dashboard",        icon: "⬡" },
+  { id: "eat",   label: "E.A.T. ENGINE", sub: "Telemetry dashboard",        icon: "◬" },
   { id: "ops",   label: "OPERATIONS",   sub: "Core operational tools",      icon: "⚙" },
 ];
 
@@ -328,7 +328,7 @@ export default function OSShell() {
           {/* E.A.T. ENGINE tabs */}
           <div style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(245,237,216,0.45)", marginBottom: 10, textTransform: "uppercase" }}>
-              ⬡ E.A.T. Engine
+              E.A.T. Engine
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {[

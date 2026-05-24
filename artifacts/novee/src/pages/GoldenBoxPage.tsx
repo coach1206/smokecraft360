@@ -169,7 +169,7 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
   const NAV_ITEMS = [
     { key: "dashboard",   icon: "⊞", label: "Dashboard"   },
     { key: "leaderboard", icon: "◈", label: "Leaderboard" },
-    { key: "challenges",  icon: "⬡", label: "Challenges"  },
+    { key: "challenges",  icon: "◬", label: "Challenges"  },
     { key: "rewards",     icon: "🎁", label: "Rewards"     },
     { key: "badges",      icon: "🛡", label: "Badges"      },
     { key: "progress",    icon: "↑", label: "My Progress"  },

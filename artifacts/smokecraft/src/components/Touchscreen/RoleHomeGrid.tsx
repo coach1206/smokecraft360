@@ -13,7 +13,7 @@ const ICON_MAP: Record<string, string> = {
   campaigns: "◇",
   alerts: "△",
   devices: "▣",
-  partners: "⬡",
+  partners: "◬",
   fraud: "◉",
   demo: "▶",
   experience: "✦",

@@ -24,7 +24,7 @@ const PLAYGROUND_CONFIG: PlaygroundConfig = {
   emblemOptions: [
     { id: "hop",    label: "Hop ⊕"    },
     { id: "grain",  label: "Grain ✦"  },
-    { id: "barrel", label: "Barrel ⬡" },
+    { id: "barrel", label: "Barrel ◬" },
     { id: "star",   label: "Star ★"   },
     { id: "shield", label: "Shield ⬛" },
   ],

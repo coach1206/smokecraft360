@@ -20,7 +20,7 @@ const PLAYGROUND_CONFIG: PlaygroundConfig = {
     { id: "burgundy", label: "Burgundy ◉" },
     { id: "sparkling", label: "Sparkling ✦" },
     { id: "decanter",  label: "Decanter ⊟" },
-    { id: "grape",     label: "Grape ⬡"    },
+    { id: "grape",     label: "Grape ◬"    },
   ],
   colorSwatches: [
     { id: "burgundy", label: "Burgundy",   primary: "#1A0010", accent: "#8B1A2F" },

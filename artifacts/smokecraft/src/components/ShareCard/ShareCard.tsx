@@ -24,7 +24,7 @@ const CRAFT_LABELS: Record<string, string> = {
 
 const CRAFT_GLYPHS: Record<string, string> = {
   smoke: "◆",
-  brew:  "⬡",
+  brew:  "◬",
   pour:  "◈",
   vape:  "◉",
 };

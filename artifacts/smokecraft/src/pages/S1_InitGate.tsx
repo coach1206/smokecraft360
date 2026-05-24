@@ -634,7 +634,7 @@ export function S1_InitGate() {
                 {[
                   { icon: "◎", label: "Score Points",   sub: "Complete actions & challenges" },
                   { icon: "▲", label: "Climb Ranks",    sub: "Earn XP to level up" },
-                  { icon: "⬡", label: "Unlock Rewards", sub: "Badges, blends, gear & more" },
+                  { icon: "◬", label: "Unlock Rewards", sub: "Badges, blends, gear & more" },
                   { icon: "♛", label: "Earn Respect",   sub: "Compete. Be recognized. Lead." },
                 ].map(r => (
                   <div key={r.label} style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 20 }}>
@@ -909,8 +909,8 @@ export function S1_InitGate() {
                 {[
                   { icon: "◎", label: "Score Points", body: "Complete challenges, tasting rounds, mentor quizzes, and pairing decisions to earn XP." },
                   { icon: "", label: "Climb the Ranks", body: "Advance through the four official SmokeCraft stages and prove your mastery." },
-                  { icon: "⬡", label: "Earn Badges", body: "Unlock exclusive achievement badges that represent your knowledge, skill, and prestige." },
-                  { icon: "⬡", label: "Unlock Rewards", body: "Higher ranks unlock rare blends, VIP experiences, exclusive events, and premium gear." },
+                  { icon: "◬", label: "Earn Badges", body: "Unlock exclusive achievement badges that represent your knowledge, skill, and prestige." },
+                  { icon: "◬", label: "Unlock Rewards", body: "Higher ranks unlock rare blends, VIP experiences, exclusive events, and premium gear." },
                   { icon: "⚠", label: "Penalties", body: "Poor decisions and incorrect selections may reduce your points. Not every move earns respect." },
                 ].map((r, i) => (
                   <div key={r.label} style={{ display: "flex", gap: 12, marginBottom: 14, alignItems: "flex-start" }}>

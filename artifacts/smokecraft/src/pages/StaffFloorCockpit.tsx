@@ -310,7 +310,7 @@ export default function StaffFloorCockpit() {
           paddingTop:     "80px",
           color:          "#6B5E4E",
         }}>
-          <div style={{ fontSize: "32px", marginBottom: "12px", opacity: 0.4 }}>⬡</div>
+          <div style={{ fontSize: "32px", marginBottom: "12px", opacity: 0.4 }}>◬</div>
           <p style={{ fontSize: "16px", fontStyle: "italic" }}>No active guests at this time.</p>
           <p style={{ fontSize: "12px", marginTop: "8px" }}>Floor will populate as guests begin their craft experience.</p>
         </div>

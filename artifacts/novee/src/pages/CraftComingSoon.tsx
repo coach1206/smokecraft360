@@ -35,7 +35,7 @@ const CONFIGS: Record<string, CraftConfig> = {
     sub:    "Craft Beer Discovery",
     color:  "#B87333",
     glow:   "rgba(184,115,51,0.18)",
-    symbol: "⬡",
+    symbol: "◬",
     lines:  ["Beyond the pint.", "Into the craft."],
   },
   winecraft: {

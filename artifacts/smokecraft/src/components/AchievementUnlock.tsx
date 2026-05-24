@@ -29,7 +29,7 @@ const ICON_MAP: Record<string, string> = {
   glass:    "◇",
   hops:     "✿",
   vapor:    "≋",
-  axiom:    "⬡",
+  axiom:    "◬",
   universe: "⊕",
 };
 
