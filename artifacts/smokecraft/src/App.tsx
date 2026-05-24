@@ -1451,11 +1451,17 @@ export default function App() {
 
 /* ── HELPERS ── */
 function RootRedirect() {
+  const [, navigate] = useLocation();
   const [splashDone, setSplashDone] = useState(false);
+
+  useEffect(() => {
+    if (splashDone) navigate('/craft-hub');
+  }, [splashDone, navigate]);
+
   if (!splashDone) {
     return <SplashController onFinish={() => setSplashDone(true)} />;
   }
-  return <SovereignBootFlow />;
+  return null;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';

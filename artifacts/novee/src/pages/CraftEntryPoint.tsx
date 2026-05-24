@@ -749,9 +749,7 @@ interface Props {
 }
 
 export default function CraftEntryPoint({ onComplete }: Props) {
-  const [stage, setStage] = useState<Stage>(() => {
-    try { return localStorage.getItem("craft_entry_done") === "1" ? "grid" : "boot"; } catch { return "boot"; }
-  });
+  const [stage, setStage] = useState<Stage>("grid");
   const [isAdminView, setIsAdminView] = useState(false);
   const [showPinGate, setShowPinGate] = useState(false);
 
