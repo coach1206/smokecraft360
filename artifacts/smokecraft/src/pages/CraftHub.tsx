@@ -16,7 +16,7 @@ import { useLocation } from "wouter";
 import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 import { SovereignOrchestrator } from "@/lib/SovereignExperienceOrchestrator";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
-import { RotateCcw, X } from "lucide-react";
+import { Activity, Cpu, RotateCcw, Sparkles, X } from "lucide-react";
 import craftHubLogo from "@assets/0E1669EB-2BD9-41AE-9549-BA48F6D0EFBB_1779139780515.png";
 import eatLogo from "@assets/C8BC12ED-E541-4EC4-A879-A25E40D9E908_1779139780515.png";
 import { AudioWaveToggle } from "@/contexts/AudioContext";

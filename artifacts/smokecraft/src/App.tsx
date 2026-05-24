@@ -822,10 +822,120 @@ function SovereignBootFlow() {
 /* ── Guest-route ambient layer — persistent canvas smoke/ember/vignette ─────── */
 
 const GUEST_PREFIXES = [
-  '/craft-hub', '/experience/', '/experience-overview/', '/synchronization/',
+  '/', '/craft-hub', '/experience/', '/experience-overview/', '/synchronization/',
   '/legacy-handoff/', '/experience-center', '/enrollment', '/reveal/',
   '/master-blender',
 ];
+
+function isSmokeCraftGuestRoute(loc: string) {
+  return GUEST_PREFIXES.some((prefix) => {
+    if (prefix === '/') return loc === '/';
+    return loc === prefix.replace(/\/$/, '') || loc.startsWith(prefix);
+  });
+}
+
+function NoveePoweredSmokeCraftShell() {
+  const [loc] = useLocation();
+  const active = isSmokeCraftGuestRoute(loc);
+
+  useEffect(() => {
+    if (!active) return;
+    try {
+      localStorage.setItem('novee_active_module', 'smokecraft-360');
+      localStorage.setItem('novee_runtime_surface', 'remote-customer');
+    } catch { /* localStorage unavailable */ }
+  }, [active]);
+
+  if (!active) return null;
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9992,
+        pointerEvents: 'none',
+        overflow: 'hidden',
+      }}
+    >
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 42,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 max(18px, env(safe-area-inset-left)) 0 max(18px, env(safe-area-inset-left))',
+        background: 'linear-gradient(180deg, rgba(5,3,1,0.82), rgba(5,3,1,0.42) 72%, transparent)',
+        borderTop: '1px solid rgba(212,175,55,0.26)',
+        boxShadow: '0 16px 42px rgba(0,0,0,0.34)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          <div style={{
+            width: 7,
+            height: 7,
+            borderRadius: '50%',
+            background: '#34D399',
+            boxShadow: '0 0 12px rgba(52,211,153,0.75)',
+          }} />
+          <span style={{
+            fontFamily: "'Inter', system-ui, sans-serif",
+            fontSize: 10,
+            fontWeight: 800,
+            letterSpacing: '0.22em',
+            color: 'rgba(245,237,216,0.76)',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+          }}>
+            NOVEE OS · Experience Runtime
+          </span>
+        </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+          fontFamily: "'Inter', system-ui, sans-serif",
+          fontSize: 9,
+          fontWeight: 800,
+          letterSpacing: '0.22em',
+          color: 'rgba(212,175,55,0.70)',
+          textTransform: 'uppercase',
+          whiteSpace: 'nowrap',
+        }}>
+          <span>SmokeCraft 360</span>
+          <span style={{ color: 'rgba(245,237,216,0.32)' }}>Powered Module</span>
+        </div>
+      </div>
+
+      <div style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: 38,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 18,
+        background: 'linear-gradient(0deg, rgba(5,3,1,0.74), rgba(5,3,1,0.28) 74%, transparent)',
+        borderBottom: '1px solid rgba(212,175,55,0.20)',
+        fontFamily: "'Inter', system-ui, sans-serif",
+        fontSize: 8,
+        fontWeight: 800,
+        letterSpacing: '0.28em',
+        color: 'rgba(245,237,216,0.34)',
+        textTransform: 'uppercase',
+      }}>
+        <span>Guest Continuity Active</span>
+        <span style={{ color: 'rgba(212,175,55,0.56)' }}>E.A.T. Ready</span>
+        <span>Venue Sync Stable</span>
+      </div>
+    </div>
+  );
+}
 
 interface AmbientParticle {
   x: number; y: number;
@@ -1091,6 +1201,7 @@ export default function App() {
       <GestureGateway />
       <BrandPartnerFirewall />
       <GuestAmbientLayer />
+      <NoveePoweredSmokeCraftShell />
 
       <Suspense fallback={<PageLoader />}>
         <Switch>
