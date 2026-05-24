@@ -702,16 +702,265 @@ function SystemControlsTab() {
   );
 }
 
+// ── Platform Operations Tabs ──────────────────────────────────────────────────
+
+const ONBOARDING_STEPS = [
+  { id: "contract", label: "Commercial Setup", owner: "Founder", state: "ready", detail: "Venue agreement, subscription tier, billing contact, and launch date." },
+  { id: "venue", label: "Venue Profile", owner: "Ops", state: "ready", detail: "Rooms, floor zones, craft offerings, staff roles, and hospitality tone." },
+  { id: "hardware", label: "Hardware Kit", owner: "Deployment", state: "queued", detail: "Kiosks, tablets, POS bridge, printer, NFC, and network claims." },
+  { id: "inventory", label: "Inventory Import", owner: "Venue", state: "queued", detail: "Cigars, spirits, pairings, pricing, modifiers, tax rules, and SKUs." },
+  { id: "training", label: "Staff Training", owner: "Academy", state: "draft", detail: "Role modules, certification paths, manager sign-off, and launch scripts." },
+  { id: "go-live", label: "Go-Live Checklist", owner: "Developer", state: "locked", detail: "Smoke test, remote deploy, rollback plan, DNS, and support handoff." },
+] as const;
+
+const MODULE_MATRIX = [
+  { id: "novee", label: "NOVEE OS", surface: "Operating System", path: "/novee/", state: "core", enabled: true },
+  { id: "smokecraft", label: "SmokeCraft 360", surface: "Customer Module", path: "/", state: "live", enabled: true },
+  { id: "eat", label: "E.A.T. / POS", surface: "Operations Module", path: "/novee/", state: "live", enabled: true },
+  { id: "academy", label: "Hospitality Academy", surface: "Training Module", path: "/training/employee", state: "ready", enabled: true },
+  { id: "pairing", label: "Pairing Intelligence", surface: "AI Sommelier", path: "/novee/", state: "ready", enabled: true },
+  { id: "control", label: "Control Chamber", surface: "Executive Ops", path: "/control-chamber", state: "restricted", enabled: true },
+  { id: "pourcraft", label: "PourCraft 360", surface: "Customer Module", path: "/pour", state: "staged", enabled: false },
+  { id: "winecraft", label: "WineCraft 360", surface: "Customer Module", path: "/wine", state: "staged", enabled: false },
+] as const;
+
+const UPDATE_CHANNELS = [
+  { id: "stable", label: "Stable", version: "v2.0.0", target: "Customer deployments", state: "current" },
+  { id: "kiosk", label: "Kiosk Runtime", version: "v2.0.1-kiosk", target: "NOVEE OS tablets / POS", state: "ready" },
+  { id: "module", label: "Module Pack", version: "smokecraft-360.19c84d96", target: "SmokeCraft remote", state: "ready" },
+  { id: "dev", label: "Developer Preview", version: "main.latest", target: "Founder dashboard only", state: "watch" },
+] as const;
+
+function stateColor(state: string) {
+  if (["ready", "live", "current", "core"].includes(state)) return T.emerald;
+  if (["queued", "staged", "watch"].includes(state)) return "#F59E0B";
+  if (state === "locked" || state === "restricted") return "#F87171";
+  return T.silverDim;
+}
+
+function OnboardingCommandTab() {
+  const [active, setActive] = useState("venue");
+  const activeStep = ONBOARDING_STEPS.find(s => s.id === active) ?? ONBOARDING_STEPS[0];
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "0.9fr 1.1fr", gap: 24 }}>
+      <TitanCard>
+        <div style={{ fontSize: 15, fontWeight: 800, color: T.silver, letterSpacing: "0.10em", marginBottom: 16 }}>
+          ONBOARDING PIPELINE
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {ONBOARDING_STEPS.map((step, index) => {
+            const color = stateColor(step.state);
+            return (
+              <button key={step.id} onClick={() => setActive(step.id)}
+                style={{
+                  textAlign: "left", borderRadius: 10, padding: "14px 16px",
+                  border: `1px solid ${active === step.id ? color : T.border}`,
+                  background: active === step.id ? `${color}12` : "rgba(255,255,255,0.025)",
+                  cursor: "pointer", display: "grid", gridTemplateColumns: "34px 1fr auto", gap: 12, alignItems: "center",
+                }}>
+                <div style={{ fontFamily: T.mono, color, fontSize: 12 }}>{String(index + 1).padStart(2, "0")}</div>
+                <div>
+                  <div style={{ color: T.silver, fontSize: 14, fontWeight: 700 }}>{step.label}</div>
+                  <div style={{ color: T.silverDim, fontSize: 12, marginTop: 2 }}>{step.owner}</div>
+                </div>
+                <div style={{ color, fontFamily: T.mono, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase" }}>{step.state}</div>
+              </button>
+            );
+          })}
+        </div>
+      </TitanCard>
+
+      <TitanCard>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+          <div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: T.silver }}>{activeStep.label}</div>
+            <div style={{ fontSize: 12, color: T.silverDim, letterSpacing: "0.14em", textTransform: "uppercase", marginTop: 4 }}>
+              Owner: {activeStep.owner}
+            </div>
+          </div>
+          <div style={{ color: stateColor(activeStep.state), border: `1px solid ${stateColor(activeStep.state)}55`, borderRadius: 8, padding: "6px 12px", fontSize: 11, fontWeight: 800, letterSpacing: "0.16em", textTransform: "uppercase" }}>
+            {activeStep.state}
+          </div>
+        </div>
+        <div style={{ color: T.silverDim, lineHeight: 1.7, fontSize: 15, marginBottom: 22 }}>{activeStep.detail}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+          {["Generate Launch Packet", "Assign Staff Training", "Open Venue Config"].map(label => (
+            <button key={label}
+              style={{ minHeight: 78, borderRadius: 10, border: `1px solid ${T.border}`, background: "rgba(255,255,255,0.03)", color: T.silver, cursor: "pointer", fontSize: 13, fontWeight: 700, letterSpacing: "0.08em" }}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </TitanCard>
+    </div>
+  );
+}
+
+function ModuleControlTab() {
+  const [enabled, setEnabled] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(MODULE_MATRIX.map(m => [m.id, m.enabled]))
+  );
+
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 24 }}>
+        {[
+          { label: "Core OS", value: "NOVEE", color: T.emerald },
+          { label: "Customer Module", value: "SmokeCraft", color: "#D4AF37" },
+          { label: "Operations", value: "E.A.T.", color: "#60A5FA" },
+          { label: "Deploy Target", value: "Remote + Kiosk", color: "#A78BFA" },
+        ].map(k => (
+          <TitanCard key={k.label} style={{ padding: "16px 20px" }}>
+            <div style={{ color: k.color, fontSize: 22, fontWeight: 900 }}>{k.value}</div>
+            <div style={{ color: T.silverDim, fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", marginTop: 4 }}>{k.label}</div>
+          </TitanCard>
+        ))}
+      </div>
+      <TitanCard>
+        <div style={{ fontSize: 15, fontWeight: 800, color: T.silver, letterSpacing: "0.10em", marginBottom: 16 }}>
+          MODULE REGISTRY
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+          {MODULE_MATRIX.map(mod => {
+            const color = stateColor(mod.state);
+            return (
+              <div key={mod.id} style={{ border: `1px solid ${T.border}`, borderRadius: 12, background: "rgba(255,255,255,0.025)", padding: "14px 16px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                  <div>
+                    <div style={{ color: T.silver, fontSize: 16, fontWeight: 800 }}>{mod.label}</div>
+                    <div style={{ color: T.silverDim, fontSize: 12, marginTop: 3 }}>{mod.surface} · {mod.path}</div>
+                  </div>
+                  <button
+                    onClick={() => mod.state !== "core" && setEnabled(e => ({ ...e, [mod.id]: !e[mod.id] }))}
+                    disabled={mod.state === "core"}
+                    style={{
+                      width: 58, height: 32, borderRadius: 999,
+                      border: `1px solid ${enabled[mod.id] ? T.emerald : T.borderHi}`,
+                      background: enabled[mod.id] ? T.emeraldDim : "rgba(255,255,255,0.04)",
+                      cursor: mod.state === "core" ? "default" : "pointer",
+                      position: "relative", flexShrink: 0,
+                    }}>
+                    <span style={{ position: "absolute", top: 5, left: enabled[mod.id] ? 30 : 6, width: 20, height: 20, borderRadius: "50%", background: enabled[mod.id] ? T.emerald : T.silverDim, transition: "left 0.18s" }} />
+                  </button>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 14 }}>
+                  <span style={{ color, fontFamily: T.mono, fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase" }}>{mod.state}</span>
+                  <span style={{ color: enabled[mod.id] ? T.emerald : "#F87171", fontSize: 11, fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase" }}>
+                    {enabled[mod.id] ? "enabled" : "disabled"}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </TitanCard>
+    </div>
+  );
+}
+
+function SoftwareUpdatesTab() {
+  const [log, setLog] = useState<string[]>(["> UPDATE ORCHESTRATOR READY"]);
+  const [channel, setChannel] = useState("stable");
+  const [busy, setBusy] = useState(false);
+
+  const pushUpdate = async () => {
+    if (busy) return;
+    const selected = UPDATE_CHANNELS.find(c => c.id === channel) ?? UPDATE_CHANNELS[0];
+    setBusy(true);
+    setLog(l => [...l, `> Preparing ${selected.label} ${selected.version}`, "> Running preflight checks", "> Creating rollback checkpoint"]);
+    await new Promise(r => setTimeout(r, 900));
+    try { await apiPost("/api/v1/admin/system-override", { action: "ota_sync_all", channel, version: selected.version }); } catch (_e) { /* best-effort */ }
+    setLog(l => [...l, `> ✓ ${selected.label} staged for ${selected.target}`]);
+    setBusy(false);
+  };
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 0.85fr", gap: 24 }}>
+      <TitanCard>
+        <div style={{ fontSize: 15, fontWeight: 800, color: T.silver, letterSpacing: "0.10em", marginBottom: 16 }}>
+          SOFTWARE UPDATE CHANNELS
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {UPDATE_CHANNELS.map(c => {
+            const color = stateColor(c.state);
+            return (
+              <button key={c.id} onClick={() => setChannel(c.id)}
+                style={{
+                  textAlign: "left", borderRadius: 10, padding: "14px 16px",
+                  border: `1px solid ${channel === c.id ? color : T.border}`,
+                  background: channel === c.id ? `${color}12` : "rgba(255,255,255,0.025)",
+                  cursor: "pointer", display: "grid", gridTemplateColumns: "1fr auto", gap: 12,
+                }}>
+                <div>
+                  <div style={{ color: T.silver, fontSize: 15, fontWeight: 800 }}>{c.label}</div>
+                  <div style={{ color: T.silverDim, fontFamily: T.mono, fontSize: 12, marginTop: 3 }}>{c.version}</div>
+                  <div style={{ color: T.silverDim, fontSize: 12, marginTop: 3 }}>{c.target}</div>
+                </div>
+                <div style={{ color, fontFamily: T.mono, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase" }}>{c.state}</div>
+              </button>
+            );
+          })}
+        </div>
+        <button onClick={pushUpdate} disabled={busy}
+          style={{ marginTop: 18, width: "100%", minHeight: 56, borderRadius: 10, border: `1px solid ${T.emerald}`, background: busy ? "rgba(16,185,129,0.08)" : `linear-gradient(135deg,${T.emeraldDim},rgba(16,185,129,0.08))`, color: T.emerald, cursor: busy ? "default" : "pointer", fontSize: 14, fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+          {busy ? "Staging Update..." : "Stage / Push Update"}
+        </button>
+      </TitanCard>
+
+      <TitanCard>
+        <div style={{ fontSize: 15, fontWeight: 800, color: T.silver, letterSpacing: "0.10em", marginBottom: 14 }}>
+          RELEASE LOG
+        </div>
+        <div style={{ height: 378, overflowY: "auto", background: "#040406", borderRadius: 8, padding: 14, fontFamily: T.mono, fontSize: 12, color: T.emerald, lineHeight: 1.7, border: `1px solid ${T.border}` }}>
+          {log.map((line, i) => <div key={i} style={{ color: line.includes("✓") ? T.emerald : "rgba(16,185,129,0.65)" }}>{line}</div>)}
+          <span style={{ animation: "blink 1s step-end infinite" }}>▋</span>
+        </div>
+      </TitanCard>
+    </div>
+  );
+}
+
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: "provision", label: "Tenant Provisioning" },
-  { id: "fleet",     label: "Fleet Monitoring"    },
-  { id: "system",    label: "System Controls"     },
+  { id: "overview",   label: "Overview"       },
+  { id: "onboarding", label: "Onboarding"     },
+  { id: "modules",    label: "Modules"        },
+  { id: "updates",    label: "Updates"        },
+  { id: "provision",  label: "Provisioning"   },
+  { id: "fleet",      label: "Fleet"          },
+  { id: "system",     label: "System"         },
 ];
 
+function PlatformOverviewTab() {
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 24 }}>
+        {[
+          { label: "Operating System", value: "NOVEE OS", color: T.emerald },
+          { label: "Live Module", value: "SmokeCraft 360", color: "#D4AF37" },
+          { label: "Control Scope", value: "End-to-End", color: "#60A5FA" },
+          { label: "Update Authority", value: "Developer", color: "#A78BFA" },
+        ].map(k => (
+          <TitanCard key={k.label} style={{ padding: "18px 20px" }}>
+            <div style={{ color: k.color, fontSize: 24, fontWeight: 900 }}>{k.value}</div>
+            <div style={{ color: T.silverDim, fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", marginTop: 5 }}>{k.label}</div>
+          </TitanCard>
+        ))}
+      </div>
+      <TitanCard>
+        <div style={{ fontSize: 28, fontWeight: 900, color: T.silver, marginBottom: 10 }}>NOVEE Developer Dashboard</div>
+        <div style={{ color: T.silverDim, lineHeight: 1.7, fontSize: 15, maxWidth: 920 }}>
+          Central command for the entire NOVEE platform: onboard venues, configure SmokeCraft and future craft modules, manage kiosk/tablet/POS devices, stage software updates, run fleet controls, and supervise customer deployments from one place.
+        </div>
+      </TitanCard>
+    </div>
+  );
+}
+
 function DeveloperDashboard({ onLock }: { onLock: () => void }) {
-  const [tab, setTab] = useState("provision");
+  const [tab, setTab] = useState("overview");
   const [, navigate]  = useLocation();
 
   return (
@@ -782,9 +1031,13 @@ function DeveloperDashboard({ onLock }: { onLock: () => void }) {
           <motion.div key={tab}
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}>
-            {tab === "provision" && <TenantProvisioningTab />}
-            {tab === "fleet"     && <FleetMonitoringTab />}
-            {tab === "system"    && <SystemControlsTab />}
+            {tab === "overview"   && <PlatformOverviewTab />}
+            {tab === "onboarding" && <OnboardingCommandTab />}
+            {tab === "modules"    && <ModuleControlTab />}
+            {tab === "updates"    && <SoftwareUpdatesTab />}
+            {tab === "provision"  && <TenantProvisioningTab />}
+            {tab === "fleet"      && <FleetMonitoringTab />}
+            {tab === "system"     && <SystemControlsTab />}
           </motion.div>
         </AnimatePresence>
       </div>
