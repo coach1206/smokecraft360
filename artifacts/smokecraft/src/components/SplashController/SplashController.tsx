@@ -28,20 +28,20 @@ function hasSkipParam(): boolean {
 }
 
 // ── Timing constants (ms) ────────────────────────────────────────────────────
-const S1_FADE   = 2500;   // Profound: linear fade-in
-const S1_HOLD   = 6500;   // Profound: static hold after fade completes
-const S1_END    = S1_FADE + S1_HOLD;                         // 9 000 ms
+const S1_FADE   = 1200;   // Profound: linear fade-in
+const S1_HOLD   = 2000;   // Profound: static hold after fade completes
+const S1_END    = S1_FADE + S1_HOLD;                         // 3 200 ms
 
-const S2_TRANS  = 2800;   // Novee OS: slide transition
-const S2_HOLD   = 6000;   // Novee OS: static hold
-const S2_END    = S1_END  + S2_TRANS + S2_HOLD;              // 17 800 ms
+const S2_TRANS  = 1000;   // Novee OS: slide transition
+const S2_HOLD   = 1800;   // Novee OS: static hold
+const S2_END    = S1_END  + S2_TRANS + S2_HOLD;              // 6 000 ms
 
-const S3_TRANS  = 2800;   // CraftHub: scale-zoom transition
-const S3_HOLD   = 5500;   // CraftHub: static hold
-const S3_END    = S2_END  + S3_TRANS + S3_HOLD;              // 26 100 ms
+const S3_TRANS  = 800;    // CraftHub: scale-zoom transition
+const S3_HOLD   = 1200;   // CraftHub: static hold
+const S3_END    = S2_END  + S3_TRANS + S3_HOLD;              // 8 000 ms
 
-const DISSOLVE  = 2800;   // Final sensory dissolve duration
-const UNMOUNT   = S3_END  + DISSOLVE;                        // 28 900 ms
+const DISSOLVE  = 800;    // Final sensory dissolve duration
+const UNMOUNT   = S3_END  + DISSOLVE;                        // 8 800 ms
 
 // ── Stage enum ───────────────────────────────────────────────────────────────
 type Stage = "profound" | "novee" | "crafthub" | "dissolving";
@@ -57,7 +57,7 @@ export interface SplashControllerProps {
 }
 
 export function SplashController({ onFinish }: SplashControllerProps = {}) {
-  const [visible,    setVisible]    = useState(() => !hasSkipParam());
+  const [visible,    setVisible]    = useState(() => !hasSkipParam() && !hasSeenSplash());
   const [stage,      setStage]      = useState<Stage>("profound");
   const [dismissing, setDismissing] = useState(false);
 
@@ -69,6 +69,7 @@ export function SplashController({ onFinish }: SplashControllerProps = {}) {
   function finish() {
     if (finishedRef.current) return;
     finishedRef.current = true;
+    try { window.sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ok */ }
     setVisible(false);
     onFinishRef.current?.();
   }
