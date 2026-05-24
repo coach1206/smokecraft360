@@ -341,11 +341,13 @@ export function CraftGrid({
   onEAT,
   isAdminView = false,
   onStaffAccess,
+  embedded = false,
 }: {
   onSmokecraft: () => void;
   onEAT?: (key: EATKey) => void;
   isAdminView?: boolean;
   onStaffAccess?: () => void;
+  embedded?: boolean;
 }) {
   const [hoveredEAT, setHoveredEAT] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -365,18 +367,27 @@ export function CraftGrid({
   }, []);
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#130b05", display: "flex", flexDirection: "row" }}>
+    <div style={{
+      position: embedded ? "absolute" : "fixed",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      background: "#130b05",
+      display: "flex",
+      flexDirection: "row",
+      overflow: "hidden",
+    }}>
       {/* ── Left Obsidian Nav Rail — 64px ── */}
-      <ObsidianNavRail active="HUB" onSC={onSmokecraft} />
+      {!embedded && <ObsidianNavRail active="HUB" onSC={onSmokecraft} />}
 
       {/* ── Main content area — pushed 64px right ── */}
       <EnvironmentalSceneStack
         sceneId="craft-hub"
         className="env-full-content"
         contentClassName="env-full-content"
-        style={{ flex: 1, minWidth: 0 }}
+        style={{ flex: 1, minWidth: 0, height: "100%" }}
       >
-      <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", touchAction: "manipulation" }}>
+      <div style={{ height: "100%", minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", touchAction: "manipulation" }}>
       {/* Ambient back-lit radial gradient */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, background: "radial-gradient(ellipse 70% 60% at 50% 80%, rgba(212,175,55,0.07) 0%, transparent 70%)" }} />
 
@@ -398,10 +409,12 @@ export function CraftGrid({
         ))}
       </div>
       <div style={{
-        flexShrink: 0, padding: "24px 48px 20px",
+        flexShrink: 0, padding: embedded ? "18px 32px 16px" : "24px 48px 20px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
         borderBottom: "1px solid rgba(212,175,55,0.10)",
         background: "rgba(0,0,0,0.60)", backdropFilter: "blur(20px)",
+        gap: 18,
+        minHeight: embedded ? 88 : undefined,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <img src={IMG("logo_craft_hub.jpg")} alt="Craft Hub" style={{ height: 48, width: "auto", objectFit: "contain" }} />
@@ -491,7 +504,7 @@ export function CraftGrid({
 
       {/* ── Guest 4-tile grid ── */}
       {!isAdminView && (
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", overflow: "hidden" }}>
+      <div style={{ flex: 1, minHeight: 0, display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", overflow: "hidden" }}>
         {TILES.map((tile) => {
           const isHovered = hovered === tile.id;
           return (
@@ -565,12 +578,12 @@ export function CraftGrid({
                 </div>
               )}
 
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 28px 32px" }}>
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: embedded ? "0 22px 24px" : "0 28px 32px" }}>
                 <motion.div animate={{ y: isHovered && tile.active ? -6 : 0 }} transition={{ duration: 0.4, ease: EASE }}>
                   <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, letterSpacing: "0.24em", color: tile.active ? `${tile.accent}dd` : "rgba(253,251,247,0.42)", textTransform: "uppercase", margin: "0 0 12px", fontWeight: 800 }}>
                     {tile.active ? "Tap to enter" : "Coming soon"}
                   </p>
-                  <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 44, fontWeight: 700, color: "#FDFBF7", letterSpacing: "0.04em", margin: "0 0 10px", lineHeight: 1.05, textShadow: `0 0 40px rgba(0,0,0,0.90), 0 2px 8px rgba(0,0,0,0.70)` }}>
+                  <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: embedded ? 34 : 44, fontWeight: 700, color: "#FDFBF7", letterSpacing: "0.04em", margin: "0 0 10px", lineHeight: 1.05, textShadow: `0 0 40px rgba(0,0,0,0.90), 0 2px 8px rgba(0,0,0,0.70)` }}>
                     {tile.label}
                   </p>
                   <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, letterSpacing: "0.18em", color: "rgba(253,251,247,0.55)", textTransform: "uppercase", margin: 0, fontWeight: 500 }}>
@@ -589,7 +602,7 @@ export function CraftGrid({
                       background: `linear-gradient(135deg, rgba(253,251,247,0.10), rgba(212,175,55,0.18))`,
                       border: `1px solid rgba(253,251,247,0.35)`,
                       backdropFilter: "blur(12px)",
-                      borderRadius: 8, padding: "16px 30px", minHeight: 64,
+                      borderRadius: 8, padding: embedded ? "13px 22px" : "16px 30px", minHeight: embedded ? 54 : 64,
                       boxShadow: `0 0 24px rgba(212,175,55,0.18), inset 0 1px 0 rgba(255,255,255,0.10)`,
                     }}>
                       <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 15, fontWeight: 900, letterSpacing: "0.18em", color: "#FDFBF7", textTransform: "uppercase" }}>
@@ -609,13 +622,13 @@ export function CraftGrid({
       {/* ── E.A.T. Command Bar ── */}
       <div style={{
         flexShrink: 0,
-        padding: "0 48px",
+        padding: embedded ? "0 30px" : "0 48px",
         display: "flex", alignItems: "stretch",
         borderTop: "1px solid rgba(212,175,55,0.22)",
         background: "rgba(0,0,0,0.82)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
-        minHeight: 88,
+        minHeight: embedded ? 72 : 88,
         gap: 0,
         zIndex: 10,
         position: "relative",

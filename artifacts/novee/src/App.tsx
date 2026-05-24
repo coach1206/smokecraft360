@@ -1670,6 +1670,7 @@ function CraftHubWrapper() {
   const { setPhase } = useGuest();
   return (
     <CraftGrid
+      embedded
       onSmokecraft={() => setPhase("s1_demo")}
       onEAT={() => setPhase("eat_dashboard")}
     />
