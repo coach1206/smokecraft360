@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./cinematic-environment.css";
 
 @custom-variant dark (&:is(.dark *));
 

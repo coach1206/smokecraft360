@@ -1,0 +1,258 @@
+/**
+ * cinematic-environment.css
+ * Global depth-layer system for the luxury hospitality platform.
+ *
+ * Usage:
+ *   Wrap any section in .env-depth-stack and compose child layers:
+ *
+ *   <div class="env-depth-stack">
+ *     <div class="env-scene-bg" style="--env-bg: url(...)"></div>
+ *     <div class="env-overlay"></div>
+ *     <div class="env-bloom"></div>
+ *     <div class="env-smoke-layer"></div>
+ *     <div class="env-content">...</div>
+ *   </div>
+ *
+ * DESIGN LANGUAGE:
+ *   Material: walnut · leather · brass · velvet · obsidian · crystal
+ *   Palette:  #0a0806 base · #D4AF37 amber · #C8821E copper · #B06080 burgundy
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROOT STACK
+   ═══════════════════════════════════════════════════════════════════════════ */
+.env-depth-stack {
+  position:   relative;
+  isolation:  isolate;
+  overflow:   hidden;
+  background: #0a0806;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 1 — Cinematic scene background
+   ═══════════════════════════════════════════════════════════════════════════ */
+.env-scene-bg {
+  position:            absolute;
+  inset:               0;
+  background-image:    var(--env-bg, none);
+  background-size:     cover;
+  background-position: center 30%;
+  background-repeat:   no-repeat;
+  filter:              blur(2px) brightness(0.55) saturate(0.80);
+  transform:           translate3d(0,0,0) scale(1.04);
+  will-change:         transform;
+  backface-visibility: hidden;
+  pointer-events:      none;
+  z-index:             0;
+  animation:           env-bg-drift 28s ease-in-out infinite;
+}
+
+@keyframes env-bg-drift {
+  0%   { transform: translate3d(0, 0, 0)      scale(1.04); }
+  33%  { transform: translate3d(-8px,-5px, 0) scale(1.06); }
+  66%  { transform: translate3d( 5px,-9px, 0) scale(1.05); }
+  100% { transform: translate3d(0, 0, 0)      scale(1.04); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 2 — Dark material overlay + vignette
+   ═══════════════════════════════════════════════════════════════════════════ */
+.env-overlay {
+  position:       absolute;
+  inset:          0;
+  background:     var(--env-overlay,
+    linear-gradient(
+      180deg,
+      rgba(6,4,2,0.80)  0%,
+      rgba(10,8,4,0.65) 35%,
+      rgba(10,8,4,0.60) 60%,
+      rgba(6,4,2,0.78)  85%,
+      rgba(4,3,1,0.92)  100%
+    )
+  );
+  pointer-events: none;
+  z-index:        1;
+}
+
+.env-vignette {
+  position:       absolute;
+  inset:          0;
+  box-shadow:     inset 0 0 180px 60px rgba(0,0,0,0.85);
+  pointer-events: none;
+  z-index:        2;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 3 — Ambient light bloom
+   ═══════════════════════════════════════════════════════════════════════════ */
+.env-bloom {
+  position:       absolute;
+  top:            50%;
+  left:           50%;
+  width:          800px;
+  height:         580px;
+  max-width:      90vw;
+  transform:      translate(-50%, -50%);
+  border-radius:  50%;
+  background:     radial-gradient(
+    ellipse at center,
+    var(--env-bloom-color, rgba(212,175,55,0.14)) 0%,
+    transparent 68%
+  );
+  animation:      env-bloom-breathe 7s ease-in-out infinite;
+  pointer-events: none;
+  z-index:        3;
+}
+
+@keyframes env-bloom-breathe {
+  0%, 100% { opacity: 0.65; transform: translate(-50%,-50%) scale(0.92); }
+  50%       { opacity: 1;    transform: translate(-50%,-50%) scale(1.08); }
+}
+
+/* Accent: warm cigar lounge */
+.env-bloom--amber {
+  --env-bloom-color: rgba(212,175,55,0.18);
+}
+/* Accent: spirit copper */
+.env-bloom--copper {
+  --env-bloom-color: rgba(200,130,40,0.18);
+}
+/* Accent: wine burgundy */
+.env-bloom--burgundy {
+  --env-bloom-color: rgba(160,60,100,0.18);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 4 — Smoke drift
+   ═══════════════════════════════════════════════════════════════════════════ */
+.env-smoke-layer {
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  overflow:       hidden;
+  z-index:        4;
+}
+
+/* Each .env-wisp is an individual smoke puff — position via inline style */
+.env-wisp {
+  position:       absolute;
+  border-radius:  50%;
+  background:     radial-gradient(
+    ellipse at center,
+    rgba(230,200,150,0.065) 0%,
+    rgba(220,190,140,0.030) 50%,
+    transparent              72%
+  );
+  filter:         blur(20px);
+  will-change:    transform, opacity;
+  backface-visibility: hidden;
+  animation:      env-wisp-rise var(--w-dur, 12s) ease-out var(--w-del, 0s) infinite;
+}
+
+@keyframes env-wisp-rise {
+  0%   { opacity: 0;    transform: translate3d(0, 0, 0)                                 scale(0.7);  }
+  12%  { opacity: 0.70; }
+  60%  { opacity: 0.50; transform: translate3d(var(--w-dx, 12px),  -50%, 0)             scale(1.4);  }
+  100% { opacity: 0;    transform: translate3d(var(--w-dx2, -8px), -120%, 0)            scale(2.0);  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 5 — Ember sparks
+   ═══════════════════════════════════════════════════════════════════════════ */
+.env-ember-layer {
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  overflow:       hidden;
+  z-index:        5;
+}
+
+.env-ember {
+  position:       absolute;
+  width:          3px;
+  height:         3px;
+  border-radius:  50%;
+  background:     var(--ember-color, #D4AF37);
+  box-shadow:     0 0 6px 2px var(--ember-glow, rgba(212,175,55,0.55));
+  will-change:    transform, opacity;
+  backface-visibility: hidden;
+  animation:      env-ember-rise var(--e-dur, 4.5s) ease-out var(--e-del, 0s) infinite;
+}
+
+@keyframes env-ember-rise {
+  0%   { opacity: 0;    transform: translate3d(0, 0, 0); }
+  8%   { opacity: 0.90; }
+  50%  { opacity: 0.65; transform: translate3d(var(--e-dx,  8px), -65px, 0); }
+  100% { opacity: 0;    transform: translate3d(var(--e-dx2,-6px), -140px, 0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 6 — Content (above all environmental layers)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.env-content {
+  position: relative;
+  z-index:  10;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MATERIAL ACCENTS — text / border helpers
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mat-walnut  { --mat-accent: #8B5E3C; --mat-glow: rgba(139,94,60,0.35);  }
+.mat-leather { --mat-accent: #7B4A2A; --mat-glow: rgba(123,74,42,0.35);  }
+.mat-brass   { --mat-accent: #D4AF37; --mat-glow: rgba(212,175,55,0.40); }
+.mat-velvet  { --mat-accent: #8B2252; --mat-glow: rgba(139,34,82,0.35);  }
+.mat-obsidian{ --mat-accent: #3A3A3A; --mat-glow: rgba(58,58,58,0.45);   }
+.mat-crystal { --mat-accent: #A0C4D8; --mat-glow: rgba(160,196,216,0.30);}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ENVIRONMENTAL TRANSITIONS — between rooms
+   ═══════════════════════════════════════════════════════════════════════════ */
+.env-enter-smoke {
+  animation: env-trans-smoke 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+.env-exit-smoke {
+  animation: env-trans-smoke-out 0.6s ease-in both;
+}
+@keyframes env-trans-smoke {
+  from { opacity: 0; filter: blur(8px) brightness(0.6); transform: scale(0.98); }
+  to   { opacity: 1; filter: blur(0px) brightness(1.0); transform: scale(1.00); }
+}
+@keyframes env-trans-smoke-out {
+  from { opacity: 1; filter: blur(0px); }
+  to   { opacity: 0; filter: blur(8px) brightness(0.5); }
+}
+
+.env-enter-bloom {
+  animation: env-trans-bloom 1.0s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes env-trans-bloom {
+  from { opacity: 0; filter: brightness(2.4) blur(4px); }
+  to   { opacity: 1; filter: brightness(1.0) blur(0px); }
+}
+
+.env-enter-depth {
+  animation: env-trans-depth 0.9s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes env-trans-depth {
+  from { opacity: 0; transform: scale(1.04) translateY(8px); filter: blur(4px); }
+  to   { opacity: 1; transform: scale(1.00) translateY(0);   filter: blur(0px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .env-scene-bg,
+  .env-bloom,
+  .env-wisp,
+  .env-ember,
+  .env-enter-smoke,
+  .env-exit-smoke,
+  .env-enter-bloom,
+  .env-enter-depth {
+    animation: none !important;
+    opacity:   1 !important;
+    transform: none !important;
+    filter:    none !important;
+  }
+}

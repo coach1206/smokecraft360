@@ -1,0 +1,309 @@
+EXECUTE CINEMATIC ENVIRONMENTAL WORLD-BUILDING OVERHAUL
+(NO GENERIC BLACK SCREENS • NO EMPTY BACKGROUNDS • NO TEMPLATE LUXURY)
+
+##################################################
+PRIMARY OBJECTIVE
+##################################################
+
+The platform currently has:
+luxury typography
+WITHOUT
+luxury environmental storytelling.
+
+This creates:
+generic fake luxury.
+
+The system must stop feeling:
+like text floating on black backgrounds.
+
+The system must become:
+a living cinematic hospitality world.
+
+##################################################
+REMOVE GENERIC BLACK VOID SCREENS
+##################################################
+
+CURRENT ISSUE:
+Screens rely on:
+- empty black backgrounds
+- subtle gradients
+- glow overlays
+- floating text
+
+This feels:
+cheap
+generic
+unfinished
+
+REMOVE:
+all “black void” presentation logic.
+
+##################################################
+CREATE ENVIRONMENTAL STORYTELLING SYSTEM
+##################################################
+
+CREATE:
+
+EnvironmentalSceneEngine.ts
+
+This engine controls:
+- cinematic lounge environments
+- environmental transitions
+- room identity
+- atmosphere continuity
+- ambient visual storytelling
+- depth layers
+- smoke layers
+- reflections
+- cinematic lighting
+- material realism
+
+##################################################
+SPLASH SCREEN OVERHAUL
+##################################################
+
+CURRENT ISSUE:
+Splash feels like:
+a generic startup splash.
+
+NEW EXPERIENCE:
+
+The splash should feel:
+like entering a private luxury cigar sanctuary.
+
+BACKGROUND SHOULD INCLUDE:
+- soft out-of-focus lounge
+- warm amber lighting
+- cinematic smoke atmosphere
+- reflective wood textures
+- subtle ember particles
+- brass accents
+- leather seating silhouettes
+- humidor reflections
+- low-lit hospitality environment
+
+TEXT should feel:
+embedded INTO the environment.
+
+NOT floating above emptiness.
+
+##################################################
+ADD DEPTH LAYERS
+##################################################
+
+CREATE MULTI-LAYER ENVIRONMENT STACK:
+
+Layer 1:
+soft cinematic environment
+
+Layer 2:
+smoke drift
+
+Layer 3:
+light bloom
+
+Layer 4:
+depth blur
+
+Layer 5:
+material reflections
+
+Layer 6:
+typography integration
+
+Everything should feel:
+dimensional and spatial.
+
+##################################################
+REMOVE GENERIC “CYBER LUXURY”
+##################################################
+
+REMOVE:
+- random gold glow lines
+- fake futuristic minimalism
+- generic dark-tech visuals
+- empty black gradients
+- startup-tech aesthetics
+
+REPLACE WITH:
+hospitality realism.
+
+##################################################
+REAL MATERIAL LANGUAGE
+##################################################
+
+THE PLATFORM SHOULD VISUALLY FEEL MADE OF:
+
+- leather
+- walnut wood
+- brass
+- cigar ash
+- glass reflections
+- smoke haze
+- velvet
+- dim ambient lighting
+
+NOT:
+CSS gradients.
+
+##################################################
+CREATE LOCATION-BASED ENVIRONMENTS
+##################################################
+
+Each section should feel:
+like a real place.
+
+==================================================
+CRAFT HUB
+==================================================
+
+Feel:
+private members club.
+
+==================================================
+SMOKECRAFT
+==================================================
+
+Feel:
+luxury cigar lounge.
+
+==================================================
+PAIRING INTELLIGENCE
+==================================================
+
+Feel:
+sommelier tasting room.
+
+==================================================
+CONTROL CHAMBER
+==================================================
+
+Feel:
+executive operations suite.
+
+==================================================
+HOSPITALITY INTELLIGENCE
+==================================================
+
+Feel:
+private hospitality academy.
+
+##################################################
+REMOVE GENERIC STOCK IMAGERY
+##################################################
+
+NO:
+- random AI visuals
+- generic stock photos
+- disconnected imagery
+- unrelated luxury images
+
+ALL imagery must feel:
+curated and emotionally connected.
+
+##################################################
+REAL CINEMATIC IMAGE DIRECTION
+##################################################
+
+USE:
+- realistic hospitality photography
+- cinematic cigar lounge imagery
+- warm practical lighting
+- realistic people
+- atmospheric smoke
+- premium textures
+- luxury composition
+
+NO:
+- fake CGI nonsense
+- abstract cyber visuals
+- robotic futurism
+
+##################################################
+ADD ENVIRONMENT TRANSITIONS
+##################################################
+
+Transitions between sections should feel:
+like moving between rooms.
+
+NOT:
+page changes.
+
+Use:
+- smoke fades
+- ambient dimming
+- light blooms
+- depth shifts
+- slow cinematic transitions
+
+##################################################
+TOUCHSCREEN IMMERSION RULES
+##################################################
+
+The environment must:
+- feel tactile
+- feel warm
+- feel luxurious
+- feel emotionally immersive
+
+NOT:
+like a browser app.
+
+##################################################
+CREATE GLOBAL ENVIRONMENT DIRECTORY
+##################################################
+
+CREATE:
+
+/assets/environments/
+    craft-hub/
+    cigar-lounge/
+    pairing-room/
+    hospitality-academy/
+    founder-suite/
+    humidor-room/
+    tasting-room/
+    executive-lounge/
+
+##################################################
+FILES TO PATCH
+##################################################
+
+PATCH:
+
+SplashController.tsx
+EnvironmentalSceneEngine.ts
+CraftHub.tsx
+SmokeCraftJourneyEngine.ts
+PairingIntelligence.tsx
+ControlChamber.tsx
+hospitality-theme.css
+cinematic-environment.css
+
+##################################################
+FINAL EXPERIENCE GOAL
+##################################################
+
+The system should now feel like:
+
+“A living luxury hospitality world.”
+
+NOT:
+text on black screens.
+
+Users should emotionally feel:
+- atmosphere
+- warmth
+- mystery
+- luxury
+- immersion
+- realism
+- exclusivity
+
+NO EMPTY VOID SCREENS.
+NO GENERIC CYBER LUXURY.
+NO RANDOM GOLD LINES.
+NO TEMPLATE DARK UI.
+
+ONLY:
+cinematic environmental storytelling.

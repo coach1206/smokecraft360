@@ -1,7 +1,7 @@
-/* SplashController — 4-stage cinematic brand intro
- * Design: pitch-black field, hardware-accelerated logo layers,
- * zero transition blur, premium Apple-precision timing.
- * ───────────────────────────────────────────────────────── */
+/* SplashController — Cinematic Luxury Lounge Entry
+ * 6-layer depth stack: environment · overlay · bloom · smoke · embers · identity
+ * Hardware-accelerated GPU compositing throughout.
+ * ─────────────────────────────────────────────────────────────────────────── */
 
 /* ── Root container ─────────────────────────────────────────────────────── */
 .root {
@@ -9,7 +9,7 @@
   inset:           0;
   width:           100%;
   height:          100%;
-  background:      #000000;
+  background:      #0a0806;
   display:         flex;
   align-items:     center;
   justify-content: center;
@@ -17,7 +17,6 @@
   z-index:         9999;
   cursor:          pointer;
   user-select:     none;
-  /* Final sensory dissolve driven by .dissolving */
   transition:      opacity 1.9s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -26,7 +25,148 @@
   pointer-events: none;
 }
 
-/* ── Stage layer (one per brand) ────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   LAYER 1 — Cinematic Environment Background
+   Full-bleed lounge photograph, softly defocused to push depth behind type.
+   ══════════════════════════════════════════════════════════════════════════ */
+.envBg {
+  position:            absolute;
+  inset:               0;
+  background-size:     cover;
+  background-position: center 35%;
+  background-repeat:   no-repeat;
+  filter:              blur(3px) brightness(0.55) saturate(0.80);
+  transform:           translate3d(0, 0, 0) scale(1.06);
+  will-change:         transform;
+  backface-visibility: hidden;
+  pointer-events:      none;
+  animation:           envDrift 22s ease-in-out infinite;
+}
+
+@keyframes envDrift {
+  0%   { transform: translate3d(0, 0, 0)     scale(1.06); }
+  33%  { transform: translate3d(-6px, -4px, 0) scale(1.08); }
+  66%  { transform: translate3d(4px, -8px, 0)  scale(1.07); }
+  100% { transform: translate3d(0, 0, 0)     scale(1.06); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LAYER 2 — Dark Material Overlay
+   Deep warm-black gradient anchors depth. Vignette burns edges.
+   ══════════════════════════════════════════════════════════════════════════ */
+.envOverlay {
+  position:   absolute;
+  inset:      0;
+  background: linear-gradient(
+    180deg,
+    rgba(6,4,2,0.82)   0%,
+    rgba(10,8,4,0.68)  30%,
+    rgba(10,8,4,0.64)  55%,
+    rgba(6,4,2,0.78)   80%,
+    rgba(4,3,1,0.90)   100%
+  );
+  pointer-events: none;
+}
+
+.envVignette {
+  position:       absolute;
+  inset:          0;
+  box-shadow:     inset 0 0 220px 80px rgba(0,0,0,0.88);
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LAYER 3 — Warm Amber Light Bloom
+   ══════════════════════════════════════════════════════════════════════════ */
+.envBloom {
+  position:       absolute;
+  top:            50%;
+  left:           50%;
+  width:          900px;
+  height:         660px;
+  transform:      translate(-50%, -50%);
+  border-radius:  50%;
+  background:     radial-gradient(
+    ellipse at center,
+    rgba(212,175,55,0.16)  0%,
+    rgba(180,120,40,0.10)  25%,
+    rgba(140,90,20,0.05)   50%,
+    transparent            72%
+  );
+  animation:      bloomBreathe 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes bloomBreathe {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.94); }
+  50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LAYER 4 — Smoke Drift
+   ══════════════════════════════════════════════════════════════════════════ */
+.smokeField {
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  overflow:       hidden;
+}
+
+.smokeWisp {
+  position:       absolute;
+  bottom:         -40px;
+  border-radius:  50%;
+  background:     radial-gradient(
+    ellipse at center,
+    rgba(230,200,150,0.07) 0%,
+    rgba(220,190,140,0.03) 50%,
+    transparent            72%
+  );
+  filter:         blur(22px);
+  will-change:    transform, opacity;
+  backface-visibility: hidden;
+  animation:      wispsRise var(--wdur, 11s) ease-out var(--wdel, 0s) infinite;
+}
+
+@keyframes wispsRise {
+  0%   { transform: translate3d(0, 0, 0)      scale(0.7);  opacity: 0; }
+  12%  { opacity: 0.7; }
+  60%  { transform: translate3d(var(--wdx, 12px), -55%, 0) scale(1.4); opacity: 0.55; }
+  100% { transform: translate3d(var(--wdx2, -8px), -130%, 0) scale(2.0); opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LAYER 5 — Ember Sparks
+   ══════════════════════════════════════════════════════════════════════════ */
+.emberField {
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  overflow:       hidden;
+}
+
+.ember {
+  position:       absolute;
+  width:          3px;
+  height:         3px;
+  border-radius:  50%;
+  background:     #D4AF37;
+  box-shadow:     0 0 6px 2px rgba(212,175,55,0.60);
+  will-change:    transform, opacity;
+  backface-visibility: hidden;
+  animation:      emberRise var(--edur, 4s) ease-out var(--edel, 0s) infinite;
+}
+
+@keyframes emberRise {
+  0%   { transform: translate3d(0, 0, 0);                          opacity: 0; }
+  8%   { opacity: 0.9; }
+  50%  { transform: translate3d(var(--edx, 8px), -60px, 0);        opacity: 0.7; }
+  100% { transform: translate3d(var(--edx2, -6px), -130px, 0);     opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LAYER 6 — Brand Identity (logo layers)
+   ══════════════════════════════════════════════════════════════════════════ */
 .stageLayer {
   position:        absolute;
   inset:           0;
@@ -36,122 +176,65 @@
   pointer-events:  none;
 }
 
-/* ── Image wrapper — GPU promotion, anti-blur ───────────────────────────── */
 .imgWrap {
   display:             flex;
   align-items:         center;
   justify-content:     center;
-  max-width:           60vw;
-  max-height:          58vh;
-  /* Hardware acceleration — eliminates runtime transition blur */
+  max-width:           56vw;
+  max-height:          52vh;
   transform:           translate3d(0, 0, 0);
   will-change:         transform, opacity;
   backface-visibility: hidden;
 }
 
-/* ── Logo base ──────────────────────────────────────────────────────────── */
 .logo {
   display:             block;
   max-width:           100%;
   max-height:          100%;
   object-fit:          contain;
-  /* GPU promotion on each element */
   transform:           translate3d(0, 0, 0);
   will-change:         transform, opacity;
   backface-visibility: hidden;
   image-rendering:     -webkit-optimize-contrast;
-  /* Start invisible; animation class drives first render */
   opacity:             0;
+  filter:              drop-shadow(0 8px 40px rgba(0,0,0,0.70));
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STAGE 1 — Profound Innovation
-   linear 1.5 s fade-in → fill:forwards holds at opacity 1
-   exit: 2 s horizontal slide-dissolve to the left
-   ═══════════════════════════════════════════════════════════ */
-.s1Enter {
-  animation: s1FadeIn 1500ms linear forwards;
-}
+/* ── Stage 1: Profound Innovation ───────────────────────────────────────── */
+.s1Enter { animation: s1FadeIn  1500ms linear                          forwards; }
+.s1Exit  { animation: s1SlideOut 2000ms cubic-bezier(0.4,0,0.2,1)     forwards; }
 
-.s1Exit {
-  animation: s1SlideOut 2000ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+@keyframes s1FadeIn  {
+  0%   { opacity: 0; transform: translate3d(0, 12px, 0); }
+  100% { opacity: 1; transform: translate3d(0,  0px, 0); }
 }
-
-@keyframes s1FadeIn {
-  0%   { opacity: 0;   transform: translate3d(0, 0, 0); }
-  100% { opacity: 1;   transform: translate3d(0, 0, 0); }
-}
-
 @keyframes s1SlideOut {
-  0%   { opacity: 1;   transform: translate3d(0, 0, 0); }
-  100% { opacity: 0;   transform: translate3d(-80px, 0, 0); }
+  0%   { opacity: 1; transform: translate3d(0,   0, 0); }
+  100% { opacity: 0; transform: translate3d(-80px, 0, 0); }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STAGE 2 — Novee OS
-   2 s slide-in from the right + fade-in
-   exit: 2 s smooth fade-dissolve
-   ═══════════════════════════════════════════════════════════ */
-.s2Enter {
-  animation: s2SlideIn 2000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.s2Exit {
-  animation: s2FadeOut 2000ms ease forwards;
-}
+/* ── Stage 2: Novee OS ──────────────────────────────────────────────────── */
+.s2Enter { animation: s2SlideIn 2000ms cubic-bezier(0.16,1,0.3,1)     forwards; }
+.s2Exit  { animation: s2FadeOut 2000ms ease                            forwards; }
 
 @keyframes s2SlideIn {
-  0%   { opacity: 0;   transform: translate3d(64px, 0, 0); }
-  100% { opacity: 1;   transform: translate3d(0, 0, 0); }
+  0%   { opacity: 0; transform: translate3d(64px, 0, 0); }
+  100% { opacity: 1; transform: translate3d( 0px, 0, 0); }
 }
-
 @keyframes s2FadeOut {
-  0%   { opacity: 1;   transform: translate3d(0, 0, 0); }
-  100% { opacity: 0;   transform: translate3d(0, 0, 0); }
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STAGE 3 — CraftHub Gateway
-   2 s centered scale-zoom + fade-in (no exit — root dissolves)
-   ═══════════════════════════════════════════════════════════ */
-.s3Enter {
-  animation: s3ZoomIn 2000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+/* ── Stage 3: CraftHub ──────────────────────────────────────────────────── */
+.s3Enter { animation: s3ZoomIn 2000ms cubic-bezier(0.16,1,0.3,1)      forwards; }
 
 @keyframes s3ZoomIn {
-  0%   { opacity: 0;   transform: translate3d(0, 0, 0) scale(0.74); }
-  100% { opacity: 1;   transform: translate3d(0, 0, 0) scale(1.00); }
+  0%   { opacity: 0; transform: translate3d(0,0,0) scale(0.74); }
+  100% { opacity: 1; transform: translate3d(0,0,0) scale(1.00); }
 }
 
-/* ── Ambient gold radial pulse (always-on atmospheric layer) ────────────── */
-.pulse {
-  position:       absolute;
-  top:            50%;
-  left:           50%;
-  transform:      translate(-50%, -50%);
-  width:          380px;
-  height:         380px;
-  border-radius:  50%;
-  background:     radial-gradient(
-    circle,
-    rgba(212, 175, 55, 0.07) 0%,
-    rgba(212, 175, 55, 0.03) 45%,
-    transparent 70%
-  );
-  animation:      pulseBreathe 4.2s ease-in-out infinite;
-  pointer-events: none;
-  z-index:        -1;
-}
-
-@keyframes pulseBreathe {
-  0%   { transform: translate(-50%, -50%) scale(0.82); opacity: 0;    }
-  18%  { opacity: 1; }
-  50%  { transform: translate(-50%, -50%) scale(1.18); opacity: 0.75; }
-  82%  { opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(0.82); opacity: 0;    }
-}
-
-/* ── Tap hint ───────────────────────────────────────────────────────────── */
+/* ── Tap hint ────────────────────────────────────────────────────────────── */
 .tapHint {
   position:       absolute;
   bottom:         32px;
@@ -159,22 +242,20 @@
   font-size:      9px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color:          rgba(255, 255, 255, 0.16);
+  color:          rgba(212,175,55,0.30);
   opacity:        0;
   animation:      hintFadeIn 0.7s ease 5.5s forwards;
   pointer-events: none;
-  z-index:        1;
+  z-index:        10;
 }
-
 @keyframes hintFadeIn {
-  from { opacity: 0;    transform: translateY(4px); }
-  to   { opacity: 1;    transform: translateY(0);   }
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
 
-/* ── Reduced motion — honour OS preference ──────────────────────────────── */
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .root            { transition: none !important; }
-  .pulse           { animation: none !important; opacity: 0 !important; }
-  .logo            { animation: none !important; opacity: 1 !important; }
-  .tapHint         { animation: none !important; opacity: 1 !important; }
+  .root, .envBg, .envBloom, .smokeWisp, .ember { animation: none !important; }
+  .logo { animation: none !important; opacity: 1 !important; }
+  .tapHint { animation: none !important; opacity: 1 !important; }
 }
