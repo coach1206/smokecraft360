@@ -1,3 +1,6 @@
+import { createElement } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+
 /**
  * EnvironmentalSceneEngine — cinematic location-based scene system.
  *
@@ -51,6 +54,8 @@ export interface EnvironmentalScene {
   entryTransition: TransitionType;
   /** Vignette strength 0–1 */
   vignetteStrength: number;
+  /** CSS object-position value for the photographic layer */
+  focalPoint: string;
 }
 
 const LOUNGE_BG_FALLBACK =
@@ -71,6 +76,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#D4AF37',
     entryTransition: 'smoke-fade',
     vignetteStrength: 0.85,
+    focalPoint: 'center 36%',
   },
   'craft-hub': {
     id: 'craft-hub',
@@ -86,6 +92,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#D4AF37',
     entryTransition: 'depth-shift',
     vignetteStrength: 0.75,
+    focalPoint: 'center 34%',
   },
   'cigar-lounge': {
     id: 'cigar-lounge',
@@ -102,6 +109,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#C8821E',
     entryTransition: 'smoke-fade',
     vignetteStrength: 0.90,
+    focalPoint: 'center 42%',
   },
   'pairing-room': {
     id: 'pairing-room',
@@ -118,6 +126,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#B06080',
     entryTransition: 'light-bloom',
     vignetteStrength: 0.80,
+    focalPoint: 'center 42%',
   },
   'control-chamber': {
     id: 'control-chamber',
@@ -134,6 +143,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#C8A030',
     entryTransition: 'depth-shift',
     vignetteStrength: 0.70,
+    focalPoint: 'center 35%',
   },
   'founder-suite': {
     id: 'founder-suite',
@@ -149,6 +159,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#E8C84A',
     entryTransition: 'ember-cross',
     vignetteStrength: 0.90,
+    focalPoint: 'center 38%',
   },
   'humidor-room': {
     id: 'humidor-room',
@@ -165,6 +176,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#A06820',
     entryTransition: 'smoke-fade',
     vignetteStrength: 0.85,
+    focalPoint: 'center 44%',
   },
   'tasting-room': {
     id: 'tasting-room',
@@ -181,6 +193,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#D4914A',
     entryTransition: 'light-bloom',
     vignetteStrength: 0.80,
+    focalPoint: 'center 44%',
   },
   'executive-lounge': {
     id: 'executive-lounge',
@@ -196,6 +209,7 @@ export const SCENES: Record<SceneId, EnvironmentalScene> = {
     accentGlow: '#C8A030',
     entryTransition: 'depth-shift',
     vignetteStrength: 0.78,
+    focalPoint: 'center 34%',
   },
 };
 
@@ -207,12 +221,12 @@ export function getScene(id: SceneId): EnvironmentalScene {
 export function sceneBgStyle(
   scene: EnvironmentalScene,
   baseUrl: string
-): React.CSSProperties {
+): CSSProperties {
   const url = `${baseUrl}images/${scene.bgImage}`;
   return {
     backgroundImage: `url("${url}")`,
     backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundPosition: scene.focalPoint,
     backgroundRepeat: 'no-repeat',
   };
 }
@@ -221,4 +235,110 @@ export function sceneBgStyle(
 export function sceneVignette(scene: EnvironmentalScene): string {
   const v = scene.vignetteStrength;
   return `inset 0 0 ${Math.round(v * 220)}px ${Math.round(v * 80)}px rgba(0,0,0,${(v * 0.9).toFixed(2)})`;
+}
+
+const WISPS = [
+  { left: '8%', width: 118, height: 172, dur: '13s', del: '0s', dx: '16px', dx2: '-14px' },
+  { left: '24%', width: 92, height: 138, dur: '10s', del: '1.7s', dx: '-10px', dx2: '13px' },
+  { left: '43%', width: 152, height: 218, dur: '15s', del: '0.8s', dx: '12px', dx2: '-16px' },
+  { left: '62%', width: 104, height: 156, dur: '12s', del: '2.5s', dx: '-14px', dx2: '10px' },
+  { left: '80%', width: 132, height: 188, dur: '14s', del: '1.2s', dx: '10px', dx2: '-12px' },
+] as const;
+
+const EMBERS = [
+  { left: '13%', bottom: '9%', dur: '4.2s', del: '0s', dx: '8px', dx2: '-6px' },
+  { left: '31%', bottom: '12%', dur: '5.8s', del: '1.1s', dx: '-10px', dx2: '7px' },
+  { left: '52%', bottom: '7%', dur: '4.8s', del: '0.5s', dx: '6px', dx2: '-8px' },
+  { left: '74%', bottom: '14%', dur: '6.2s', del: '2.1s', dx: '-8px', dx2: '10px' },
+] as const;
+
+const TRANSITION_CLASS: Record<TransitionType, string> = {
+  'smoke-fade': 'env-enter-smoke',
+  'light-bloom': 'env-enter-bloom',
+  'depth-shift': 'env-enter-depth',
+  'ember-cross': 'env-enter-smoke',
+};
+
+interface EnvironmentalSceneStackProps {
+  sceneId: SceneId;
+  children?: ReactNode;
+  className?: string;
+  contentClassName?: string;
+  style?: CSSProperties;
+  baseUrl?: string;
+}
+
+export function EnvironmentalSceneStack({
+  sceneId,
+  children,
+  className = '',
+  contentClassName = '',
+  style,
+  baseUrl = import.meta.env.BASE_URL ?? '/',
+}: EnvironmentalSceneStackProps) {
+  const scene = getScene(sceneId);
+  const bgUrl = `${baseUrl}images/${scene.bgImage}`;
+  const stackStyle: CSSProperties = {
+    '--env-bg': `url("${bgUrl}")`,
+    '--env-bg-fallback': scene.bgFallback,
+    '--env-bg-position': scene.focalPoint,
+    '--env-overlay-depth': scene.overlayDepth,
+    '--env-bloom-color': scene.bloomColour,
+    '--env-bloom-opacity': scene.bloomOpacity,
+    '--env-smoke-tint': scene.smokeTint,
+    '--env-accent': scene.accentGlow,
+    ...style,
+  } as CSSProperties;
+
+  const wisps = scene.smokeIntensity === 'none' ? null : createElement(
+    'div',
+    { className: `env-smoke-layer env-smoke-layer--${scene.smokeIntensity}`, 'aria-hidden': true },
+    WISPS.map((w, i) => createElement('div', {
+      key: `wisp-${i}`,
+      className: 'env-wisp',
+      style: {
+        left: w.left,
+        width: w.width,
+        height: w.height,
+        '--w-dur': w.dur,
+        '--w-del': w.del,
+        '--w-dx': w.dx,
+        '--w-dx2': w.dx2,
+      } as CSSProperties,
+    }))
+  );
+
+  const embers = scene.id === 'control-chamber' ? null : createElement(
+    'div',
+    { className: 'env-ember-layer', 'aria-hidden': true },
+    EMBERS.map((e, i) => createElement('div', {
+      key: `ember-${i}`,
+      className: 'env-ember',
+      style: {
+        left: e.left,
+        bottom: e.bottom,
+        '--e-dur': e.dur,
+        '--e-del': e.del,
+        '--e-dx': e.dx,
+        '--e-dx2': e.dx2,
+      } as CSSProperties,
+    }))
+  );
+
+  return createElement(
+    'section',
+    {
+      className: `env-depth-stack ${TRANSITION_CLASS[scene.entryTransition]} mat-${scene.material} ${className}`.trim(),
+      style: stackStyle,
+      'aria-label': scene.identity,
+    },
+    createElement('div', { className: 'env-scene-bg', 'aria-hidden': true }),
+    createElement('div', { className: 'env-reflection-layer', 'aria-hidden': true }),
+    createElement('div', { className: 'env-overlay', 'aria-hidden': true }),
+    createElement('div', { className: 'env-bloom', 'aria-hidden': true }),
+    wisps,
+    embers,
+    createElement('div', { className: 'env-vignette', 'aria-hidden': true }),
+    createElement('div', { className: `env-content ${contentClassName}`.trim() }, children)
+  );
 }

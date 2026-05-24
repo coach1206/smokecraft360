@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGuest, Phase } from "../context/GuestProfileContext";
 import { generateCompetitors, injectToLeaderboard, clearFakeCompetitors } from "../lib/fakeCompetitorEngine";
+import { EnvironmentalSceneStack } from "../lib/EnvironmentalSceneEngine";
 
 const GOLD = "#D4AF37";
 
@@ -36,11 +37,12 @@ export default function ControlChamber() {
 
   if (!isAuthorized) {
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "black", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <EnvironmentalSceneStack sceneId="control-chamber" className="env-depth-stack--fixed" contentClassName="env-full-content" style={{ zIndex: 1000 }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, touchAction: "manipulation" }}>
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          style={{ width: "100%", maxWidth: 400, padding: 32, borderRadius: 16, border: `1px solid ${GOLD}4c`, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(20px)", textAlign: "center" }}
+          style={{ width: "100%", maxWidth: 400, padding: 32, borderRadius: 8, border: `1px solid ${GOLD}4c`, background: "rgba(14,10,6,0.78)", backdropFilter: "blur(20px)", textAlign: "center", boxShadow: "0 30px 90px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,236,184,0.10)" }}
         >
           <div style={{ marginBottom: 32 }}>
             <div style={{ color: GOLD, fontSize: 32, marginBottom: 8 }}>◈</div>
@@ -54,24 +56,28 @@ export default function ControlChamber() {
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               placeholder="ENTER PIN"
-              style={{ width: "100%", background: "rgba(0,0,0,0.5)", border: `1px solid ${GOLD}33`, borderRadius: 8, padding: 16, textAlign: "center", color: GOLD, fontSize: 24, letterSpacing: "0.5em", outline: "none" }}
+              inputMode="numeric"
+              autoComplete="off"
+              style={{ width: "100%", minHeight: 68, background: "rgba(0,0,0,0.5)", border: `1px solid ${GOLD}33`, borderRadius: 8, padding: 16, textAlign: "center", color: GOLD, fontSize: 28, letterSpacing: "0.5em", outline: "none" }}
               onKeyDown={(e) => e.key === 'Enter' && verifyPin()}
             />
             {error && <p style={{ color: "#ef4444", fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase" }}>{error}</p>}
             <button 
               onClick={verifyPin}
-              style={{ width: "100%", padding: 16, background: `${GOLD}1a`, border: `1px solid ${GOLD}66`, color: GOLD, fontWeight: "bold", letterSpacing: "0.2em", borderRadius: 8, cursor: "pointer" }}
+              style={{ width: "100%", minHeight: 64, padding: 16, background: `${GOLD}1a`, border: `1px solid ${GOLD}66`, color: GOLD, fontWeight: "bold", letterSpacing: "0.2em", borderRadius: 8, cursor: "pointer", touchAction: "manipulation" }}
             >
               INITIALIZE ACCESS
             </button>
           </div>
         </motion.div>
       </div>
+      </EnvironmentalSceneStack>
     );
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "black", color: GOLD, fontFamily: "sans-serif", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <EnvironmentalSceneStack sceneId="control-chamber" className="env-depth-stack--fixed" contentClassName="env-full-content" style={{ zIndex: 1000, color: GOLD, fontFamily: "sans-serif" }}>
+    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", touchAction: "manipulation" }}>
       {/* Header */}
       <header style={{ height: 80, borderBottom: `1px solid ${GOLD}33`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px", background: "rgba(0,0,0,0.5)", backdropFilter: "blur(10px)", position: "relative", zIndex: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -83,7 +89,7 @@ export default function ControlChamber() {
         </div>
         <button 
           onClick={() => setPhase("crafthub")}
-          style={{ padding: "8px 24px", border: `1px solid ${GOLD}66`, borderRadius: 4, background: "transparent", color: GOLD, cursor: "pointer", letterSpacing: "0.1em", fontSize: 12 }}
+          style={{ minHeight: 58, padding: "0 28px", border: `1px solid ${GOLD}66`, borderRadius: 6, background: "rgba(212,175,55,0.08)", color: GOLD, cursor: "pointer", letterSpacing: "0.1em", fontSize: 14, fontWeight: 800, touchAction: "manipulation" }}
         >
           EXIT CHAMBER
         </button>
@@ -104,19 +110,19 @@ export default function ControlChamber() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               style={{
-                display: "flex", alignItems: "center", gap: 16, padding: "16px 24px", borderRadius: 8, transition: "all 0.2s",
+                display: "flex", alignItems: "center", gap: 16, minHeight: 66, padding: "16px 24px", borderRadius: 8, transition: "all 0.2s",
                 background: activeTab === tab.id ? `${GOLD}33` : "transparent",
                 border: activeTab === tab.id ? `1px solid ${GOLD}66` : "1px solid transparent",
                 color: activeTab === tab.id ? GOLD : `${GOLD}66`,
-                cursor: "pointer", textAlign: "left"
+                cursor: "pointer", textAlign: "left", touchAction: "manipulation"
               }}
             >
               <span style={{ fontSize: 20 }}>{tab.icon}</span>
-              <span style={{ fontSize: 10, fontWeight: "bold", letterSpacing: "0.1em", textTransform: "uppercase" }}>{tab.label}</span>
+              <span style={{ fontSize: 12, fontWeight: "bold", letterSpacing: "0.1em", textTransform: "uppercase" }}>{tab.label}</span>
             </button>
           ))}
           <div style={{ marginTop: "auto", padding: 16, borderTop: `1px solid ${GOLD}1a` }}>
-             <button onClick={resetProfile} style={{ width: "100%", padding: 12, fontSize: 10, letterSpacing: "0.1em", border: "1px solid rgba(153,27,27,0.4)", color: "#ef4444", background: "transparent", cursor: "pointer", textTransform: "uppercase", fontWeight: "bold", borderRadius: 4 }}>Hard Reset System</button>
+             <button onClick={resetProfile} style={{ width: "100%", minHeight: 58, padding: 12, fontSize: 12, letterSpacing: "0.1em", border: "1px solid rgba(153,27,27,0.4)", color: "#ef4444", background: "transparent", cursor: "pointer", textTransform: "uppercase", fontWeight: "bold", borderRadius: 6, touchAction: "manipulation" }}>Hard Reset System</button>
           </div>
         </nav>
 
@@ -133,11 +139,11 @@ export default function ControlChamber() {
                     key={p}
                     onClick={() => setPhase(p as Phase)}
                     style={{
-                      padding: 24, border: `1px solid ${profile.phase === p ? GOLD : GOLD + "33"}`, borderRadius: 12, background: profile.phase === p ? `${GOLD}33` : "transparent",
-                      color: GOLD, cursor: "pointer", transition: "all 0.2s"
+                      minHeight: 76, padding: 24, border: `1px solid ${profile.phase === p ? GOLD : GOLD + "33"}`, borderRadius: 12, background: profile.phase === p ? `${GOLD}33` : "transparent",
+                      color: GOLD, cursor: "pointer", transition: "all 0.2s", touchAction: "manipulation"
                     }}
                   >
-                    <div style={{ fontSize: 10, letterSpacing: "0.1em", fontWeight: "bold", textTransform: "uppercase" }}>{p.replace(/_/g, " ")}</div>
+                    <div style={{ fontSize: 12, letterSpacing: "0.1em", fontWeight: "bold", textTransform: "uppercase" }}>{p.replace(/_/g, " ")}</div>
                   </button>
                 ))}
               </motion.div>
@@ -155,8 +161,8 @@ export default function ControlChamber() {
                     key={m.id}
                     onClick={() => updateProfile({ sessionType: m.id as any })}
                     style={{
-                      padding: 32, border: `1px solid ${profile.sessionType === m.id ? GOLD : GOLD + "1a"}`, borderRadius: 16, background: profile.sessionType === m.id ? `${GOLD}33` : "transparent",
-                      color: GOLD, cursor: "pointer", textAlign: "left", transition: "all 0.2s"
+                      minHeight: 126, padding: 32, border: `1px solid ${profile.sessionType === m.id ? GOLD : GOLD + "1a"}`, borderRadius: 16, background: profile.sessionType === m.id ? `${GOLD}33` : "transparent",
+                      color: GOLD, cursor: "pointer", textAlign: "left", transition: "all 0.2s", touchAction: "manipulation"
                     }}
                   >
                     <div style={{ fontSize: 20, fontWeight: "bold", letterSpacing: "0.1em", marginBottom: 4 }}>{m.label}</div>
@@ -176,13 +182,13 @@ export default function ControlChamber() {
                         const comps = generateCompetitors(5, profile.merit);
                         injectToLeaderboard(comps, "venue-1");
                       }}
-                      style={{ padding: "16px 32px", background: `${GOLD}1a`, border: `1px solid ${GOLD}66`, color: GOLD, fontWeight: "bold", letterSpacing: "0.1em", borderRadius: 8, cursor: "pointer" }}
+                      style={{ minHeight: 64, padding: "16px 32px", background: `${GOLD}1a`, border: `1px solid ${GOLD}66`, color: GOLD, fontWeight: "bold", letterSpacing: "0.1em", borderRadius: 8, cursor: "pointer", touchAction: "manipulation" }}
                     >
                       INJECT 5 COMPETITORS
                     </button>
                     <button 
                       onClick={() => clearFakeCompetitors("venue-1")}
-                      style={{ padding: "16px 32px", border: "1px solid rgba(153,27,27,0.4)", color: "#ef4444", borderRadius: 8, fontWeight: "bold", letterSpacing: "0.1em", background: "transparent", cursor: "pointer" }}
+                      style={{ minHeight: 64, padding: "16px 32px", border: "1px solid rgba(153,27,27,0.4)", color: "#ef4444", borderRadius: 8, fontWeight: "bold", letterSpacing: "0.1em", background: "transparent", cursor: "pointer", touchAction: "manipulation" }}
                     >
                       CLEAR FAKE DATA
                     </button>
@@ -214,8 +220,8 @@ export default function ControlChamber() {
                     key={m.id}
                     onClick={() => updateProfile({ mentor: m.id })}
                     style={{
-                      padding: 32, border: `1px solid ${profile.mentor === m.id ? GOLD : GOLD + "1a"}`, borderRadius: 16, background: profile.mentor === m.id ? `${GOLD}33` : "transparent",
-                      color: GOLD, cursor: "pointer", textAlign: "left", transition: "all 0.2s"
+                      minHeight: 126, padding: 32, border: `1px solid ${profile.mentor === m.id ? GOLD : GOLD + "1a"}`, borderRadius: 16, background: profile.mentor === m.id ? `${GOLD}33` : "transparent",
+                      color: GOLD, cursor: "pointer", textAlign: "left", transition: "all 0.2s", touchAction: "manipulation"
                     }}
                   >
                     <div style={{ fontSize: 20, fontWeight: "bold", letterSpacing: "0.1em", marginBottom: 4, textTransform: "uppercase" }}>{m.name}</div>
@@ -229,16 +235,17 @@ export default function ControlChamber() {
       </div>
 
       {/* Footer Status Bar */}
-      <footer style={{ height: 40, borderTop: `1px solid ${GOLD}33`, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px" }}>
-        <div style={{ display: "flex", gap: 24, fontSize: 9, letterSpacing: "0.2em", fontWeight: "bold", opacity: 0.6 }}>
+      <footer style={{ minHeight: 52, borderTop: `1px solid ${GOLD}33`, background: "rgba(13,8,4,0.84)", backdropFilter: "blur(18px)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px" }}>
+        <div style={{ display: "flex", gap: 24, fontSize: 11, letterSpacing: "0.16em", fontWeight: "bold", opacity: 0.7 }}>
           <span>STATUS: ONLINE</span>
           <span>LATENCY: 12ms</span>
           <span>VENUE: GLOBAL_ALPHA</span>
         </div>
-        <div style={{ fontSize: 9, letterSpacing: "0.2em", fontWeight: "bold", opacity: 0.4 }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.16em", fontWeight: "bold", opacity: 0.5 }}>
           © 2024 PROFOUND INNOVATIONS
         </div>
       </footer>
     </div>
+    </EnvironmentalSceneStack>
   );
 }

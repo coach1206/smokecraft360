@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { StaffPinGate } from "@/components/StaffPinGate";
 import { Router } from "wouter";
+import { EnvironmentalSceneStack } from "@/lib/EnvironmentalSceneEngine";
 
 const DeveloperGate   = lazy(() => import("@/pages/DeveloperGate"));
 const StaffTerminal   = lazy(() => import("@/pages/StaffTerminal"));
@@ -364,12 +365,18 @@ export function CraftGrid({
   }, []);
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#010101", display: "flex", flexDirection: "row" }}>
+    <div style={{ position: "fixed", inset: 0, background: "#130b05", display: "flex", flexDirection: "row" }}>
       {/* ── Left Obsidian Nav Rail — 64px ── */}
       <ObsidianNavRail active="HUB" onSC={onSmokecraft} />
 
       {/* ── Main content area — pushed 64px right ── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
+      <EnvironmentalSceneStack
+        sceneId="craft-hub"
+        className="env-full-content"
+        contentClassName="env-full-content"
+        style={{ flex: 1, minWidth: 0 }}
+      >
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", touchAction: "manipulation" }}>
       {/* Ambient back-lit radial gradient */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, background: "radial-gradient(ellipse 70% 60% at 50% 80%, rgba(212,175,55,0.07) 0%, transparent 70%)" }} />
 
@@ -400,7 +407,7 @@ export function CraftGrid({
           <img src={IMG("logo_craft_hub.jpg")} alt="Craft Hub" style={{ height: 48, width: "auto", objectFit: "contain" }} />
           <div>
             <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 600, color: GOLD, letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>Craft Hub</p>
-            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.30em", color: "rgba(240,228,196,0.38)", margin: 0, textTransform: "uppercase" }}>Select Your Craft Experience</p>
+            <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, letterSpacing: "0.24em", color: "rgba(240,228,196,0.50)", margin: 0, textTransform: "uppercase" }}>Touch a craft experience</p>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -413,11 +420,9 @@ export function CraftGrid({
           {!isAdminView && onStaffAccess && (
             <motion.button
               onClick={onStaffAccess}
-              onTouchStart={onStaffAccess}
               whileTap={{ scale: 0.96 }}
-              whileHover={{ boxShadow: "0 0 32px rgba(212,175,55,0.55), 0 0 8px rgba(212,175,55,0.80)" }}
               style={{
-                height: 58, padding: "0 28px",
+                minHeight: 64, padding: "0 30px",
                 background: "linear-gradient(135deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.08) 100%)",
                 border: "2px solid #D4AF37",
                 borderRadius: 8,
@@ -427,9 +432,9 @@ export function CraftGrid({
                 fontFamily: "'Inter',sans-serif",
                 display: "flex", alignItems: "center", gap: 10,
                 boxShadow: "0 0 18px rgba(212,175,55,0.28), inset 0 1px 0 rgba(212,175,55,0.20)",
-                whiteSpace: "nowrap",
+                whiteSpace: "nowrap", touchAction: "manipulation",
               }}>
-              ⚡ LAUNCH TERMINAL (POS 3)
+              LAUNCH TERMINAL
             </motion.button>
           )}
         </div>
@@ -445,6 +450,7 @@ export function CraftGrid({
                 key={tile.id}
                 onHoverStart={() => setHovered(tile.id)}
                 onHoverEnd={() => setHovered(null)}
+                onPointerDown={() => setHovered(tile.id)}
                 onClick={() =>
                   tile.id === "developer" ? setShowDevGate(true) :
                   tile.id === "pos"       ? setShowStaffTerminal(true) :
@@ -455,7 +461,7 @@ export function CraftGrid({
                   position: "relative", border: "none", padding: 0,
                   background: "#010101", cursor: "pointer", overflow: "hidden",
                   display: "flex", alignItems: "flex-end", justifyContent: "flex-start",
-                  borderRight: "1px solid rgba(212,175,55,0.05)",
+                  borderRight: "1px solid rgba(212,175,55,0.05)", touchAction: "manipulation",
                 }}
               >
                 <motion.div animate={{ opacity: isHov ? 1 : 0 }} transition={{ duration: 0.3 }}
@@ -463,8 +469,8 @@ export function CraftGrid({
                 <motion.div animate={{ opacity: isHov ? 0.08 : 0.03 }} transition={{ duration: 0.4 }}
                   style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 80% 80% at 20% 80%, ${tile.accent}, transparent)` }} />
                 <div style={{ padding: "0 36px 40px", position: "relative", zIndex: 2 }}>
-                  <div style={{ fontSize: 10, color: `${tile.accent}77`, letterSpacing: "0.32em", textTransform: "uppercase", marginBottom: 12, fontFamily: "'Inter',sans-serif" }}>
-                    ADMIN OPS  →
+                  <div style={{ fontSize: 13, color: `${tile.accent}99`, letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 12, fontFamily: "'Inter',sans-serif" }}>
+                    Tap to open
                   </div>
                   <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 42, fontWeight: 700, color: "#FDFBF7", letterSpacing: "0.04em", lineHeight: 1.05, marginBottom: 10, textShadow: "0 0 40px rgba(0,0,0,0.90)" }}>
                     {tile.label}
@@ -494,13 +500,15 @@ export function CraftGrid({
               type="button"
               onHoverStart={() => setHovered(tile.id)}
               onHoverEnd={() => setHovered(null)}
+              onFocus={() => setHovered(tile.id)}
+              onBlur={() => setHovered(null)}
               onPointerDown={() => tile.active && onSmokecraft()}
               whileTap={tile.active ? { scale: 0.98 } : {}}
               style={{
                 position: "relative", border: "none", padding: 0,
                 background: "transparent", cursor: tile.active ? "pointer" : "default",
                 overflow: "hidden", outline: "none",
-                borderRight: "1px solid rgba(255,255,255,0.04)",
+                borderRight: "1px solid rgba(255,255,255,0.04)", touchAction: "manipulation",
               }}
             >
               <AnimatePresence mode="sync">
@@ -509,7 +517,7 @@ export function CraftGrid({
                   src={tile.imgs[imgIndices[tile.id]]}
                   alt={tile.label}
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, scale: isHovered && tile.active ? 1.06 : 1 }}
+                  animate={{ opacity: 1, scale: isHovered && tile.active ? 1.05 : 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ opacity: { duration: 1.4 }, scale: { duration: 0.6, ease: EASE } }}
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
@@ -553,14 +561,14 @@ export function CraftGrid({
                     transition={{ duration: 1.4, repeat: Infinity }}
                     style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }}
                   />
-                  <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.26em", color: "#32B45A99", textTransform: "uppercase" }}>Active</span>
+                  <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, letterSpacing: "0.18em", color: "#32B45Acc", textTransform: "uppercase", fontWeight: 800 }}>Active</span>
                 </div>
               )}
 
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 28px 32px" }}>
                 <motion.div animate={{ y: isHovered && tile.active ? -6 : 0 }} transition={{ duration: 0.4, ease: EASE }}>
-                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, letterSpacing: "0.38em", color: tile.active ? `${tile.accent}cc` : "rgba(253,251,247,0.30)", textTransform: "uppercase", margin: "0 0 12px" }}>
-                    {tile.active ? "Select Experience  →" : "Not Yet Available"}
+                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, letterSpacing: "0.24em", color: tile.active ? `${tile.accent}dd` : "rgba(253,251,247,0.42)", textTransform: "uppercase", margin: "0 0 12px", fontWeight: 800 }}>
+                    {tile.active ? "Tap to enter" : "Coming soon"}
                   </p>
                   <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 44, fontWeight: 700, color: "#FDFBF7", letterSpacing: "0.04em", margin: "0 0 10px", lineHeight: 1.05, textShadow: `0 0 40px rgba(0,0,0,0.90), 0 2px 8px rgba(0,0,0,0.70)` }}>
                     {tile.label}
@@ -572,7 +580,7 @@ export function CraftGrid({
 
                 {tile.active && (
                   <motion.div
-                    animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 8 }}
+                    animate={{ opacity: 1, y: isHovered ? 0 : 4 }}
                     transition={{ duration: 0.3 }}
                     style={{ marginTop: 18 }}
                   >
@@ -581,10 +589,10 @@ export function CraftGrid({
                       background: `linear-gradient(135deg, rgba(253,251,247,0.10), rgba(212,175,55,0.18))`,
                       border: `1px solid rgba(253,251,247,0.35)`,
                       backdropFilter: "blur(12px)",
-                      borderRadius: 8, padding: "14px 28px", minHeight: 58,
+                      borderRadius: 8, padding: "16px 30px", minHeight: 64,
                       boxShadow: `0 0 24px rgba(212,175,55,0.18), inset 0 1px 0 rgba(255,255,255,0.10)`,
                     }}>
-                      <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 800, letterSpacing: "0.22em", color: "#FDFBF7", textTransform: "uppercase" }}>
+                      <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 15, fontWeight: 900, letterSpacing: "0.18em", color: "#FDFBF7", textTransform: "uppercase" }}>
                         Enter SmokeCraft 360
                       </span>
                       <span style={{ color: GOLD, fontSize: 18, fontWeight: 300 }}>→</span>
@@ -607,7 +615,7 @@ export function CraftGrid({
         background: "rgba(0,0,0,0.82)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
-        minHeight: 72,
+        minHeight: 88,
         gap: 0,
         zIndex: 10,
         position: "relative",
@@ -633,7 +641,7 @@ export function CraftGrid({
               <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 20, fontWeight: 900, color: "#FFFFFF", letterSpacing: "0.10em", textTransform: "uppercase", lineHeight: 1 }}>
                 NOVEE OS
               </div>
-              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}66`, textTransform: "uppercase", marginTop: 3 }}>
+              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, letterSpacing: "0.20em", color: `${GOLD}77`, textTransform: "uppercase", marginTop: 3 }}>
                 INTELLIGENCE THAT ELEVATES
               </div>
             </div>
@@ -653,6 +661,7 @@ export function CraftGrid({
                     key={cmd.code}
                     onHoverStart={() => setHoveredEAT(cmd.key)}
                     onHoverEnd={() => setHoveredEAT(null)}
+                    onPointerDown={() => setHoveredEAT(cmd.key)}
                     onClick={() => onEAT?.(cmd.key)}
                     animate={{
                       background: isHov ? "rgba(212,175,55,0.16)" : "rgba(212,175,55,0.06)",
@@ -661,16 +670,16 @@ export function CraftGrid({
                     whileTap={{ scale: 0.96 }}
                     style={{
                       border: `1px solid ${isHov ? "rgba(212,175,55,0.70)" : "rgba(212,175,55,0.35)"}`,
-                      borderRadius: 10, padding: "10px 28px", cursor: "pointer",
+                      borderRadius: 10, padding: "14px 30px", cursor: "pointer",
                       display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-                      minWidth: 148, fontFamily: "inherit", touchAction: "manipulation",
+                      minWidth: 168, minHeight: 64, fontFamily: "inherit", touchAction: "manipulation",
                       transition: "border-color 0.2s",
                     }}
                   >
                     <span style={{ color: GOLD, fontSize: 18, fontWeight: 900, letterSpacing: "0.09em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                       [ {cmd.code} ]
                     </span>
-                    <span style={{ color: "rgba(240,228,196,0.42)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                    <span style={{ color: "rgba(240,228,196,0.55)", fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                       {cmd.label}
                     </span>
                   </motion.button>
@@ -697,8 +706,8 @@ export function CraftGrid({
             style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
         </div>
       </div>
-      {/* ── end inner column ── */}
       </div>
+      </EnvironmentalSceneStack>
 
       {/* ── Staff Terminal Overlay ── */}
       <AnimatePresence>

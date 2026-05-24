@@ -213,34 +213,35 @@ function FloorMap({ floor, selected, onSelect, onRitual }: {
     return (
       <motion.button
         key={t.id}
-        whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+        whileTap={{ scale: 0.94 }}
         onClick={() => onSelect(t.id)}
         onDoubleClick={() => t.status === "RITUAL" && onRitual(t.id)}
         style={{
           background: isSel ? c + "33" : D.s3,
           border: `2px solid ${isSel ? c : D.border}`,
           borderRadius: t.zone === "bar" ? 8 : 12,
-          padding: t.zone === "bar" ? "10px 6px" : "14px 10px",
-          cursor: "pointer", textAlign: "center", minWidth: t.zone === "bar" ? 48 : 72,
+          padding: t.zone === "bar" ? "14px 10px" : "18px 14px",
+          cursor: "pointer", textAlign: "center", minWidth: t.zone === "bar" ? 64 : 88, minHeight: 72,
           boxShadow: isSel ? `0 0 12px ${c}66` : "none",
           transition: "box-shadow 0.2s",
+          touchAction: "manipulation",
         }}
       >
-        <div style={{ fontSize: t.zone === "bar" ? 11 : 13, fontWeight: 700, color: c, letterSpacing: 1 }}>
+        <div style={{ fontSize: t.zone === "bar" ? 14 : 16, fontWeight: 800, color: c, letterSpacing: 1 }}>
           {t.label}
         </div>
         {t.guest && (
-          <div style={{ fontSize: 10, color: D.muted, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 60 }}>
+          <div style={{ fontSize: 12, color: D.muted, marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 82 }}>
             {t.guest}
           </div>
         )}
         {t.tabTotal && (
-          <div style={{ fontSize: 10, color: D.goldLt, marginTop: 1 }}>{cents(t.tabTotal * 100)}</div>
+          <div style={{ fontSize: 12, color: D.goldLt, marginTop: 3, fontWeight: 800 }}>{cents(t.tabTotal * 100)}</div>
         )}
         {t.status === "RITUAL" && (
           <motion.div
             animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1.8 }}
-            style={{ fontSize: 9, color: "#9B59B6", marginTop: 2 }}>● RITUAL</motion.div>
+            style={{ fontSize: 11, color: "#9B59B6", marginTop: 4, fontWeight: 800 }}>● RITUAL</motion.div>
         )}
       </motion.button>
     );
@@ -297,7 +298,7 @@ function MemberSidebar({ table, onClose, onRitual }: {
           <div style={sty.tag(c)}>{table.status}</div>
         </div>
         <motion.button whileTap={{ scale: 0.9 }} onClick={onClose}
-          style={{ background: D.s3, border: "none", color: D.muted, borderRadius: 8, padding: "6px 10px", cursor: "pointer", fontSize: 16 }}>✕</motion.button>
+          style={{ background: D.s3, border: "none", color: D.muted, borderRadius: 8, minWidth: 54, minHeight: 54, padding: "0 14px", cursor: "pointer", fontSize: 20, touchAction: "manipulation" }}>✕</motion.button>
       </div>
 
       {table.guest && (
@@ -748,7 +749,7 @@ export default function EatPosModule({ onBack }: { onBack?: () => void } = {}) {
   }, [state.kds]);
 
   return (
-    <div style={{ ...sty.fill, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ ...sty.fill, display: "flex", flexDirection: "column", overflow: "hidden", touchAction: "manipulation" }}>
 
       {/* Header */}
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${D.border}`,
@@ -756,7 +757,7 @@ export default function EatPosModule({ onBack }: { onBack?: () => void } = {}) {
         {onBack && (
           <motion.button whileTap={{ scale: 0.9 }} onClick={onBack}
             style={{ background: D.s3, border: `1px solid ${D.border}`, borderRadius: 8,
-              padding: "8px 14px", color: D.muted, cursor: "pointer", fontSize: 13 }}>← BACK</motion.button>
+              minHeight: 56, padding: "0 20px", color: D.muted, cursor: "pointer", fontSize: 14, fontWeight: 800, touchAction: "manipulation" }}>BACK</motion.button>
         )}
         <div>
           <div style={{ fontSize: 11, color: D.gold, letterSpacing: 4, fontWeight: 700 }}>E.A.T. PLATFORM</div>
@@ -768,11 +769,12 @@ export default function EatPosModule({ onBack }: { onBack?: () => void } = {}) {
             {(["RITUAL", "CASUAL", "TRANSITION"] as LoungeMode[]).map(m => (
               <motion.button key={m} whileTap={{ scale: 0.92 }}
                 onClick={() => dispatch({ type: "SET_LOUNGE", m })}
-                style={{ padding: "6px 10px", borderRadius: 8, fontSize: 10, fontWeight: 700,
+                style={{ minHeight: 48, padding: "0 14px", borderRadius: 8, fontSize: 12, fontWeight: 800,
                   cursor: "pointer", letterSpacing: 1, border: "1px solid transparent",
                   background: state.env.loungeMode === m ? (m === "RITUAL" ? "#9B59B622" : D.s3) : "transparent",
                   color: state.env.loungeMode === m ? (m === "RITUAL" ? "#9B59B6" : D.text) : D.muted,
                   borderColor: state.env.loungeMode === m ? (m === "RITUAL" ? "#9B59B655" : D.border) : "transparent",
+                  touchAction: "manipulation",
                 }}>
                 {m}
               </motion.button>
@@ -783,11 +785,12 @@ export default function EatPosModule({ onBack }: { onBack?: () => void } = {}) {
             {(["HIGH", "MEDIUM", "LOW"] as Velocity[]).map(v => (
               <motion.button key={v} whileTap={{ scale: 0.92 }}
                 onClick={() => dispatch({ type: "SET_VELOCITY", v })}
-                style={{ padding: "6px 10px", borderRadius: 8, fontSize: 10, fontWeight: 700,
+                style={{ minHeight: 48, padding: "0 14px", borderRadius: 8, fontSize: 12, fontWeight: 800,
                   cursor: "pointer", letterSpacing: 1, border: "1px solid transparent",
                   background: state.env.velocity === v ? D.gold + "22" : "transparent",
                   color: state.env.velocity === v ? D.gold : D.muted,
                   borderColor: state.env.velocity === v ? D.gold + "55" : "transparent",
+                  touchAction: "manipulation",
                 }}>
                 {v}
               </motion.button>
@@ -808,13 +811,14 @@ export default function EatPosModule({ onBack }: { onBack?: () => void } = {}) {
           const active = tab === t.id;
           return (
             <motion.button key={t.id} whileTap={{ scale: 0.97 }} onClick={() => setTab(t.id)}
-              style={{ flex: 1, padding: "14px 20px", border: "none", cursor: "pointer",
+              style={{ flex: 1, minHeight: 68, padding: "14px 20px", border: "none", cursor: "pointer",
                 background: "transparent", textAlign: "left",
                 borderBottom: active ? `2px solid ${D.gold}` : "2px solid transparent",
+                touchAction: "manipulation",
               }}>
-              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2,
+              <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: 2,
                 color: active ? D.gold : D.muted }}>{t.label}</div>
-              <div style={{ fontSize: 10, color: D.muted, marginTop: 2 }}>{t.sub}</div>
+              <div style={{ fontSize: 12, color: D.muted, marginTop: 3 }}>{t.sub}</div>
             </motion.button>
           );
         })}

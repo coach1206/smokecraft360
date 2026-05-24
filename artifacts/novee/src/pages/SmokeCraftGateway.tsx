@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import profoundLogo from "@assets/IMG_5260_1779139731186.png";
 import noveeLogo from "@assets/0FA797BC-6150-4BEA-A16F-D8AEB447996E_1779139780514.png";
+import { EnvironmentalSceneStack } from "@/lib/EnvironmentalSceneEngine";
 
 type Phase = "level0" | "level1";
 
@@ -17,7 +18,8 @@ export default function SmokeCraftGateway() {
   }, [navigate]);
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#000000", overflow: "hidden", fontFamily: "system-ui, sans-serif" }}>
+    <EnvironmentalSceneStack sceneId="cigar-lounge" className="env-depth-stack--fixed" contentClassName="env-full-content" style={{ fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ width: "100%", height: "100%", overflow: "hidden", touchAction: "manipulation" }}>
 
       {/* ── LEVEL 0: Profound Innovations LLC — pure black canvas ── */}
       <AnimatePresence>
@@ -32,7 +34,7 @@ export default function SmokeCraftGateway() {
               position: "absolute", inset: 0,
               display: "flex", flexDirection: "column",
               alignItems: "center", justifyContent: "center",
-              background: "#000000",
+              background: "transparent",
             }}
           >
             <motion.img
@@ -62,7 +64,7 @@ export default function SmokeCraftGateway() {
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
             style={{
               position: "absolute", inset: 0,
-              background: "#000000",
+              background: "transparent",
               display: "flex", flexDirection: "column",
               alignItems: "center", justifyContent: "center",
               gap: 28,
@@ -87,7 +89,7 @@ export default function SmokeCraftGateway() {
                 padding: "clamp(32px, 5vh, 56px) clamp(32px, 6vw, 72px)",
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
-                background: "rgba(6,4,2,0.94)",
+                background: "rgba(20,12,6,0.78)",
                 textAlign: "center",
                 minWidth: "clamp(260px, 38vw, 480px)",
                 boxShadow: "0 0 80px rgba(212,175,55,0.06), 0 40px 80px rgba(0,0,0,0.6)",
@@ -144,20 +146,24 @@ export default function SmokeCraftGateway() {
               animate={{ opacity: 1 }}
               transition={{ delay: 1.0 }}
               onClick={() => navigate("/craft-collection")}
+              onPointerDown={() => navigate("/craft-collection")}
               style={{
                 background: "none", border: "none",
                 color: "rgba(212,175,55,0.38)",
-                fontSize: 9, letterSpacing: "0.26em",
+                fontSize: 13, letterSpacing: "0.18em",
                 textTransform: "uppercase",
                 cursor: "pointer",
-                padding: "8px 16px",
+                minHeight: 58,
+                padding: "0 28px",
+                touchAction: "manipulation",
               }}
             >
-              Enter Collection →
+              Enter Collection
             </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
+    </EnvironmentalSceneStack>
   );
 }

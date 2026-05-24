@@ -41,6 +41,9 @@ import { NoveeXPBridge }              from "@/components/PosXPFeedback";
 import { DevModeOverlay } from "@/components/DevModeOverlay";
 import { playClick } from "@/hooks/useAudio";
 import { hapticClick } from "@/hooks/useHaptic";
+import { EnvironmentalSceneStack } from "@/lib/EnvironmentalSceneEngine";
+import { useKioskRuntime, type KioskRuntimeState } from "@/hooks/useKioskRuntime";
+import { POS_TERMINAL_CONFIG, formatProviderLabel } from "@/config/kioskPosConfig";
 
 class EATErrorBoundary extends Component<
   { children: ReactNode },
@@ -198,13 +201,14 @@ function PairingView() {
   const carouselItems = pairings.length > 1 ? pairings.slice(1) : MOCK_PAIRING_CARDS;
 
   return (
+    <EnvironmentalSceneStack sceneId="pairing-room" className="env-depth-stack--absolute" contentClassName="env-full-content">
     <AnimatePresence mode="wait">
       {introPhase === "intro" ? (
         /* ── CINEMATIC INTRO ── */
         <motion.div key="pr-intro"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -24, filter: "blur(10px)" }}
           transition={{ duration: 0.55 }}
-          style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: `radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.08) 0%, transparent 65%), radial-gradient(ellipse at 50% 65%, rgba(253,251,247,0.025) 0%, transparent 50%)` }}>
+          style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "transparent" }}>
           {[1, 2, 3].map(i => (
             <motion.div key={i}
               animate={{ opacity: [0.07, 0.20, 0.07], scale: [0.94, 1.04, 0.94] }}
@@ -240,8 +244,8 @@ function PairingView() {
               </div>
             </div>
             <motion.button type="button" whileTap={{ scale: 0.94 }} onPointerDown={() => setIntroPhase("intro")}
-              style={{ padding: "9px 20px", border: `1px solid ${GOLD}44`, borderRadius: 8, background: "rgba(212,175,55,0.07)", color: `${GOLD}88`, fontSize: 11, letterSpacing: "0.16em", cursor: "pointer", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>
-              ↺ RECALIBRATE
+              style={{ minHeight: 58, padding: "0 28px", border: `1px solid ${GOLD}55`, borderRadius: 8, background: "rgba(212,175,55,0.10)", color: `${GOLD}AA`, fontSize: 13, letterSpacing: "0.14em", cursor: "pointer", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", fontWeight: 800, touchAction: "manipulation" }}>
+              Recalibrate
             </motion.button>
           </div>
 
@@ -254,14 +258,14 @@ function PairingView() {
                 {featured ? (
                   <div style={{ background: "rgba(5,3,1,0.82)", backdropFilter: "blur(20px)", borderRadius: 16, border: `1px solid ${GOLD}33`, padding: 20, position: "relative", overflow: "hidden" }}>
                     <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${GOLD}88, transparent)`, pointerEvents: "none" }} />
-                    <div style={{ fontSize: 9, letterSpacing: "0.32em", color: `${GOLD}55`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginBottom: 14 }}>TONIGHT'S FEATURED PAIRING</div>
+                    <div style={{ fontSize: 12, letterSpacing: "0.24em", color: `${GOLD}70`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", marginBottom: 14, fontWeight: 800 }}>Tonight's Featured Pairing</div>
 
                     {/* Three-column: cigar | badge | spirit | food */}
                     <div style={{ display: "flex", gap: 12, marginBottom: 18, alignItems: "stretch" }}>
-                      <div style={{ flex: 1, background: "rgba(212,175,55,0.06)", borderRadius: 10, border: `1px solid ${GOLD}33`, padding: 14, display: "flex", flexDirection: "column", gap: 6, backdropFilter: "blur(12px)" }}>
-                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: `${GOLD}88`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>CIGAR</div>
+                      <div style={{ flex: 1, background: "rgba(212,175,55,0.06)", borderRadius: 10, border: `1px solid ${GOLD}33`, padding: 16, display: "flex", flexDirection: "column", gap: 8, backdropFilter: "blur(12px)" }}>
+                        <div style={{ fontSize: 12, letterSpacing: "0.18em", color: `${GOLD}99`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", fontWeight: 800 }}>Cigar</div>
                         <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, overflow: "hidden", position: "relative" }}>
-                          <img src="https://images.unsplash.com/photo-1589831377283-33cb1cc6bd5d?auto=format&fit=crop&w=600&q=80" alt="Maduro cigar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <img src={IMG("smoke/smoke_selection.png")} alt="Maduro cigar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 40%, rgba(5,3,1,0.75) 100%)" }} />
                         </div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: "#FFFDD0", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{featured.name}</div>
@@ -281,20 +285,20 @@ function PairingView() {
                         <span style={{ fontSize: 8, color: `${GOLD}44`, letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif", textAlign: "center", lineHeight: 1.4 }}>FLAVOR<br/>BRIDGE</span>
                       </div>
 
-                      <div style={{ flex: 1, background: "rgba(150,80,20,0.10)", borderRadius: 10, border: "1px solid rgba(196,120,40,0.35)", padding: 14, display: "flex", flexDirection: "column", gap: 6, backdropFilter: "blur(12px)" }}>
-                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(255,190,80,0.90)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>SPIRIT</div>
+                      <div style={{ flex: 1, background: "rgba(150,80,20,0.10)", borderRadius: 10, border: "1px solid rgba(196,120,40,0.35)", padding: 16, display: "flex", flexDirection: "column", gap: 8, backdropFilter: "blur(12px)" }}>
+                        <div style={{ fontSize: 12, letterSpacing: "0.18em", color: "rgba(255,190,80,0.95)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", fontWeight: 800 }}>Spirit</div>
                         <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, overflow: "hidden", position: "relative" }}>
-                          <img src="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=600&q=80" alt="Crystal tumbler whiskey" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <img src={IMG("pour/pour_whiskey.png")} alt="Crystal tumbler whiskey" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 40%, rgba(5,2,0,0.75) 100%)" }} />
                         </div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: "#FFFDD0", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{perfPair.drink}</div>
                         <div style={{ fontSize: 11, color: "rgba(255,190,80,0.75)", fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em" }}>{perfPair.drinkNote}</div>
                       </div>
 
-                      <div style={{ flex: 1, background: "rgba(60,100,30,0.09)", borderRadius: 10, border: "1px solid rgba(80,160,60,0.28)", padding: 14, display: "flex", flexDirection: "column", gap: 6, backdropFilter: "blur(12px)" }}>
-                        <div style={{ fontSize: 9, letterSpacing: "0.24em", color: "rgba(120,200,90,0.85)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>CUISINE</div>
+                      <div style={{ flex: 1, background: "rgba(60,100,30,0.09)", borderRadius: 10, border: "1px solid rgba(80,160,60,0.28)", padding: 16, display: "flex", flexDirection: "column", gap: 8, backdropFilter: "blur(12px)" }}>
+                        <div style={{ fontSize: 12, letterSpacing: "0.18em", color: "rgba(120,200,90,0.90)", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", fontWeight: 800 }}>Cuisine</div>
                         <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 7, overflow: "hidden", position: "relative" }}>
-                          <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80" alt="Upscale culinary plate" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <img src={IMG("pour/pour_tasting.png")} alt="Upscale tasting plate" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 40%, rgba(2,5,1,0.75) 100%)" }} />
                         </div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: "#FFFDD0", fontFamily: "'Cormorant Garamond',serif", lineHeight: 1.2 }}>{perfPair.food}</div>
@@ -338,7 +342,8 @@ function PairingView() {
                             color: btn.primary ? "#0A0700" : `${GOLD}AA`,
                             border: `1px solid ${btn.primary ? GOLD : GOLD + "44"}`,
                             boxShadow: btn.primary ? `0 4px 22px ${GOLD}44` : "none",
-                            minHeight: 58,
+                            minHeight: 64,
+                            touchAction: "manipulation",
                           }}>
                           {btn.label}
                         </motion.button>
@@ -361,12 +366,13 @@ function PairingView() {
                   {PAIRING_CATEGORIES.map(cat => (
                     <motion.button key={cat.id} type="button" onPointerDown={() => setActiveCategory(cat.id)} whileTap={{ scale: 0.94 }}
                       style={{
-                        padding: "7px 16px", borderRadius: 7, fontFamily: "'Inter',sans-serif", fontSize: 11, fontWeight: 700,
+                        minHeight: 54, padding: "0 20px", borderRadius: 8, fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 800,
                         letterSpacing: "0.12em", cursor: "pointer", textTransform: "uppercase", flexShrink: 0, whiteSpace: "nowrap",
                         background: activeCategory === cat.id ? `rgba(212,175,55,0.18)` : "rgba(255,255,255,0.04)",
                         color: activeCategory === cat.id ? GOLD : "rgba(240,232,212,0.45)",
                         border: `1px solid ${activeCategory === cat.id ? GOLD + "66" : "rgba(255,255,255,0.08)"}`,
                         boxShadow: activeCategory === cat.id ? `0 0 12px ${GOLD}22` : "none",
+                        touchAction: "manipulation",
                       }}>
                       {cat.icon} {cat.label}
                     </motion.button>
@@ -378,9 +384,9 @@ function PairingView() {
                       initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.07, duration: 0.38 }}
                       whileTap={{ scale: 0.97 }}
-                      style={{ flexShrink: 0, width: 178, background: "rgba(5,3,1,0.80)", backdropFilter: "blur(14px)", borderRadius: 10, border: `1px solid ${GOLD}28`, padding: 12, cursor: "pointer", overflow: "hidden" }}>
+                      style={{ flexShrink: 0, width: 220, minHeight: 172, background: "rgba(5,3,1,0.80)", backdropFilter: "blur(14px)", borderRadius: 10, border: `1px solid ${GOLD}28`, padding: 14, cursor: "pointer", overflow: "hidden", touchAction: "pan-x" }}>
                       <div style={{ width: "100%", height: 76, borderRadius: 6, overflow: "hidden", marginBottom: 8, position: "relative" }}>
-                        <img src="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=400&q=80" alt="Cigar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={IMG("smokecraft-card.jpg")} alt="Cigar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 30%, rgba(5,3,1,0.80) 100%)" }} />
                         <div style={{ position: "absolute", bottom: 5, right: 7, fontSize: 9, color: GOLD, fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>{p.affinityScore}% ✦</div>
                       </div>
@@ -398,7 +404,7 @@ function PairingView() {
 
             {/* RIGHT: Venue Intelligence Panel */}
             <div style={{ width: 246, flexShrink: 0, borderLeft: `1px solid ${GOLD}15`, background: "rgba(3,2,0,0.62)", backdropFilter: "blur(18px)", padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
-              <div style={{ fontSize: 10, letterSpacing: "0.28em", color: `${GOLD}55`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", borderBottom: `1px solid ${GOLD}15`, paddingBottom: 9 }}>VENUE INTELLIGENCE</div>
+              <div style={{ fontSize: 12, letterSpacing: "0.22em", color: `${GOLD}70`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", borderBottom: `1px solid ${GOLD}15`, paddingBottom: 12, fontWeight: 800 }}>Venue Intelligence</div>
 
               <div style={{ background: "rgba(212,175,55,0.09)", borderRadius: 9, padding: 13, border: `1px solid ${GOLD}22` }}>
                 <div style={{ fontSize: 9, letterSpacing: "0.20em", color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", marginBottom: 7, textTransform: "uppercase" }}>LOUNGE MODE</div>
@@ -414,7 +420,7 @@ function PairingView() {
                 { label: "Atmosphere", value: env ? (env.eventAtmosphere === "none" ? "Reserve" : env.eventAtmosphere.replace(/_/g, " ")) : "Reserve",                               icon: "◎" },
                 { label: "Seating",    value: "Humidor Lounge",                                                                                                                       icon: "▣" },
               ] as { label: string; value: string; icon: string }[]).map(item => (
-                <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: `1px solid rgba(255,255,255,0.05)` }}>
+                <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 54, padding: "8px 0", borderBottom: `1px solid rgba(255,255,255,0.05)` }}>
                   <span style={{ fontSize: 15, color: `${GOLD}60`, width: 18, flexShrink: 0 }}>{item.icon}</span>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 9, color: `${GOLD}45`, letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>{item.label}</div>
@@ -435,6 +441,7 @@ function PairingView() {
         </motion.div>
       )}
     </AnimatePresence>
+    </EnvironmentalSceneStack>
   );
 }
 
@@ -1079,29 +1086,82 @@ function useStaffMode() {
 function OsNavBar() {
   return (
     <div style={{
-      width: "100%", flexShrink: 0, height: 62,
+      width: "100%", flexShrink: 0, minHeight: 72,
       background: "rgba(3,2,0,0.97)",
       backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)",
       borderBottom: `1px solid rgba(212,175,55,0.20)`,
       display: "flex", flexDirection: "row", alignItems: "center",
       position: "relative", zIndex: 200,
-      paddingLeft: 12, paddingRight: 12, gap: 4,
+      paddingLeft: 16, paddingRight: 16, gap: 8,
     }}>
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent 0%, ${GOLD}88 20%, ${GOLD} 50%, ${GOLD}88 80%, transparent 100%)`, boxShadow: `0 0 12px ${GOLD}44` }} />
 
       {/* NOVEE OS logo */}
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, paddingRight: 16, borderRight: "1px solid rgba(212,175,55,0.18)", marginRight: 8, flexShrink: 0 }}>
-        <div style={{ width: 40, height: 40, borderRadius: 10, background: `linear-gradient(135deg, ${GOLD}55 0%, rgba(0,0,0,0.70) 100%)`, border: `1.5px solid ${GOLD}99`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 18px ${GOLD}44` }}>
+        <div style={{ width: 48, height: 48, borderRadius: 10, background: `linear-gradient(135deg, ${GOLD}55 0%, rgba(0,0,0,0.70) 100%)`, border: `1.5px solid ${GOLD}99`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 18px ${GOLD}44` }}>
           <span style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 22, fontWeight: 700, color: GOLD, lineHeight: 1 }}>N</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-          <span style={{ fontSize: 14, fontWeight: 800, color: GOLD, fontFamily: "'Cormorant Garamond',Georgia,serif", letterSpacing: "0.06em" }}>NOVEE OS</span>
-          <span style={{ fontSize: 9, color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700 }}>Kiosk Edition</span>
+          <span style={{ fontSize: 17, fontWeight: 800, color: GOLD, fontFamily: "'Cormorant Garamond',Georgia,serif", letterSpacing: "0.06em" }}>NOVEE OS</span>
+          <span style={{ fontSize: 11, color: `${GOLD}66`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 800 }}>Kiosk Edition</span>
         </div>
       </div>
 
       <div style={{ flex: 1 }} />
       <span style={{ fontSize: 9, color: "rgba(212,175,55,0.30)", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>v2.4</span>
+    </div>
+  );
+}
+
+function KioskRuntimePanel({ kiosk }: { kiosk: KioskRuntimeState }) {
+  const modeLabel = kiosk.displayMode === "browser" ? "Browser" : kiosk.displayMode;
+  const idleLabel = `${Math.max(0, kiosk.idleSecondsRemaining)}s`;
+  const providerLabel = formatProviderLabel(POS_TERMINAL_CONFIG.preferredProvider);
+  return (
+    <div
+      aria-label="Kiosk runtime status"
+      style={{
+        position: "absolute",
+        top: 78,
+        right: 18,
+        zIndex: 260,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        minHeight: 44,
+        padding: "0 12px",
+        borderRadius: 8,
+        background: "rgba(6,4,2,0.78)",
+        border: `1px solid rgba(212,175,55,0.22)`,
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        pointerEvents: "none",
+      }}
+    >
+      {[
+        { label: kiosk.isOnline ? `${providerLabel} LINK` : "OFFLINE", color: kiosk.isOnline ? "#32B45A" : "#F07070" },
+        { label: POS_TERMINAL_CONFIG.laneName.toUpperCase(), color: "rgba(253,251,247,0.62)" },
+        { label: kiosk.isLandscape ? "LANDSCAPE" : "ROTATE TABLET", color: kiosk.isLandscape ? "#32B45A" : "#F07070" },
+        { label: kiosk.isCoarsePointer ? "TOUCH" : "POINTER", color: kiosk.isCoarsePointer ? GOLD : "#F4A240" },
+        { label: modeLabel.toUpperCase(), color: kiosk.displayMode === "browser" ? "#F4A240" : GOLD },
+        { label: kiosk.wakeLockActive ? "AWAKE" : "WAKE READY", color: kiosk.wakeLockActive ? "#5BBFFF" : `${GOLD}99` },
+        { label: `RESET ${idleLabel}`, color: "rgba(253,251,247,0.62)" },
+      ].map(item => (
+        <span
+          key={item.label}
+          style={{
+            fontFamily: "'Inter',sans-serif",
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: "0.14em",
+            color: item.color,
+            textTransform: "uppercase",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {item.label}
+        </span>
+      ))}
     </div>
   );
 }
@@ -1129,12 +1189,12 @@ function LeftRail() {
 
   return (
     <div style={{
-      width: 58, flexShrink: 0,
+      width: 76, flexShrink: 0,
       background: "rgba(5,3,1,0.95)",
       backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
       borderRight: `1px solid rgba(212,175,55,0.16)`,
       display: "flex", flexDirection: "column", alignItems: "center",
-      paddingTop: 20, paddingBottom: 20, gap: 6,
+      paddingTop: 22, paddingBottom: 22, gap: 10,
       position: "relative", zIndex: 100,
     }}>
       <div style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 1, background: `linear-gradient(180deg, transparent 0%, ${GOLD}55 20%, ${GOLD}99 50%, ${GOLD}55 80%, transparent 100%)` }} />
@@ -1148,12 +1208,12 @@ function LeftRail() {
             whileTap={{ scale: 0.90 }}
             animate={{ background: active ? `rgba(212,175,55,0.18)` : "rgba(255,255,255,0.02)", borderColor: active ? `${GOLD}77` : "rgba(255,255,255,0.08)", boxShadow: active ? `0 0 16px ${GOLD}33, inset 0 1px 0 ${GOLD}22` : "none" }}
             transition={{ duration: 0.20 }}
-            style={{ width: 42, minHeight: 54, border: `1px solid rgba(255,255,255,0.08)`, borderRadius: 10, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, padding: "8px 4px", position: "relative" }}>
+            style={{ width: 58, minHeight: 66, border: `1px solid rgba(255,255,255,0.08)`, borderRadius: 10, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, padding: "8px 4px", position: "relative", touchAction: "manipulation" }}>
             {active && (
               <div style={{ position: "absolute", left: -1, top: "25%", bottom: "25%", width: 2, background: GOLD, borderRadius: "0 2px 2px 0", boxShadow: `0 0 8px ${GOLD}` }} />
             )}
-            <span style={{ fontSize: 16, color: active ? GOLD : "rgba(212,175,55,0.45)", lineHeight: 1, filter: active ? `drop-shadow(0 0 6px ${GOLD}88)` : "none" }}>{item.icon}</span>
-            <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.12em", color: active ? GOLD : "rgba(212,175,55,0.45)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", textAlign: "center", lineHeight: 1.2, maxWidth: 38 }}>{item.abbr}</span>
+            <span style={{ fontSize: 18, color: active ? GOLD : "rgba(212,175,55,0.45)", lineHeight: 1, filter: active ? `drop-shadow(0 0 6px ${GOLD}88)` : "none" }}>{item.icon}</span>
+            <span style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.08em", color: active ? GOLD : "rgba(212,175,55,0.45)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", textAlign: "center", lineHeight: 1.2, maxWidth: 52 }}>{item.abbr}</span>
             {item.pinLevel && (
               <div style={{ position: "absolute", top: 2, right: 2, width: 4, height: 4, borderRadius: "50%", background: item.pinLevel === "management" ? "#C87028" : GOLD, opacity: 0.7 }} />
             )}
@@ -1186,7 +1246,7 @@ function SystemBar() {
   }
 
   return (
-    <div style={{ position: "absolute", top: 3, left: 0, right: 0, height: 38, background: "rgba(1,1,1,0.82)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", zIndex: 50 }}>
+    <div style={{ position: "absolute", top: 3, left: 0, right: 0, minHeight: 58, background: "rgba(1,1,1,0.82)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", zIndex: 50 }}>
 
       {/* Left: location + biometric */}
       <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 100 }}>
@@ -1202,12 +1262,12 @@ function SystemBar() {
       {/* Center: action buttons */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <motion.button type="button" onPointerDown={() => { if (inSession) resetBlend(); else navigate("crafthub"); }} whileTap={{ scale: 0.95 }}
-          style={{ border: `1px solid rgba(212,175,55,${inSession ? "0.55" : "0.25"})`, borderRadius: 6, padding: "5px 14px", background: `rgba(212,175,55,${inSession ? "0.14" : "0.05"})`, cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.22em", color: inSession ? GOLD : `${GOLD}55`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: inSession ? `0 0 10px rgba(212,175,55,0.22)` : "none", transition: "all 0.2s" }}>
+          style={{ minHeight: 48, border: `1px solid rgba(212,175,55,${inSession ? "0.55" : "0.25"})`, borderRadius: 8, padding: "0 18px", background: `rgba(212,175,55,${inSession ? "0.14" : "0.05"})`, cursor: "pointer", fontSize: 12, fontWeight: 800, letterSpacing: "0.16em", color: inSession ? GOLD : `${GOLD}66`, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: inSession ? `0 0 10px rgba(212,175,55,0.22)` : "none", transition: "all 0.2s", touchAction: "manipulation" }}>
           RESET BLEND
         </motion.button>
 
         <motion.button type="button" onPointerDown={() => navigate("eat_dashboard")} whileTap={{ scale: 0.95 }}
-          style={{ border: `1px solid ${GOLD}66`, borderRadius: 6, padding: "5px 14px", background: `rgba(212,175,55,0.14)`, cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: `0 0 10px ${GOLD}22` }}>
+          style={{ minHeight: 48, border: `1px solid ${GOLD}66`, borderRadius: 8, padding: "0 18px", background: `rgba(212,175,55,0.14)`, cursor: "pointer", fontSize: 12, fontWeight: 800, letterSpacing: "0.16em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", boxShadow: `0 0 10px ${GOLD}22`, touchAction: "manipulation" }}>
           COACH HELP
         </motion.button>
 
@@ -1217,21 +1277,21 @@ function SystemBar() {
           @keyframes staffAuthDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.72); } }
         `}</style>
         <motion.button type="button" onPointerDown={onStaffAuth} whileTap={{ scale: 0.93 }}
-          style={{ border: `1px solid ${GOLD}`, borderRadius: 6, padding: "5px 14px", background: staffAuthActive ? `rgba(212,175,55,0.32)` : `rgba(212,175,55,0.10)`, cursor: "pointer", fontSize: 9, fontWeight: 900, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 6, animation: staffAuthPulsing ? "staffAuthPulse 2.0s ease-in-out infinite" : "none", transition: "background 0.25s" }}>
+          style={{ minHeight: 48, border: `1px solid ${GOLD}`, borderRadius: 8, padding: "0 18px", background: staffAuthActive ? `rgba(212,175,55,0.32)` : `rgba(212,175,55,0.10)`, cursor: "pointer", fontSize: 12, fontWeight: 900, letterSpacing: "0.14em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 8, animation: staffAuthPulsing ? "staffAuthPulse 2.0s ease-in-out infinite" : "none", transition: "background 0.25s", touchAction: "manipulation" }}>
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD, animation: staffAuthPulsing ? "staffAuthDot 2.0s ease-in-out infinite" : "none", boxShadow: `0 0 6px ${GOLD}`, flexShrink: 0 }} />
-          ⚡ LAUNCH TERMINAL (POS 3)
+          POS TERMINAL
         </motion.button>
 
         {/* PROFILE RESET */}
         <motion.button type="button" onPointerDown={() => { resetGuest(); navigate("crafthub"); }} whileTap={{ scale: 0.93 }}
-          style={{ border: "1px solid rgba(240,112,112,0.35)", borderRadius: 6, padding: "5px 14px", background: "rgba(240,112,112,0.08)", cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.22em", color: "#F07070", textTransform: "uppercase", fontFamily: "'Inter',sans-serif" }}>
+          style={{ minHeight: 48, border: "1px solid rgba(240,112,112,0.35)", borderRadius: 8, padding: "0 18px", background: "rgba(240,112,112,0.08)", cursor: "pointer", fontSize: 12, fontWeight: 800, letterSpacing: "0.14em", color: "#F07070", textTransform: "uppercase", fontFamily: "'Inter',sans-serif", touchAction: "manipulation" }}>
           PROFILE RESET
         </motion.button>
       </div>
 
       {/* Right: kiosk status */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 100, justifyContent: "flex-end" }}>
-        <span style={{ fontSize: 9, letterSpacing: "0.26em", color: "rgba(255,255,255,0.18)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>TABLE KIOSK · ACTIVE</span>
+        <span style={{ fontSize: 11, letterSpacing: "0.18em", color: "rgba(255,255,255,0.26)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", fontWeight: 800 }}>TABLE KIOSK · ACTIVE</span>
         <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 8px #32B45A" }} />
         <span style={{ fontSize: 9, letterSpacing: "0.18em", color: "rgba(255,255,255,0.12)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>KIOSK EDITION · NOVEE OS</span>
       </div>
@@ -1259,7 +1319,7 @@ function EATTelemetryBar() {
 
   void tick; void BASE_TELEMETRY;
 
-  useState(() => {
+  useEffect(() => {
     const id = setInterval(() => {
       setTick(t => t + 1);
       setTemp(t      => Math.round(Math.min(74, Math.max(64, t + (Math.random() - 0.5) * 0.8))));
@@ -1267,19 +1327,19 @@ function EATTelemetryBar() {
       setCount(c     => Math.max(120, c - (Math.random() > 0.97 ? 1 : 0)));
     }, 3200);
     return () => clearInterval(id);
-  });
+  }, []);
 
   const telemetry = [
     { label: "Lounge Temp",     value: `${temp}°F`,       color: temp > 71 ? "#F07070" : "#5BBFFF" },
     { label: "Humidity",        value: `${humidity}%`,    color: humidity > 76 ? "#F07070" : "#32B45A" },
     { label: "Humidor Count",   value: `${count} Puros`,  color: GOLD },
     { label: "Lounge Mode",     value: "Active",          color: "#32B45A" },
-    { label: "POS Transaction", value: "Authenticated",   color: GOLD },
+    { label: `${formatProviderLabel(POS_TERMINAL_CONFIG.preferredProvider)} POS`, value: "Authenticated",   color: GOLD },
   ];
 
   return (
     <motion.div onPointerDown={() => navigate("eat_dashboard")} whileTap={{ scale: 0.995 }}
-      style={{ width: "100%", flexShrink: 0, height: 42, background: "rgba(3,2,0,0.98)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderTop: `1px solid rgba(212,175,55,0.30)`, borderBottom: `1px solid rgba(212,175,55,0.12)`, display: "flex", flexDirection: "row", alignItems: "center", position: "relative", zIndex: 180, cursor: "pointer", overflow: "hidden" }}>
+      style={{ width: "100%", flexShrink: 0, minHeight: 56, background: "rgba(3,2,0,0.98)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderTop: `1px solid rgba(212,175,55,0.30)`, borderBottom: `1px solid rgba(212,175,55,0.12)`, display: "flex", flexDirection: "row", alignItems: "center", position: "relative", zIndex: 180, cursor: "pointer", overflow: "hidden", touchAction: "manipulation" }}>
       <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 200, background: `radial-gradient(ellipse at 0% 50%, rgba(212,175,55,0.07) 0%, transparent 70%)`, pointerEvents: "none" }} />
 
       {/* E.A.T label */}
@@ -1288,8 +1348,8 @@ function EATTelemetryBar() {
           <span style={{ fontSize: 10, fontWeight: 900, color: GOLD, fontFamily: "'Inter',sans-serif" }}>⊞</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-          <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.22em", color: GOLD, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>E.A.T INTELLIGENCE</span>
-          <span style={{ fontSize: 7.5, letterSpacing: "0.18em", color: `${GOLD}55`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>Environment • Asset • Transaction</span>
+          <span style={{ fontSize: 12, fontWeight: 900, letterSpacing: "0.18em", color: GOLD, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>E.A.T INTELLIGENCE</span>
+          <span style={{ fontSize: 9, letterSpacing: "0.14em", color: `${GOLD}66`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>Environment • Asset • Transaction</span>
         </div>
       </div>
 
@@ -1298,9 +1358,9 @@ function EATTelemetryBar() {
         {telemetry.map((item, i) => (
           <div key={item.label} style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 0, flexShrink: 0 }}>
             <div style={{ display: "flex", flexDirection: "column", padding: "0 18px", borderLeft: i === 0 ? "none" : `1px solid rgba(212,175,55,0.12)` }}>
-              <span style={{ fontSize: 8.5, letterSpacing: "0.22em", color: "rgba(212,175,55,0.40)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>{item.label}</span>
+              <span style={{ fontSize: 10, letterSpacing: "0.18em", color: "rgba(212,175,55,0.48)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap", fontWeight: 800 }}>{item.label}</span>
               <motion.span key={item.value} initial={{ opacity: 0.6, y: 3 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-                style={{ fontSize: 13, fontWeight: 800, color: item.color, fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em", whiteSpace: "nowrap", textShadow: `0 0 12px ${item.color}55` }}>
+                style={{ fontSize: 16, fontWeight: 900, color: item.color, fontFamily: "'Inter',sans-serif", letterSpacing: "0.06em", whiteSpace: "nowrap", textShadow: `0 0 12px ${item.color}55` }}>
                 {item.value}
               </motion.span>
             </div>
@@ -1310,8 +1370,8 @@ function EATTelemetryBar() {
 
       <div
         onPointerDown={(e) => { e.stopPropagation(); navigate("executive_command", "management"); }}
-        style={{ flexShrink: 0, padding: "0 18px", height: "100%", display: "flex", alignItems: "center", gap: 8, borderLeft: `1px solid rgba(212,175,55,0.22)`, cursor: "pointer", background: "rgba(212,175,55,0.03)", transition: "background 0.18s" }}>
-        <span style={{ fontSize: 8.5, letterSpacing: "0.22em", color: `${GOLD}80`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap" }}>OPEN COMMAND CENTER</span>
+        style={{ flexShrink: 0, padding: "0 22px", minHeight: 56, display: "flex", alignItems: "center", gap: 8, borderLeft: `1px solid rgba(212,175,55,0.22)`, cursor: "pointer", background: "rgba(212,175,55,0.03)", transition: "background 0.18s", touchAction: "manipulation" }}>
+        <span style={{ fontSize: 11, letterSpacing: "0.18em", color: `${GOLD}88`, fontFamily: "'Inter',sans-serif", textTransform: "uppercase", whiteSpace: "nowrap", fontWeight: 900 }}>OPEN COMMAND CENTER</span>
         <span style={{ fontSize: 14, color: GOLD }}>›</span>
       </div>
     </motion.div>
@@ -1681,6 +1741,7 @@ function handlePointerDown() { playClick(); hapticClick(); }
 function OsShell() {
   const { setPhase, resetProfile, profile } = useGuest();
   const isEAT = profile.phase === "eat_dashboard";
+  const isStaff = useStaffMode();
   const { env: syncedEnv, updateEnv } = useVisualSync();
   const [eatFlags, setEatFlags]    = useState<EATModuleFlags>(DEFAULT_FLAGS);
 
@@ -1768,6 +1829,14 @@ function OsShell() {
     setPhase("s1_demo");
   }
 
+  const kiosk = useKioskRuntime({
+    idleMs: isStaff ? POS_TERMINAL_CONFIG.staffIdleResetMs : POS_TERMINAL_CONFIG.idleResetMs,
+    onIdleReset: () => {
+      if (!isStaff) resetGuest();
+      setPhase("crafthub");
+    },
+  });
+
   const navCtx: NoveeNavCtx = {
     navigate,
     eatFlags,
@@ -1779,6 +1848,7 @@ function OsShell() {
   return (
     <NoveeNavContext.Provider value={navCtx}>
       <div onPointerDown={handlePointerDown}
+        className="kiosk-shell"
         style={{ position: "fixed", inset: 0, cursor: "none", userSelect: "none", WebkitUserSelect: "none", overscrollBehavior: "none", touchAction: "manipulation", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
         {/* Hidden Gesture Zones */}
@@ -1793,6 +1863,7 @@ function OsShell() {
 
         {/* Top OS navigation bar */}
         <OsNavBar />
+        <KioskRuntimePanel kiosk={kiosk} />
 
         {/* Middle: Left Rail + Content Area */}
         <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden", position: "relative" }}>
@@ -1800,8 +1871,7 @@ function OsShell() {
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
             <FullBleedBackground />
             {!isEAT && <SystemBar />}
-            {/* Content starts at top:44 so SystemBar (zIndex:50, height~38px) never clips or intercepts */}
-            <div style={{ position: "absolute", top: isEAT ? 0 : 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: isEAT ? 0 : 64, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
               <PhaseRouter eatFlags={eatFlags} onFlagsChange={setEatFlags} />
             </div>
           </div>

@@ -1,0 +1,37 @@
+/*
+ * Hospitality material language.
+ * Keeps the cinematic UI grounded in walnut, leather, brass, smoke, glass,
+ * velvet, and warm practical lighting instead of generic dark-tech styling.
+ */
+
+:root {
+  --hospitality-walnut: #3a2112;
+  --hospitality-walnut-deep: #140b06;
+  --hospitality-leather: #5f321f;
+  --hospitality-brass: #d4af37;
+  --hospitality-copper: #c87941;
+  --hospitality-smoke: rgba(236, 214, 174, 0.08);
+  --hospitality-cream: #f0e8d4;
+  --hospitality-velvet: #61233f;
+  --hospitality-glass: rgba(255, 246, 220, 0.08);
+  --hospitality-shadow: rgba(0, 0, 0, 0.58);
+}
+
+.hospitality-panel {
+  background:
+    linear-gradient(135deg, rgba(255, 246, 220, 0.08), rgba(74, 36, 16, 0.22)),
+    rgba(14, 9, 5, 0.72);
+  border: 1px solid rgba(212, 175, 55, 0.26);
+  box-shadow:
+    0 30px 90px var(--hospitality-shadow),
+    inset 0 1px 0 rgba(255, 246, 220, 0.10);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.hospitality-texture-walnut {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.025), transparent 18%, rgba(0,0,0,0.08) 42%, transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255,236,184,0.025) 0 1px, transparent 1px 14px),
+    linear-gradient(180deg, var(--hospitality-walnut), var(--hospitality-walnut-deep));
+}

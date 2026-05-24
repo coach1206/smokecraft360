@@ -25,7 +25,7 @@
   position:   relative;
   isolation:  isolate;
   overflow:   hidden;
-  background: #0a0806;
+  background: var(--env-bg-fallback, #0a0806);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -38,6 +38,7 @@
   background-size:     cover;
   background-position: center 30%;
   background-repeat:   no-repeat;
+  background-position: var(--env-bg-position, center 30%);
   filter:              blur(2px) brightness(0.55) saturate(0.80);
   transform:           translate3d(0,0,0) scale(1.04);
   will-change:         transform;
@@ -45,6 +46,39 @@
   pointer-events:      none;
   z-index:             0;
   animation:           env-bg-drift 28s ease-in-out infinite;
+}
+
+.env-depth-stack--fixed {
+  position: fixed;
+  inset: 0;
+}
+
+.env-depth-stack--absolute {
+  position: absolute;
+  inset: 0;
+}
+
+.env-content {
+  width: 100%;
+  height: 100%;
+}
+
+.env-full-content {
+  width: 100%;
+  height: 100%;
+}
+
+.env-reflection-layer {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(112deg, transparent 0%, rgba(255, 236, 184, 0.055) 18%, transparent 36%),
+    linear-gradient(0deg, rgba(92, 52, 23, 0.26) 0%, transparent 34%),
+    repeating-linear-gradient(90deg, rgba(255, 236, 184, 0.035) 0 1px, transparent 1px 12px);
+  mix-blend-mode: screen;
+  opacity: 0.52;
+  pointer-events: none;
+  z-index: 1;
 }
 
 @keyframes env-bg-drift {
@@ -60,7 +94,16 @@
 .env-overlay {
   position:       absolute;
   inset:          0;
-  background:     var(--env-overlay,
+  background:
+    linear-gradient(
+      180deg,
+      rgba(6,4,2,var(--env-overlay-depth, 0.74)) 0%,
+      rgba(10,8,4,calc(var(--env-overlay-depth, 0.74) - 0.12)) 35%,
+      rgba(10,8,4,calc(var(--env-overlay-depth, 0.74) - 0.16)) 60%,
+      rgba(6,4,2,var(--env-overlay-depth, 0.74)) 85%,
+      rgba(4,3,1,0.92) 100%
+    ),
+    var(--env-overlay,
     linear-gradient(
       180deg,
       rgba(6,4,2,0.80)  0%,
@@ -71,7 +114,7 @@
     )
   );
   pointer-events: none;
-  z-index:        1;
+  z-index:        2;
 }
 
 .env-vignette {
@@ -79,7 +122,7 @@
   inset:          0;
   box-shadow:     inset 0 0 180px 60px rgba(0,0,0,0.85);
   pointer-events: none;
-  z-index:        2;
+  z-index:        7;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -99,6 +142,7 @@
     var(--env-bloom-color, rgba(212,175,55,0.14)) 0%,
     transparent 68%
   );
+  opacity:        var(--env-bloom-opacity, 0.85);
   animation:      env-bloom-breathe 7s ease-in-out infinite;
   pointer-events: none;
   z-index:        3;
@@ -139,7 +183,7 @@
   border-radius:  50%;
   background:     radial-gradient(
     ellipse at center,
-    rgba(230,200,150,0.065) 0%,
+    var(--env-smoke-tint, rgba(230,200,150,0.065)) 0%,
     rgba(220,190,140,0.030) 50%,
     transparent              72%
   );
@@ -147,6 +191,20 @@
   will-change:    transform, opacity;
   backface-visibility: hidden;
   animation:      env-wisp-rise var(--w-dur, 12s) ease-out var(--w-del, 0s) infinite;
+}
+
+.env-smoke-layer--whisper .env-wisp {
+  opacity: 0.52;
+  filter: blur(24px);
+}
+
+.env-smoke-layer--drift .env-wisp {
+  opacity: 0.72;
+}
+
+.env-smoke-layer--thick .env-wisp {
+  opacity: 0.9;
+  filter: blur(30px);
 }
 
 @keyframes env-wisp-rise {
@@ -172,8 +230,8 @@
   width:          3px;
   height:         3px;
   border-radius:  50%;
-  background:     var(--ember-color, #D4AF37);
-  box-shadow:     0 0 6px 2px var(--ember-glow, rgba(212,175,55,0.55));
+  background:     var(--ember-color, var(--env-accent, #D4AF37));
+  box-shadow:     0 0 6px 2px var(--ember-glow, color-mix(in srgb, var(--env-accent, #D4AF37) 55%, transparent));
   will-change:    transform, opacity;
   backface-visibility: hidden;
   animation:      env-ember-rise var(--e-dur, 4.5s) ease-out var(--e-del, 0s) infinite;

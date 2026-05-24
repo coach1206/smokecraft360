@@ -1,8 +1,9 @@
 {
   "name": "NOVEE OS — Kiosk Edition",
   "short_name": "NOVEE OS",
+  "id": "/novee/?kiosk=1",
   "description": "SmokeCraft 360 — Luxury Cigar Science Kiosk. Powered by Axiom OS.",
-  "start_url": "/novee/",
+  "start_url": "/novee/?kiosk=1",
   "scope": "/novee/",
   "display": "standalone",
   "display_override": ["fullscreen", "standalone"],
