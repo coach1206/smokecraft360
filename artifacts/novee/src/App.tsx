@@ -38,6 +38,7 @@ import { AmbientEmberField } from "@/components/AmbientEmberField";
 import { AshParticles } from "@/components/AshParticles";
 import { RevenueOptimizationOverlay } from "@/components/RevenueOptimizationOverlay";
 import { NoveeXPBridge }              from "@/components/PosXPFeedback";
+import { DevModeOverlay } from "@/components/DevModeOverlay";
 import { playClick } from "@/hooks/useAudio";
 import { hapticClick } from "@/hooks/useHaptic";
 
@@ -1870,6 +1871,7 @@ export default function App() {
               <AshParticles />
               <RevenueOptimizationOverlay />
               <NoveeXPBridge />
+              <DevModeOverlay />
             </motion.div>
           )}
         </AnimatePresence>

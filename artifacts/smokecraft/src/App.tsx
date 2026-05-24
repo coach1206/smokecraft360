@@ -44,6 +44,7 @@ import { AshParticles }              from '@/components/AshParticles';
 import { RevenueOptimizationOverlay } from '@/components/RevenueOptimizationOverlay';
 import { PosXPFeedback }             from '@/components/PosXPFeedback';
 import { startHeartbeat, getOrCreateDeviceId } from '@/lib/deviceTelemetry';
+import { DevModeOverlay } from '@/components/DevModeOverlay';
 
 /* ── Lazy-loaded overlays (removed from critical path) ────── */
 const EeisOverlay          = lazy(() => import('@/components/EeisOverlay'));
@@ -255,6 +256,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <PosXPFeedback />
                                           <UniversalTouchAnchors />
                                           <UniversalBackButton />
+                                          <DevModeOverlay />
                                           {children}
                                           <RouteTransitionOverlay />
                                           <Suspense fallback={null}>

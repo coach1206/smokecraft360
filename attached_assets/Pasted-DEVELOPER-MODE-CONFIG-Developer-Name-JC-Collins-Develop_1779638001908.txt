@@ -1,0 +1,149 @@
+DEVELOPER MODE CONFIG
+
+Developer Name:
+JC Collins
+
+Developer Access Code:
+6810
+
+====================================================
+DEVELOPER AUTO-SIGNIN RULES
+====================================================
+
+IF:
+developerCode === "6810"
+
+THEN:
+- bypass onboarding repetition
+- unlock dev navigation panel
+- preserve session automatically
+- auto-save all form entries
+- restore last active screen
+- allow section skipping
+- allow XP simulation
+- allow reward unlock simulation
+- prevent forced restart loops
+
+====================================================
+LOCAL DEV SESSION STORAGE
+====================================================
+
+STORE:
+
+{
+  developerMode: true,
+  developerName: "JC Collins",
+  developerCode: "6810",
+  skipOnboarding: true,
+  persistentSession: true,
+  restoreLastScreen: true
+}
+
+====================================================
+ADD TO:
+====================================================
+
+client/src/store/useGoldenBoxStore.ts
+
+====================================================
+ZUSTAND STATE
+====================================================
+
+developerMode: false,
+developerName: "",
+developerCode: "",
+
+enableDeveloperMode: (
+  name,
+  code
+) => set({
+
+  developerMode: true,
+
+  developerName: name,
+
+  developerCode: code
+})
+
+====================================================
+AUTO-HYDRATE ON LOAD
+====================================================
+
+On application startup:
+
+IF localStorage contains:
+developerCode === "6810"
+
+AUTO:
+- restore profile
+- restore progress
+- restore last route
+- restore XP
+- restore unlocked levels
+- restore mentor selection
+
+====================================================
+DEV PANEL ACCESS
+====================================================
+
+Keyboard Shortcut:
+SHIFT + D
+
+OR
+
+Hidden touch trigger:
+tap NOVEE logo 5 times
+
+====================================================
+DEV PANEL OPTIONS
+====================================================
+
+- Jump To Any Screen
+- Unlock All Levels
+- Add XP
+- Reset Session
+- Simulate Rewards
+- Open Leaderboard
+- Open Prize Pool
+- Skip Animations
+- Reload Current Route
+- Restore Previous Route
+
+====================================================
+DEVELOPER FAILSAFE
+====================================================
+
+Never clear developer session unless:
+- manual reset
+- explicit logout
+- storage corruption
+
+====================================================
+VISUAL DEV INDICATOR
+====================================================
+
+Top right subtle label:
+
+DEV MODE ACTIVE
+JC COLLINS
+
+Small amber glow badge only visible in development mode.
+
+Also add this because you’re missing a major developer efficiency layer right now:
+
+AUTO ROUTE RECOVERY
+
+Every route change must save:
+
+{
+  lastRoute,
+  scrollPosition,
+  activeScreen,
+  activeSection,
+  formState
+}
+
+If crash/reload happens:
+restore automatically.
+
+NO MORE STARTING OVER.

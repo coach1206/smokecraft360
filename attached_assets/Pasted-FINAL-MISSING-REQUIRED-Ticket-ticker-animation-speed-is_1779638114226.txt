@@ -1,0 +1,303 @@
+FINAL
+MISSING / REQUIRED
+Ticket ticker animation speed is too aggressive
+Users cannot read the content before it disappears across screen.
+Current ticker lacks:
+pause logic
+hover slowdown
+cinematic pacing
+lounge readability
+adaptive speed scaling
+The ticker currently feels:
+“casino chaos”
+
+Instead of:
+“luxury ambient intelligence.”
+
+The ticker also needs:
+content prioritization
+spacing normalization
+smooth easing curves
+reduced motion fatigue
+Developer session persistence and route cleanup from previous prompt still must remain fully active.
+FAILURE PREVENTION CHECKLIST
+
+✅ Preserve E.A.T intelligence footer
+✅ Preserve live feed system
+✅ Slow ticker for readability
+✅ Add adaptive speed controls
+✅ Add hover pause behavior
+✅ Add touchscreen pause behavior
+✅ Prevent motion fatigue
+✅ Preserve cinematic luxury feel
+✅ Keep Replit-safe rendering
+✅ Reduce GPU strain
+✅ Maintain infinite loop continuity
+✅ Preserve real-time updates
+✅ Maintain mobile/tablet compatibility
+✅ Preserve developer persistence system
+✅ Preserve Golden Box routing fixes
+
+MASTER PATCH PROMPT
+EXECUTE E.A.T TICKER INTELLIGENCE REDESIGN + MOTION STABILIZATION PATCH
+(FULLY WIRED • NO STUBS • TOUCHSCREEN SAFE)
+
+====================================================
+PRIMARY OBJECTIVE
+====================================================
+
+Fix the E.A.T bottom ticker system so users can comfortably read information without visual stress.
+
+The current ticker is moving too fast and creating:
+- cognitive overload
+- motion fatigue
+- readability failure
+- touchscreen distraction
+
+The ticker must now feel:
+
+“Luxury ambient intelligence.”
+
+NOT:
+“A stock market panic screen.”
+
+====================================================
+FIX 1 — REDUCE TICKER SPEED
+====================================================
+
+CURRENT ISSUE:
+Ticker races across screen too quickly.
+
+NEW BEHAVIOR:
+Reduce speed by 65%.
+
+TARGET:
+Smooth cinematic crawl.
+
+Ticker should move:
+slow enough to casually read from lounge distance.
+
+====================================================
+FIX 2 — ADD ADAPTIVE SPEED ENGINE
+====================================================
+
+IMPLEMENT:
+Dynamic ticker speed logic.
+
+RULES:
+
+IF:
+message length is long
+THEN:
+ticker slows automatically.
+
+IF:
+message contains rewards/promotions
+THEN:
+pause slightly longer.
+
+IF:
+screen is idle
+THEN:
+slow ticker further.
+
+====================================================
+FIX 3 — ADD HOVER / TOUCH PAUSE
+====================================================
+
+DESKTOP:
+On hover:
+pause ticker animation.
+
+TOUCHSCREEN:
+Tap ticker once:
+pause.
+
+Tap again:
+resume.
+
+Show subtle:
+“PAUSED”
+indicator in amber.
+
+====================================================
+FIX 4 — ADD MESSAGE SPACING
+====================================================
+
+CURRENT ISSUE:
+Messages are cramped together.
+
+FIX:
+Add large spacing between ticker items.
+
+Each item should breathe visually.
+
+Use:
+minimum 120px spacing.
+
+====================================================
+FIX 5 — ADD CATEGORY HIERARCHY
+====================================================
+
+STYLE DIFFERENT MESSAGE TYPES:
+
+CIGAR:
+gold accent
+
+DRINKS:
+amber accent
+
+KITCHEN:
+warm copper
+
+REWARDS:
+purple glow
+
+SYSTEM:
+subtle teal
+
+Do NOT:
+use flashing colors.
+
+====================================================
+FIX 6 — ADD CINEMATIC EASING
+====================================================
+
+REMOVE:
+linear robotic movement.
+
+ADD:
+smooth cinematic easing.
+
+Use:
+ease-in-out infinite loop.
+
+Movement should feel:
+organic and premium.
+
+====================================================
+FIX 7 — ADD TICKER INTELLIGENCE QUEUE
+====================================================
+
+CREATE PRIORITY ORDER:
+
+1. Critical system alerts
+2. Rewards
+3. Promotions
+4. Lounge specials
+5. Pairing suggestions
+6. Ambient venue updates
+
+====================================================
+FIX 8 — ADD READING SAFE ZONES
+====================================================
+
+Every 8–10 seconds:
+brief micro slowdown.
+
+Purpose:
+allow users to naturally catch information.
+
+====================================================
+FIX 9 — PERFORMANCE OPTIMIZATION
+====================================================
+
+Reduce:
+- excessive rerenders
+- repaint loops
+- unnecessary transforms
+
+Use:
+transform: translate3d()
+
+Enable:
+GPU acceleration safely.
+
+Prevent:
+frame skipping on tablets.
+
+====================================================
+FIX 10 — FILES TO PATCH
+====================================================
+
+PATCH:
+
+client/src/components/eat/
+- EatTicker.tsx
+- LoungeTicker.tsx
+- TickerItem.tsx
+
+PATCH:
+- animation.css
+- kiosk-motion.css
+
+====================================================
+FIX 11 — TICKER CONTENT STRUCTURE
+====================================================
+
+FORMAT:
+
+[CATEGORY BADGE]
+MESSAGE
+OPTIONAL CTA
+
+EXAMPLE:
+
+[CIGAR]
+Rocky Patel Vintage 1990 now available tonight
+
+[REWARDS]
+Connoisseur members unlock private pairing events
+
+[KITCHEN]
+Truffle Lobster Bisque now serving
+
+====================================================
+FIX 12 — DEVELOPER CONTROLS
+====================================================
+
+Inside DEV MODE:
+
+Allow:
+- ticker speed slider
+- pause/resume
+- force message
+- test categories
+- simulate alerts
+
+====================================================
+FIX 13 — SESSION PERSISTENCE
+====================================================
+
+Preserve all prior fixes:
+
+- developer session memory
+- route recovery
+- profile persistence
+- navigation stack
+- leaderboard cleanup
+- duplicate button removal
+- SC legacy route removal
+
+DO NOT overwrite prior systems.
+
+====================================================
+FINAL EXPERIENCE GOAL
+====================================================
+
+Ticker should now feel like:
+A cinematic luxury ambient intelligence ribbon.
+
+Users should:
+- comfortably read content
+- absorb promotions naturally
+- feel atmosphere instead of stress
+
+NO CHAOTIC MOVEMENT.
+NO SPEED RACING.
+NO CASINO EFFECT.
+NO HARD JERKS.
+NO UNREADABLE TEXT.
+
+ONLY:
+smooth ambient premium movement.
