@@ -781,6 +781,7 @@ export default function CraftEntryPoint({ onComplete }: Props) {
   }
 
   function handleSmokecraftSelect() {
+    try { sessionStorage.setItem("novee_launch_phase", "s1_demo"); } catch { /* kiosk storage unavailable */ }
     onComplete();
   }
 
