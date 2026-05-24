@@ -1448,10 +1448,7 @@ export default function App() {
 
 /* ── HELPERS ── */
 function RootRedirect() {
-  const [, navigate] = useLocation();
-  // DEV OVERRIDE: force straight to StaffTerminal for preview
-  useEffect(() => { navigate('/pos', { replace: true }); }, []);
-  return null;
+  return <SovereignBootFlow />;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';

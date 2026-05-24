@@ -1530,7 +1530,7 @@ function BottomBar() {
     <div style={{ width: "100%", flexShrink: 0, height: 58, background: "rgba(4,2,0,0.98)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderTop: `2px solid ${GOLD}`, boxShadow: `0 -6px 32px rgba(212,175,55,0.18)`, display: "flex", flexDirection: "row", alignItems: "center", position: "relative", zIndex: 200, overflow: "hidden" }}>
       <style>{`
         @keyframes novee-ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .novee-ticker-track { display: inline-flex; flex-direction: row; align-items: center; white-space: nowrap; animation: novee-ticker 80s linear infinite; will-change: transform; }
+        .novee-ticker-track { display: inline-flex; flex-direction: row; align-items: center; white-space: nowrap; animation: novee-ticker 200s linear infinite; will-change: transform; }
       `}</style>
       <div style={{ flexShrink: 0, padding: "0 18px", borderRight: `1px solid ${GOLD}44`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 2, background: "rgba(212,175,55,0.06)" }}>
         <span style={{ fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}99`, fontWeight: 900, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>TONIGHT'S</span>
@@ -2019,14 +2019,11 @@ function OsShellContent() {
 }
 
 export default function NoveeOsShell() {
-  const [bootDone, setBootDone] = useState<boolean>(() => {
-    try { return sessionStorage.getItem("novee_boot_done") === "1"; } catch { return false; }
-  });
+  const [bootDone, setBootDone] = useState(false);
 
   const CompBoot = NoveeKioskBootSequence as any;
 
   function handleBootComplete() {
-    try { sessionStorage.setItem("novee_boot_done", "1"); } catch { /* */ }
     setBootDone(true);
   }
 

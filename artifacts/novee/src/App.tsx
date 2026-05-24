@@ -1831,9 +1831,7 @@ function OsShell() {
    Root app
 ───────────────────────────────────────────── */
 export default function App() {
-  const [bootDone, setBootDone] = useState<boolean>(() => {
-    try { return sessionStorage.getItem("novee_boot_done") === "1"; } catch { return false; }
-  });
+  const [bootDone, setBootDone] = useState(false);
 
   // ── Device heartbeat — keeps kiosk registered as ACTIVE in venue registry ──
   useEffect(() => {
@@ -1846,7 +1844,6 @@ export default function App() {
   }, []);
 
   function handleBootComplete() {
-    try { sessionStorage.setItem("novee_boot_done", "1"); } catch { /* */ }
     setBootDone(true);
   }
 
