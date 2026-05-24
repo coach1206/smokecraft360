@@ -1673,10 +1673,9 @@ function CraftHubInner() {
             mod={CRAFT_MODULES[0]!}
             isPrimary
             onTrigger={() => {
-              ExperienceFlowEngine.startCraft(CRAFT_MODULES[0]!.id);
-              SovereignOrchestrator.startCraft("smoke");
-              void SovereignOrchestrator.transitionTo("ritual_intro");
               navigate("/master-blender");
+              try { ExperienceFlowEngine.startCraft(CRAFT_MODULES[0]!.id); } catch { /* non-blocking */ }
+              try { SovereignOrchestrator.startCraft("smoke"); void SovereignOrchestrator.transitionTo("ritual_intro"); } catch { /* non-blocking */ }
             }}
           />
         </div>
