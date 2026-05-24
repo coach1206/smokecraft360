@@ -9,7 +9,7 @@ args = ["pnpm", "store", "prune"]
 env = { "CI" = "true" }
 
 [workflows]
-runButton = "Project"
+runButton = "SmokeCraft Remote"
 
 [[workflows.workflow]]
 name = "Project"
@@ -18,11 +18,27 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "essential-mode-tests"
+args = "SmokeCraft Remote"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "typecheck"
+args = "NOVEE OS Kiosk"
+
+[[workflows.workflow]]
+name = "SmokeCraft Remote"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sh scripts/replit-dev-smokecraft.sh"
+
+[[workflows.workflow]]
+name = "NOVEE OS Kiosk"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sh scripts/replit-dev-novee.sh"
 
 [[workflows.workflow]]
 name = "essential-mode-tests"
