@@ -1,0 +1,507 @@
+EXECUTE FULL SOVEREIGN EXPERIENCE ORCHESTRATION MERGE
+(NON-DESTRUCTIVE • TOUCHSCREEN CINEMATIC OS • SINGLE CONTINUOUS EXPERIENCE ENGINE)
+
+##################################################
+PRIMARY OBJECTIVE
+##################################################
+
+Merge ALL prior systems, fixes, redesigns, navigation patches, realism upgrades, persistence systems, and cinematic architecture into ONE unified sovereign orchestration system.
+
+SmokeCraft MUST stop behaving like:
+- React pages
+- CSS dashboard panels
+- isolated components
+- stacked routes
+- generic SaaS architecture
+
+SmokeCraft MUST become:
+
+“A SINGLE CONTINUOUS LIVING EXPERIENCE ENGINE.”
+
+NO disconnected flows.
+NO repeated splash screens.
+NO random transitions.
+NO dead states.
+NO duplicated routes.
+NO CSS card dashboard feel.
+
+EVERYTHING must operate through ONE master orchestration layer.
+
+##################################################
+CREATE MASTER EXPERIENCE BRAIN
+##################################################
+
+CREATE:
+
+SovereignExperienceOrchestrator.ts
+
+OR
+
+SmokeCraftJourneyEngine.ts
+
+THIS becomes the MASTER SYSTEM CONTROLLER.
+
+The orchestrator controls:
+
+- progression phases
+- cinematic pacing
+- atmosphere systems
+- mentor influence
+- XP progression
+- leaderboard updates
+- pairing intelligence
+- emotional pacing
+- ambient lighting logic
+- smoke overlays
+- ember systems
+- transition timing
+- preload timing
+- reward reveals
+- session persistence
+- profile memory
+- venue inventory comparison
+- loyalty systems
+- upsell timing
+- educational sequencing
+- tasting progression
+- state restoration
+- touchscreen interaction pacing
+
+##################################################
+GLOBAL EXPERIENCE RULE
+##################################################
+
+ALL experiences MUST emotionally flow together.
+
+NO abrupt route changes.
+NO black empty screens.
+NO repeated intros.
+NO duplicated SmokeCraft landing pages.
+NO isolated page behavior.
+
+EVERYTHING should feel:
+continuous
+luxurious
+immersive
+calm
+cinematic
+spatial
+touch-native
+
+##################################################
+REMOVE DUPLICATE SMOKECRAFT FLOW
+##################################################
+
+CURRENT ISSUE:
+SmokeCraft launches twice.
+
+FLOW MUST NOW BE:
+
+CRAFT HUB
+→
+DIRECTLY INTO ACTIVE SMOKECRAFT EXPERIENCE
+
+REMOVE:
+secondary SmokeCraft splash screen entirely.
+
+NO duplicate intros.
+
+##################################################
+REMOVE CSS DASHBOARD FEEL
+##################################################
+
+CURRENT ISSUE:
+System still feels like:
+stacked CSS cards.
+
+REMOVE:
+- boxed panel layouts
+- rigid grids
+- dashboard cards
+- flat admin sections
+- generic settings rows
+
+REPLACE WITH:
+spatial cinematic composition.
+
+The UI must feel:
+like a luxury operating environment,
+NOT a website.
+
+##################################################
+REMOVE ALL GLYPHS / EMOJIS
+##################################################
+
+REMOVE:
+- emoji icons
+- generic circles
+- placeholder badges
+- template glyphs
+- fake dashboard icons
+- cartoon visuals
+
+REPLACE WITH:
+- realistic metallic badges
+- engraved cigar seals
+- premium medallions
+- cinematic emblems
+- realistic textures
+- dimensional luxury materials
+
+##################################################
+REALISTIC BADGE + USER IDENTITY SYSTEM
+##################################################
+
+Leaderboard users must have:
+
+- uploaded portrait/avatar
+- nickname
+- prestige title
+- mentor affiliation
+- regional affiliation
+- streak status
+- rarity badges
+
+CREATE:
+real image upload system.
+
+SUPPORTED:
+- drag/drop
+- camera capture
+- tablet upload
+
+Leaderboard should feel:
+exclusive and prestigious.
+
+##################################################
+PAIRING INTELLIGENCE OVERHAUL
+##################################################
+
+CURRENT ISSUE:
+Pairing system visuals make no sense.
+
+REMOVE:
+- fake recommendation cards
+- placeholder imagery
+- disconnected pairings
+
+REPLACE WITH:
+realistic cinematic pairing intelligence.
+
+EACH PAIRING MUST SHOW:
+- realistic cigar image
+- realistic spirit image
+- flavor science
+- aroma profile
+- why AI selected it
+- mentor commentary
+- rarity value
+- venue inventory availability
+
+EXAMPLE:
+“The cocoa density of this Maduro complements the caramelized oak finish of the reserve bourbon.”
+
+##################################################
+MASTER BLEND SYSTEM OVERHAUL
+##################################################
+
+CURRENT ISSUE:
+Blend system looks cartoonish.
+
+REMOVE:
+- game sliders
+- flat bars
+- generic UI meters
+
+REPLACE WITH:
+CINEMATIC TOBACCO COMPOSITION ENGINE
+
+VISUALIZE:
+- real tobacco leaves
+- combustion maps
+- flavor wheel
+- aroma diffusion
+- smoke density
+- ash behavior
+- heat maps
+- cross-sectional cigar anatomy
+
+STYLE:
+luxury scientific visualization.
+
+##################################################
+CONTROL CHAMBER OVERHAUL
+##################################################
+
+CURRENT ISSUE:
+Control Chamber has no meaning.
+
+CREATE:
+Founder Control Introduction Layer.
+
+TEXT:
+“CONTROL CHAMBER
+The operational intelligence core of NOVEE OS.”
+
+EXPLAIN:
+- atmosphere control
+- AI orchestration
+- pairing systems
+- loyalty intelligence
+- venue calibration
+- guest behavior systems
+- operational intelligence
+- founder systems
+
+##################################################
+FOUNDER ACCESS SYSTEM
+##################################################
+
+DEFAULT FOUNDER:
+JC Collins
+
+FOUNDER PIN:
+6810
+
+CREATE:
+- founder onboarding
+- PIN setup
+- encrypted storage
+- recovery flow
+- dev bypass
+- biometric-ready architecture
+
+ENABLE:
+persistent developer mode.
+
+##################################################
+SESSION PERSISTENCE
+##################################################
+
+NEVER force restart.
+
+SAVE:
+- route state
+- progression state
+- mentor selections
+- XP
+- badges
+- pairings
+- onboarding completion
+- flavor profiles
+- current screen
+- scroll position
+
+ON RELOAD:
+restore automatically.
+
+DISPLAY:
+“Continue Your Journey?”
+
+##################################################
+TOUCHSCREEN EXPERIENCE RULES
+##################################################
+
+ALL interfaces MUST:
+- feel touch-native
+- feel spatially balanced
+- feel calm
+- feel breathable
+- feel premium
+
+NO compressed UI.
+NO crowded panels.
+NO tiny text.
+NO overlapping systems.
+
+##################################################
+VISUAL ATMOSPHERE RULES
+##################################################
+
+Maintain:
+- smoke overlays
+- ember systems
+- cinematic lighting
+- dimensional depth
+- ambient particles
+- luxury typography
+- atmospheric transitions
+
+REDUCE:
+- visual chaos
+- overactive glow spam
+- dashboard clutter
+- noisy layering
+
+##################################################
+REAL IMAGE SYSTEM
+##################################################
+
+ALL SCREENS MUST USE:
+- realistic cigar photography
+- real lounge imagery
+- real spirits
+- real tobacco textures
+- cinematic hospitality photography
+
+NO:
+placeholder renders
+cartoon graphics
+fake AI nonsense
+generic stock cards
+
+##################################################
+EXPERIENCE STORY FLOW
+##################################################
+
+The ENTIRE system must now flow as:
+
+PHASE 0
+Sovereign Boot Sequence
+
+↓
+
+Craft Hub
+
+↓
+
+SmokeCraft Ritual Introduction
+
+↓
+
+Profile + Flavor Identity
+
+↓
+
+Mentor Selection
+
+↓
+
+Leaf Education
+
+↓
+
+Regional Tobacco Science
+
+↓
+
+Blend Construction
+
+↓
+
+Cut + Lighting Ritual
+
+↓
+
+Pairing Intelligence
+
+↓
+
+Venue Inventory Matching
+
+↓
+
+XP + Rewards
+
+↓
+
+Leaderboard + Prestige
+
+↓
+
+Loyalty + Return Progression
+
+ALL phases must preserve:
+- emotional continuity
+- mentor continuity
+- atmosphere continuity
+- educational continuity
+- session continuity
+
+##################################################
+LEADERBOARD RULES
+##################################################
+
+Leaderboard must feel:
+alive
+competitive
+luxurious
+prestigious
+
+DISPLAY:
+- portraits
+- XP
+- rank
+- mentor
+- region
+- streaks
+- titles
+- rarity badges
+
+REMOVE:
+generic circles and dots.
+
+##################################################
+FILES TO CREATE
+##################################################
+
+CREATE:
+
+SovereignExperienceOrchestrator.ts
+SmokeCraftJourneyEngine.ts
+TouchscreenAtmosphereController.ts
+FounderAccessEngine.ts
+CinematicTransitionEngine.ts
+GuestIntelligenceDirectory.ts
+
+##################################################
+FILES TO PATCH
+##################################################
+
+PATCH:
+
+CraftHub.tsx
+SmokeCraftLanding.tsx
+GoldenBoxPage.tsx
+PairingIntelligence.tsx
+MasterBlend.tsx
+Leaderboard.tsx
+ControlChamber.tsx
+FounderAccess.tsx
+NavigationContext.tsx
+useGoldenBoxStore.ts
+touchscreen-motion.css
+goldenbox-theme.css
+
+##################################################
+FINAL EXPERIENCE GOAL
+##################################################
+
+SmokeCraft must now feel like:
+
+“A luxury cinematic hospitality operating system.”
+
+NOT:
+- a React app
+- a dashboard
+- a CSS template
+- a crypto UI
+- a mobile game
+
+Users should emotionally feel:
+- prestige
+- ritual
+- atmosphere
+- immersion
+- mastery
+- luxury
+- exclusivity
+- progression
+
+EVERYTHING must operate as ONE unified living experience engine.
+NO DISCONNECTED SYSTEMS.
+NO DUPLICATE FLOWS.
+NO PLACEHOLDER UI.
+NO GENERIC COMPONENTS.
+NO DEAD TRANSITIONS.
+NO CSS DASHBOARD FEEL.
