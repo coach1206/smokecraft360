@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
-import { getVenueLeaderboard } from "@/lib/leaderboardEngine";
+import { socket } from "@/lib/socket";
 
 const GOLD  = "#D4AF37";
 const AMBER = "#C4860A";
@@ -10,6 +10,35 @@ const DARK  = "#0A0700";
 const EASE  = [0.22, 1, 0.36, 1] as const;
 
 export type GBTier = "novice" | "enthusiast" | "connoisseur" | "aficionado" | "expert";
+
+interface LeaderEntry {
+  rank:           number;
+  guestProfileId: string | null;
+  firstName:      string;
+  lastInitial:    string;
+  craftScore:     number;
+  totalXp:        number;
+  achievementCnt: number;
+  tier:           string;
+  tierLabel:      string;
+  tierColor:      string;
+}
+
+const TIER_CFG: Record<string, { num: number; color: string; label: string }> = {
+  explorer:   { num: 1, color: "#6B8A9A", label: "INITIATE"    },
+  enthusiast: { num: 2, color: "#7EC8A0", label: "ENTHUSIAST"  },
+  specialist: { num: 3, color: "#D48B00", label: "SPECIALIST"  },
+  aficionado: { num: 4, color: "#CE93D8", label: "CONNOISSEUR" },
+  golden_box: { num: 5, color: "#FFD700", label: "GOLDEN BOX"  },
+};
+
+const DEMO_LEADER: LeaderEntry[] = [
+  { rank: 1, guestProfileId: "d1", firstName: "TheCigarLion",  lastInitial: "",  craftScore: 100, totalXp: 18750, achievementCnt: 7, tier: "golden_box", tierLabel: "Golden Box",  tierColor: "#FFD700" },
+  { rank: 2, guestProfileId: "d2", firstName: "Aficionado",    lastInitial: "D", craftScore:  87, totalXp: 16420, achievementCnt: 6, tier: "golden_box", tierLabel: "Golden Box",  tierColor: "#FFD700" },
+  { rank: 3, guestProfileId: "d3", firstName: "SmoothDraws",   lastInitial: "",  craftScore:  76, totalXp: 14980, achievementCnt: 8, tier: "aficionado", tierLabel: "Aficionado", tierColor: "#CE93D8" },
+  { rank: 4, guestProfileId: "d4", firstName: "Ash&Oak",       lastInitial: "",  craftScore:  67, totalXp: 13250, achievementCnt: 5, tier: "aficionado", tierLabel: "Aficionado", tierColor: "#CE93D8" },
+  { rank: 5, guestProfileId: "d5", firstName: "LeafScholar",   lastInitial: "",  craftScore:  63, totalXp: 12760, achievementCnt: 6, tier: "aficionado", tierLabel: "Aficionado", tierColor: "#CE93D8" },
+];
 
 function getTier(xp: number): GBTier {
   if (xp >= 20000) return "expert";
@@ -168,11 +197,7 @@ const STAT_COMPARE = [
   { label: "Rare Blends",    you: 3,   avg: 1,   unit: ""    },
 ];
 
-const DEMO_TOP = [
-  { name: "TheCigarLion",  score: 18750 },
-  { name: "Aficionado_D",  score: 16420 },
-  { name: "SmoothDraws",   score: 14980 },
-];
+const BASE_URL = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL?.replace(/\/$/, "") ?? "";
 
 interface GoldenBoxPageProps { onBack: () => void; }
 
@@ -186,6 +211,12 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
   const [challengeOpen,   setChallengeOpen]   = useState(false);
   const [statsOpen,       setStatsOpen]       = useState(false);
   const [activeChallenge, setActiveChallenge] = useState<string | null>(null);
+  const [activeNav,       setActiveNav]       = useState<"dashboard" | "leaderboard">("dashboard");
+
+  const [leaderEntries,  setLeaderEntries]  = useState<LeaderEntry[]>([]);
+  const [leaderLoading,  setLeaderLoading]  = useState(true);
+  const [leaderUpdated,  setLeaderUpdated]  = useState("just now");
+  const prevRanks = useRef<Map<string, number>>(new Map());
 
   const xpPercent = (() => {
     if (tier === "novice")      return Math.round((xp / 1000) * 100);
@@ -195,19 +226,123 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
     return 100;
   })();
 
-  const liveEntries = getVenueLeaderboard("00000000-0000-0000-0000-000000000001");
-  const topThree = (liveEntries.length > 0 ? liveEntries.slice(0, 3) : DEMO_TOP) as Array<{ name: string; score: number }>;
+  function applyEntries(incoming: LeaderEntry[]) {
+    incoming.forEach(e => { if (e.guestProfileId) prevRanks.current.set(e.guestProfileId, e.rank); });
+    setLeaderEntries(incoming.slice(0, 20));
+    setLeaderUpdated("just now");
+  }
 
-  const NAV_ITEMS = [
-    { icon: "⊞", label: "Dashboard", active: true },
-    { icon: "📖", label: "Learn" },
-    { icon: "⬡",  label: "Challenges" },
-    { icon: "◈",  label: "Leaderboard" },
-    { icon: "🎁", label: "Rewards" },
-    { icon: "🛡",  label: "Badges" },
-    { icon: "↑",  label: "My Progress" },
-    { icon: "⚙",  label: "Settings" },
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchLeaderboard() {
+      try {
+        const res  = await fetch(`${BASE_URL}/api/leaderboard?limit=20`);
+        if (!res.ok || cancelled) return;
+        const data = await res.json() as { entries?: LeaderEntry[] };
+        applyEntries(data.entries ?? []);
+      } catch { /* fallback to demo */ }
+      finally { if (!cancelled) setLeaderLoading(false); }
+    }
+    fetchLeaderboard();
+    const interval = setInterval(fetchLeaderboard, 30_000);
+
+    function onUpdate(data: { entries?: LeaderEntry[] }) {
+      if (!cancelled) applyEntries(data.entries ?? []);
+    }
+    socket.on("leaderboard_update", onUpdate);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      socket.off("leaderboard_update", onUpdate);
+    };
+  }, []);
+
+  const displayEntries = leaderEntries.length > 0 ? leaderEntries : DEMO_LEADER;
+  const topThree = displayEntries.slice(0, 3);
+
+  const NAV = [
+    { key: "dashboard",    icon: "⊞", label: "Dashboard" },
+    { key: "learn",        icon: "📖", label: "Learn" },
+    { key: "challenges",   icon: "⬡",  label: "Challenges" },
+    { key: "leaderboard",  icon: "◈",  label: "Leaderboard" },
+    { key: "rewards",      icon: "🎁", label: "Rewards" },
+    { key: "badges",       icon: "🛡",  label: "Badges" },
+    { key: "progress",     icon: "↑",  label: "My Progress" },
+    { key: "settings",     icon: "⚙",  label: "Settings" },
   ];
+
+  function handleNavClick(key: string) {
+    if (key === "leaderboard") setActiveNav("leaderboard");
+    else if (key === "challenges") setChallengeOpen(true);
+    else setActiveNav("dashboard");
+  }
+
+  function handleBack() {
+    if (activeNav !== "dashboard") { setActiveNav("dashboard"); return; }
+    onBack();
+  }
+
+  const RightPanel = () => (
+    <div style={{ width: 238, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* YOUR JOURNEY */}
+      <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
+        <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 14 }}>YOUR JOURNEY</div>
+        {LEVELS.slice().reverse().map((lv, i) => {
+          const isActive = lv.id === tier;
+          const isPast   = xp >= lv.xpMin && !isActive;
+          return (
+            <div key={lv.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < LEVELS.length - 1 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
+              <div style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
+                background: isActive ? `linear-gradient(135deg, ${lv.color}CC, ${lv.color}77)` : isPast ? "rgba(50,180,90,0.14)" : "rgba(212,175,55,0.07)",
+                border: `1.5px solid ${isActive ? lv.color : isPast ? "rgba(50,180,90,0.38)" : "rgba(212,175,55,0.18)"}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 11, fontWeight: 900,
+                color: isActive ? "#000" : isPast ? "#32B45A" : "rgba(212,175,55,0.40)",
+              }}>
+                {LEVELS.length - i}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: isActive ? 900 : 600, color: isActive ? lv.color : isPast ? CREAM : "rgba(240,232,212,0.40)", letterSpacing: "0.05em" }}>{lv.title}</div>
+                {!isActive && (
+                  <div style={{ fontSize: 10, color: "rgba(240,232,212,0.28)", letterSpacing: "0.07em", marginTop: 1 }}>
+                    {lv.xpMin > 0 ? `${lv.xpMin.toLocaleString()} XP` : "0 XP"}
+                  </div>
+                )}
+              </div>
+              {isActive && (
+                <div style={{ fontSize: 11, fontWeight: 700, color: `${GOLD}88`, letterSpacing: "0.05em", flexShrink: 0 }}>{xp.toLocaleString()} XP</div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* WEEKLY CHALLENGE */}
+      <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
+        <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 3 }}>WEEKLY CHALLENGE</div>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginTop: 12, marginBottom: 12 }}>
+          <div style={{ width: 42, height: 42, borderRadius: 10, background: `rgba(212,175,55,0.10)`, border: `1px solid ${GOLD}2A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🎯</div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: CREAM, letterSpacing: "0.03em", marginBottom: 3 }}>Blend Master</div>
+            <div style={{ fontSize: 11, color: "rgba(240,232,212,0.46)", lineHeight: 1.45 }}>Complete 5 challenges</div>
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
+          <div style={{ flex: 1, height: 4, borderRadius: 2, background: "rgba(212,175,55,0.10)", overflow: "hidden" }}>
+            <motion.div initial={{ width: 0 }} animate={{ width: "30%" }} transition={{ duration: 1.2, ease: EASE }}
+              style={{ height: "100%", background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, borderRadius: 2 }} />
+          </div>
+          <div style={{ fontSize: 10, color: "rgba(240,232,212,0.40)", flexShrink: 0 }}>30%</div>
+        </div>
+        <div style={{ fontSize: 10, color: "rgba(240,232,212,0.30)", marginBottom: 13 }}>2 / 5 challenges</div>
+        <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => setChallengeOpen(true)}
+          style={{ width: "100%", padding: "11px", borderRadius: 9, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.07)", color: GOLD, fontSize: 12, fontWeight: 900, cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase" }}>
+          VIEW CHALLENGES
+        </motion.button>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{
@@ -233,30 +368,33 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
         zIndex: 10, position: "relative",
         overflowY: "auto",
       }}>
-        {/* Logo */}
         <div style={{ padding: "18px 14px 14px", borderBottom: `1px solid rgba(212,175,55,0.09)` }}>
           <div style={{ fontSize: 17, fontWeight: 900, color: GOLD, letterSpacing: "0.04em", lineHeight: 1.1 }}>SMOKECRAFT <span style={{ color: CREAM }}>360</span></div>
           <div style={{ fontSize: 8, fontWeight: 900, letterSpacing: "0.32em", color: `${GOLD}44`, textTransform: "uppercase", marginTop: 4 }}>KIOSK EDITION</div>
         </div>
-        {/* Nav */}
-        {NAV_ITEMS.map(item => (
-          <div key={item.label} style={{
-            display: "flex", alignItems: "center", gap: 10,
-            padding: "11px 14px",
-            background: item.active ? `rgba(212,175,55,0.09)` : "transparent",
-            borderLeft: item.active ? `3px solid ${GOLD}` : "3px solid transparent",
-            cursor: "pointer",
-          }}>
-            <span style={{ fontSize: 14, color: item.active ? GOLD : "rgba(240,232,212,0.38)", width: 18, textAlign: "center" }}>{item.icon}</span>
-            <span style={{ fontSize: 13, fontWeight: item.active ? 800 : 500, color: item.active ? GOLD : "rgba(240,232,212,0.50)", letterSpacing: "0.03em" }}>{item.label}</span>
-          </div>
-        ))}
-        {/* Mini Golden Box teaser */}
+        {NAV.map(item => {
+          const isActive = item.key === activeNav || (item.key === "dashboard" && activeNav === "dashboard");
+          const isLeader = item.key === "leaderboard" && activeNav === "leaderboard";
+          const navActive = item.key === activeNav || isLeader || (item.key === "dashboard" && activeNav === "dashboard");
+          return (
+            <div key={item.key} onClick={() => handleNavClick(item.key)} style={{
+              display: "flex", alignItems: "center", gap: 10,
+              padding: "11px 14px",
+              background: navActive ? `rgba(212,175,55,0.09)` : "transparent",
+              borderLeft: navActive ? `3px solid ${GOLD}` : "3px solid transparent",
+              cursor: "pointer",
+              transition: "background 0.18s",
+            }}>
+              <span style={{ fontSize: 14, color: navActive ? GOLD : "rgba(240,232,212,0.38)", width: 18, textAlign: "center" }}>{item.icon}</span>
+              <span style={{ fontSize: 13, fontWeight: navActive ? 800 : 500, color: navActive ? GOLD : "rgba(240,232,212,0.50)", letterSpacing: "0.03em" }}>{item.label}</span>
+            </div>
+          );
+        })}
         <div style={{ margin: "auto 12px 14px", padding: "12px 10px", borderRadius: 10, background: `rgba(212,175,55,0.05)`, border: `1px solid ${GOLD}1A` }}>
           <div style={{ fontSize: 10, fontWeight: 900, color: GOLD, letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 4 }}>THE GOLDEN BOX</div>
           <div style={{ fontSize: 8, color: `${GOLD}50`, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10 }}>COMPETE. LEARN. ASCEND.</div>
           <div style={{ width: "100%", height: 56, borderRadius: 8, background: `linear-gradient(160deg, ${GOLD}14, ${AMBER}09)`, border: `1px solid ${GOLD}1A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 8 }}>🏆</div>
-          <div style={{ fontSize: 9, color: "rgba(240,232,212,0.38)", lineHeight: 1.55, textAlign: "center" }}>Every decision builds your mastery. Earn your place.</div>
+          <div style={{ fontSize: 9, color: "rgba(240,232,212,0.38)", lineHeight: 1.55, textAlign: "center" }}>Study the leaf. Build wisely. Earn your place.</div>
         </div>
       </div>
 
@@ -265,9 +403,9 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
 
         {/* TOP HEADER BAR */}
         <div style={{ padding: "11px 20px", borderBottom: `1px solid rgba(212,175,55,0.11)`, display: "flex", alignItems: "center", gap: 10, flexShrink: 0, background: "rgba(0,0,0,0.35)" }}>
-          <motion.button type="button" onClick={onBack} whileTap={{ scale: 0.94 }}
+          <motion.button type="button" onClick={handleBack} whileTap={{ scale: 0.94 }}
             style={{ padding: "8px 16px", borderRadius: 8, background: "rgba(212,175,55,0.08)", border: `1px solid ${GOLD}44`, color: GOLD, fontSize: 12, fontWeight: 800, cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase" }}>
-            ← BACK
+            {activeNav === "dashboard" ? "← BACK" : "← DASHBOARD"}
           </motion.button>
           <div style={{ flex: 1 }} />
           <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={() => setStatsOpen(true)}
@@ -278,7 +416,6 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
             style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, color: DARK, fontSize: 12, fontWeight: 900, cursor: "pointer", letterSpacing: "0.13em", textTransform: "uppercase", boxShadow: `0 0 14px ${GOLD}33` }}>
             ⬡ OPEN CHALLENGE
           </motion.button>
-          {/* Profile chip */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
             <div style={{ width: 30, height: 30, borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 900, color: DARK, flexShrink: 0 }}>
               {guestProfile?.firstName?.[0]?.toUpperCase() ?? "G"}
@@ -292,7 +429,6 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
 
         {/* RANK BAR */}
         <div style={{ padding: "13px 20px", borderBottom: `1px solid rgba(212,175,55,0.09)`, display: "flex", alignItems: "center", gap: 0, flexShrink: 0, background: "rgba(0,0,0,0.38)" }}>
-          {/* YOUR RANK */}
           <div style={{ display: "flex", alignItems: "center", gap: 14, paddingRight: 22, borderRight: `1px solid rgba(212,175,55,0.13)`, marginRight: 22 }}>
             <div style={{ width: 46, height: 46, borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD}20, ${AMBER}0E)`, border: `1.5px solid ${GOLD}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>♛</div>
             <div>
@@ -306,7 +442,6 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
               <div style={{ fontSize: 9, color: "rgba(240,232,212,0.32)", marginTop: 3, letterSpacing: "0.09em" }}>Next Rank: <span style={{ color: `${GOLD}99` }}>{milestone.label}</span></div>
             </div>
           </div>
-          {/* NEXT RANK */}
           <div style={{ paddingRight: 22, borderRight: `1px solid rgba(212,175,55,0.13)`, marginRight: 22 }}>
             <div style={{ fontSize: 9, color: "rgba(240,232,212,0.38)", letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 3 }}>Next Rank</div>
             <div style={{ fontSize: 20, fontWeight: 900, color: "#9B59B6", letterSpacing: "0.05em" }}>{milestone.label}</div>
@@ -314,225 +449,378 @@ export default function GoldenBoxPage({ onBack }: GoldenBoxPageProps) {
               {milestone.needed > 0 ? `${milestone.needed.toLocaleString()} XP to go` : "PEAK ACHIEVED"}
             </div>
           </div>
-          {/* REWARDS */}
           <div style={{ paddingRight: 22, borderRight: `1px solid rgba(212,175,55,0.13)`, marginRight: 22, textAlign: "center" }}>
             <div style={{ fontSize: 22, marginBottom: 4 }}>🎁</div>
             <div style={{ fontSize: 11, color: `${GOLD}77`, letterSpacing: "0.11em", cursor: "pointer" }}>View rewards</div>
           </div>
-          {/* BADGES */}
           <div style={{ paddingRight: 22, borderRight: `1px solid rgba(212,175,55,0.13)`, marginRight: 22, textAlign: "center" }}>
             <div style={{ fontSize: 22, marginBottom: 4 }}>🛡️</div>
             <div style={{ fontSize: 11, color: `${GOLD}77`, letterSpacing: "0.11em", cursor: "pointer" }}>View badges</div>
           </div>
           <div style={{ flex: 1 }} />
-          {/* SELECT MENTOR CTA */}
           <motion.div whileTap={{ scale: 0.97 }} style={{ padding: "12px 20px", borderRadius: 10, background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, cursor: "pointer", textAlign: "center", boxShadow: `0 0 22px ${GOLD}2A` }}>
             <div style={{ fontSize: 15, fontWeight: 900, color: DARK, letterSpacing: "0.11em", textTransform: "uppercase" }}>SELECT MENTOR →</div>
             <div style={{ fontSize: 9, color: `${DARK}88`, marginTop: 3, letterSpacing: "0.10em" }}>Get guidance. Climb faster.</div>
           </motion.div>
         </div>
 
-        {/* SCROLLABLE BODY */}
+        {/* ── SCROLLABLE BODY ── */}
         <div style={{ flex: 1, overflowY: "auto", padding: "16px 18px 16px", display: "flex", gap: 16 }}>
 
-          {/* CENTER MAIN */}
-          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* ══════════════════════════════════════════
+              LEADERBOARD VIEW
+          ══════════════════════════════════════════ */}
+          {activeNav === "leaderboard" && (
+            <>
+              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 14 }}>
 
-            {/* CONTEST LEVELS */}
-            <div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 13 }}>
-                <div style={{ fontSize: 17, fontWeight: 900, color: CREAM, letterSpacing: "0.22em", textTransform: "uppercase" }}>CONTEST LEVELS</div>
-                <div style={{ fontSize: 11, color: "rgba(240,232,212,0.38)", letterSpacing: "0.10em" }}>Progress through the ranks. Master the leaf.</div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
-                {LEVELS.map((lv, i) => {
-                  const isActive = lv.id === tier;
-                  const isPast   = xp >= lv.xpMin;
-                  return (
-                    <motion.div key={lv.id}
-                      initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.06 + i * 0.07, duration: 0.48, ease: EASE }}
-                      style={{
-                        borderRadius: 12,
-                        border: isActive ? `1.5px solid ${lv.color}88` : `1px solid rgba(212,175,55,${isPast ? "0.20" : "0.08"})`,
-                        background: isActive ? `linear-gradient(160deg, rgba(0,0,0,0.97), ${lv.color}0E)` : "rgba(8,5,1,0.80)",
-                        boxShadow: isActive ? `0 0 22px ${lv.glow}` : "none",
-                        padding: "14px 10px 12px",
-                        display: "flex", flexDirection: "column", alignItems: "center",
-                        position: "relative",
-                      }}>
-                      {isActive && <div style={{ position: "absolute", top: -1, left: "18%", right: "18%", height: 2, background: `linear-gradient(90deg, transparent, ${lv.color}, transparent)` }} />}
-                      <div style={{ fontSize: 11, fontWeight: 900, color: `${lv.color}88`, letterSpacing: "0.20em", marginBottom: 8 }}>{lv.num}</div>
-                      <div style={{ marginBottom: 8, transform: "scale(0.60)", transformOrigin: "center" }}>{lv.badge}</div>
-                      <div style={{ fontSize: 13, fontWeight: 900, color: isActive ? lv.color : "rgba(240,232,212,0.72)", letterSpacing: "0.09em", textAlign: "center", marginBottom: 4 }}>{lv.title}</div>
-                      <div style={{ fontSize: 9, color: "rgba(240,232,212,0.38)", textAlign: "center", lineHeight: 1.55, marginBottom: isActive ? 10 : 0 }}>{lv.desc}</div>
-                      {isActive && (
-                        <div style={{ width: "100%", height: 3, borderRadius: 2, background: "rgba(212,175,55,0.14)", overflow: "hidden", marginTop: "auto" }}>
-                          <div style={{ width: `${Math.min(xpPercent, 100)}%`, height: "100%", background: `linear-gradient(90deg, ${lv.color}88, ${lv.color})`, borderRadius: 2 }} />
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* HOW IT WORKS */}
-            <div style={{ padding: "15px 18px", borderRadius: 12, background: "rgba(0,0,0,0.42)", border: `1px solid rgba(212,175,55,0.09)` }}>
-              <div style={{ fontSize: 12, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 14 }}>HOW IT WORKS</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
-                {[
-                  { icon: "XP", label: "Earn Points",     desc: "Complete actions & challenges to earn XP." },
-                  { icon: "↑",  label: "Climb Ranks",     desc: "Gain XP to move up and unlock new levels." },
-                  { icon: "🔓", label: "Unlock Rewards",  desc: "New blends, gear, and experiences await." },
-                  { icon: "🏆", label: "Win",             desc: "Reach the top and earn exclusive status." },
-                ].map(step => (
-                  <div key={step.label} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
-                    <div style={{ width: 34, height: 34, borderRadius: 8, background: `rgba(212,175,55,0.09)`, border: `1px solid ${GOLD}2A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color: GOLD, flexShrink: 0 }}>{step.icon}</div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, marginBottom: 3, letterSpacing: "0.03em" }}>{step.label}</div>
-                      <div style={{ fontSize: 11, color: "rgba(240,232,212,0.42)", lineHeight: 1.55 }}>{step.desc}</div>
-                    </div>
+                {/* Header */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <motion.div
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 1.6, repeat: Infinity }}
+                      style={{ width: 9, height: 9, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 7px #32B45A" }}
+                    />
+                    <div style={{ fontSize: 19, fontWeight: 900, color: CREAM, letterSpacing: "0.20em", textTransform: "uppercase" }}>LIVE LEADERBOARD</div>
+                    <div style={{ fontSize: 12, color: "rgba(240,232,212,0.35)", letterSpacing: "0.08em" }}>· UPDATED {leaderUpdated.toUpperCase()}</div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* BOTTOM ROW */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 158px", gap: 14 }}>
-
-              {/* LIVE LEADERBOARD */}
-              <div style={{ padding: "15px 16px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)` }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 5px #32B45A" }} />
-                    <div style={{ fontSize: 13, fontWeight: 900, color: CREAM, letterSpacing: "0.15em", textTransform: "uppercase" }}>Live Leaderboard</div>
-                  </div>
-                  <div style={{ fontSize: 10, color: "rgba(240,232,212,0.28)", letterSpacing: "0.14em" }}>
-                    {liveEntries.length > 0 ? `${liveEntries.length} ranked` : "Updated Just Now"}
-                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(240,232,212,0.30)", letterSpacing: "0.24em", textTransform: "uppercase" }}>RANK &nbsp; CONTESTANT</div>
                 </div>
-                {topThree.map((entry, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 9, padding: "8px 0", borderBottom: i < 2 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
-                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: i === 0 ? `linear-gradient(135deg, ${GOLD}, ${AMBER})` : "rgba(212,175,55,0.10)", border: `1px solid ${i === 0 ? GOLD : "rgba(212,175,55,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: i === 0 ? DARK : GOLD, flexShrink: 0 }}>{i + 1}</div>
-                    <div style={{ width: 26, height: 26, borderRadius: "50%", background: `rgba(212,175,55,0.14)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color: GOLD, flexShrink: 0 }}>{entry.name.charAt(0).toUpperCase()}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{entry.name}</div>
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 900, color: GOLD, flexShrink: 0 }}>{entry.score.toLocaleString()} XP</div>
+
+                {/* Table */}
+                <div style={{ borderRadius: 14, border: `1px solid rgba(212,175,55,0.13)`, background: "rgba(0,0,0,0.52)", overflow: "hidden" }}>
+
+                  {/* Column headers */}
+                  <div style={{ display: "grid", gridTemplateColumns: "54px 1fr 180px 160px 130px", padding: "10px 18px", borderBottom: `1px solid rgba(212,175,55,0.08)`, background: "rgba(0,0,0,0.30)" }}>
+                    {["#", "CONTESTANT", "LEVEL", "XP", "BADGES"].map(h => (
+                      <div key={h} style={{ fontSize: 10, fontWeight: 700, color: "rgba(240,232,212,0.30)", letterSpacing: "0.22em", textTransform: "uppercase" }}>{h}</div>
+                    ))}
                   </div>
-                ))}
+
+                  {/* Rows */}
+                  <AnimatePresence mode="popLayout">
+                    {(leaderLoading ? DEMO_LEADER : displayEntries).map((entry, idx) => {
+                      const tierInfo = TIER_CFG[entry.tier] ?? { num: 1, color: "#6B8A9A", label: entry.tierLabel };
+                      const rankColor = idx === 0 ? "#FFD700" : idx === 1 ? "#C0C0C0" : idx === 2 ? "#CD7F32" : "rgba(240,232,212,0.30)";
+                      const isMe = entry.guestProfileId === guestProfile?.id;
+                      const shownBadges = Math.min(entry.achievementCnt, 4);
+                      const extraBadges = entry.achievementCnt - shownBadges;
+                      return (
+                        <motion.div
+                          key={entry.guestProfileId ?? `row-${idx}`}
+                          layout
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 8 }}
+                          transition={{ duration: 0.30, delay: idx * 0.04 }}
+                          style={{
+                            display: "grid", gridTemplateColumns: "54px 1fr 180px 160px 130px",
+                            padding: "13px 18px", alignItems: "center",
+                            borderBottom: idx < displayEntries.length - 1 ? `1px solid rgba(212,175,55,0.06)` : "none",
+                            background: isMe ? `rgba(212,175,55,0.07)` : "transparent",
+                            transition: "background 0.2s",
+                          }}
+                        >
+                          {/* Rank badge */}
+                          <div style={{
+                            width: 32, height: 32, borderRadius: "50%",
+                            background: idx < 3 ? `radial-gradient(circle, ${rankColor}33, ${rankColor}11)` : "rgba(255,255,255,0.04)",
+                            border: `1.5px solid ${rankColor}`,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 13, fontWeight: 900, color: rankColor, flexShrink: 0,
+                          }}>
+                            {entry.rank}
+                          </div>
+
+                          {/* Contestant */}
+                          <div style={{ display: "flex", alignItems: "center", gap: 11, minWidth: 0 }}>
+                            <div style={{
+                              width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+                              background: `linear-gradient(135deg, ${tierInfo.color}33, ${tierInfo.color}11)`,
+                              border: `1.5px solid ${tierInfo.color}55`,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 14, fontWeight: 900, color: tierInfo.color,
+                            }}>
+                              {(entry.firstName[0] ?? "?").toUpperCase()}
+                            </div>
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontSize: 14, fontWeight: isMe ? 900 : 700, color: isMe ? GOLD : CREAM, letterSpacing: "0.02em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {entry.firstName}{entry.lastInitial ? ` ${entry.lastInitial}.` : ""}
+                                {isMe && <span style={{ color: GOLD, marginLeft: 6, fontSize: 9, letterSpacing: "0.18em" }}>YOU</span>}
+                              </div>
+                              <div style={{ fontSize: 11, color: "rgba(240,232,212,0.35)", marginTop: 2, letterSpacing: "0.06em" }}>{tierInfo.label}</div>
+                            </div>
+                          </div>
+
+                          {/* Level */}
+                          <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                            <div style={{
+                              width: 30, height: 30, borderRadius: 8,
+                              background: `${tierInfo.color}22`,
+                              border: `1.5px solid ${tierInfo.color}55`,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 13, fontWeight: 900, color: tierInfo.color, flexShrink: 0,
+                            }}>
+                              {tierInfo.num}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: 13, fontWeight: 800, color: tierInfo.color, letterSpacing: "0.07em" }}>{tierInfo.label}</div>
+                              <div style={{ width: 56, height: 2, borderRadius: 1, background: "rgba(255,255,255,0.08)", overflow: "hidden", marginTop: 4 }}>
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${entry.craftScore}%` }}
+                                  transition={{ duration: 0.7, delay: idx * 0.05 }}
+                                  style={{ height: "100%", background: tierInfo.color, borderRadius: 1 }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* XP */}
+                          <div>
+                            <div style={{ fontSize: 16, fontWeight: 900, color: GOLD, letterSpacing: "0.04em" }}>
+                              {entry.totalXp.toLocaleString()} XP
+                            </div>
+                            <div style={{ fontSize: 10, color: "rgba(240,232,212,0.30)", marginTop: 2 }}>Craft Score: {entry.craftScore}</div>
+                          </div>
+
+                          {/* Badges */}
+                          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                            {Array.from({ length: shownBadges }).map((_, bi) => (
+                              <div key={bi} style={{
+                                width: 22, height: 22, borderRadius: "50%",
+                                background: `linear-gradient(135deg, ${tierInfo.color}44, ${tierInfo.color}22)`,
+                                border: `1px solid ${tierInfo.color}55`,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: 11,
+                              }}>
+                                {["⬡","★","◈","✦"][bi % 4]}
+                              </div>
+                            ))}
+                            {extraBadges > 0 && (
+                              <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(240,232,212,0.38)", marginLeft: 2 }}>+{extraBadges}</div>
+                            )}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                </div>
+
+                {/* VIEW FULL LEADERBOARD button */}
                 <motion.button type="button" whileTap={{ scale: 0.97 }}
-                  style={{ marginTop: 12, width: "100%", padding: "9px", borderRadius: 8, border: `1px solid ${GOLD}3A`, background: "rgba(212,175,55,0.05)", color: GOLD, fontSize: 11, fontWeight: 800, cursor: "pointer", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                  style={{ width: "100%", padding: "13px", borderRadius: 10, border: `1px solid ${GOLD}3A`, background: "rgba(212,175,55,0.05)", color: GOLD, fontSize: 13, fontWeight: 900, cursor: "pointer", letterSpacing: "0.22em", textTransform: "uppercase" }}>
                   VIEW FULL LEADERBOARD
                 </motion.button>
               </div>
 
-              {/* EARN XP TODAY */}
-              <div style={{ padding: "15px 16px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)` }}>
-                <div style={{ fontSize: 13, fontWeight: 900, color: CREAM, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 13 }}>EARN XP TODAY</div>
-                {[
-                  { label: "Complete a Challenge",  xp: 250, done: false },
-                  { label: "Submit a Tasting Note", xp: 100, done: false },
-                  { label: "Daily Login",            xp: 50,  done: true  },
-                  { label: "Help Another Member",    xp: 75,  done: false },
-                ].map((item, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 9, padding: "8px 0", borderBottom: i < 3 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
-                    <div style={{ width: 20, height: 20, borderRadius: 5, background: "rgba(255,255,255,0.03)", border: `1px solid rgba(212,175,55,0.16)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 10, color: GOLD }}>⬡</div>
-                    <div style={{ flex: 1, fontSize: 12, color: "rgba(240,232,212,0.68)", letterSpacing: "0.01em" }}>{item.label}</div>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: GOLD, flexShrink: 0 }}>+{item.xp} XP</div>
-                    {item.done ? (
-                      <div style={{ width: 26, height: 26, borderRadius: 6, background: "rgba(50,180,90,0.14)", border: "1px solid rgba(50,180,90,0.28)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#32B45A", flexShrink: 0 }}>✓</div>
-                    ) : (
-                      <motion.button type="button" whileTap={{ scale: 0.94 }} onClick={() => setChallengeOpen(true)}
-                        style={{ width: 26, height: 26, borderRadius: 6, background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, border: "none", color: DARK, fontSize: 9, fontWeight: 900, cursor: "pointer", flexShrink: 0 }}>GO</motion.button>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <RightPanel />
+            </>
+          )}
 
-              {/* YOUR PROGRESS circle */}
-              <div style={{ padding: "15px 12px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)`, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <div style={{ fontSize: 11, fontWeight: 900, color: CREAM, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 14 }}>YOUR PROGRESS</div>
-                <div style={{ position: "relative", width: 108, height: 108 }}>
-                  <svg width="108" height="108" viewBox="0 0 108 108">
-                    <circle cx="54" cy="54" r="43" fill="none" stroke="rgba(212,175,55,0.10)" strokeWidth="8" />
-                    <circle cx="54" cy="54" r="43" fill="none" stroke={GOLD} strokeWidth="8"
-                      strokeLinecap="round"
-                      strokeDasharray={`${Math.min(xpPercent, 100) * 2.703} 270.3`}
-                      strokeDashoffset="67.6"
-                      style={{ filter: `drop-shadow(0 0 5px ${GOLD}55)`, transition: "stroke-dasharray 1.2s ease" }} />
-                  </svg>
-                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                    <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, lineHeight: 1 }}>{xp.toLocaleString()}</div>
-                    <div style={{ fontSize: 9, color: "rgba(240,232,212,0.42)", letterSpacing: "0.18em", marginTop: 3 }}>XP</div>
+          {/* ══════════════════════════════════════════
+              DASHBOARD VIEW
+          ══════════════════════════════════════════ */}
+          {activeNav === "dashboard" && (
+            <>
+              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+
+                {/* CONTEST LEVELS */}
+                <div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 13 }}>
+                    <div style={{ fontSize: 17, fontWeight: 900, color: CREAM, letterSpacing: "0.22em", textTransform: "uppercase" }}>CONTEST LEVELS</div>
+                    <div style={{ fontSize: 11, color: "rgba(240,232,212,0.38)", letterSpacing: "0.10em" }}>Progress through the ranks. Master the leaf.</div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
+                    {LEVELS.map((lv, i) => {
+                      const isActive = lv.id === tier;
+                      const isPast   = xp >= lv.xpMin;
+                      return (
+                        <motion.div key={lv.id}
+                          initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.06 + i * 0.07, duration: 0.48, ease: EASE }}
+                          style={{
+                            borderRadius: 12,
+                            border: isActive ? `1.5px solid ${lv.color}88` : `1px solid rgba(212,175,55,${isPast ? "0.20" : "0.08"})`,
+                            background: isActive ? `linear-gradient(160deg, rgba(0,0,0,0.97), ${lv.color}0E)` : "rgba(8,5,1,0.80)",
+                            boxShadow: isActive ? `0 0 22px ${lv.glow}` : "none",
+                            padding: "14px 10px 12px",
+                            display: "flex", flexDirection: "column", alignItems: "center",
+                            position: "relative",
+                          }}>
+                          {isActive && <div style={{ position: "absolute", top: -1, left: "18%", right: "18%", height: 2, background: `linear-gradient(90deg, transparent, ${lv.color}, transparent)` }} />}
+                          <div style={{ fontSize: 11, fontWeight: 900, color: `${lv.color}88`, letterSpacing: "0.20em", marginBottom: 8 }}>{lv.num}</div>
+                          <div style={{ marginBottom: 8, transform: "scale(0.60)", transformOrigin: "center" }}>{lv.badge}</div>
+                          <div style={{ fontSize: 13, fontWeight: 900, color: isActive ? lv.color : "rgba(240,232,212,0.72)", letterSpacing: "0.09em", textAlign: "center", marginBottom: 4 }}>{lv.title}</div>
+                          <div style={{ fontSize: 9, color: "rgba(240,232,212,0.38)", textAlign: "center", lineHeight: 1.55, marginBottom: isActive ? 10 : 0 }}>{lv.desc}</div>
+                          {isActive && (
+                            <div style={{ width: "100%", height: 3, borderRadius: 2, background: "rgba(212,175,55,0.14)", overflow: "hidden", marginTop: "auto" }}>
+                              <div style={{ width: `${Math.min(xpPercent, 100)}%`, height: "100%", background: `linear-gradient(90deg, ${lv.color}88, ${lv.color})`, borderRadius: 2 }} />
+                            </div>
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </div>
-                <div style={{ marginTop: 10, fontSize: 12, fontWeight: 800, color: GOLD, textAlign: "center", letterSpacing: "0.07em" }}>{tierLabel}</div>
-                {milestone.needed > 0 && (
-                  <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", textAlign: "center", marginTop: 4, lineHeight: 1.45 }}>
-                    {milestone.needed.toLocaleString()} XP<br />to {milestone.label}
+
+                {/* HOW IT WORKS */}
+                <div style={{ padding: "15px 18px", borderRadius: 12, background: "rgba(0,0,0,0.42)", border: `1px solid rgba(212,175,55,0.09)` }}>
+                  <div style={{ fontSize: 12, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 14 }}>HOW IT WORKS</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
+                    {[
+                      { icon: "XP", label: "Earn Points",     desc: "Complete actions & challenges to earn XP." },
+                      { icon: "↑",  label: "Climb Ranks",     desc: "Gain XP to move up and unlock new levels." },
+                      { icon: "🔓", label: "Unlock Rewards",  desc: "New blends, gear, and experiences await." },
+                      { icon: "🏆", label: "Win",             desc: "Reach the top and earn exclusive status." },
+                    ].map(step => (
+                      <div key={step.label} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
+                        <div style={{ width: 34, height: 34, borderRadius: 8, background: `rgba(212,175,55,0.09)`, border: `1px solid ${GOLD}2A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color: GOLD, flexShrink: 0 }}>{step.icon}</div>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, marginBottom: 3, letterSpacing: "0.03em" }}>{step.label}</div>
+                          <div style={{ fontSize: 11, color: "rgba(240,232,212,0.42)", lineHeight: 1.55 }}>{step.desc}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+
+                {/* BOTTOM ROW */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 158px", gap: 14 }}>
+
+                  {/* LIVE LEADERBOARD preview */}
+                  <div style={{ padding: "15px 16px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)` }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.6, repeat: Infinity }}
+                          style={{ width: 7, height: 7, borderRadius: "50%", background: "#32B45A", boxShadow: "0 0 5px #32B45A" }} />
+                        <div style={{ fontSize: 13, fontWeight: 900, color: CREAM, letterSpacing: "0.15em", textTransform: "uppercase" }}>Live Leaderboard</div>
+                      </div>
+                      <div style={{ fontSize: 10, color: "rgba(240,232,212,0.28)", letterSpacing: "0.14em" }}>Updated {leaderUpdated}</div>
+                    </div>
+                    {topThree.map((entry, i) => {
+                      const tc = TIER_CFG[entry.tier] ?? { color: GOLD };
+                      return (
+                        <div key={entry.guestProfileId ?? i} style={{ display: "flex", alignItems: "center", gap: 9, padding: "8px 0", borderBottom: i < 2 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
+                          <div style={{ width: 22, height: 22, borderRadius: "50%", background: i === 0 ? `linear-gradient(135deg, ${GOLD}, ${AMBER})` : "rgba(212,175,55,0.10)", border: `1px solid ${i === 0 ? GOLD : "rgba(212,175,55,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: i === 0 ? DARK : GOLD, flexShrink: 0 }}>{i + 1}</div>
+                          <div style={{ width: 26, height: 26, borderRadius: "50%", background: `${tc.color}22`, border: `1px solid ${tc.color}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color: tc.color, flexShrink: 0 }}>{(entry.firstName[0] ?? "?").toUpperCase()}</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 800, color: CREAM, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{entry.firstName}{entry.lastInitial ? ` ${entry.lastInitial}.` : ""}</div>
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: 900, color: GOLD, flexShrink: 0 }}>{entry.totalXp.toLocaleString()} XP</div>
+                        </div>
+                      );
+                    })}
+                    <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => setActiveNav("leaderboard")}
+                      style={{ marginTop: 12, width: "100%", padding: "9px", borderRadius: 8, border: `1px solid ${GOLD}3A`, background: "rgba(212,175,55,0.05)", color: GOLD, fontSize: 11, fontWeight: 800, cursor: "pointer", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                      VIEW FULL LEADERBOARD
+                    </motion.button>
+                  </div>
+
+                  {/* EARN XP TODAY */}
+                  <div style={{ padding: "15px 16px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)` }}>
+                    <div style={{ fontSize: 13, fontWeight: 900, color: CREAM, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 13 }}>EARN XP TODAY</div>
+                    {[
+                      { label: "Complete a Challenge",  xp: 250, done: false },
+                      { label: "Submit a Tasting Note", xp: 100, done: false },
+                      { label: "Daily Login",            xp: 50,  done: true  },
+                      { label: "Help Another Member",    xp: 75,  done: false },
+                    ].map((item, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 9, padding: "8px 0", borderBottom: i < 3 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
+                        <div style={{ width: 20, height: 20, borderRadius: 5, background: "rgba(255,255,255,0.03)", border: `1px solid rgba(212,175,55,0.16)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 10, color: GOLD }}>⬡</div>
+                        <div style={{ flex: 1, fontSize: 12, color: "rgba(240,232,212,0.68)", letterSpacing: "0.01em" }}>{item.label}</div>
+                        <div style={{ fontSize: 12, fontWeight: 800, color: GOLD, flexShrink: 0 }}>+{item.xp} XP</div>
+                        {item.done ? (
+                          <div style={{ width: 26, height: 26, borderRadius: 6, background: "rgba(50,180,90,0.14)", border: "1px solid rgba(50,180,90,0.28)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#32B45A", flexShrink: 0 }}>✓</div>
+                        ) : (
+                          <motion.button type="button" whileTap={{ scale: 0.94 }} onClick={() => setChallengeOpen(true)}
+                            style={{ width: 26, height: 26, borderRadius: 6, background: `linear-gradient(135deg, ${GOLD}, ${AMBER})`, border: "none", color: DARK, fontSize: 9, fontWeight: 900, cursor: "pointer", flexShrink: 0 }}>GO</motion.button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* YOUR PROGRESS circle */}
+                  <div style={{ padding: "15px 12px", borderRadius: 12, background: "rgba(0,0,0,0.50)", border: `1px solid rgba(212,175,55,0.11)`, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div style={{ fontSize: 11, fontWeight: 900, color: CREAM, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 14 }}>YOUR PROGRESS</div>
+                    <div style={{ position: "relative", width: 108, height: 108 }}>
+                      <svg width="108" height="108" viewBox="0 0 108 108">
+                        <circle cx="54" cy="54" r="43" fill="none" stroke="rgba(212,175,55,0.10)" strokeWidth="8" />
+                        <circle cx="54" cy="54" r="43" fill="none" stroke={GOLD} strokeWidth="8"
+                          strokeLinecap="round"
+                          strokeDasharray={`${Math.min(xpPercent, 100) * 2.703} 270.3`}
+                          strokeDashoffset="67.6"
+                          style={{ filter: `drop-shadow(0 0 5px ${GOLD}55)`, transition: "stroke-dasharray 1.2s ease" }} />
+                      </svg>
+                      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                        <div style={{ fontSize: 20, fontWeight: 900, color: GOLD, lineHeight: 1 }}>{xp.toLocaleString()}</div>
+                        <div style={{ fontSize: 9, color: "rgba(240,232,212,0.42)", letterSpacing: "0.18em", marginTop: 3 }}>XP</div>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: 10, fontSize: 12, fontWeight: 800, color: GOLD, textAlign: "center", letterSpacing: "0.07em" }}>{tierLabel}</div>
+                    {milestone.needed > 0 && (
+                      <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", textAlign: "center", marginTop: 4, lineHeight: 1.45 }}>
+                        {milestone.needed.toLocaleString()} XP<br />to {milestone.label}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* RIGHT PANEL */}
-          <div style={{ width: 238, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+              {/* RIGHT PANEL */}
+              <div style={{ width: 238, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
+                  <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 14 }}>YOUR JOURNEY</div>
+                  {LEVELS.slice().reverse().map((lv, i) => {
+                    const isActive = lv.id === tier;
+                    const isPast   = xp >= lv.xpMin && !isActive;
+                    return (
+                      <div key={lv.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < LEVELS.length - 1 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
+                        <div style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
+                          background: isActive ? `linear-gradient(135deg, ${lv.color}CC, ${lv.color}77)` : isPast ? "rgba(50,180,90,0.14)" : "rgba(212,175,55,0.07)",
+                          border: `1.5px solid ${isActive ? lv.color : isPast ? "rgba(50,180,90,0.38)" : "rgba(212,175,55,0.18)"}`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 11, fontWeight: 900,
+                          color: isActive ? "#000" : isPast ? "#32B45A" : "rgba(212,175,55,0.40)",
+                        }}>
+                          {LEVELS.length - i}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, fontWeight: isActive ? 900 : 600, color: isActive ? lv.color : isPast ? CREAM : "rgba(240,232,212,0.40)", letterSpacing: "0.05em" }}>{lv.title}</div>
+                        </div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: isActive ? `${GOLD}88` : "rgba(240,232,212,0.28)", letterSpacing: "0.05em" }}>
+                          {isActive ? `${xp.toLocaleString()} XP` : lv.xpMin > 0 ? `${lv.xpMin.toLocaleString()} XP` : "0 XP"}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
 
-            {/* YOUR JOURNEY */}
-            <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
-              <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 14 }}>YOUR JOURNEY</div>
-              {LEVELS.slice().reverse().map((lv, i) => {
-                const isActive = lv.id === tier;
-                const isPast   = xp >= lv.xpMin && !isActive;
-                return (
-                  <div key={lv.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < LEVELS.length - 1 ? `1px solid rgba(212,175,55,0.07)` : "none" }}>
-                    <div style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
-                      background: isActive ? `linear-gradient(135deg, ${lv.color}CC, ${lv.color}77)` : isPast ? "rgba(50,180,90,0.14)" : "rgba(212,175,55,0.07)",
-                      border: `1.5px solid ${isActive ? lv.color : isPast ? "rgba(50,180,90,0.38)" : "rgba(212,175,55,0.18)"}`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 11, fontWeight: 900,
-                      color: isActive ? "#000" : isPast ? "#32B45A" : "rgba(212,175,55,0.40)",
-                    }}>
-                      {LEVELS.length - i}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: isActive ? 900 : 600, color: isActive ? lv.color : isPast ? CREAM : "rgba(240,232,212,0.40)", letterSpacing: "0.05em" }}>{lv.title}</div>
-                    </div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: isActive ? `${GOLD}88` : "rgba(240,232,212,0.28)", letterSpacing: "0.05em" }}>
-                      {isActive ? `${xp.toLocaleString()} XP` : lv.xpMin > 0 ? `${lv.xpMin.toLocaleString()} XP` : "0 XP"}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
+                  <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 3 }}>NEXT REWARD</div>
+                  <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", letterSpacing: "0.14em", marginBottom: 13 }}>At {milestone.label} Rank</div>
+                  <div style={{ width: "100%", height: 78, borderRadius: 9, background: `linear-gradient(160deg, ${GOLD}12, ${AMBER}07)`, border: `1px solid ${GOLD}1A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 12 }}>🎁</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: CREAM, marginBottom: 4, letterSpacing: "0.03em" }}>Premium Tasting Kit</div>
+                  <div style={{ fontSize: 11, color: "rgba(240,232,212,0.46)", lineHeight: 1.55, marginBottom: 13 }}>Exclusive blend collection &amp; accessories.</div>
+                  {milestone.needed > 0 && (
+                    <>
+                      <div style={{ height: 4, borderRadius: 2, background: "rgba(212,175,55,0.10)", overflow: "hidden", marginBottom: 5 }}>
+                        <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(xpPercent, 100)}%` }} transition={{ duration: 1.2, ease: EASE }}
+                          style={{ height: "100%", background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, borderRadius: 2 }} />
+                      </div>
+                      <div style={{ fontSize: 10, color: "rgba(240,232,212,0.36)", textAlign: "right", letterSpacing: "0.10em" }}>{milestone.needed.toLocaleString()} to go</div>
+                    </>
+                  )}
+                </div>
 
-            {/* NEXT REWARD */}
-            <div style={{ padding: "15px 15px", borderRadius: 12, background: "rgba(0,0,0,0.55)", border: `1px solid rgba(212,175,55,0.11)` }}>
-              <div style={{ fontSize: 11, fontWeight: 900, color: GOLD, letterSpacing: "0.26em", textTransform: "uppercase", marginBottom: 3 }}>NEXT REWARD</div>
-              <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", letterSpacing: "0.14em", marginBottom: 13 }}>At {milestone.label} Rank</div>
-              <div style={{ width: "100%", height: 78, borderRadius: 9, background: `linear-gradient(160deg, ${GOLD}12, ${AMBER}07)`, border: `1px solid ${GOLD}1A`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 12 }}>🎁</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: CREAM, marginBottom: 4, letterSpacing: "0.03em" }}>Premium Tasting Kit</div>
-              <div style={{ fontSize: 11, color: "rgba(240,232,212,0.46)", lineHeight: 1.55, marginBottom: 13 }}>Exclusive blend collection &amp; accessories.</div>
-              {milestone.needed > 0 && (
-                <>
-                  <div style={{ height: 4, borderRadius: 2, background: "rgba(212,175,55,0.10)", overflow: "hidden", marginBottom: 5 }}>
-                    <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(xpPercent, 100)}%` }} transition={{ duration: 1.2, ease: EASE }}
-                      style={{ height: "100%", background: `linear-gradient(90deg, ${AMBER}, ${GOLD})`, borderRadius: 2 }} />
-                  </div>
-                  <div style={{ fontSize: 10, color: "rgba(240,232,212,0.36)", textAlign: "right", letterSpacing: "0.10em" }}>{milestone.needed.toLocaleString()} to go</div>
-                </>
-              )}
-            </div>
-
-            {/* VIEW LEADERBOARD */}
-            <motion.button type="button" whileTap={{ scale: 0.97 }}
-              style={{ width: "100%", padding: "13px", borderRadius: 10, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.07)", color: GOLD, fontSize: 12, fontWeight: 900, cursor: "pointer", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-              VIEW LEADERBOARD
-            </motion.button>
-          </div>
+                <motion.button type="button" whileTap={{ scale: 0.97 }} onClick={() => setActiveNav("leaderboard")}
+                  style={{ width: "100%", padding: "13px", borderRadius: 10, border: `1px solid ${GOLD}44`, background: "rgba(212,175,55,0.07)", color: GOLD, fontSize: 12, fontWeight: 900, cursor: "pointer", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                  VIEW LEADERBOARD
+                </motion.button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* STATUS BAR */}
