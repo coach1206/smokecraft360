@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>SmokeCraft 360 | Master Orchestrator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary": "#ffb95a",
+                        "on-tertiary-container": "#ffe8df",
+                        "on-tertiary-fixed": "#251913",
+                        "on-primary": "#492905",
+                        "primary-fixed": "#ffdcbf",
+                        "on-secondary-fixed-variant": "#643f00",
+                        "on-secondary": "#462a00",
+                        "surface-container-highest": "#353534",
+                        "tertiary-fixed-dim": "#d8c2b9",
+                        "surface-bright": "#393939",
+                        "on-secondary-container": "#3d2400",
+                        "background": "#131313",
+                        "on-error": "#690005",
+                        "inverse-surface": "#e5e2e1",
+                        "on-primary-fixed-variant": "#633f19",
+                        "tertiary-container": "#796760",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary": "#3b2d27",
+                        "on-surface": "#e5e2e1",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#ffb95a",
+                        "primary-fixed-dim": "#f1bc8c",
+                        "on-primary-container": "#ffe8d7",
+                        "on-tertiary-fixed-variant": "#53433d",
+                        "on-background": "#e5e2e1",
+                        "inverse-on-surface": "#313030",
+                        "on-primary-fixed": "#2d1600",
+                        "error": "#ffb4ab",
+                        "primary": "#f1bc8c",
+                        "on-error-container": "#ffdad6",
+                        "surface-variant": "#353534",
+                        "tertiary": "#d8c2b9",
+                        "secondary-container": "#c68315",
+                        "on-secondary-fixed": "#2a1800",
+                        "surface": "#131313",
+                        "tertiary-fixed": "#f5ded5",
+                        "surface-container": "#201f1f",
+                        "outline": "#9d8e83",
+                        "inverse-primary": "#7e562e",
+                        "secondary-fixed": "#ffddb6",
+                        "outline-variant": "#50453b",
+                        "surface-tint": "#f1bc8c",
+                        "surface-dim": "#131313",
+                        "on-surface-variant": "#d4c3b7",
+                        "primary-container": "#8c6239",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-container-high": "#2a2a2a"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Playfair Display"],
+                        "label-lg": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        :root {
+            --primary: #c2652a;
+            --secondary: #ffb95a;
+            --surface: #131313;
+            --amber-glass: rgba(194, 101, 42, 0.12);
+        }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        h1, h2, h3, h4, .font-display { font-family: 'Playfair Display', serif; }
+
+        .glass-panel {
+            background: rgba(28, 27, 27, 0.75);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(194, 101, 42, 0.2);
+        }
+        .amber-glass-panel {
+            background: var(--amber-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(194, 101, 42, 0.3);
+        }
+        .firelight-glow {
+            background: radial-gradient(circle at center, rgba(194, 101, 42, 0.18) 0%, rgba(19, 19, 19, 0) 75%);
+        }
+        .burnished-gradient {
+            background: linear-gradient(135deg, #f1bc8c 0%, #c2652a 100%);
+        }
+        .pulse-glow {
+            animation: pulse-glow 3s infinite;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(194, 101, 42, 0.4); }
+            70% { box-shadow: 0 0 0 25px rgba(194, 101, 42, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(194, 101, 42, 0); }
+        }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .stage-transition {
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        #smoke-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.5;
+        }
+        .haptic-btn {
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), filter 0.15s;
+            cursor: pointer;
+        }
+        .haptic-btn:active {
+            transform: scale(0.97);
+            filter: brightness(0.9);
+        }
+        .stage-hidden {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .stage-active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .premium-gold-text {
+            background: linear-gradient(to bottom, #f1bc8c, #c2652a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-slide-in {
+            animation: slideIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes slideIn {
+            0% { transform: translateY(40px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .power-up {
+            animation: powerUp 1.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        @keyframes powerUp {
+            0% { filter: brightness(0.5) blur(8px); transform: scale(0.95); }
+            100% { filter: brightness(1) blur(0px); transform: scale(1); }
+        }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 40px;
+            height: 40px;
+            background: #c2652a;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(194, 101, 42, 0.5);
+            border: 3px solid #131313;
+        }
+    </style>
+</head>
+<body class="bg-[#131313] text-[#e5e2e1] min-h-screen flex flex-col overflow-hidden selection:bg-[#c2652a]/30">
+<canvas id="smoke-canvas"></canvas>
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-[60] bg-surface/80 backdrop-blur-xl border-b border-primary/10 flex justify-between items-center px-6 py-5 opacity-0 transition-opacity duration-1000" id="main-header">
+<div class="flex items-center gap-4">
+<h1 class="text-lg font-display tracking-[0.25em] text-[#c2652a]">LUMINA</h1>
+</div>
+<div class="w-10 h-10 rounded-full border border-primary/30 overflow-hidden haptic-btn">
+<img alt="Member Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ugYc4r6XpOoxBC_0wB3pD3GSaOTeJippscVrxjV1OdTamhEalt10kK1w91das6GsXcMFkTFqZpWWWNiYJyxePU8VaUTKsJxLDh4zNM6DAtY4PCmeoL7UrpY0srY0oWTow7emrNVoQpHanRmD5CEvJluqZcG31BvL2-l13KDFw3j1xl-p7UeTX67IsxqFDwRH7GWQkG4cH4OiWKZxp9EtVQSEkpYXz4XxPs0zSS-XzglQZht2PgMSfvg9A"/>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto scroll-hide relative z-10 pt-4">
+<!-- Ambient Background -->
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute top-1/4 -left-1/4 w-[600px] h-[600px] firelight-glow opacity-30"></div>
+<div class="absolute bottom-0 -right-1/4 w-[800px] h-[800px] firelight-glow opacity-25"></div>
+</div>
+<div class="max-w-xl mx-auto px-6 pb-32">
+<!-- STAGE: INITIATION SEQUENCE -->
+<section class="stage-transition stage-active flex flex-col items-center justify-center min-h-[85vh] space-y-12" id="stage-initiation">
+<div class="w-56 logo-slide-in" id="profound-logo">
+<img alt="Profound Innovations" class="w-full h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhj2-yD55eFY8sXAgqCsiytEcK4WN-8otOuyAHjDyJhWosE11ghCXfeK1oiw1dFFLMR6I9XXwkVymlWmfTF-lvK2htym5lhQPXLUur6WDJm5r2BAHPtS4xn8ZDbyx-wp4CwJqyANhCbkSe-cb-kBD2Rxi3ZvG5oR0_CEuR2leSxRL8h4MWls2966cMqO-9btJcp74seO_jE2UPj5-K0NJrcErT17RXTr_IQEB7pOoJPZ7w1RVTHP0lDD5eyay2IYbrCw4w6x1sWLQ"/>
+</div>
+<div class="w-64 opacity-0 hidden" id="novee-logo">
+<img alt="NOVEE OS" class="w-full h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlhdqiSKn66_HoaP-kZnvcqK7Wq2d1THWHaXKm0jZnKtbT6C_xz9glrgLvVGZCivCZjhfVasoD5NBQWh6ePKVFkHxBfCIYM-in03Kyn8b_BlXCEWwxAc1FI9rX6sL71KZer-JTtBOeom2C8iZpQtVcFUWulE7r6k5psBvm94OPHeLaPqpQ-A6SJdRoRv2f9blDBx5YndqL-lNu-20HfXbbQAD24j3BjqVOcOQgfaGhbkKG6WCnzyJE3aGsFWis0q_l1MskKPLWXVE"/>
+</div>
+</section>
+<!-- STAGE: CRAFTHUB PORTAL -->
+<section class="stage-transition stage-hidden space-y-8 pt-20" id="stage-portal">
+<div class="text-center space-y-2">
+<h2 class="text-4xl font-display premium-gold-text">CraftHub Portal</h2>
+<p class="text-[#d4c3b7] text-sm tracking-wide">Select your sensory dimension</p>
+</div>
+<div class="grid grid-cols-1 gap-6">
+<!-- SmokeCraft 360 (Active) -->
+<div class="relative group cursor-pointer haptic-btn" onclick="goToStage('stage-immersion')">
+<div class="absolute inset-0 bg-[#c2652a]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative rounded-[1.5rem] overflow-hidden border border-primary/40 aspect-video">
+<img alt="SmokeCraft 360" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uhIEUTRtDSLfVvoeCK1FiwxwstruheRLZVL7s1qe8E7W376n44tmuuiOCKG6Zg76Yfe6XlYfFm7VWZ6KW5jmm9jolNDewIoS_54ppOYtORqdgVKmQ48Tya6vmQB1MjGUSfX_Ux5VqlLQO1dDDkeIlSJPL18Mp8F1OtjriqrI-sEDJFYrAW9U-K-DekHury7InxnKrRg3RrLW4BiObYiDXK9lNf3vYgNoie_XkiAGM_N4V8IVZZX9Sl1OUY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+<h3 class="text-2xl font-display text-white">SmokeCraft 360</h3>
+<p class="text-primary font-bold uppercase tracking-widest text-[10px]">Active Experience</p>
+</div>
+</div>
+</div>
+<!-- Mini Grid for others -->
+<div class="grid grid-cols-1 gap-3">
+<div class="glass-panel p-5 rounded-xl flex justify-between items-center opacity-60">
+<span class="text-xl font-display text-white">BrewCraft</span>
+<span class="px-3 py-1 rounded-full amber-glass-panel text-[8px] font-bold uppercase tracking-widest text-primary border border-primary/20">Coming Soon</span>
+</div>
+<div class="glass-panel p-5 rounded-xl flex justify-between items-center opacity-60">
+<span class="text-xl font-display text-white">WineCraft</span>
+<span class="px-3 py-1 rounded-full amber-glass-panel text-[8px] font-bold uppercase tracking-widest text-primary border border-primary/20">Coming Soon</span>
+</div>
+</div>
+</div>
+</section>
+<!-- STAGE 1: IMMERSION -->
+<section class="stage-transition stage-hidden space-y-10 pt-20" id="stage-immersion">
+<div class="space-y-4 text-center">
+<h2 class="text-5xl font-display leading-tight premium-gold-text">Elevate Your<br/><span class="italic text-white">Crafted Legacy.</span></h2>
+<p class="text-[#d4c3b7] text-base max-w-xs mx-auto">Step into the sensory orchestration. A six-stage journey through the refined art of the smoke.</p>
+</div>
+<div class="relative rounded-[2rem] overflow-hidden aspect-[4/5] shadow-2xl border border-primary/20">
+<img alt="Community" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ugYc4r6XpOoxBC_0wB3pD3GSaOTeJippscVrxjV1OdTamhEalt10kK1w91das6GsXcMFkTFqZpWWWNiYJyxePU8VaUTKsJxLDh4zNM6DAtY4PCmeoL7UrpY0srY0oWTow7emrNVoQpHanRmD5CEvJluqZcG31BvL2-l13KDFw3j1xl-p7UeTX67IsxqFDwRH7GWQkG4cH4OiWKZxp9EtVQSEkpYXz4XxPs0zSS-XzglQZht2PgMSfvg9A"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8">
+<p class="text-primary font-bold uppercase tracking-[0.3em] text-[10px] mb-2">S1: Immersion</p>
+<h4 class="text-3xl font-display text-white">The Global Reserve</h4>
+</div>
+</div>
+<button class="haptic-btn pulse-glow burnished-gradient w-full py-6 rounded-full text-white font-bold text-lg uppercase tracking-[0.2em] flex items-center justify-center gap-3" onclick="goToStage('stage-identity')" type="button">
+                Initiate Journey <span class="text-xl">→</span>
+</button>
+</section>
+<!-- STAGE 2: IDENTITY & MENTOR -->
+<section class="stage-transition stage-hidden space-y-10 pt-20" id="stage-identity">
+<div class="flex items-end gap-4 border-l-2 border-primary pl-4">
+<span class="text-primary font-bold text-4xl leading-none font-display">02</span>
+<div>
+<h3 class="text-2xl font-display premium-gold-text">Identity</h3>
+<p class="text-[#d4c3b7] text-xs">Mapping your distinct profile.</p>
+</div>
+</div>
+<div class="amber-glass-panel p-8 rounded-2xl flex items-center gap-6 border-l-4 border-primary">
+<div class="relative">
+<div class="w-20 h-20 rounded-full border-2 border-primary/50 overflow-hidden shadow-xl">
+<img alt="Member" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ugYc4r6XpOoxBC_0wB3pD3GSaOTeJippscVrxjV1OdTamhEalt10kK1w91das6GsXcMFkTFqZpWWWNiYJyxePU8VaUTKsJxLDh4zNM6DAtY4PCmeoL7UrpY0srY0oWTow7emrNVoQpHanRmD5CEvJluqZcG31BvL2-l13KDFw3j1xl-p7UeTX67IsxqFDwRH7GWQkG4cH4OiWKZxp9EtVQSEkpYXz4XxPs0zSS-XzglQZht2PgMSfvg9A"/>
+</div>
+</div>
+<div>
+<h4 class="text-2xl font-display text-white">Aura: Refined</h4>
+<p class="text-primary font-bold uppercase tracking-widest text-[10px] mt-1">Prestige Status</p>
+</div>
+</div>
+<div class="space-y-4">
+<h5 class="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/70 ml-1">Select Your Mentor</h5>
+<div class="grid grid-cols-1 gap-4">
+<div class="glass-panel p-5 rounded-2xl border-l-4 border-primary cursor-pointer haptic-btn flex justify-between items-center" onclick="selectMentor(this)">
+<div class="flex gap-5 items-center">
+<div class="w-16 h-16 rounded-full border border-primary/20 overflow-hidden">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ujvF0LDTfTtfi8FjKatJ-P4KXaG2BmntCvuzETLPaNMDfR2FDU4r88Mi3ZH3fa5FkinbJ2MM_MJihjHHXBIa8Hvzs19KVFE3Mwdzjy2Frtv-ft3q8eiOBDO_dE8VlecGtx3EqkYud-lJxq_bW-LX4w4va-XWmmZV2KVOg7RTsXxZSLdXiXqNroyfbHmFtoxvR_Gs-c4aCwNg_xyIaMaVaUlrDzOFjGZhKO8txtT3JKQkjwphdPfpkUX-Fs"/>
+</div>
+<div>
+<p class="text-lg font-bold text-white">Marcus Vance</p>
+<p class="text-xs text-primary/70">Vintage Curator</p>
+</div>
+</div>
+<span class="text-primary font-bold text-[10px] uppercase tracking-widest">Selected</span>
+</div>
+<div class="glass-panel p-5 rounded-2xl border-l-4 border-transparent cursor-pointer haptic-btn flex justify-between items-center opacity-60" onclick="selectMentor(this)">
+<div class="flex gap-5 items-center">
+<div class="w-16 h-16 rounded-full border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ujAleMiYHqc5FeHUdrsR8hi-mmOt0uY80dYY60m2vjhAjA1-J5FV9wduNrygz3UAfUxaye3B-f8O3NlNe60kjh_IjPAOBhG-Vf3aUhnxd865SvrMxputnALIbQbQ5Fo2ho1qxqfvy2phMv824xgrvGdAEZ7E0JdLsonKIMtb_96B-jW-SF7II_bNMv5QVI4T87LZbyYR1SF82WAPulp9nqq3e3Ua_RMlDh0f1Nea3zrC_Jl6-GP_4UktKA"/>
+</div>
+<div>
+<p class="text-lg font-bold text-white">Elena Thorne</p>
+<p class="text-xs text-[#d4c3b7]">Elite Concierge</p>
+</div>
+</div>
+<span class="text-[#d4c3b7] font-bold text-[10px] uppercase tracking-widest">Select</span>
+</div>
+</div>
+</div>
+<button class="haptic-btn burnished-gradient w-full py-6 rounded-full text-white font-bold uppercase tracking-[0.2em] shadow-lg" onclick="goToStage('stage-matrix')">
+                Build Matrix
+            </button>
+</section>
+<!-- STAGE 3: LEAF MATRIX -->
+<section class="stage-transition stage-hidden space-y-10 pt-20" id="stage-matrix">
+<div class="flex items-end gap-4 border-l-2 border-primary pl-4">
+<span class="text-primary font-bold text-4xl leading-none font-display">03</span>
+<div>
+<h3 class="text-2xl font-display premium-gold-text">Leaf Matrix</h3>
+<p class="text-[#d4c3b7] text-xs">Tactile digital mastery.</p>
+</div>
+</div>
+<div class="relative rounded-2xl overflow-hidden aspect-video border border-primary/20 shadow-xl">
+<img alt="Interactive Lab" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uiX2XE4vk1tpK_YO1N6oLY0bZnftyAtfBu1H31tCovXscbczeW2hri9dlnWfNppkcvd7J8i0rFi2TmWYMEVuT_RTL-D0_6gxS9ehT3ySt9z-enYqGDQgUBA5JZinCC-mw9Vcvh3v5uF-prU7AD9hS58xtUTz7cMh6D23YZhy15eoPOFWmSi0NJUHcs5a4Ss5DqyehpCBPDECGFGRXR1sZGjqEmxhwHXEgcp7DpPJHQKzHMhZ53DgV7D2A"/>
+<div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
+<div class="text-center p-6 bg-[#131313]/90 rounded-xl border border-primary/20 mx-8">
+<h4 class="text-xl font-display text-white mb-1">Interactive Lab</h4>
+<p class="text-[9px] text-primary uppercase font-bold tracking-widest">Digital Humidor Control</p>
+</div>
+</div>
+</div>
+<div class="amber-glass-panel p-8 rounded-2xl space-y-8">
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<label class="text-white text-lg font-medium">Spice Level</label>
+<span class="text-primary font-bold text-xl" id="spice-val">LVL 4</span>
+</div>
+<input class="w-full h-2 bg-surface-container-high rounded-full appearance-none cursor-pointer slider-thumb" max="10" min="1" oninput="document.getElementById('spice-val').innerText = 'LVL ' + this.value" type="range" value="4"/>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<label class="text-white text-lg font-medium">Body Weight</label>
+<span class="text-primary font-bold text-xl" id="body-val">LVL 7</span>
+</div>
+<input class="w-full h-2 bg-surface-container-high rounded-full appearance-none cursor-pointer slider-thumb" max="10" min="1" oninput="document.getElementById('body-val').innerText = 'LVL ' + this.value" type="range" value="7"/>
+</div>
+</div>
+<button class="haptic-btn burnished-gradient w-full py-6 rounded-full text-white font-bold uppercase tracking-[0.2em] shadow-lg" onclick="goToStage('stage-reward')">
+                Confirm Selection
+            </button>
+</section>
+<!-- STAGE 4: REVEAL -->
+<section class="stage-transition stage-hidden space-y-10 pt-20" id="stage-reward">
+<div class="flex items-end gap-4 border-l-2 border-primary pl-4">
+<span class="text-primary font-bold text-4xl leading-none font-display">04</span>
+<div>
+<h3 class="text-2xl font-display premium-gold-text">The Reveal</h3>
+<p class="text-[#d4c3b7] text-xs">Uncovering your legacy.</p>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -inset-8 bg-[#c2652a]/15 blur-[60px] opacity-60"></div>
+<div class="relative rounded-[2.5rem] overflow-hidden border border-primary/30 pulse-glow shadow-2xl aspect-square">
+<img alt="The Golden Box" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uiKiZsMg3k_CQRIY9i4XNWFZXXzRd-CyGDxLyAQmMYYiUxGC3eu9br5f8upe9BBWWKjFuexFGvFf3otx7ojtpsunqbr03b5cyGZSuvcmbNHvU4eSPXhxt902bOY1msSfklxPH-k8y8x85VDoX3C0WEPxdD-XAbLjnluWdsqSsEqcE61Of-d0OIDv37JCvCkoBbcYZue6MKz3y5pnAKyqYO3An74lxScC7IlmaSc9TTZWBrqX-Fv8lpGGQ"/>
+<div class="absolute top-8 right-8">
+<div class="amber-glass-panel px-4 py-2 rounded-full border border-primary/40 text-[9px] font-bold uppercase tracking-[0.2em] text-white">
+                            Reward Unlocked
+                        </div>
+</div>
+</div>
+</div>
+<div class="glass-panel p-8 rounded-2xl border-l-4 border-primary">
+<h4 class="text-xl font-display mb-3 text-white">Grand Experience Eligible</h4>
+<p class="text-base text-[#d4c3b7] italic leading-relaxed">"The legacy is not just in the leaf, but in the hands that craft the journey. Your selection represents the pinnacle of Lumina heritage."</p>
+</div>
+<button class="haptic-btn burnished-gradient w-full py-6 rounded-full text-white font-bold uppercase tracking-[0.2em] shadow-xl" onclick="goToStage('stage-concierge')">
+                Claim Reserve Selection
+            </button>
+</section>
+<!-- STAGE 5: CONCIERGE -->
+<section class="stage-transition stage-hidden space-y-10 pt-20" id="stage-concierge">
+<div class="flex items-end gap-4 border-l-2 border-primary pl-4">
+<span class="text-primary font-bold text-4xl leading-none font-display">05</span>
+<div>
+<h3 class="text-2xl font-display premium-gold-text">Concierge</h3>
+<p class="text-[#d4c3b7] text-xs">Luxury at your fingertips.</p>
+</div>
+</div>
+<div class="glass-panel rounded-[1.5rem] overflow-hidden">
+<div class="p-10 text-center bg-gradient-to-b from-primary/10 to-transparent">
+<img alt="E.A.T." class="w-32 mx-auto mb-6 drop-shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABVV3uUTEs6YLU3y8S_ojYGC21GciSiQAGBggHZZZDnzmuWitt3bXfPU2KkrDIckkPZgAOH8C_3Ed03HYK0SNzhHhXH_Z5OkzN_4zBkeU0on4zRR2i-LhremT-Kr1PLPk990Fo7PhOhiyPv5aodbu52OwfcF3V97VS61iD4b29iJVUZnNyOPVOQJpZDHQYaph4ZVnT1Pv6_gWT4-1Fmpik_BsCByjWzUJLnSfnJ6hATo9dvPT_91JMPsHz4O8s5aPQ22cFuVLxY9w"/>
+<h4 class="text-2xl font-display text-white mb-2">Environment Assets</h4>
+<p class="text-[#d4c3b7] text-sm leading-relaxed">Your host is preparing your table in the North Wing.</p>
+</div>
+<div class="p-8 pt-0 space-y-3">
+<button class="haptic-btn amber-glass-panel w-full py-5 rounded-xl text-white font-bold uppercase tracking-widest text-[11px] border border-primary/30">Modify Reservation</button>
+<button class="haptic-btn burnished-gradient w-full py-5 rounded-xl text-white font-bold uppercase tracking-widest text-[11px]" onclick="location.reload()">Return to Lounge</button>
+</div>
+</div>
+<p class="text-center text-primary/30 font-bold uppercase tracking-[0.4em] text-[9px] pt-8">— MISSION COMPLETE —</p>
+</section>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-[#131313]/90 backdrop-blur-2xl border-t border-primary/10 h-24 flex justify-around items-center px-6 shadow-2xl opacity-0 transition-opacity duration-1000" id="bottom-nav">
+<button class="flex flex-col items-center justify-center text-primary haptic-btn px-4 py-3 amber-glass-panel rounded-full">
+<span class="text-[9px] font-bold uppercase tracking-[0.2em]">Journey</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#d4c3b7]/40 haptic-btn px-4 py-3">
+<span class="text-[9px] font-bold uppercase tracking-[0.2em]">Matrix</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#d4c3b7]/40 haptic-btn px-4 py-3">
+<span class="text-[9px] font-bold uppercase tracking-[0.2em]">Reveal</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#d4c3b7]/40 haptic-btn px-4 py-3">
+<span class="text-[9px] font-bold uppercase tracking-[0.2em]">System</span>
+</button>
+</nav>
+<script>
+    // --- OPTIMIZED SMOKE ENGINE FOR TOUCH ---
+    const canvas = document.getElementById('smoke-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const particleCount = 25; // Optimized for mobile performance
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+        constructor() {
+            this.reset();
+        }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = canvas.height + 100;
+            this.size = Math.random() * 80 + 40;
+            this.speedY = Math.random() * 0.4 + 0.15;
+            this.speedX = (Math.random() - 0.5) * 0.5;
+            this.opacity = 0;
+            this.maxOpacity = Math.random() * 0.15 + 0.05;
+            this.life = 0;
+        }
+        update() {
+            this.y -= this.speedY;
+            this.x += this.speedX;
+            this.life++;
+            if (this.life < 80) this.opacity += this.maxOpacity / 80;
+            if (this.y < -150) this.reset();
+        }
+        draw() {
+            ctx.beginPath();
+            const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+            gradient.addColorStop(0, `rgba(194, 101, 42, ${this.opacity})`);
+            gradient.addColorStop(1, 'rgba(19, 19, 19, 0)');
+            ctx.fillStyle = gradient;
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // --- SEQUENCE CONTROLLER ---
+    window.onload = () => {
+        const pLogo = document.getElementById('profound-logo');
+        const nLogo = document.getElementById('novee-logo');
+        const header = document.getElementById('main-header');
+        const nav = document.getElementById('bottom-nav');
+
+        setTimeout(() => {
+            pLogo.classList.add('logo-slide-in');
+        }, 300);
+
+        setTimeout(() => {
+            pLogo.style.opacity = '0';
+            pLogo.style.transition = 'opacity 0.8s ease';
+            setTimeout(() => {
+                pLogo.classList.add('hidden');
+                nLogo.classList.remove('hidden');
+                nLogo.classList.add('power-up');
+            }, 800);
+        }, 2800);
+
+        setTimeout(() => {
+            goToStage('stage-portal');
+            header.classList.remove('opacity-0');
+            nav.classList.remove('opacity-0');
+        }, 5500);
+    };
+
+    function goToStage(stageId) {
+        if (window.navigator.vibrate) window.navigator.vibrate(10);
+
+        const activeStage = document.querySelector('.stage-active');
+        const targetStage = document.getElementById(stageId);
+
+        if (!activeStage || !targetStage) return;
+
+        activeStage.classList.remove('stage-active');
+        activeStage.classList.add('stage-hidden');
+
+        setTimeout(() => {
+            targetStage.classList.remove('stage-hidden');
+            targetStage.classList.add('stage-active');
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+        }, 400);
+    }
+
+    function selectMentor(el) {
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.classList.remove('border-primary');
+            card.classList.add('border-transparent', 'opacity-60');
+            const span = card.querySelector('span:last-child');
+            if (span) span.innerText = 'Select';
+        });
+        el.classList.add('border-primary');
+        el.classList.remove('border-transparent', 'opacity-60');
+        el.querySelector('span:last-child').innerText = 'Selected';
+        if (window.navigator.vibrate) window.navigator.vibrate(15);
+    }
+</script>
+</body></html>
