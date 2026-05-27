@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>SMOKECRAFT 360 | ULTIMATE MASTER ORCHESTRATOR</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "inverse-on-surface": "#313030",
+                        "secondary": "#ffb95a",
+                        "surface-container-low": "#1c1b1b",
+                        "primary-fixed": "#ffdcbf",
+                        "outline": "#9d8e83",
+                        "on-secondary-container": "#3d2400",
+                        "on-primary-fixed-variant": "#633f19",
+                        "on-tertiary-fixed-variant": "#53433d",
+                        "tertiary": "#d8c2b9",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary-fixed": "#ffddb6",
+                        "on-tertiary-container": "#ffe8df",
+                        "on-secondary": "#462a00",
+                        "on-error-container": "#ffdad6",
+                        "primary-container": "#8c6239",
+                        "secondary-container": "#c68315",
+                        "on-secondary-fixed": "#2a1800",
+                        "on-tertiary": "#3b2d27",
+                        "on-surface-variant": "#d4c3b7",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#ffb95a",
+                        "on-error": "#690005",
+                        "surface-bright": "#393939",
+                        "outline-variant": "#50453b",
+                        "on-tertiary-fixed": "#251913",
+                        "surface-tint": "#f1bc8c",
+                        "surface-dim": "#131313",
+                        "background": "#131313",
+                        "on-primary-fixed": "#2d1600",
+                        "on-surface": "#e5e2e1",
+                        "tertiary-container": "#796760",
+                        "surface-container-highest": "#353534",
+                        "tertiary-fixed-dim": "#d8c2b9",
+                        "primary-fixed-dim": "#f1bc8c",
+                        "on-primary-container": "#ffe8d7",
+                        "inverse-primary": "#7e562e",
+                        "on-primary": "#492905",
+                        "primary": "#f1bc8c",
+                        "error": "#ffb4ab",
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary-fixed-variant": "#643f00",
+                        "on-background": "#e5e2e1",
+                        "tertiary-fixed": "#f5ded5",
+                        "surface-variant": "#353534",
+                        "surface": "#131313",
+                        "surface-container": "#201f1f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-lg": "48px",
+                        "container-max": "1440px",
+                        "touch-min": "56px",
+                        "gutter-md": "24px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Playfair Display"],
+                        "headline-sm": ["Playfair Display"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Playfair Display"],
+                        "label-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                        "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                        "headline-lg": ["40px", {"lineHeight": "48px", "fontWeight": "600"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(32, 31, 31, 0.7);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(241, 188, 140, 0.2);
+        }
+        .firelight-glow {
+            background: radial-gradient(circle at center, rgba(255, 185, 90, 0.15) 0%, rgba(19, 19, 19, 0) 70%);
+        }
+        .smoke-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.4;
+        }
+        @keyframes startup-slide {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .startup-anim { animation: startup-slide 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        .portal-tile-active {
+            box-shadow: 0 0 30px rgba(241, 188, 140, 0.3);
+            border-color: #f1bc8c;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary/30">
+<!-- ATMOSPHERIC SMOKE ENGINE -->
+<canvas class="smoke-canvas" id="smokeCanvas"></canvas>
+<!-- STARTUP SEQUENCE (Section 1) -->
+<div class="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000" id="startupSequence">
+<div class="relative w-64 h-64 flex items-center justify-center mb-unit">
+<img alt="Profound Innovations" class="w-full h-auto startup-anim opacity-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0KkWhv5sVI33T9hAr0mYHmDkf7lUyXgodz4Cc9DI23kdiM6jvX4JpHjYHdoPm_idEtcqpnS1gaGnmBcoRqbdS_wRBruDvWL2Zpq4iJaCTTq8v4Yh5zxjICGrLhjXen7BzJhTOLDZ9nUEatXzR3kwPtIRIMJFEYcMXHEZkfcy7WN3-53UdpWvXtF-kysPt8s2Z9RVDOgSAPkATt5W_QwGwNuAhtOF1ZuekEJTO5f9pia3psrggXRPrfLt8-skY2VG_UAQMzi-wLjo" style="animation-delay: 0.2s;"/>
+</div>
+<div class="h-px w-32 bg-primary/20 startup-anim opacity-0" style="animation-delay: 0.6s;"></div>
+<div class="mt-margin-lg startup-anim opacity-0" style="animation-delay: 1s;">
+<img alt="NOVEE OS" class="h-12 w-auto grayscale brightness-200 contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHpxBFJj-P04TV9_MbOuusZ497ngWOmvuVYwQQO-55WJQpypaSl2y13lgpPUPb0Ed3VCiyT_RXNaqe3YdeqzvnqQiS8NwwH3ss0yQXy6aYwVxHrEKCr5rBf7EzEWz17On-bNXZOLNzpL4HEYv2thxBsPBWRdjhlnTHfvFiunZvD_K1dBoocwBLReGVheNp4bloJ7OO50QHDnZb9hpIy-D5aSAVJ9pikAT3LuzLzAnnYuJyO7-zM8SQORQi-vKfvYCOgcgsmP47I6A"/>
+</div>
+<div class="mt-unit text-primary/60 font-label-lg tracking-widest startup-anim opacity-0" style="animation-delay: 1.4s;">
+            INITIALIZING NEURAL COMMAND...
+        </div>
+</div>
+<!-- MAIN APP SHELL -->
+<main class="hidden opacity-0 transition-opacity duration-1000 min-h-screen" id="appShell">
+<!-- SIDE NAVIGATION (From Shared Components) -->
+<aside class="fixed left-0 top-0 h-full w-80 bg-surface-container border-r border-outline-variant/20 shadow-2xl flex flex-col py-gutter-md z-40">
+<div class="px-margin-lg mb-gutter-md">
+<div class="font-headline-sm italic text-secondary-fixed-dim">The Curator</div>
+<div class="flex items-center gap-4 mt-unit">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-primary/30">
+<img alt="The Curator Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uhtU8rz_LUuM2Rs6VF6IbOHs2GcKncyUqQ8Thqk46-kFmxWCnYM38gCe4HTEiQwd5OoLqx3XfFipqA6HLoOiYZ6hLTp8wQ6BXqxptudmmSy-tk-yrSSxOA1GBXJGwVm-I9a3cWNEAAZtLI9iflIxR7hLiT-P_p3psEHLu-7MOfUCtHN7odA_qLbPWBsS2KqOI8ICaLQE5I0sU3z14GXzi9OKzPYOGtKfzS_jMseIgXP3XegckKVxV7zaew"/>
+</div>
+<div>
+<div class="font-label-lg text-on-surface">Chris Clark</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Master Sommelier</div>
+</div>
+</div>
+</div>
+<nav class="flex-grow">
+<button class="bg-primary-container text-on-primary-container rounded-xl mx-2 my-1 px-4 py-3 flex items-center gap-4 active:bg-secondary-container transition-all" id="nav-cellar" onclick="switchContext('cellar')">
+<span class="material-symbols-outlined">wine_bar</span>
+<span class="font-label-lg">Cellar</span>
+</button>
+<button class="text-on-surface-variant mx-2 my-1 px-4 py-3 flex items-center gap-4 hover:bg-surface-variant/50 rounded-xl transition-all" id="nav-humidor" onclick="switchContext('humidor')">
+<span class="material-symbols-outlined">smoking_rooms</span>
+<span class="font-label-lg">Humidor</span>
+</button>
+<button class="text-on-surface-variant mx-2 my-1 px-4 py-3 flex items-center gap-4 hover:bg-surface-variant/50 rounded-xl transition-all" id="nav-lounge" onclick="switchContext('lounge')">
+<span class="material-symbols-outlined">chair</span>
+<span class="font-label-lg">Lounge</span>
+</button>
+<button class="text-on-surface-variant mx-2 my-1 px-4 py-3 flex items-center gap-4 hover:bg-surface-variant/50 rounded-xl transition-all" id="nav-concierge" onclick="switchContext('concierge')">
+<span class="material-symbols-outlined">concierge</span>
+<span class="font-label-lg">Concierge</span>
+</button>
+<button class="text-on-surface-variant mx-2 my-1 px-4 py-3 flex items-center gap-4 hover:bg-surface-variant/50 rounded-xl transition-all" id="nav-history" onclick="switchContext('history')">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-lg">History</span>
+</button>
+</nav>
+<div class="px-2 mt-auto">
+<button class="w-full bg-primary py-4 rounded-xl text-on-primary font-label-lg uppercase tracking-widest shadow-lg active:scale-95 transition-transform mb-4" onclick="triggerSummon()">
+                    Summon Staff
+                </button>
+<div class="h-px bg-outline-variant/10 mb-4"></div>
+<div class="flex flex-col">
+<button class="text-on-surface-variant px-4 py-2 flex items-center gap-4 hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">tune</span>
+<span class="font-label-lg">Settings</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- TOP BAR (From Shared Components) -->
+<header class="fixed top-0 right-0 w-[calc(100%-320px)] h-touch-min px-margin-lg flex justify-between items-center bg-background/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm z-30">
+<div class="font-headline-md text-primary font-bold tracking-tight">SMOKECRAFT 360</div>
+<div class="flex items-center gap-gutter-md">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-surface-container-high border-none rounded-full pl-10 pr-4 py-1 text-label-lg w-64 focus:ring-1 focus:ring-primary" placeholder="Explore Vault..." type="text"/>
+</div>
+<button class="text-primary hover:text-secondary-fixed-dim transition-colors duration-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-primary hover:text-secondary-fixed-dim transition-colors duration-300">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- CONTENT CANVAS -->
+<div class="ml-80 pt-touch-min h-screen overflow-y-auto overflow-x-hidden">
+<section class="p-margin-lg space-y-margin-lg" id="portal">
+<div class="flex flex-col space-y-2">
+<h1 class="font-display-lg text-display-lg text-on-surface">CraftHub Portal</h1>
+<p class="font-body-lg text-on-surface-variant max-w-2xl">Welcome to the inner sanctum. Orchestrate your journey through fire, oak, and grain.</p>
+</div>
+<!-- BENTO GRID PORTAL TILES -->
+<div class="grid grid-cols-12 gap-gutter-md">
+<!-- SMOKE CRAFT -->
+<div class="col-span-12 md:col-span-8 group cursor-pointer relative h-[500px] rounded-xl overflow-hidden glass-card border-none" onclick="enterRitual('smoke')">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-[3s] group-hover:scale-110" data-alt="A cinematic, high-contrast portrait of a distinguished Black gentleman holding a premium cigar in a dimly lit, luxury lounge with amber light hitting swirls of mahogany smoke. The mood is powerful, masculine, and sophisticated, with a warm color palette of espresso and burnished bronze." style="background-image: url('https://lh3.googleusercontent.com/aida/ADBb0uhtU8rz_LUuM2Rs6VF6IbOHs2GcKncyUqQ8Thqk46-kFmxWCnYM38gCe4HTEiQwd5OoLqx3XfFipqA6HLoOiYZ6hLTp8wQ6BXqxptudmmSy-tk-yrSSxOA1GBXJGwVm-I9a3cWNEAAZtLI9iflIxR7hLiT-P_p3psEHLu-7MOfUCtHN7odA_qLbPWBsS2KqOI8ICaLQE5I0sU3z14GXzi9OKzPYOGtKfzS_jMseIgXP3XegckKVxV7zaew')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-gutter-md">
+<span class="inline-block px-3 py-1 bg-primary/20 border border-primary/40 rounded-full text-[10px] uppercase tracking-widest text-primary mb-4">Master Level: Chris Clark</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-2">SmokeCraft 360</h3>
+<p class="text-on-surface-variant max-w-md">The alchemy of tobacco. Learn the ritual of the cut, the light, and the slow draw.</p>
+</div>
+</div>
+<!-- WINE CRAFT -->
+<div class="col-span-12 md:col-span-4 group cursor-pointer relative h-[500px] rounded-xl overflow-hidden glass-card border-none" onclick="enterRitual('wine')">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-[3s] group-hover:scale-110" data-alt="A portrait of a sophisticated Black sommelier in a bespoke charcoal blazer, wearing elegant designer glasses, inspecting a glass of vintage red wine in an underground stone cellar. Golden light glows from within the wine racks, creating a rich, opulent atmosphere of expertise and luxury hospitality." style="background-image: url('https://lh3.googleusercontent.com/aida/ADBb0ugjIJZfwJ3IGEYKUJhER-QdccGeY-WcbTfiArJb-s9N3ERQdMNmb_K6bulXWMdtmsaQlf7QWvrCPdfCtK0I_7qxHcoEqmj_2jzkRsRttL3KMZCp0MLWoENgAQsDFT7xPEThYAoPHhFraE69m5CTsD7LHWKxMq3GoYYJnpZRiw1uNl1GECOLzvAy6dk9_5MZ6a0E1ZIhsLmNMLh8RlMDpb4s8zYGvuprrEmF_rX3lzyDVpApwvqnz7Vc78E')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-gutter-md">
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-2">WineCraft</h3>
+<p class="text-on-surface-variant">Unveil the cellar's deepest secrets with JC Collins.</p>
+</div>
+</div>
+<!-- POUR CRAFT -->
+<div class="col-span-12 md:col-span-6 group cursor-pointer relative h-[400px] rounded-xl overflow-hidden glass-card border-none">
+<div class="absolute inset-0 firelight-glow opacity-40"></div>
+<img alt="Spirits" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="A close-up shot of a crystal decanter pouring a rich amber single-malt Scotch into a heavy-bottomed glass on a dark wood surface. The lighting is low and moody, catching the highlights of the cut glass and the golden liquid, evoking a sense of calm, evening luxury and slow appreciation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCskNm-Gipq4Xh2PEmPK9RMRTgGDUBuyMZiRYoAtME-Zh5z6j_ab5GU3AHR-ZrDs2sqFDRLu23c8NuimOJ1qSvRoL3IOkxJb90dCZQkV7rv0WZupovlupp3Q5Tfwvsebm7bP5ynjwSaAKpMMlFJtlpf5Dc-IxE6nztt22D5VZ-nIfF85DE7uazu54z3XZKTev7einMVBybyeFS5E1s-qHFA_fEufSTGP8ZBPj7y9PSzgDxJBhwIsDXc2jZC8BGPNADgf8HsLjbz3m4"/>
+<div class="absolute inset-0 bg-black/40"></div>
+<div class="absolute inset-0 p-gutter-md flex flex-col justify-end">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">PourCraft</h3>
+<p class="text-on-surface-variant">Master the spirit. From the Highland peat to the Kentucky oak.</p>
+</div>
+</div>
+<!-- BEER CRAFT -->
+<div class="col-span-12 md:col-span-6 group cursor-pointer relative h-[400px] rounded-xl overflow-hidden glass-card border-none">
+<div class="absolute inset-0 firelight-glow opacity-40"></div>
+<img alt="Beer" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="A row of tall, perfectly poured craft beer glasses with thick, creamy heads on a burnished bronze bar top. The scene is illuminated by warm, industrial-style lighting, showing the range of colors from pale gold to deep ebony, emphasizing craft, temperature, and texture in a premium setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUADSYfZyDmWta433lljSL8PiO2ygnU_RD5LHM6qVdl_wyQBS-74Qg8otmBdDmp_FG_S8m9mKO_O-cNUWo4HzyxJYxCUYEq42Wb2Z8NQVALqdquemqVvGRF3P5vIEb8mt2BKxPOMHkTcUyWpVysZPBmmJrsQuOtBQrtoiYjBJEtADqDP8ky4NfdEw70-R-2WkFWClBxJKuC7YOb5AWkXvr4t5rRvgbv7oN3_hgEcDtPthlyF5f19ncQ5GFemANiRTQxtPHqDkJf7s"/>
+<div class="absolute inset-0 bg-black/40"></div>
+<div class="absolute inset-0 p-gutter-md flex flex-col justify-end">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">BeerCraft</h3>
+<p class="text-on-surface-variant">The grain's true expression. Explore the elite taproom selection.</p>
+</div>
+</div>
+</div>
+<!-- RITUAL CONTENT (Dynamic) -->
+<div class="hidden space-y-gutter-md animate-in fade-in slide-in-from-bottom-4 duration-700" id="ritualContainer">
+<div class="flex items-center gap-4 mb-4">
+<button class="p-2 rounded-full bg-surface-container-high border border-outline-variant/30 hover:bg-surface-variant transition-colors" onclick="exitRitual()">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="font-headline-lg text-headline-lg text-primary" id="ritualTitle">Smoke Ritual</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-md">
+<div class="md:col-span-2 space-y-gutter-md">
+<!-- CHALLENGE CARD -->
+<div class="glass-card p-margin-lg rounded-xl">
+<div class="flex justify-between items-start mb-gutter-md">
+<div>
+<div class="font-label-lg text-secondary uppercase tracking-widest mb-2">Current Challenge</div>
+<h4 class="font-headline-md text-headline-md text-on-surface">The Perfect Draw</h4>
+</div>
+<div class="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">timer</span>
+</div>
+</div>
+<p class="text-body-lg text-on-surface-variant mb-gutter-md">
+                                    Analyze the moisture levels of your selection. A proper draw begins with the environment. Ensure the humidor is calibrated at exactly 70/70.
+                                </p>
+<div class="flex gap-4">
+<button class="bg-primary px-8 py-4 rounded-xl text-on-primary font-label-lg uppercase tracking-widest hover:scale-[1.02] transition-transform">Begin Analysis</button>
+<button class="border border-outline px-8 py-4 rounded-xl text-on-surface font-label-lg uppercase tracking-widest hover:bg-surface-variant transition-all">Details</button>
+</div>
+</div>
+<!-- THE CURATOR'S NOTE -->
+<div class="relative overflow-hidden bg-primary/5 border-l-4 border-secondary p-gutter-md rounded-r-xl">
+<div class="font-headline-sm italic text-secondary-fixed-dim mb-2">Curator's Note</div>
+<p class="font-headline-sm italic text-on-surface/80 leading-relaxed">
+                                    "A great cigar is like a fine melody; it has an introduction, a complex bridge, and a lingering finale. Never rush the light—patience is the first ingredient."
+                                </p>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-primary opacity-10 text-[120px]">format_quote</span>
+</div>
+</div>
+<!-- MASTER SCORECARD -->
+<div class="space-y-gutter-md">
+<div class="glass-card p-gutter-md rounded-xl">
+<h5 class="font-label-lg text-on-surface uppercase tracking-widest mb-4">Your Master Score</h5>
+<div class="flex items-center justify-center py-8">
+<div class="relative h-40 w-40">
+<svg class="h-full w-full" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="none" r="16" stroke="#353534" stroke-width="2"></circle>
+<circle cx="18" cy="18" fill="none" r="16" stroke="#f1bc8c" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="2" transform="rotate(-90 18 18)"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-md text-primary">780</span>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Elite Rank</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between text-label-lg">
+<span class="text-on-surface-variant">Flavor Profile</span>
+<span class="text-on-surface">Advanced</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full">
+<div class="bg-secondary h-1 rounded-full" style="width: 85%"></div>
+</div>
+<div class="flex justify-between text-label-lg">
+<span class="text-on-surface-variant">Ritual Precision</span>
+<span class="text-on-surface">Master</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full">
+<div class="bg-secondary h-1 rounded-full" style="width: 92%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- GOLDEN BOX REWARD (Section 4) -->
+<div class="hidden glass-card p-margin-lg rounded-xl border-secondary/30 relative overflow-hidden text-center space-y-6" id="rewardZone">
+<div class="absolute inset-0 firelight-glow animate-pulse"></div>
+<div class="relative z-10">
+<div class="w-32 h-32 mx-auto bg-gradient-to-br from-secondary to-primary-container rounded-2xl flex items-center justify-center shadow-[0_0_50px_rgba(255,185,90,0.4)] mb-8 animate-bounce">
+<span class="material-symbols-outlined text-[64px] text-on-primary">card_giftcard</span>
+</div>
+<h2 class="font-display-lg text-primary">The Golden Box Unlocked</h2>
+<p class="font-body-lg text-on-surface-variant max-w-xl mx-auto">Your mastery has been recognized. A rare reserve has been allocated to your profile. Summon staff to redeem.</p>
+<div class="flex justify-center gap-6 mt-10">
+<button class="bg-secondary text-on-secondary px-10 py-5 rounded-xl font-headline-sm uppercase tracking-widest shadow-xl">Redeem Now</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- FOOTER (From Shared Components) -->
+<footer class="ml-80 bg-background py-8 border-t border-outline-variant/10">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-lg max-w-container-max mx-auto">
+<div class="font-label-lg uppercase tracking-widest text-on-surface-variant">© 2024 SMOKECRAFT 360 | NOVEE OS</div>
+<div class="flex gap-margin-lg mt-4 md:mt-0">
+<a class="text-on-surface-variant font-label-lg hover:text-secondary underline transition-all" href="#">Privacy</a>
+<a class="text-on-surface-variant font-label-lg hover:text-secondary underline transition-all" href="#">Terms</a>
+<a class="text-on-surface-variant font-label-lg hover:text-secondary underline transition-all" href="#">Concierge Support</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- SUMMON STAFF OVERLAY -->
+<div class="fixed inset-0 z-[1000] hidden bg-black/90 backdrop-blur-3xl flex flex-col items-center justify-center p-margin-lg text-center" id="summonOverlay">
+<div class="w-px h-32 bg-gradient-to-b from-transparent via-primary to-transparent mb-gutter-md"></div>
+<h2 class="font-display-lg text-primary mb-2">NEURAL COMMAND</h2>
+<div class="text-on-surface-variant font-label-lg uppercase tracking-[0.4em] mb-12">Staff Notified | Response Time: &lt; 45s</div>
+<div class="grid grid-cols-2 gap-gutter-md max-w-2xl w-full">
+<div class="glass-card p-gutter-md rounded-xl flex flex-col items-center">
+<span class="material-symbols-outlined text-[48px] text-primary mb-4">restaurant_menu</span>
+<span class="font-label-lg">E.A.T. Command</span>
+</div>
+<div class="glass-card p-gutter-md rounded-xl flex flex-col items-center">
+<span class="material-symbols-outlined text-[48px] text-primary mb-4">point_of_sale</span>
+<span class="font-label-lg">POS 3 Cockpit</span>
+</div>
+</div>
+<button class="mt-margin-lg text-on-surface-variant font-label-lg hover:text-primary transition-colors border-b border-primary/20 pb-1" onclick="cancelSummon()">
+            CANCEL COMMAND
+        </button>
+</div>
+<script>
+        // --- SMOKE ENGINE ---
+        const canvas = document.getElementById('smokeCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 150 + 50;
+                this.speedY = Math.random() * 0.5 + 0.2;
+                this.opacity = Math.random() * 0.15 + 0.05;
+                this.angle = Math.random() * Math.PI * 2;
+                this.rotationSpeed = Math.random() * 0.01 - 0.005;
+            }
+            update() {
+                this.y -= this.speedY;
+                this.angle += this.rotationSpeed;
+                if (this.y < -this.size) {
+                    this.y = canvas.height + this.size;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.beginPath();
+                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
+                gradient.addColorStop(0, `rgba(180, 180, 180, ${this.opacity})`);
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.fillStyle = gradient;
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initSmoke() {
+            for (let i = 0; i < 30; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateSmoke() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateSmoke);
+        }
+        initSmoke();
+        animateSmoke();
+
+        // --- ORCHESTRATION LOGIC ---
+        
+        // Startup Transition
+        setTimeout(() => {
+            const startup = document.getElementById('startupSequence');
+            const app = document.getElementById('appShell');
+            startup.style.opacity = '0';
+            setTimeout(() => {
+                startup.classList.add('hidden');
+                app.classList.remove('hidden');
+                setTimeout(() => app.style.opacity = '1', 50);
+            }, 1000);
+        }, 4000);
+
+        function switchContext(context) {
+            const navs = ['cellar', 'humidor', 'lounge', 'concierge', 'history'];
+            navs.forEach(n => {
+                const el = document.getElementById(`nav-${n}`);
+                el.className = "text-on-surface-variant mx-2 my-1 px-4 py-3 flex items-center gap-4 hover:bg-surface-variant/50 rounded-xl transition-all";
+            });
+            const activeEl = document.getElementById(`nav-${context}`);
+            activeEl.className = "bg-primary-container text-on-primary-container rounded-xl mx-2 my-1 px-4 py-3 flex items-center gap-4 active:bg-secondary-container transition-all";
+            
+            // In a real app, this would swap content. For this demo, we use it to exit ritual views.
+            exitRitual();
+        }
+
+        function enterRitual(type) {
+            const portal = document.getElementById('portal');
+            const grid = portal.querySelector('.grid');
+            const hero = portal.querySelector('div:first-child');
+            const ritual = document.getElementById('ritualContainer');
+            const title = document.getElementById('ritualTitle');
+
+            grid.classList.add('hidden');
+            hero.classList.add('hidden');
+            ritual.classList.remove('hidden');
+            
+            if(type === 'wine') {
+                title.innerText = "Wine Ritual: JC Collins Selection";
+            } else {
+                title.innerText = "Smoke Ritual: Chris Clark Collection";
+            }
+            
+            // Randomly trigger reward for demo flow
+            if(Math.random() > 0.5) {
+                setTimeout(() => {
+                    document.getElementById('rewardZone').classList.remove('hidden');
+                }, 3000);
+            }
+        }
+
+        function exitRitual() {
+            const portal = document.getElementById('portal');
+            const grid = portal.querySelector('.grid');
+            const hero = portal.querySelector('div:first-child');
+            const ritual = document.getElementById('ritualContainer');
+            const reward = document.getElementById('rewardZone');
+
+            grid.classList.remove('hidden');
+            hero.classList.remove('hidden');
+            ritual.classList.add('hidden');
+            reward.classList.add('hidden');
+        }
+
+        function triggerSummon() {
+            const overlay = document.getElementById('summonOverlay');
+            overlay.classList.remove('hidden');
+            // Haptic Feedback Simulation (if available)
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate([100, 50, 100]);
+            }
+        }
+
+        function cancelSummon() {
+            document.getElementById('summonOverlay').classList.add('hidden');
+        }
+    </script>
+</body></html>
