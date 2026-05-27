@@ -65,6 +65,8 @@ const OnboardWizard         = lazy(() => import('@/pages/OnboardWizard'));
 const AnalyticsModule       = lazy(() => import('@/pages/AnalyticsModule'));
 const SwipeIntelligence     = lazy(() => import('@/pages/SwipeIntelligence'));
 const CraftHub              = lazy(() => import('@/pages/CraftHubPortal'));
+const CraftHubVisualPortal  = lazy(() => import('@/pages/CraftHubVisualPortal'));
+const CraftModulePlaceholder = lazy(() => import('@/pages/CraftModulePlaceholder'));
 const DemoWalkthrough       = lazy(() => import('@/pages/DemoWalkthrough'));
 const MasterOperations      = lazy(() => import('@/pages/MasterOperations'));
 const CommandCenter         = lazy(() => import('@/pages/CommandCenter'));
@@ -1179,7 +1181,7 @@ function PrefetchChunks() {
   useEffect(() => {
     const t = setTimeout(() => {
       import('@/pages/NoveeOsShell').catch(() => {});
-      import('@/pages/CraftHub').catch(() => {});
+      import('@/pages/CraftHubVisualPortal').catch(() => {});
       import('@/pages/Dashboard').catch(() => {});
     }, 1800);
     return () => clearTimeout(t);
@@ -1291,8 +1293,118 @@ export default function App() {
           </Route>
           <Route path="/craft-hub">
             <Suspense fallback={null}>
-              <CraftEntryPoint />
+              <CraftHubVisualPortal />
             </Suspense>
+          </Route>
+          <Route path="/smokecraft">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Signature Ritual"
+                title="SmokeCraft 360"
+                description="The cigar journey route is connected. This screen is ready to receive the live onboarding, mentor, wrapper, flavor, analysis, and recommendation engines."
+                image="/images/scenes/smokecraft-card.jpg"
+                status="SmokeCraft route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/winecraft">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Cellar Curation"
+                title="WineCraft"
+                description="WineCraft is now reachable from CraftHub with premium back and home navigation. Connect cellar inventory, sommelier notes, and guest preference APIs here."
+                image="/images/craft/wine-1.png"
+                status="WineCraft route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/pourcraft">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Spirits Room"
+                title="PourCraft"
+                description="PourCraft is wired for cocktail, whiskey, pairing, and POS-ready service intelligence. Backend data can now attach without changing navigation."
+                image="/images/scenes/pourcraft-card.jpg"
+                status="PourCraft route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/beercraft">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Taproom Intelligence"
+                title="BeerCraft"
+                description="BeerCraft now has a live route for flights, taps, inventory signals, and guest education. The visual shell is ready for module wiring."
+                image="/images/scenes/brewcraft-card.jpg"
+                status="BeerCraft route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/cellar">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Reserve Cellar"
+                title="Cellar"
+                description="Cellar control is routed for bottle lists, allocations, pairing notes, and reserve service workflows."
+                image="/images/craft/wine-2.png"
+                status="Cellar route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/humidor">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Asset Intelligence"
+                title="Humidor"
+                description="Humidor control is routed for cigar counts, humidity state, storage zones, and premium inventory actions."
+                image="/images/smoke-home-1.jpg"
+                status="Humidor route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/lounge">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Atmosphere Control"
+                title="Lounge"
+                description="Lounge control is routed for ambiance, table state, service pacing, and environmental storytelling."
+                image="/images/lounge-bg.jpg"
+                status="Lounge route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/concierge">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Hospitality Intelligence"
+                title="Concierge"
+                description="Concierge mode is routed for guest requests, curated recommendations, staff handoff, and VIP service memory."
+                image="/images/scenes/craft-hub.jpg"
+                status="Concierge route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/history">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Guest Memory"
+                title="History"
+                description="History is routed for past sessions, flavor evolution, rewards movement, and venue-level journey recall."
+                image="/images/leaderboard_bg.png"
+                status="History route connected"
+              />
+            </SubPageProviders>
+          </Route>
+          <Route path="/staff-summon">
+            <SubPageProviders>
+              <CraftModulePlaceholder
+                eyebrow="Service Signal"
+                title="Summon Staff"
+                description="Staff summon is routed for live service requests, station context, and POS floor notifications."
+                image="/images/lounge_bg.jpg"
+                status="Staff signal route connected"
+              />
+            </SubPageProviders>
           </Route>
           <Route path="/pos">
             <SubPageProviders><StaffTerminal /></SubPageProviders>

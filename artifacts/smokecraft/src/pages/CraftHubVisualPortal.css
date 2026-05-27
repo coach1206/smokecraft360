@@ -1,0 +1,628 @@
+.chvp-shell,
+.chvp-module-shell {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #050403;
+  color: #f7edd7;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.chvp-shell {
+  display: grid;
+  grid-template-columns: minmax(220px, 17vw) 1fr;
+}
+
+.chvp-scene,
+.chvp-module-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(110deg, rgba(3, 3, 2, 0.92) 0%, rgba(10, 7, 4, 0.58) 50%, rgba(3, 3, 2, 0.9) 100%),
+    url("/images/scenes/craft-hub.jpg");
+  background-position: center;
+  background-size: cover;
+  filter: saturate(0.92) contrast(1.08);
+  transform: scale(1.03);
+}
+
+.chvp-module-bg {
+  opacity: 0.78;
+}
+
+.chvp-scene::after,
+.chvp-module-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 16%, rgba(216, 168, 45, 0.14), transparent 28%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.64));
+}
+
+.chvp-smoke,
+.chvp-embers {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+}
+
+.chvp-smoke {
+  background: radial-gradient(ellipse at center, rgba(255, 237, 202, 0.11), transparent 58%);
+  filter: blur(24px);
+  mix-blend-mode: screen;
+  animation: chvp-drift 22s ease-in-out infinite alternate;
+}
+
+.chvp-smoke-b {
+  animation-duration: 32s;
+  animation-delay: -8s;
+  opacity: 0.5;
+}
+
+.chvp-embers {
+  background-image:
+    radial-gradient(circle, rgba(216, 168, 45, 0.65) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(255, 240, 190, 0.45) 0 1px, transparent 2px);
+  background-size: 180px 180px, 260px 260px;
+  opacity: 0.22;
+  animation: chvp-ember-rise 36s linear infinite;
+}
+
+.chvp-sidebar,
+.chvp-main,
+.chvp-module-panel {
+  position: relative;
+  z-index: 2;
+}
+
+.chvp-sidebar {
+  min-height: 100vh;
+  padding: 24px 18px;
+  border-right: 1px solid rgba(216, 168, 45, 0.2);
+  background: linear-gradient(180deg, rgba(7, 7, 6, 0.9), rgba(7, 6, 4, 0.7));
+  backdrop-filter: blur(20px);
+}
+
+.chvp-brand,
+.chvp-nav button,
+.chvp-staff,
+.chvp-icon-btn,
+.chvp-intel-row button,
+.chvp-module-actions button,
+.chvp-modal button {
+  border: 1px solid rgba(216, 168, 45, 0.28);
+  color: #f7edd7;
+  background: rgba(13, 10, 6, 0.72);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.chvp-brand {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  text-align: left;
+  border-radius: 18px;
+}
+
+.chvp-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(216, 168, 45, 0.62);
+  border-radius: 14px;
+  color: #f2c755;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.chvp-brand strong,
+.chvp-curator h2,
+.chvp-card-copy strong,
+.chvp-module-panel h1,
+.chvp-modal h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+.chvp-brand strong {
+  display: block;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+
+.chvp-brand small,
+.chvp-curator p,
+.chvp-card-copy em,
+.chvp-module-status span {
+  color: rgba(247, 237, 215, 0.66);
+}
+
+.chvp-nav {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.chvp-nav button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 16px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.chvp-nav button.active,
+.chvp-nav button:hover,
+.chvp-brand:hover,
+.chvp-staff:hover,
+.chvp-icon-btn:hover,
+.chvp-intel-row button:hover,
+.chvp-module-actions button:hover,
+.chvp-modal button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(242, 199, 85, 0.78);
+  background: rgba(58, 43, 14, 0.76);
+  box-shadow: 0 0 28px rgba(216, 168, 45, 0.15);
+}
+
+.chvp-curator {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+  padding: 18px;
+  border: 1px solid rgba(216, 168, 45, 0.24);
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.chvp-curator-photo {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 1px solid rgba(216, 168, 45, 0.48);
+  background: radial-gradient(circle, rgba(216, 168, 45, 0.22), rgba(0, 0, 0, 0.42));
+}
+
+.chvp-overline {
+  display: block;
+  color: #f2c755;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.chvp-curator h2 {
+  margin: 6px 0 4px;
+  font-size: 28px;
+}
+
+.chvp-curator p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.chvp-staff {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 62px;
+  margin-top: 18px;
+  padding: 0 16px;
+  border-radius: 18px;
+  color: #12100a;
+  background: linear-gradient(180deg, #f4c449, #bb811a);
+  font-weight: 900;
+}
+
+.chvp-main {
+  display: flex;
+  min-width: 0;
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 22px clamp(18px, 3vw, 42px) 28px;
+}
+
+.chvp-topbar {
+  display: grid;
+  grid-template-columns: auto minmax(260px, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.chvp-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+}
+
+.chvp-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 18px;
+  border: 1px solid rgba(216, 168, 45, 0.26);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(14px);
+}
+
+.chvp-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff7e6;
+  font-size: 17px;
+}
+
+.chvp-search input::placeholder {
+  color: rgba(247, 237, 215, 0.46);
+}
+
+.chvp-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  gap: 28px;
+  align-items: end;
+  padding: clamp(34px, 5vw, 70px) 0 26px;
+}
+
+.chvp-hero h1 {
+  max-width: 820px;
+  margin: 10px 0 14px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(48px, 7vw, 98px);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
+.chvp-hero p {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(247, 237, 215, 0.72);
+  font-size: clamp(18px, 1.6vw, 23px);
+  line-height: 1.45;
+}
+
+.chvp-hero-status {
+  padding: 22px;
+  border: 1px solid rgba(216, 168, 45, 0.28);
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.48);
+}
+
+.chvp-hero-status span,
+.chvp-hero-status small {
+  display: block;
+  color: rgba(247, 237, 215, 0.62);
+}
+
+.chvp-hero-status strong {
+  display: block;
+  margin: 8px 0;
+  color: #4ade80;
+  font-size: 24px;
+}
+
+.chvp-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
+  gap: 16px;
+}
+
+.chvp-craft-card {
+  position: relative;
+  min-height: clamp(320px, 44vh, 520px);
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgba(216, 168, 45, 0.24);
+  border-radius: 24px;
+  text-align: left;
+  background: #0a0704;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 60px rgba(0, 0, 0, 0.32);
+}
+
+.chvp-craft-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.62) saturate(0.92);
+  transform: scale(1.02);
+  transition: transform 600ms ease, filter 600ms ease;
+}
+
+.chvp-craft-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.72)),
+    radial-gradient(circle at 50% 72%, color-mix(in srgb, var(--card-accent) 34%, transparent), transparent 48%);
+  transition: opacity 260ms ease;
+}
+
+.chvp-craft-card:hover,
+.chvp-craft-card.selected {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--card-accent) 76%, white 10%);
+  box-shadow: 0 0 44px color-mix(in srgb, var(--card-accent) 22%, transparent), 0 28px 70px rgba(0, 0, 0, 0.42);
+}
+
+.chvp-craft-card:hover img,
+.chvp-craft-card.selected img {
+  filter: brightness(0.78) saturate(1.08);
+  transform: scale(1.075);
+}
+
+.chvp-card-status {
+  position: absolute;
+  z-index: 2;
+  top: 18px;
+  right: 18px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.44);
+  color: #f2c755;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.chvp-card-copy {
+  position: absolute;
+  z-index: 2;
+  left: 22px;
+  right: 22px;
+  bottom: 24px;
+}
+
+.chvp-card-copy small {
+  display: block;
+  color: #f2c755;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.chvp-card-copy strong {
+  display: block;
+  margin: 8px 0 10px;
+  font-size: clamp(34px, 4vw, 58px);
+  line-height: 0.92;
+}
+
+.chvp-card-copy em {
+  display: block;
+  max-width: 310px;
+  font-style: normal;
+  line-height: 1.4;
+}
+
+.chvp-craft-card > svg {
+  position: absolute;
+  z-index: 2;
+  right: 22px;
+  bottom: 24px;
+  color: #f2c755;
+}
+
+.chvp-intel-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.chvp-intel-row button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  align-items: center;
+  min-height: 76px;
+  padding: 16px;
+  border-radius: 18px;
+  text-align: left;
+}
+
+.chvp-intel-row strong {
+  grid-column: 2;
+  color: #4ade80;
+}
+
+.chvp-modal-backdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(12px);
+}
+
+.chvp-modal,
+.chvp-module-panel {
+  width: min(560px, 100%);
+  padding: 28px;
+  border: 1px solid rgba(216, 168, 45, 0.35);
+  border-radius: 26px;
+  background: linear-gradient(180deg, rgba(20, 15, 8, 0.94), rgba(6, 5, 4, 0.92));
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55);
+}
+
+.chvp-modal h2,
+.chvp-module-panel h1 {
+  margin: 8px 0 12px;
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 0.95;
+}
+
+.chvp-modal p,
+.chvp-module-panel p {
+  color: rgba(247, 237, 215, 0.72);
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.chvp-modal button {
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 14px;
+  font-weight: 850;
+}
+
+.chvp-module-shell {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.chvp-module-panel {
+  width: min(880px, 100%);
+}
+
+.chvp-module-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.chvp-module-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 16px;
+  font-weight: 850;
+}
+
+.chvp-module-status {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid rgba(216, 168, 45, 0.24);
+  border-radius: 18px;
+  background: rgba(216, 168, 45, 0.08);
+}
+
+.chvp-module-status strong,
+.chvp-module-status span {
+  display: block;
+}
+
+@keyframes chvp-drift {
+  from { transform: translate3d(-4%, 2%, 0) scale(1); }
+  to { transform: translate3d(5%, -3%, 0) scale(1.08); }
+}
+
+@keyframes chvp-ember-rise {
+  from { transform: translateY(8%); }
+  to { transform: translateY(-8%); }
+}
+
+@media (max-width: 1180px) {
+  .chvp-shell {
+    grid-template-columns: 96px 1fr;
+  }
+
+  .chvp-brand span:not(.chvp-brand-mark),
+  .chvp-nav span,
+  .chvp-curator,
+  .chvp-staff span {
+    display: none;
+  }
+
+  .chvp-brand,
+  .chvp-nav button,
+  .chvp-staff {
+    justify-content: center;
+  }
+
+  .chvp-card-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .chvp-shell {
+    display: block;
+    padding-bottom: 86px;
+  }
+
+  .chvp-sidebar {
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 0;
+    padding: 8px;
+    border-top: 1px solid rgba(216, 168, 45, 0.22);
+    border-right: 0;
+  }
+
+  .chvp-brand,
+  .chvp-curator,
+  .chvp-staff {
+    display: none;
+  }
+
+  .chvp-nav {
+    display: flex;
+    margin-top: 0;
+    overflow-x: auto;
+  }
+
+  .chvp-nav button {
+    min-width: 72px;
+    min-height: 60px;
+    padding: 0 12px;
+  }
+
+  .chvp-main {
+    min-height: auto;
+  }
+
+  .chvp-topbar {
+    grid-template-columns: auto 1fr auto auto;
+  }
+
+  .chvp-hero {
+    grid-template-columns: 1fr;
+    padding-top: 28px;
+  }
+
+  .chvp-card-grid,
+  .chvp-intel-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chvp-craft-card {
+    min-height: 340px;
+  }
+}
