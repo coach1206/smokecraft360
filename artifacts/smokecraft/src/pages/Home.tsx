@@ -1172,6 +1172,27 @@ export default function Home() {
         Experience Hub
       </button>
 
+      <button
+        type="button"
+        onClick={() => navigate("/craft-hub")}
+        data-testid="home-open-crafthub"
+        aria-label="Open CraftHub Portal"
+        style={{
+          position: "fixed", top: 18, right: 18, zIndex: 60,
+          display: "inline-flex", alignItems: "center", gap: 8,
+          padding: "9px 14px",
+          background: "rgba(212,139,0,0.24)",
+          color: "rgba(255,242,214,0.96)",
+          border: "1px solid rgba(241,188,140,0.55)",
+          borderRadius: 999,
+          fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase",
+          cursor: "pointer",
+          backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+        }}
+      >
+        Open CraftHub Portal
+      </button>
+
       <AnimatePresence>
         {phase === "loading" && <CigarBurnLoader onComplete={handleBurnComplete} />}
       </AnimatePresence>
