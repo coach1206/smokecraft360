@@ -64,7 +64,7 @@ const AdminMaster           = lazy(() => import('@/pages/AdminMaster'));
 const OnboardWizard         = lazy(() => import('@/pages/OnboardWizard'));
 const AnalyticsModule       = lazy(() => import('@/pages/AnalyticsModule'));
 const SwipeIntelligence     = lazy(() => import('@/pages/SwipeIntelligence'));
-const CraftHub              = lazy(() => import('@/pages/CraftHub'));
+const CraftHub              = lazy(() => import('@/pages/CraftHubPortal'));
 const DemoWalkthrough       = lazy(() => import('@/pages/DemoWalkthrough'));
 const MasterOperations      = lazy(() => import('@/pages/MasterOperations'));
 const CommandCenter         = lazy(() => import('@/pages/CommandCenter'));
