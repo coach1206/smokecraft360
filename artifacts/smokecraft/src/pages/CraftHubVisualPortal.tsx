@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
@@ -43,7 +43,7 @@ const craftCards: PortalItem[] = [
   },
   {
     id: "winecraft",
-    label: "WineCraft",
+    label: "WineCraft 360",
     eyebrow: "Cellar Curation",
     route: "/winecraft",
     image: "/images/craft/wine-1.png",
@@ -53,7 +53,7 @@ const craftCards: PortalItem[] = [
   },
   {
     id: "pourcraft",
-    label: "PourCraft",
+    label: "PourCraft 360",
     eyebrow: "Spirits Room",
     route: "/pourcraft",
     image: "/images/scenes/pourcraft-card.jpg",
@@ -63,7 +63,7 @@ const craftCards: PortalItem[] = [
   },
   {
     id: "beercraft",
-    label: "BeerCraft",
+    label: "BeerCraft 360",
     eyebrow: "Taproom Intelligence",
     route: "/beercraft",
     image: "/images/scenes/brewcraft-card.jpg",
@@ -96,6 +96,67 @@ export default function CraftHubVisualPortal() {
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [staffOpen, setStaffOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", resize);
+    resize();
+
+    class Particle {
+      x = 0; y = 0; size = 0; speedY = 0; opacity = 0; maxOpacity = 0; vx = 0;
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas!.width;
+        this.y = canvas!.height + Math.random() * 100;
+        this.size = Math.random() * 80 + 40;
+        this.speedY = Math.random() * 0.5 + 0.2;
+        this.opacity = 0;
+        this.maxOpacity = Math.random() * 0.18 + 0.04;
+        this.vx = Math.random() * 0.4 - 0.2;
+      }
+      update() {
+        this.y -= this.speedY;
+        this.x += this.vx;
+        if (this.opacity < this.maxOpacity) this.opacity += 0.005;
+        if (this.y < -100) this.reset();
+      }
+      draw() {
+        if (!ctx) return;
+        ctx.beginPath();
+        const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+        grad.addColorStop(0, `rgba(216, 168, 45, ${this.opacity * 0.6})`);
+        grad.addColorStop(0.5, `rgba(200, 200, 200, ${this.opacity * 0.3})`);
+        grad.addColorStop(1, "rgba(200, 200, 200, 0)");
+        ctx.fillStyle = grad;
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    const particles: Particle[] = Array.from({ length: 40 }, () => new Particle());
+    let raf: number;
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      raf = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const visibleCards = useMemo(() => {
     const value = query.trim().toLowerCase();
@@ -114,6 +175,8 @@ export default function CraftHubVisualPortal() {
   return (
     <main className="chvp-shell">
       {/* Backup reference only: public/stitch-export.html should remain untouched when present. */}
+      <canvas ref={canvasRef} id="chvp-smoke-canvas" aria-hidden="true" />
+      <div className="chvp-gold-glow" aria-hidden="true" />
       <div className="chvp-scene" />
       <div className="chvp-smoke chvp-smoke-a" />
       <div className="chvp-smoke chvp-smoke-b" />
