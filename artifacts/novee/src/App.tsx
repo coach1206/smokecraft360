@@ -25,6 +25,9 @@ import DevConsole from "@/pages/DevConsole";
 import { StaffPinGate } from "@/components/StaffPinGate";
 import type { PinRole } from "@/components/StaffPinGate";
 import CraftEntryPoint, { CraftGrid } from "@/pages/CraftEntryPoint";
+import { Router, Route, Switch } from "wouter";
+import CraftHubVisualPortal from "@/pages/CraftHubVisualPortal";
+import CraftModulePlaceholder from "@/pages/CraftModulePlaceholder";
 import { SplashController } from "@/components/SplashController";
 import { S1_InitGate } from "@/pages/S1_InitGate";
 import { S2_TerroirMatrix } from "@/pages/S2_TerroirMatrix";
@@ -1302,11 +1305,7 @@ function SystemBar() {
           COACH HELP
         </motion.button>
 
-        {/* STAFF AUTH — pulsating amber glow */}
-        <style>{`
-          @keyframes staffAuthPulse { 0%   { box-shadow: 0 0 8px rgba(212,175,55,0.55), 0 0 2px rgba(212,175,55,0.80); border-color: rgba(212,175,55,0.55); } 50%  { box-shadow: 0 0 22px rgba(212,175,55,0.90), 0 0 8px rgba(212,175,55,1.0), inset 0 0 6px rgba(212,175,55,0.18); border-color: rgba(212,175,55,1.0); } 100% { box-shadow: 0 0 8px rgba(212,175,55,0.55), 0 0 2px rgba(212,175,55,0.80); border-color: rgba(212,175,55,0.55); } }
-          @keyframes staffAuthDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.72); } }
-        `}</style>
+        {/* STAFF AUTH — pulsating amber glow (keyframes in index.css — do not inline) */}
         <motion.button type="button" onPointerDown={onStaffAuth} whileTap={{ scale: 0.93 }}
           style={{ minHeight: 48, border: `1px solid ${GOLD}`, borderRadius: 8, padding: "0 18px", background: staffAuthActive ? `rgba(212,175,55,0.32)` : `rgba(212,175,55,0.10)`, cursor: "pointer", fontSize: 12, fontWeight: 900, letterSpacing: "0.14em", color: GOLD, textTransform: "uppercase", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 8, animation: staffAuthPulsing ? "staffAuthPulse 2.0s ease-in-out infinite" : "none", transition: "background 0.25s", touchAction: "manipulation" }}>
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD, animation: staffAuthPulsing ? "staffAuthDot 2.0s ease-in-out infinite" : "none", boxShadow: `0 0 6px ${GOLD}`, flexShrink: 0 }} />
@@ -1444,10 +1443,6 @@ function BottomBar() {
 
   return (
     <div style={{ width: "100%", flexShrink: 0, height: 58, background: "rgba(4,2,0,0.98)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderTop: `2px solid ${GOLD}`, boxShadow: `0 -6px 32px rgba(212,175,55,0.18)`, display: "flex", flexDirection: "row", alignItems: "center", position: "relative", zIndex: 200, overflow: "hidden" }}>
-      <style>{`
-        @keyframes novee-ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .novee-ticker-track { display: inline-flex; flex-direction: row; align-items: center; white-space: nowrap; animation: novee-ticker 900s linear infinite; will-change: transform; }
-      `}</style>
       <div style={{ flexShrink: 0, padding: "0 18px", borderRight: `1px solid ${GOLD}44`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 2, background: "rgba(212,175,55,0.06)" }}>
         <span style={{ fontSize: 9, letterSpacing: "0.28em", color: `${GOLD}99`, fontWeight: 900, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>TONIGHT'S</span>
         <span style={{ fontSize: 13, letterSpacing: "0.20em", color: GOLD, fontWeight: 900, fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>SPECIALS</span>
@@ -1700,14 +1695,44 @@ function POSCommandHub() {
   );
 }
 
-function CraftHubWrapper() {
+function SmokecraftRedirect() {
   const { setPhase } = useGuest();
+  useEffect(() => { setPhase("s1_demo"); }, [setPhase]);
+  return null;
+}
+
+function CraftHubWrapper() {
   return (
-    <CraftGrid
-      embedded
-      onSmokecraft={() => setPhase("s1_demo")}
-      onEAT={() => setPhase("eat_dashboard")}
-    />
+    <Router base="">
+      <Switch>
+        <Route path="/smokecraft"><SmokecraftRedirect /></Route>
+        <Route path="/winecraft">
+          <CraftModulePlaceholder
+            title="WineCraft 360"
+            eyebrow="Cellar Curation"
+            description="Sommelier-led discovery for bottles, pairings, reserve notes, and service moments."
+            image="/images/craft/wine-1.png"
+          />
+        </Route>
+        <Route path="/pourcraft">
+          <CraftModulePlaceholder
+            title="PourCraft 360"
+            eyebrow="Spirits Room"
+            description="Whiskey, cocktail, and premium pour intelligence for staff and guest journeys."
+            image="/images/scenes/pourcraft-card.jpg"
+          />
+        </Route>
+        <Route path="/beercraft">
+          <CraftModulePlaceholder
+            title="BeerCraft 360"
+            eyebrow="Taproom Intelligence"
+            description="Craft beer discovery, flight building, inventory signal, and hospitality pacing."
+            image="/images/scenes/brewcraft-card.jpg"
+          />
+        </Route>
+        <Route><CraftHubVisualPortal /></Route>
+      </Switch>
+    </Router>
   );
 }
 
