@@ -1311,8 +1311,8 @@ export default function App() {
             <SubPageProviders>
               <CraftModulePlaceholder
                 eyebrow="Cellar Curation"
-                title="WineCraft"
-                description="WineCraft is now reachable from CraftHub with premium back and home navigation. Connect cellar inventory, sommelier notes, and guest preference APIs here."
+                title="WineCraft 360"
+                description="WineCraft 360 is now reachable from CraftHub with premium back and home navigation. Connect cellar inventory, sommelier notes, and guest preference APIs here."
                 image="/images/craft/wine-1.png"
                 status="WineCraft route connected"
               />
@@ -1322,8 +1322,8 @@ export default function App() {
             <SubPageProviders>
               <CraftModulePlaceholder
                 eyebrow="Spirits Room"
-                title="PourCraft"
-                description="PourCraft is wired for cocktail, whiskey, pairing, and POS-ready service intelligence. Backend data can now attach without changing navigation."
+                title="PourCraft 360"
+                description="PourCraft 360 is wired for cocktail, whiskey, pairing, and POS-ready service intelligence. Backend data can now attach without changing navigation."
                 image="/images/scenes/pourcraft-card.jpg"
                 status="PourCraft route connected"
               />
@@ -1333,8 +1333,8 @@ export default function App() {
             <SubPageProviders>
               <CraftModulePlaceholder
                 eyebrow="Taproom Intelligence"
-                title="BeerCraft"
-                description="BeerCraft now has a live route for flights, taps, inventory signals, and guest education. The visual shell is ready for module wiring."
+                title="BeerCraft 360"
+                description="BeerCraft 360 now has a live route for flights, taps, inventory signals, and guest education. The visual shell is ready for module wiring."
                 image="/images/scenes/brewcraft-card.jpg"
                 status="BeerCraft route connected"
               />
