@@ -2,7 +2,7 @@
  * GuestAmbientOverlay — persistent warm amber vignette over all guest routes.
  *
  * Applies dark obsidian edges + a subtle warm amber glow toward the center-bottom.
- * Communicates private lounge atmosphere throughout the entire guest journey.
+ * Communicates private lounge atmosphere throughout the guest flow.
  * Mounted in SubPageProviders — never unmounts.
  */
 

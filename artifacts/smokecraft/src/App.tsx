@@ -1299,22 +1299,22 @@ export default function App() {
           <Route path="/smokecraft">
             <SubPageProviders>
               <CraftModulePlaceholder
-                eyebrow="Signature Ritual"
+                eyebrow="Cigar Ritual"
                 title="SmokeCraft 360"
-                description="The cigar journey route is connected. This screen is ready to receive the live onboarding, mentor, wrapper, flavor, analysis, and recommendation engines."
+                description="Build the profile. Match the pour. Guide the moment."
                 image="/images/scenes/smokecraft-card.jpg"
-                status="SmokeCraft route connected"
+                status="SmokeCraft 360 is ready"
               />
             </SubPageProviders>
           </Route>
           <Route path="/winecraft">
             <SubPageProviders>
               <CraftModulePlaceholder
-                eyebrow="Cellar Curation"
+                eyebrow="Cellar Experience"
                 title="WineCraft 360"
-                description="WineCraft 360 is now reachable from CraftHub with premium back and home navigation. Connect cellar inventory, sommelier notes, and guest preference APIs here."
+                description="Build the taste profile. Match the bottle. Guide the pour."
                 image="/images/craft/wine-1.png"
-                status="WineCraft route connected"
+                status="WineCraft 360 is ready"
               />
             </SubPageProviders>
           </Route>
@@ -1323,75 +1323,75 @@ export default function App() {
               <CraftModulePlaceholder
                 eyebrow="Spirits Room"
                 title="PourCraft 360"
-                description="PourCraft 360 is wired for cocktail, whiskey, pairing, and POS-ready service intelligence. Backend data can now attach without changing navigation."
+                description="Choose the spirit. Shape the mood. Serve the moment."
                 image="/images/scenes/pourcraft-card.jpg"
-                status="PourCraft route connected"
+                status="PourCraft 360 is ready"
               />
             </SubPageProviders>
           </Route>
           <Route path="/beercraft">
             <SubPageProviders>
               <CraftModulePlaceholder
-                eyebrow="Taproom Intelligence"
+                eyebrow="Taproom Experience"
                 title="BeerCraft 360"
-                description="BeerCraft 360 now has a live route for flights, taps, inventory signals, and guest education. The visual shell is ready for module wiring."
+                description="Find the flavor. Match the glass. Keep the room flowing."
                 image="/images/scenes/brewcraft-card.jpg"
-                status="BeerCraft route connected"
+                status="BeerCraft 360 is ready"
               />
             </SubPageProviders>
           </Route>
           <Route path="/cellar">
             <SubPageProviders>
               <CraftModulePlaceholder
-                eyebrow="Reserve Cellar"
+                eyebrow="Cellar"
                 title="Cellar"
-                description="Cellar control is routed for bottle lists, allocations, pairing notes, and reserve service workflows."
+                description="Browse bottles, pairings, and service notes."
                 image="/images/craft/wine-2.png"
-                status="Cellar route connected"
+                status="Cellar is ready"
               />
             </SubPageProviders>
           </Route>
           <Route path="/humidor">
             <SubPageProviders>
               <CraftModulePlaceholder
-                eyebrow="Asset Intelligence"
+                eyebrow="Humidor"
                 title="Humidor"
-                description="Humidor control is routed for cigar counts, humidity state, storage zones, and premium inventory actions."
+                description="Track cigars, profiles, and lounge favorites."
                 image="/images/smoke-home-1.jpg"
-                status="Humidor route connected"
+                status="Humidor is ready"
               />
             </SubPageProviders>
           </Route>
           <Route path="/lounge">
             <SubPageProviders>
               <CraftModulePlaceholder
-                eyebrow="Atmosphere Control"
+                eyebrow="Lounge"
                 title="Lounge"
-                description="Lounge control is routed for ambiance, table state, service pacing, and environmental storytelling."
+                description="See the room at a glance."
                 image="/images/lounge-bg.jpg"
-                status="Lounge route connected"
+                status="Lounge is ready"
               />
             </SubPageProviders>
           </Route>
           <Route path="/concierge">
             <SubPageProviders>
               <CraftModulePlaceholder
-                eyebrow="Hospitality Intelligence"
+                eyebrow="Concierge"
                 title="Concierge"
-                description="Concierge mode is routed for guest requests, curated recommendations, staff handoff, and VIP service memory."
+                description="Help guests faster with simple service tools."
                 image="/images/scenes/craft-hub.jpg"
-                status="Concierge route connected"
+                status="Concierge is ready"
               />
             </SubPageProviders>
           </Route>
           <Route path="/history">
             <SubPageProviders>
               <CraftModulePlaceholder
-                eyebrow="Guest Memory"
+                eyebrow="History"
                 title="History"
-                description="History is routed for past sessions, flavor evolution, rewards movement, and venue-level journey recall."
+                description="Review past sessions and guest preferences."
                 image="/images/leaderboard_bg.png"
-                status="History route connected"
+                status="History is ready"
               />
             </SubPageProviders>
           </Route>
@@ -1400,9 +1400,9 @@ export default function App() {
               <CraftModulePlaceholder
                 eyebrow="Service Signal"
                 title="Summon Staff"
-                description="Staff summon is routed for live service requests, station context, and POS floor notifications."
+                description="Send a clean staff request from the screen."
                 image="/images/lounge_bg.jpg"
-                status="Staff signal route connected"
+                status="Staff request is ready"
               />
             </SubPageProviders>
           </Route>

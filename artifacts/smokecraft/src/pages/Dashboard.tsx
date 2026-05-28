@@ -69,7 +69,7 @@ const SOVEREIGN_FEATURES: {
   {
     path:        "/designer",
     name:        "Experience Designer",
-    description: "Build cinematic guest journeys and custom swipe experiences.",
+    description: "Build clear guest profiles and custom swipe experiences.",
     icon:        <Sparkles size={18} />,
   },
   {

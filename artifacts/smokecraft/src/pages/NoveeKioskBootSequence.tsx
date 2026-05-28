@@ -682,7 +682,7 @@ function Stage5({ onDismiss }: { onDismiss: () => void }) {
       rows: [
         { label: "Avg Guest Spend",    value: `$${spend}`, status: "TONIGHT" },
         { label: "Spend Tier",         value: "Sovereign", status: "2×" },
-        { label: "POS Status",         value: "Authenticated", status: "LIVE" },
+        { label: "POS Status",         value: "POS Connected", status: "LIVE" },
         { label: "Multiplier Active",  value: "Revenue ×2", status: "ON" },
       ],
     },

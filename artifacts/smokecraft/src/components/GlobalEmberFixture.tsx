@@ -5,7 +5,7 @@
  * guest stage. Pulses on a 4–6 s breathing cycle. Emits short-lived micro-
  * spark particles upward. Communicates private-lounge atmosphere.
  *
- * Mounted in SubPageProviders — never unmounted during the guest journey.
+ * Mounted in SubPageProviders — never unmounted during the guest flow.
  */
 
 import { motion } from "framer-motion";

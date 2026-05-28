@@ -1,7 +1,7 @@
 /**
- * ExperienceFlowOrchestrator — Guest journey progression and flow orchestration.
+ * ExperienceFlowOrchestrator — guest flow progression.
  *
- * Manages the full guest journey lifecycle:
+ * Manages the full guest flow:
  *   enrollment → mentor reveal → craft selection → swipe experience
  *   → recommendation reveal → order → receipt
  *
@@ -12,9 +12,8 @@
  *   - Mood discovery flow timing
  *   - Recap and session wrap transitions
  *
- * Produces flow events that UI components subscribe to for pacing
- * their content presentation. Nothing renders here — this is pure
- * orchestration logic.
+ * Produces flow events that UI components subscribe to for pacing.
+ * Nothing renders here.
  *
  * Usage:
  *   ExperienceFlowOrchestrator.start();

@@ -2,10 +2,10 @@ import { useState } from 'react';
 
 const sidebarItems = ['Cellar', 'Humidor', 'Lounge', 'Concierge', 'History', 'Settings'] as const;
 const cards = [
-  { title: 'SmokeCraft 360', subtitle: 'The alchemy of tobacco.', image: '/images/scenes/smokecraft-card.jpg', route: '/home' },
-  { title: 'WineCraft', subtitle: "Unveil the cellar's deepest secrets.", image: '/images/scenes/pourcraft-card.jpg', route: '/winecraft' },
-  { title: 'PourCraft', subtitle: 'Master the spirit.', image: '/images/pour-1.jpg', route: '/pourcraft' },
-  { title: 'BeerCraft', subtitle: "The grain's true expression.", image: '/images/scenes/brewcraft-card.jpg', route: '/brewcraft' },
+  { title: 'SmokeCraft 360', subtitle: 'Build the profile. Match the pour. Guide the moment.', image: '/images/scenes/smokecraft-card.jpg', route: '/smokecraft' },
+  { title: 'WineCraft 360', subtitle: 'Taste, pair, and recommend with confidence.', image: '/images/scenes/craft-hub.jpg', route: '/winecraft' },
+  { title: 'PourCraft 360', subtitle: 'Guide cocktails, bourbon, whiskey, and premium pours.', image: '/images/pour-1.jpg', route: '/pourcraft' },
+  { title: 'BeerCraft 360', subtitle: 'Match flavor, mood, and menu with the right beer.', image: '/images/scenes/brewcraft-card.jpg', route: '/beercraft' },
 ] as const;
 
 export default function CraftHubPortal() {
@@ -27,8 +27,8 @@ export default function CraftHubPortal() {
         </aside>
 
         <main className="flex-1 p-8">
-          <h1 className="text-5xl font-serif mb-2">CraftHub Portal</h1>
-          <p className="text-[#d4c3b7] mb-8">Welcome to the inner sanctum. Orchestrate your journey through fire, oak, and grain.</p>
+          <h1 className="text-5xl font-serif mb-2">Welcome to Craft Hub</h1>
+          <p className="text-[#d4c3b7] mb-8">Craft the experience. Guide the moment. Elevate the room.</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {cards.map(card => (

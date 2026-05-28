@@ -1451,7 +1451,7 @@ function EATTelemetryBar() {
     { label: "Humidity",        value: `${humidity}%`,    color: humidity > 76 ? "#F07070" : "#32B45A" },
     { label: "Humidor Count",   value: `${count} Puros`,  color: GOLD },
     { label: "Lounge Mode",     value: "Active",          color: "#32B45A" },
-    { label: "POS Transaction", value: "Authenticated",   color: GOLD },
+    { label: "POS Transaction", value: "POS Connected",   color: GOLD },
   ];
 
   return (

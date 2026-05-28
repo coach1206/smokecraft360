@@ -5,7 +5,7 @@
  * Transactions) management command deck.
  *
  * Responsibilities:
- *   • Guest session snapshot persistence — saves the active guest journey
+ *   • Guest session snapshot persistence — saves the active guest flow
  *     path to sessionStorage before staff enters EAT mode, enabling a clean
  *     "Resume Guest Journey" handoff when staff exits.
  *   • EAT mode trigger — dispatches the "eat:enter" CustomEvent that the
@@ -20,18 +20,18 @@ const EAT_RESUME_KEY = "eat_guest_resume";
 
 export interface PosIntegrationHandle {
   /**
-   * Snapshot the current guest journey path so staff can return to it later.
+   * Snapshot the current guest path so staff can return to it later.
    * @param path  The URL pathname to persist (e.g. "/craft-hub" or "/experience/smoke").
    */
   saveGuestSnapshot: (path: string) => void;
 
   /**
-   * Read the cached guest journey path. Returns null if none is stored.
+   * Read the cached guest path. Returns null if none is stored.
    */
   getGuestResumePath: () => string | null;
 
   /**
-   * Clear the cached guest journey snapshot (call after resuming).
+   * Clear the cached guest snapshot (call after resuming).
    */
   clearGuestSnapshot: () => void;
 

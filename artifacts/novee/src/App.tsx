@@ -1337,7 +1337,7 @@ const BASE_TELEMETRY = [
   { label: "Humidity",        value: "72%",           color: "#32B45A" },
   { label: "Humidor Count",   value: "145 Puros",     color: GOLD      },
   { label: "Lounge Mode",     value: "Active",        color: "#32B45A" },
-  { label: "POS Transaction", value: "Authenticated", color: GOLD      },
+  { label: "POS Transaction", value: "POS Connected", color: GOLD      },
 ];
 
 function EATTelemetryBar() {
@@ -1364,7 +1364,7 @@ function EATTelemetryBar() {
     { label: "Humidity",        value: `${humidity}%`,    color: humidity > 76 ? "#F07070" : "#32B45A" },
     { label: "Humidor Count",   value: `${count} Puros`,  color: GOLD },
     { label: "Lounge Mode",     value: "Active",          color: "#32B45A" },
-    { label: `${formatProviderLabel(POS_TERMINAL_CONFIG.preferredProvider)} POS`, value: "Authenticated",   color: GOLD },
+    { label: `${formatProviderLabel(POS_TERMINAL_CONFIG.preferredProvider)} POS`, value: "POS Connected",   color: GOLD },
   ];
 
   return (
@@ -1709,8 +1709,8 @@ function CraftHubWrapper() {
         <Route path="/winecraft">
           <CraftModulePlaceholder
             title="WineCraft 360"
-            eyebrow="Cellar Curation"
-            description="Sommelier-led discovery for bottles, pairings, reserve notes, and service moments."
+            eyebrow="Cellar Experience"
+            description="Build the taste profile. Match the bottle. Guide the pour."
             image="/images/craft/wine-1.png"
           />
         </Route>
@@ -1718,15 +1718,15 @@ function CraftHubWrapper() {
           <CraftModulePlaceholder
             title="PourCraft 360"
             eyebrow="Spirits Room"
-            description="Whiskey, cocktail, and premium pour intelligence for staff and guest journeys."
+            description="Choose the spirit. Shape the mood. Serve the moment."
             image="/images/scenes/pourcraft-card.jpg"
           />
         </Route>
         <Route path="/beercraft">
           <CraftModulePlaceholder
             title="BeerCraft 360"
-            eyebrow="Taproom Intelligence"
-            description="Craft beer discovery, flight building, inventory signal, and hospitality pacing."
+            eyebrow="Taproom Experience"
+            description="Find the flavor. Match the glass. Keep the room flowing."
             image="/images/scenes/brewcraft-card.jpg"
           />
         </Route>
