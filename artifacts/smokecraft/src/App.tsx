@@ -44,6 +44,7 @@ import { AshParticles }              from '@/components/AshParticles';
 import { RevenueOptimizationOverlay } from '@/components/RevenueOptimizationOverlay';
 import { PosXPFeedback }             from '@/components/PosXPFeedback';
 import { startHeartbeat, getOrCreateDeviceId } from '@/lib/deviceTelemetry';
+import { ExperienceFlowEngine } from '@/lib/experienceFlowEngine';
 import { DevModeOverlay } from '@/components/DevModeOverlay';
 
 /* ── Lazy-loaded overlays (removed from critical path) ────── */
@@ -1297,15 +1298,7 @@ export default function App() {
             </Suspense>
           </Route>
           <Route path="/smokecraft">
-            <SubPageProviders>
-              <CraftModulePlaceholder
-                eyebrow="Cigar Ritual"
-                title="SmokeCraft 360"
-                description="Build the profile. Match the pour. Guide the moment."
-                image="/images/scenes/smokecraft-card.jpg"
-                status="SmokeCraft 360 is ready"
-              />
-            </SubPageProviders>
+            <SmokeCraftStartRedirect />
           </Route>
           <Route path="/winecraft">
             <SubPageProviders>
@@ -1685,6 +1678,17 @@ function RootRedirect() {
     return <SplashController onFinish={() => setSplashDone(true)} />;
   }
   return null;
+}
+
+function SmokeCraftStartRedirect() {
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    const route = ExperienceFlowEngine.startCraft('smoke');
+    navigate(route, { replace: true });
+  }, [navigate]);
+
+  return <PageLoader />;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
