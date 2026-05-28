@@ -1357,7 +1357,7 @@ export default function ExperiencePage() {
   }
 
   async function handleFinish() {
-    if (!sessionId) { navigate("/"); return; }
+    if (!sessionId) { navigate("/craft-hub"); return; }
     apiPost(`/api/swipe-experience/session/${sessionId}/complete`, {}).catch(() => {});
     // Mark ritual as complete — unlocks Signature Studio eligibility gate
     try { sessionStorage.setItem("titan_ritual_complete", "true"); } catch { /* ignore */ }
@@ -1444,7 +1444,7 @@ export default function ExperiencePage() {
           ExperienceFlowEngine.goTo("CHALLENGE_SELECTION");
           setInitiationActive(true);
         }}
-        onBack={() => navigate("/")}
+        onBack={() => navigate("/craft-hub")}
       />
     )}
 
@@ -1505,7 +1505,7 @@ export default function ExperiencePage() {
         flexShrink: 0,
       }}>
         <motion.button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/craft-hub")}
           whileTap={{ scale: 0.93 }}
           style={{
             display: "flex", alignItems: "center", gap: 6,
@@ -1516,7 +1516,7 @@ export default function ExperiencePage() {
             fontSize: 13, cursor: "pointer",
           }}
         >
-          <ArrowLeft size={14} /> Return
+          <ArrowLeft size={14} /> Return to Craft Hub
         </motion.button>
 
         <div style={{ textAlign: "center" }}>

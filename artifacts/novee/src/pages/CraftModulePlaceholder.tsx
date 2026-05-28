@@ -37,7 +37,7 @@ export default function CraftModulePlaceholder({
   eyebrow,
   description,
   image = "/images/scenes/craft-hub.jpg",
-  status = "Ready",
+  status = "Being prepared",
 }: CraftModulePlaceholderProps) {
   const [, navigate] = useLocation();
   const [touchPulse, setTouchPulse] = useState<TouchPulse | null>(null);
@@ -86,7 +86,7 @@ export default function CraftModulePlaceholder({
           <ShieldCheck size={22} />
           <div>
             <strong>{status}</strong>
-            <span>This screen is connected and ready for live service tools.</span>
+            <span>This experience is being prepared for live service tools.</span>
           </div>
         </div>
       </section>

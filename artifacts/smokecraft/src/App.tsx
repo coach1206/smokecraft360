@@ -1298,7 +1298,7 @@ export default function App() {
             </Suspense>
           </Route>
           <Route path="/smokecraft">
-            <SmokeCraftStartRedirect />
+            <SmokeCraftExperienceRoute />
           </Route>
           <Route path="/winecraft">
             <SubPageProviders>
@@ -1307,7 +1307,7 @@ export default function App() {
                 title="WineCraft 360"
                 description="Build the taste profile. Match the bottle. Guide the pour."
                 image="/images/craft/wine-1.png"
-                status="WineCraft 360 is ready"
+                status="WineCraft 360 is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1318,7 +1318,7 @@ export default function App() {
                 title="PourCraft 360"
                 description="Choose the spirit. Shape the mood. Serve the moment."
                 image="/images/scenes/pourcraft-card.jpg"
-                status="PourCraft 360 is ready"
+                status="PourCraft 360 is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1329,7 +1329,7 @@ export default function App() {
                 title="BeerCraft 360"
                 description="Find the flavor. Match the glass. Keep the room flowing."
                 image="/images/scenes/brewcraft-card.jpg"
-                status="BeerCraft 360 is ready"
+                status="BeerCraft 360 is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1340,7 +1340,7 @@ export default function App() {
                 title="Cellar"
                 description="Browse bottles, pairings, and service notes."
                 image="/images/craft/wine-2.png"
-                status="Cellar is ready"
+                status="Cellar is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1351,7 +1351,7 @@ export default function App() {
                 title="Humidor"
                 description="Track cigars, profiles, and lounge favorites."
                 image="/images/smoke-home-1.jpg"
-                status="Humidor is ready"
+                status="Humidor is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1362,7 +1362,7 @@ export default function App() {
                 title="Lounge"
                 description="See the room at a glance."
                 image="/images/lounge-bg.jpg"
-                status="Lounge is ready"
+                status="Lounge is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1373,7 +1373,7 @@ export default function App() {
                 title="Concierge"
                 description="Help guests faster with simple service tools."
                 image="/images/scenes/craft-hub.jpg"
-                status="Concierge is ready"
+                status="Concierge is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1384,7 +1384,7 @@ export default function App() {
                 title="History"
                 description="Review past sessions and guest preferences."
                 image="/images/leaderboard_bg.png"
-                status="History is ready"
+                status="History is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1395,7 +1395,7 @@ export default function App() {
                 title="Summon Staff"
                 description="Send a clean staff request from the screen."
                 image="/images/lounge_bg.jpg"
-                status="Staff request is ready"
+                status="Staff request is being prepared"
               />
             </SubPageProviders>
           </Route>
@@ -1680,15 +1680,12 @@ function RootRedirect() {
   return null;
 }
 
-function SmokeCraftStartRedirect() {
-  const [, navigate] = useLocation();
-
+function SmokeCraftExperienceRoute() {
   useEffect(() => {
-    const route = ExperienceFlowEngine.startCraft('smoke');
-    navigate(route, { replace: true });
-  }, [navigate]);
+    ExperienceFlowEngine.startCraft('smoke');
+  }, []);
 
-  return <PageLoader />;
+  return <SubPageProviders><ExperiencePage /></SubPageProviders>;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
