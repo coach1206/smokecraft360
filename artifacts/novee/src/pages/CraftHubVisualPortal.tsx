@@ -1,3 +1,4 @@
+import type { PointerEvent } from "react";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -28,6 +29,12 @@ type PortalItem = {
   status: string;
   accent: string;
   description: string;
+};
+
+type TouchPulse = {
+  id: number;
+  x: number;
+  y: number;
 };
 
 const craftCards: PortalItem[] = [
@@ -83,9 +90,16 @@ const sideItems = [
   { label: "Settings", route: "/settings", icon: Settings },
 ];
 
-function tapFeedback() {
-  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-    navigator.vibrate(16);
+let lastHapticAt = 0;
+
+function tapFeedback(pattern: number | number[] = 18) {
+  const now = Date.now();
+  if (now - lastHapticAt < 90) return;
+  lastHapticAt = now;
+  try {
+    navigator.vibrate?.(pattern);
+  } catch {
+    // Haptics are best-effort; iPadOS/Safari may ignore vibration.
   }
 }
 
@@ -96,6 +110,7 @@ export default function CraftHubVisualPortal() {
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [staffOpen, setStaffOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [touchPulse, setTouchPulse] = useState<TouchPulse | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -172,8 +187,15 @@ export default function CraftHubVisualPortal() {
     navigate(route);
   };
 
+  const handleTouchPress = (event: PointerEvent<HTMLElement>) => {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest("button, a, input, [role='button']")) return;
+    tapFeedback();
+    setTouchPulse({ id: Date.now(), x: event.clientX, y: event.clientY });
+  };
+
   return (
-    <main className="chvp-shell">
+    <main className="chvp-shell" onPointerDownCapture={handleTouchPress}>
       {/* Backup reference only: public/stitch-export.html should remain untouched when present. */}
       <canvas ref={canvasRef} id="chvp-smoke-canvas" aria-hidden="true" />
       <div className="chvp-gold-glow" aria-hidden="true" />
@@ -181,6 +203,20 @@ export default function CraftHubVisualPortal() {
       <div className="chvp-smoke chvp-smoke-a" />
       <div className="chvp-smoke chvp-smoke-b" />
       <div className="chvp-embers" />
+      <AnimatePresence>
+        {touchPulse && (
+          <motion.span
+            key={touchPulse.id}
+            className="chvp-touch-ripple"
+            style={{ left: touchPulse.x, top: touchPulse.y }}
+            initial={{ opacity: 0.42, scale: 0.18 }}
+            animate={{ opacity: 0, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.48, ease: "easeOut" }}
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
 
       <aside className="chvp-sidebar" aria-label="Craft Hub navigation">
         <button className="chvp-brand" onClick={() => go("/craft-hub")} aria-label="Craft Hub home">

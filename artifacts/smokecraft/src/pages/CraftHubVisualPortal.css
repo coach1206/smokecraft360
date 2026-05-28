@@ -88,6 +88,7 @@
 .chvp-nav button,
 .chvp-staff,
 .chvp-icon-btn,
+.chvp-craft-card,
 .chvp-intel-row button,
 .chvp-module-actions button,
 .chvp-modal button {
@@ -96,7 +97,35 @@
   background: rgba(13, 10, 6, 0.72);
   cursor: pointer;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
   transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.chvp-brand:active,
+.chvp-nav button:active,
+.chvp-staff:active,
+.chvp-icon-btn:active,
+.chvp-craft-card:active,
+.chvp-intel-row button:active,
+.chvp-module-actions button:active,
+.chvp-modal button:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: 0 0 34px rgba(242, 199, 85, 0.24), inset 0 0 20px rgba(242, 199, 85, 0.08);
+}
+
+.chvp-touch-ripple {
+  position: fixed;
+  z-index: 50;
+  width: 96px;
+  height: 96px;
+  margin: -48px 0 0 -48px;
+  pointer-events: none;
+  border: 1px solid rgba(242, 199, 85, 0.5);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 199, 85, 0.26), rgba(242, 199, 85, 0.08) 42%, transparent 68%);
+  box-shadow: 0 0 34px rgba(242, 199, 85, 0.24);
+  mix-blend-mode: screen;
 }
 
 .chvp-brand {
@@ -153,7 +182,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 56px;
+  min-height: 60px;
   padding: 0 16px;
   border-radius: 16px;
   font-size: 15px;
@@ -246,8 +275,8 @@
 .chvp-icon-btn {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
+  width: 60px;
+  height: 60px;
   border-radius: 16px;
 }
 
@@ -255,7 +284,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 56px;
+  min-height: 60px;
   padding: 0 18px;
   border: 1px solid rgba(216, 168, 45, 0.26);
   border-radius: 18px;
@@ -337,6 +366,9 @@
   text-align: left;
   background: #0a0704;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 60px rgba(0, 0, 0, 0.32);
+  cursor: pointer;
+  transform-origin: center;
+  will-change: transform;
 }
 
 .chvp-craft-card img {
