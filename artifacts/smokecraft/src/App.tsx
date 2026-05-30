@@ -1651,9 +1651,9 @@ export default function App() {
           <Route path="/home">
             <SubPageProviders><Home /></SubPageProviders>
           </Route>
-          {/* ── Root: redirect straight to CraftHub ── */}
+          {/* ── Root: SmokeCraft Stitch ritual entry ── */}
           <Route path="/">
-            <RootRedirect />
+            <SmokeCraftExperienceRoute />
           </Route>
 
           {/* ── Default: Sovereign Gate — all entry flows begin here ── */}
@@ -1674,7 +1674,7 @@ function RootRedirect() {
   const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
-    if (splashDone) navigate('/craft-hub');
+    if (splashDone) navigate('/experience/smoke');
   }, [splashDone, navigate]);
 
   if (!splashDone) {
@@ -1687,6 +1687,7 @@ function SmokeCraftExperienceRoute() {
   try {
     sessionStorage.setItem("novee_initial_phase", "s1_demo");
     sessionStorage.setItem("novee_launch_phase", "s1_demo");
+    sessionStorage.removeItem("novee_golden_box_seen");
   } catch {
     // Kiosk storage can be unavailable; NOVEE shell still boots normally.
   }
