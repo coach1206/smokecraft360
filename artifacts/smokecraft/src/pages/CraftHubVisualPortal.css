@@ -567,6 +567,92 @@
   display: block;
 }
 
+.chvp-module-live-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.chvp-module-live-card {
+  min-height: 184px;
+  padding: 16px;
+  border: 1px solid rgba(216, 168, 45, 0.2);
+  border-radius: 8px;
+  background: rgba(12, 9, 5, 0.64);
+  box-shadow: inset 0 1px 0 rgba(247, 237, 215, 0.05);
+}
+
+.chvp-module-live-card svg {
+  color: #f2c755;
+  margin-bottom: 14px;
+}
+
+.chvp-module-live-card span,
+.chvp-module-signal-strip span {
+  display: block;
+  color: rgba(247, 237, 215, 0.52);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.chvp-module-live-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #f7edd7;
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.chvp-module-live-card p {
+  margin: 10px 0 0;
+  color: rgba(247, 237, 215, 0.68);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.chvp-module-signal-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(216, 168, 45, 0.18);
+  border-radius: 8px;
+  background: rgba(216, 168, 45, 0.06);
+}
+
+.chvp-module-signal-strip svg {
+  color: #f2c755;
+}
+
+.chvp-module-signal-strip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-left: 1px solid rgba(216, 168, 45, 0.22);
+}
+
+.chvp-module-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  margin-top: 16px;
+  padding: 0 18px;
+  border: 1px solid rgba(242, 199, 85, 0.42);
+  border-radius: 8px;
+  color: #0d0a06;
+  background: linear-gradient(180deg, #f2c755, #c69222);
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
 @keyframes chvp-drift {
   from { transform: translate3d(-4%, 2%, 0) scale(1); }
   to { transform: translate3d(5%, -3%, 0) scale(1.08); }
@@ -652,6 +738,14 @@
   .chvp-card-grid,
   .chvp-intel-row {
     grid-template-columns: 1fr;
+  }
+
+  .chvp-module-live-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chvp-module-live-card {
+    min-height: auto;
   }
 
   .chvp-craft-card {
