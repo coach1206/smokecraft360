@@ -44,7 +44,6 @@ import { AshParticles }              from '@/components/AshParticles';
 import { RevenueOptimizationOverlay } from '@/components/RevenueOptimizationOverlay';
 import { PosXPFeedback }             from '@/components/PosXPFeedback';
 import { startHeartbeat, getOrCreateDeviceId } from '@/lib/deviceTelemetry';
-import { ExperienceFlowEngine } from '@/lib/experienceFlowEngine';
 import { DevModeOverlay } from '@/components/DevModeOverlay';
 
 /* ── Lazy-loaded overlays (removed from critical path) ────── */
@@ -1682,10 +1681,15 @@ function RootRedirect() {
 
 function SmokeCraftExperienceRoute() {
   useEffect(() => {
-    ExperienceFlowEngine.startCraft('smoke');
+    try {
+      sessionStorage.setItem("novee_initial_phase", "s1_demo");
+      sessionStorage.setItem("novee_launch_phase", "s1_demo");
+    } catch {
+      // Kiosk storage can be unavailable; NOVEE shell still boots normally.
+    }
   }, []);
 
-  return <SubPageProviders><ExperiencePage /></SubPageProviders>;
+  return <NoveeOsShell />;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
