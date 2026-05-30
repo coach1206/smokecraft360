@@ -309,6 +309,88 @@ function StitchRitualFrame({
   );
 }
 
+function StitchProfileFrame({
+  image,
+  firstName,
+  lastName,
+  phone4,
+  age,
+  flavorNotes,
+  expLevel,
+  setFirstName,
+  setLastName,
+  setPhone4,
+  setAge,
+  setFlavorNotes,
+  setExpLevel,
+  onBack,
+  onContinue,
+}: {
+  image: string;
+  firstName: string;
+  lastName: string;
+  phone4: string;
+  age: string;
+  flavorNotes: string;
+  expLevel: string;
+  setFirstName: (value: string) => void;
+  setLastName: (value: string) => void;
+  setPhone4: (value: string) => void;
+  setAge: (value: string) => void;
+  setFlavorNotes: (value: string) => void;
+  setExpLevel: (value: string) => void;
+  onBack: () => void;
+  onContinue: () => void;
+}) {
+  const fieldStyle: CSSProperties = {
+    position: "absolute",
+    background: "transparent",
+    border: 0,
+    outline: "none",
+    color: "#f4ead7",
+    fontSize: 18,
+    fontFamily: "'Inter', sans-serif",
+    zIndex: 4,
+  };
+  const selectStyle: CSSProperties = {
+    ...fieldStyle,
+    color: "#f4ead7",
+    appearance: "none",
+    cursor: "pointer",
+  };
+
+  return (
+    <motion.div
+      key="demo-stitch"
+      variants={PV}
+      initial="enter"
+      animate="active"
+      exit="exit"
+      transition={PT}
+      style={{ position: "absolute", inset: "41px 0 0 0", overflow: "hidden", background: "#020202" }}
+    >
+      <img src={image} alt="SmokeCraft 360 guest profile registration" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+      <button type="button" aria-label="Back" onPointerDown={onBack} style={{ position: "absolute", left: "1.6%", top: "8.2%", width: "9.2%", height: "6.2%", zIndex: 5, border: 0, background: "transparent", cursor: "pointer" }} />
+      <input aria-label="First name" value={firstName} onChange={e => setFirstName(e.target.value)} style={{ ...fieldStyle, left: "41.5%", top: "26.1%", width: "17%", height: "3.5%" }} />
+      <input aria-label="Last name" value={lastName} onChange={e => setLastName(e.target.value)} style={{ ...fieldStyle, left: "64%", top: "26.1%", width: "18%", height: "3.5%" }} />
+      <input aria-label="Last 4 digits phone" inputMode="numeric" maxLength={4} value={phone4} onChange={e => setPhone4(e.target.value.replace(/\D/g, "").slice(0, 4))} style={{ ...fieldStyle, left: "41.5%", top: "35.9%", width: "17%", height: "3.5%", letterSpacing: "0.14em" }} />
+      <select aria-label="Age" value={age} onChange={e => setAge(e.target.value)} style={{ ...selectStyle, left: "64%", top: "35.9%", width: "18%", height: "3.8%" }}>
+        <option value="">Select your age</option>
+        {Array.from({ length: 63 }, (_, i) => i + 18).map(a => <option key={a} value={String(a)}>{a}</option>)}
+      </select>
+      <select aria-label="Preferred flavor notes" value={flavorNotes} onChange={e => setFlavorNotes(e.target.value)} style={{ ...selectStyle, left: "41.5%", top: "51.6%", width: "19%", height: "3.8%" }}>
+        <option value="">Select your notes</option>
+        {["Earth & Cedar", "Pepper & Spice", "Cream & Nuts", "Dark Chocolate", "Coffee & Mocha", "Leather & Oak", "Sweet & Floral", "Mineral & Grass"].map(n => <option key={n} value={n}>{n}</option>)}
+      </select>
+      <select aria-label="Experience level" value={expLevel} onChange={e => setExpLevel(e.target.value)} style={{ ...selectStyle, left: "64%", top: "51.6%", width: "18%", height: "3.8%" }}>
+        <option value="">Select your level</option>
+        {["First time smoker", "Casual enthusiast", "Regular aficionado", "Seasoned connoisseur", "Master blender"].map(l => <option key={l} value={l}>{l}</option>)}
+      </select>
+      <button type="button" aria-label="Continue" onPointerDown={onContinue} style={{ position: "absolute", left: "36.7%", top: "59%", width: "48.2%", height: "7%", zIndex: 5, border: 0, background: "transparent", cursor: "pointer" }} />
+    </motion.div>
+  );
+}
+
 type Step = "demo" | "rules" | "country_select" | "mentor" | "soil_calibration" | "pilon_game" | "quiz" | "posgate" | "leaderboard" | "seed_canvas";
 
 export function S1_InitGate() {
@@ -346,8 +428,12 @@ export function S1_InitGate() {
   const canSubmit = !!canSubmitProfile;
 
   function submitDemo() {
-    if (!canSubmitProfile) return;
-    updateProfile({ firstName: firstName.trim(), lastName: lastName.trim(), phone4: phone4.trim().slice(-4), age: parseInt(age) });
+    updateProfile({
+      firstName: firstName.trim() || "Guest",
+      lastName: lastName.trim() || "Profile",
+      phone4: (phone4.trim() || "0000").slice(-4),
+      age: parseInt(age || "40"),
+    });
     addPoints(10);
     go("rules");
   }
@@ -448,6 +534,27 @@ export function S1_InitGate() {
 
         {/* ══════════════ DEMO — YOUR PROFILE ══════════════ */}
         {step === "demo" && (
+          <StitchProfileFrame
+            image={IMG("stitch-your-profile.png")}
+            firstName={firstName}
+            lastName={lastName}
+            phone4={phone4}
+            age={age}
+            flavorNotes={flavorNotes}
+            expLevel={expLevel}
+            setFirstName={setFirstName}
+            setLastName={setLastName}
+            setPhone4={setPhone4}
+            setAge={setAge}
+            setFlavorNotes={setFlavorNotes}
+            setExpLevel={setExpLevel}
+            onBack={() => setPhase("crafthub")}
+            onContinue={submitDemo}
+          />
+        )}
+
+        {/* ══════════════ LEGACY DEMO — kept out of runtime ══════════════ */}
+        {false && step === "demo" && (
           <motion.div key="demo" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
             style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", overflow: "hidden" }}>
 
