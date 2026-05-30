@@ -212,9 +212,54 @@ function StitchAtmosphere({ accent = GOLD, compact = false }: { accent?: string;
   );
 }
 
+function StitchPhotoLayer({
+  src,
+  alt,
+  opacity = 0.86,
+  position = "center",
+}: {
+  src: string;
+  alt: string;
+  opacity?: number;
+  position?: string;
+}) {
+  return (
+    <>
+      <img
+        src={src}
+        alt={alt}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: position,
+          opacity,
+          filter: "brightness(0.86) saturate(1.08) contrast(1.06)",
+          transform: "scale(1.025)",
+        }}
+      />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: "linear-gradient(135deg, rgba(0,0,0,0.38) 0%, rgba(5,3,0,0.12) 42%, rgba(0,0,0,0.56) 100%)",
+      }} />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: `radial-gradient(circle at 50% 28%, ${GOLD}18, transparent 36%), radial-gradient(ellipse at 50% 90%, rgba(212,139,0,0.20), transparent 48%)`,
+        mixBlendMode: "screen",
+        opacity: 0.85,
+      }} />
+    </>
+  );
+}
+
 function GoldenBoxArtwork() {
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#020202" }}>
+      <StitchPhotoLayer src={IMG("golden_box.png")} alt="The Golden Box reward case" opacity={0.78} position="center" />
       <StitchAtmosphere compact />
       <div style={{ position: "absolute", inset: "16% 12%", border: "1px solid rgba(212,175,55,0.30)", boxShadow: `0 0 44px ${GOLD}18, inset 0 0 30px rgba(212,175,55,0.08)` }} />
       <div style={{ position: "absolute", left: "22%", right: "22%", top: "31%", height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}88, transparent)` }} />
@@ -230,10 +275,18 @@ function GoldenBoxArtwork() {
 }
 
 function LeafStudyArtwork({ label }: { label: string }) {
+  const lower = label.toLowerCase();
+  const src = lower.includes("connecticut")
+    ? IMG("tobacco_connecticut.jpg")
+    : lower.includes("corojo")
+      ? IMG("tobacco_corojo.jpg")
+      : IMG("tobacco_criollo.jpg");
+
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#030201" }}>
+      <StitchPhotoLayer src={src} alt={`${label} tobacco leaf`} opacity={0.84} position="center" />
       <StitchAtmosphere compact />
-      <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
+      <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", opacity: 0.42 }}>
         <svg width="260" height="260" viewBox="0 0 220 260" aria-hidden="true">
           <defs>
             <linearGradient id={`leafStudy${label.length}`} x1="0" x2="1" y1="0" y2="1">
@@ -261,6 +314,7 @@ function LeafStudyArtwork({ label }: { label: string }) {
 function LeftPanel({ eyebrow, headline, sub, accent = GOLD }: { eyebrow: string; headline: string; sub?: string; accent?: string }) {
   return (
     <div style={{ position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      <StitchPhotoLayer src={IMG("scenes/smokecraft-card.jpg")} alt="Cinematic cigar lounge" opacity={0.72} position="center" />
       <StitchAtmosphere accent={accent} />
       {/* Dark cinematic overlay */}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(170deg, rgba(6,4,1,0.80) 0%, rgba(4,2,0,0.60) 35%, rgba(8,5,2,0.92) 100%)" }} />
@@ -361,6 +415,7 @@ function SmokeCraftIntro({ onEnter }: { onEnter: () => void }) {
         textAlign: "center",
       }}
     >
+      <StitchPhotoLayer src={IMG("scenes/smokecraft-card.jpg")} alt="Private cigar lounge arrival scene" opacity={0.58} position="center" />
       <div style={{
         position: "absolute",
         inset: 0,
@@ -658,8 +713,8 @@ export function S1_InitGate() {
 
             {/* ── LEFT PANEL: Stitch-style ritual art ── */}
             <div style={{ width: "38%", flexShrink: 0, position: "relative", overflow: "hidden" }}>
-              <StitchAtmosphere />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(5,3,0,0.60) 60%, rgba(0,0,0,0.78) 100%)" }} />
+              <StitchPhotoLayer src={IMG("scenes/smokecraft-card.jpg")} alt="Private cigar lounge profile scene" opacity={0.92} position="center" />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(0,0,0,0.30) 0%, rgba(5,3,0,0.10) 58%, rgba(0,0,0,0.38) 100%)" }} />
 
               {/* Back button */}
               <div style={{ position: "absolute", top: 24, left: 24 }}>
@@ -837,17 +892,19 @@ export function S1_InitGate() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10 }}>
                   {[
-                    { num: "1", icon: <><path d="M11 20A7 7 0 0 1 4 13C4 9 9 4 12 2c3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 2c0 6-4 10-4 10"/></>, label: "DISCOVER",    desc: "Explore premium flavor, body, aroma, and structure" },
-                    { num: "2", icon: <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,            label: "ANALYZE",     desc: "Understand flavor transitions, depth, and blend notes" },
-                    { num: "3", icon: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,              label: "CRAFT",       desc: "Build your blend profile through guided selections" },
-                    { num: "4", icon: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></>,                          label: "EXPERIENCE",  desc: "Score your blends and refine your last palate" },
+                    { num: "1", img: IMG("scenes/smokecraft-card.jpg"), icon: <><path d="M11 20A7 7 0 0 1 4 13C4 9 9 4 12 2c3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 2c0 6-4 10-4 10"/></>, label: "DISCOVER",    desc: "Explore premium flavor, body, aroma, and structure" },
+                    { num: "2", img: IMG("tobacco_criollo.jpg"), icon: <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,            label: "ANALYZE",     desc: "Understand flavor transitions, depth, and blend notes" },
+                    { num: "3", img: IMG("craft/smoke-1.png"), icon: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,              label: "CRAFT",       desc: "Build your blend profile through guided selections" },
+                    { num: "4", img: IMG("golden_box.png"), icon: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></>,                          label: "EXPERIENCE",  desc: "Score your blends and refine your last palate" },
                   ].map(s => (
-                    <div key={s.label} style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(212,175,55,0.10)", borderRadius: 10, padding: "16px 12px", textAlign: "center" }}>
-                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.22)", margin: "0 auto 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div key={s.label} style={{ position: "relative", minHeight: 150, overflow: "hidden", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(212,175,55,0.10)", borderRadius: 10, padding: "70px 12px 16px", textAlign: "center" }}>
+                      <img src={s.img} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: 70, objectFit: "cover", filter: "brightness(0.62) saturate(1.04)" }} />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.08), rgba(5,3,0,0.86) 54%)" }} />
+                      <div style={{ position: "relative", width: 36, height: 36, borderRadius: "50%", background: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.22)", margin: "0 auto 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{s.icon}</svg>
                       </div>
-                      <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.24em", color: GOLD, textTransform: "uppercase", marginBottom: 6 }}>{s.num} {s.label}</div>
-                      <div style={{ fontSize: 11, color: "rgba(240,232,212,0.40)", lineHeight: 1.5 }}>{s.desc}</div>
+                      <div style={{ position: "relative", fontSize: 9, fontWeight: 800, letterSpacing: "0.24em", color: GOLD, textTransform: "uppercase", marginBottom: 6 }}>{s.num} {s.label}</div>
+                      <div style={{ position: "relative", fontSize: 11, color: "rgba(240,232,212,0.48)", lineHeight: 1.5 }}>{s.desc}</div>
                     </div>
                   ))}
                 </div>
