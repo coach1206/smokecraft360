@@ -120,6 +120,7 @@ export default function CraftModulePlaceholder({
   const [activeLane, setActiveLane] = useState(plan.lanes[0]);
   const [armedSignals, setArmedSignals] = useState<string[]>(() => [plan.signals[0]]);
   const [lastAction, setLastAction] = useState(`${plan.lanes[0].value} selected`);
+  const [interactionCount, setInteractionCount] = useState(0);
 
   const handleTouchPress = (event: PointerEvent<HTMLElement>) => {
     const target = event.target as HTMLElement | null;
@@ -131,21 +132,26 @@ export default function CraftModulePlaceholder({
   const selectLane = (lane: ModulePlan["lanes"][number]) => {
     tapFeedback([12, 24, 12]);
     setActiveLane(lane);
-    setLastAction(`${lane.value} selected`);
+    setInteractionCount((count) => count + 1);
+    setLastAction(`${lane.value} armed for this guest`);
   };
 
   const toggleSignal = (signal: string) => {
     tapFeedback(10);
+    const isActive = armedSignals.includes(signal);
     setArmedSignals((current) =>
       current.includes(signal)
         ? current.filter((item) => item !== signal)
         : [...current, signal],
     );
-    setLastAction(`${signal} ${armedSignals.includes(signal) ? "paused" : "armed"}`);
+    setInteractionCount((count) => count + 1);
+    setLastAction(`${signal} ${isActive ? "paused" : "armed"}`);
   };
 
   const launchModule = () => {
     tapFeedback([18, 28, 18]);
+    setInteractionCount((count) => count + 1);
+    setLastAction(`${plan.primaryLabel} requested`);
     try {
       sessionStorage.setItem("smokecraft_active_lane", activeLane.label);
       sessionStorage.setItem("smokecraft_armed_signals", JSON.stringify(armedSignals));
@@ -227,6 +233,7 @@ export default function CraftModulePlaceholder({
         </div>
 
         <div className="chvp-module-action-readout" aria-live="polite">
+          <small>{interactionCount === 0 ? "Ready for touch" : `Touch confirmed ${interactionCount}`}</small>
           <strong>{lastAction}</strong>
           <span>{activeLane.detail}</span>
         </div>
