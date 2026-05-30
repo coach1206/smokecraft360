@@ -1,4 +1,4 @@
-import { useState, useEffect, type CSSProperties } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGuest } from "@/context/GuestProfileContext";
 import { BackButton } from "@/components/BackButton";
@@ -254,57 +254,6 @@ function Split({ left, right, leftFr = "1fr", rightFr = "1fr" }: { left: React.R
     >
       {left}
       {right}
-    </motion.div>
-  );
-}
-
-function StitchRitualFrame({
-  image,
-  alt,
-  overlays,
-}: {
-  image: string;
-  alt: string;
-  overlays: Array<{ label: string; rect: CSSProperties; onPointerDown: () => void }>;
-}) {
-  return (
-    <motion.div
-      variants={PV}
-      initial="enter"
-      animate="active"
-      exit="exit"
-      transition={PT}
-      style={{
-        position: "absolute",
-        inset: "41px 0 0 0",
-        overflow: "hidden",
-        background: "#020202",
-      }}
-    >
-      <img
-        src={image}
-        alt={alt}
-        style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
-        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-      />
-      {overlays.map(item => (
-        <button
-          key={item.label}
-          type="button"
-          aria-label={item.label}
-          onPointerDown={item.onPointerDown}
-          style={{
-            position: "absolute",
-            border: 0,
-            padding: 0,
-            margin: 0,
-            cursor: "pointer",
-            background: "transparent",
-            color: "transparent",
-            ...item.rect,
-          }}
-        />
-      ))}
     </motion.div>
   );
 }
@@ -653,19 +602,8 @@ export function S1_InitGate() {
           </motion.div>
         )}
 
+        {/* ══════════════ RULES — THE GOLDEN BOX ══════════════ */}
         {step === "rules" && (
-          <StitchRitualFrame
-            image={IMG("stitch-golden-box-rules.png")}
-            alt="SmokeCraft 360 Golden Box Rules of Play"
-            overlays={[
-              { label: "Back", rect: { left: "1.5%", top: "2%", width: "8.5%", height: "8%" }, onPointerDown: () => go("demo") },
-              { label: "View leaderboard", rect: { left: "42.5%", top: "89%", width: "16%", height: "6%" }, onPointerDown: () => go("leaderboard") },
-            ]}
-          />
-        )}
-
-        {/* ══════════════ LEGACY RULES — kept out of runtime ══════════════ */}
-        {false && step === "rules" && (
           <motion.div key="rules" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
             style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
@@ -939,20 +877,8 @@ export function S1_InitGate() {
           </motion.div>
         )}
 
+        {/* ══════════════ LEADERBOARD — THE GOLDEN BOX ══════════════ */}
         {step === "leaderboard" && (
-          <StitchRitualFrame
-            image={IMG("stitch-leaderboard.png")}
-            alt="SmokeCraft 360 Golden Box Leaderboard"
-            overlays={[
-              { label: "Dashboard", rect: { left: "0.8%", top: "7.5%", width: "16.5%", height: "6%" }, onPointerDown: () => go("rules") },
-              { label: "Select mentor", rect: { left: "78.8%", top: "10.2%", width: "18.5%", height: "8%" }, onPointerDown: () => go("country_select") },
-              { label: "View challenges", rect: { left: "79.5%", top: "80%", width: "17.5%", height: "4%" }, onPointerDown: () => go("country_select") },
-            ]}
-          />
-        )}
-
-        {/* ══════════════ LEGACY LEADERBOARD — kept out of runtime ══════════════ */}
-        {false && step === "leaderboard" && (
           <motion.div key="leaderboard" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
             style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", overflow: "hidden" }}>
 
