@@ -1868,7 +1868,7 @@ function FullBleedBackground() {
 
 function handlePointerDown() { playClick(); hapticClick(); }
 
-function OsShellContent() {
+function OsShellContent({ ritualOnly = false }: { ritualOnly?: boolean }) {
   const { setPhase, resetProfile, profile } = useNoveeGuest();
   const isEAT = profile.phase === "eat_dashboard";
   const { env: syncedEnv, updateEnv } = useVisualSync();
@@ -1974,34 +1974,34 @@ function OsShellContent() {
   return (
     <NoveeNavContext.Provider value={navCtx}>
       <div onPointerDown={handlePointerDown}
-        style={{ position: "fixed", inset: 0, cursor: "none", userSelect: "none", WebkitUserSelect: "none", overscrollBehavior: "none", touchAction: "manipulation", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        style={{ position: "fixed", inset: 0, cursor: ritualOnly ? "auto" : "none", userSelect: "none", WebkitUserSelect: "none", overscrollBehavior: "none", touchAction: "manipulation", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
         {/* Hidden Gesture Zones */}
-        <div 
+        {!ritualOnly && <div
           onPointerDown={handleTopLeftDown}
-          style={{ position: "absolute", top: 0, left: 0, width: 100, height: 100, zIndex: 1000 }} 
-        />
-        <div 
+          style={{ position: "absolute", top: 0, left: 0, width: 100, height: 100, zIndex: 1000 }}
+        />}
+        {!ritualOnly && <div
           onPointerDown={handleBottomRightClick}
-          style={{ position: "absolute", bottom: 0, right: 0, width: 100, height: 100, zIndex: 1000 }} 
-        />
+          style={{ position: "absolute", bottom: 0, right: 0, width: 100, height: 100, zIndex: 1000 }}
+        />}
 
-        <OsNavBar />
-        {!isEAT && <QuickNavBar />}
+        {!ritualOnly && <OsNavBar />}
+        {!ritualOnly && !isEAT && <QuickNavBar />}
 
         <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden", position: "relative" }}>
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
             <FullBleedBackground />
-            {!isEAT && <SystemBar />}
+            {!ritualOnly && !isEAT && <SystemBar />}
             {/* Content starts at top:44 so SystemBar never clips or intercepts */}
-            <div style={{ position: "absolute", top: isEAT ? 0 : 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: ritualOnly || isEAT ? 0 : 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
               <PhaseRouter eatFlags={eatFlags} onFlagsChange={setEatFlags} />
             </div>
           </div>
         </div>
 
-        {!isEAT && <EATTelemetryBar />}
-        {!isEAT && <BottomBar />}
+        {!ritualOnly && !isEAT && <EATTelemetryBar />}
+        {!ritualOnly && !isEAT && <BottomBar />}
 
         <AnimatePresence>
           {pinGate && (
@@ -2018,7 +2018,7 @@ function OsShellContent() {
   );
 }
 
-export default function NoveeOsShell({ skipBoot = false }: { skipBoot?: boolean }) {
+export default function NoveeOsShell({ skipBoot = false, ritualOnly = false }: { skipBoot?: boolean; ritualOnly?: boolean }) {
   const [bootDone, setBootDone] = useState(skipBoot);
 
   const CompBoot = NoveeKioskBootSequence as any;
@@ -2038,7 +2038,7 @@ export default function NoveeOsShell({ skipBoot = false }: { skipBoot?: boolean 
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.28, ease: EASE_CINEMA }}
             style={{ position: "fixed", inset: 0 }}>
-            <OsShellContent />
+            <OsShellContent ritualOnly={ritualOnly} />
           </motion.div>
         )}
       </AnimatePresence>

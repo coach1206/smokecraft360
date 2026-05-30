@@ -839,6 +839,7 @@ function isSmokeCraftGuestRoute(loc: string) {
 function NoveePoweredSmokeCraftShell() {
   const [loc] = useLocation();
   const active = isSmokeCraftGuestRoute(loc);
+  const ritualOnly = loc === '/experience/smoke' || loc.startsWith('/experience/smoke/');
 
   useEffect(() => {
     if (!active) return;
@@ -848,7 +849,7 @@ function NoveePoweredSmokeCraftShell() {
     } catch { /* localStorage unavailable */ }
   }, [active]);
 
-  if (!active) return null;
+  if (!active || ritualOnly) return null;
 
   return (
     <div
@@ -1690,7 +1691,7 @@ function SmokeCraftExperienceRoute() {
     // Kiosk storage can be unavailable; NOVEE shell still boots normally.
   }
 
-  return <NoveeOsShell skipBoot />;
+  return <NoveeOsShell skipBoot ritualOnly />;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
