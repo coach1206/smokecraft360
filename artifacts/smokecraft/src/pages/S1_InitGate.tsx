@@ -355,7 +355,7 @@ function StitchProfileFrame({
       transition={PT}
       style={{ position: "absolute", inset: "41px 0 0 0", overflow: "hidden", background: "#020202" }}
     >
-      <img src={image} alt="SmokeCraft 360 guest profile registration" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />
+      <img src={image} alt="SmokeCraft 360 guest profile registration" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
       <button type="button" aria-label="Back" onPointerDown={onBack} style={{ position: "absolute", left: "1.6%", top: "8.2%", width: "9.2%", height: "6.2%", zIndex: 5, border: 0, background: "transparent", cursor: "pointer" }} />
       <input aria-label="First name" value={firstName} onChange={e => setFirstName(e.target.value)} style={{ ...fieldStyle, left: "41.5%", top: "26.1%", width: "17%", height: "3.5%" }} />
       <input aria-label="Last name" value={lastName} onChange={e => setLastName(e.target.value)} style={{ ...fieldStyle, left: "64%", top: "26.1%", width: "18%", height: "3.5%" }} />
@@ -1354,39 +1354,9 @@ export function S1_InitGate() {
           </motion.div>
         )}
 
-        {step === "country_select" && (
-          <StitchRitualFrame
-            image={IMG("stitch-understanding-tobacco.png")}
-            alt="SmokeCraft 360 leaf education"
-            overlays={[
-              { label: "Back", rect: { left: "1.5%", top: "2%", width: "7.5%", height: "5%" }, onPointerDown: () => go("rules") },
-              { label: "Criollo 98", rect: { left: "1.8%", top: "48.8%", width: "21%", height: "21%" }, onPointerDown: () => { selectCountry("dominican"); go("seed_canvas"); } },
-              { label: "Corojo", rect: { left: "23.5%", top: "48.8%", width: "20.5%", height: "21%" }, onPointerDown: () => { selectCountry("nicaraguan"); go("seed_canvas"); } },
-              { label: "Connecticut Shade", rect: { left: "44.6%", top: "48.8%", width: "20.5%", height: "21%" }, onPointerDown: () => { selectCountry("honduran"); go("seed_canvas"); } },
-              { label: "Continue journey", rect: { left: "67%", top: "92.8%", width: "29%", height: "5.6%" }, onPointerDown: () => go("seed_canvas") },
-            ]}
-          />
-        )}
-
         {/* ══════════════ MENTOR ══════════════ */}
         {/* ══════════════ SEED CANVAS ══════════════ */}
-        {step === "seed_canvas" && (
-          <StitchRitualFrame
-            image={IMG("stitch-leaf-matrix.png")}
-            alt="SmokeCraft 360 leaf recognition matrix"
-            overlays={[
-              { label: "Back", rect: { left: "1.5%", top: "4.5%", width: "7.2%", height: "5.3%" }, onPointerDown: () => go("country_select") },
-              { label: "Criollo 98", rect: { left: "2.7%", top: "12.5%", width: "16.6%", height: "9%" }, onPointerDown: () => setSeedId("criollo") },
-              { label: "Corojo", rect: { left: "20.2%", top: "12.5%", width: "16.6%", height: "9%" }, onPointerDown: () => setSeedId("corojo") },
-              { label: "Connecticut Shade", rect: { left: "37.5%", top: "12.5%", width: "16.6%", height: "9%" }, onPointerDown: () => setSeedId("connecticut") },
-              { label: "Continue to validation", rect: { left: "72%", top: "82%", width: "24%", height: "15%" }, onPointerDown: () => go("quiz") },
-              { label: "Continue from comparison", rect: { left: "25%", top: "85%", width: "44%", height: "12%" }, onPointerDown: () => go("quiz") },
-            ]}
-          />
-        )}
-
-        {/* ══════════════ LEGACY SEED CANVAS — kept out of runtime ══════════════ */}
-        {false && step === "seed_canvas" && (() => {
+        {step === "seed_canvas" && (() => {
           type Drink = { icon: string; label: string; category: string; desc: string; score: number };
           const INTEL: Record<string, {
             telemetry: { k: string; v: string; b: number }[];
@@ -1739,20 +1709,6 @@ export function S1_InitGate() {
 
         {/* ══════════════ QUIZ ══════════════ */}
         {step === "quiz" && (
-          <StitchRitualFrame
-            image={IMG("stitch-golden-box-dashboard.png")}
-            alt="SmokeCraft 360 Golden Box dashboard"
-            overlays={[
-              { label: "Back", rect: { left: "1.2%", top: "7.5%", width: "14%", height: "6%" }, onPointerDown: () => go("seed_canvas") },
-              { label: "Leaderboard", rect: { left: "1.2%", top: "25%", width: "15%", height: "5.5%" }, onPointerDown: () => go("leaderboard") },
-              { label: "Select mentor", rect: { left: "77%", top: "8.8%", width: "20%", height: "9.5%" }, onPointerDown: () => go("posgate") },
-              { label: "View leaderboard", rect: { left: "77.8%", top: "82.5%", width: "19%", height: "6%" }, onPointerDown: () => go("leaderboard") },
-            ]}
-          />
-        )}
-
-        {/* ══════════════ LEGACY QUIZ — kept out of runtime ══════════════ */}
-        {false && step === "quiz" && (
           <Split key="quiz"
             leftFr="0.85fr" rightFr="1.15fr"
             left={
@@ -1830,20 +1786,6 @@ export function S1_InitGate() {
 
         {/* ══════════════ POS GATE ══════════════ */}
         {step === "posgate" && (
-          <StitchRitualFrame
-            image={IMG("stitch-pos-terminal.png")}
-            alt="SmokeCraft 360 EAT POS terminal"
-            overlays={[
-              { label: "SmokeCraft", rect: { left: "1%", top: "16%", width: "5.2%", height: "10%" }, onPointerDown: () => go("quiz") },
-              { label: "Open ticket", rect: { left: "43%", top: "35%", width: "18%", height: "5%" }, onPointerDown: () => setPhase("s2_terroir") },
-              { label: "View full ledger", rect: { left: "65%", top: "78.5%", width: "25%", height: "5%" }, onPointerDown: () => setPhase("s2_terroir") },
-              { label: "Kitchen queue", rect: { left: "7.5%", top: "78.5%", width: "25%", height: "5%" }, onPointerDown: () => setPhase("s2_terroir") },
-            ]}
-          />
-        )}
-
-        {/* ══════════════ LEGACY POS GATE — kept out of runtime ══════════════ */}
-        {false && step === "posgate" && (
           <Split key="posgate"
             leftFr="1fr" rightFr="1fr"
             left={
