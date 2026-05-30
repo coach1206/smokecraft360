@@ -17,6 +17,8 @@ type ModulePlan = {
   statusLine: string;
   lanes: Array<{ label: string; value: string; detail: string }>;
   signals: string[];
+  primaryLabel: string;
+  primaryRoute: string;
 };
 
 type TouchPulse = {
@@ -36,6 +38,8 @@ const modulePlans: Record<string, ModulePlan> = {
       { label: "Service", value: "Staff Ready", detail: "Cut, light, ash etiquette, and reorder cues are prepared for assisted service." },
     ],
     signals: ["Humidor inventory visible", "VIP preference memory active", "Pairing engine warmed"],
+    primaryLabel: "Begin SmokeCraft Ritual",
+    primaryRoute: "/smokecraft",
   },
   wine: {
     statusLine: "Cellar guidance is mapped to taste profile, bottle service, and guest preference capture.",
@@ -45,6 +49,8 @@ const modulePlans: Record<string, ModulePlan> = {
       { label: "Serve", value: "Pour Notes", detail: "Temperature, glassware, decant timing, and table notes remain visible." },
     ],
     signals: ["Cellar list staged", "Sommelier notes online", "Guest history attached"],
+    primaryLabel: "Open WineCraft Flow",
+    primaryRoute: "/winecraft",
   },
   pour: {
     statusLine: "Spirits recommendations are organized around mood, flavor bridge, and premium upsell flow.",
@@ -54,6 +60,8 @@ const modulePlans: Record<string, ModulePlan> = {
       { label: "Upsell", value: "Reserve Cue", detail: "Premium bottles and limited pours surface at the right decision moment." },
     ],
     signals: ["Backbar inventory linked", "Reserve suggestions active", "Tab handoff ready"],
+    primaryLabel: "Open PourCraft Flow",
+    primaryRoute: "/pourcraft",
   },
   beer: {
     statusLine: "Taproom guidance is ready for style discovery, food pairing, and active draft service.",
@@ -63,6 +71,8 @@ const modulePlans: Record<string, ModulePlan> = {
       { label: "Pair", value: "Menu Bridge", detail: "Food pairings and second-round suggestions stay visible to staff." },
     ],
     signals: ["Draft board synced", "Flight builder active", "Kitchen pairing route ready"],
+    primaryLabel: "Open BeerCraft Flow",
+    primaryRoute: "/beercraft",
   },
   default: {
     statusLine: "This module is connected to the venue workflow with service notes, staff cues, and guest context.",
@@ -72,6 +82,8 @@ const modulePlans: Record<string, ModulePlan> = {
       { label: "Venue", value: "Live Mode", detail: "Operational signals are ready for the active floor." },
     ],
     signals: ["Guest context loaded", "Service state online", "Venue controls ready"],
+    primaryLabel: "Return to Craft Hub",
+    primaryRoute: "/craft-hub",
   },
 };
 
@@ -105,12 +117,42 @@ export default function CraftModulePlaceholder({
   const [, navigate] = useLocation();
   const [touchPulse, setTouchPulse] = useState<TouchPulse | null>(null);
   const plan = getModulePlan(title);
+  const [activeLane, setActiveLane] = useState(plan.lanes[0]);
+  const [armedSignals, setArmedSignals] = useState<string[]>(() => [plan.signals[0]]);
+  const [lastAction, setLastAction] = useState(`${plan.lanes[0].value} selected`);
 
   const handleTouchPress = (event: PointerEvent<HTMLElement>) => {
     const target = event.target as HTMLElement | null;
     if (!target?.closest("button, a, input, [role='button']")) return;
     tapFeedback();
     setTouchPulse({ id: Date.now(), x: event.clientX, y: event.clientY });
+  };
+
+  const selectLane = (lane: ModulePlan["lanes"][number]) => {
+    tapFeedback([12, 24, 12]);
+    setActiveLane(lane);
+    setLastAction(`${lane.value} selected`);
+  };
+
+  const toggleSignal = (signal: string) => {
+    tapFeedback(10);
+    setArmedSignals((current) =>
+      current.includes(signal)
+        ? current.filter((item) => item !== signal)
+        : [...current, signal],
+    );
+    setLastAction(`${signal} ${armedSignals.includes(signal) ? "paused" : "armed"}`);
+  };
+
+  const launchModule = () => {
+    tapFeedback([18, 28, 18]);
+    try {
+      sessionStorage.setItem("smokecraft_active_lane", activeLane.label);
+      sessionStorage.setItem("smokecraft_armed_signals", JSON.stringify(armedSignals));
+    } catch {
+      // Session hints are optional; routing should still work without storage.
+    }
+    navigate(plan.primaryRoute);
   };
 
   return (
@@ -156,25 +198,42 @@ export default function CraftModulePlaceholder({
 
         <div className="chvp-module-live-grid" aria-label={`${title} service lanes`}>
           {plan.lanes.map(({ label, value, detail }) => (
-            <article key={label} className="chvp-module-live-card">
+            <button
+              key={label}
+              type="button"
+              className={`chvp-module-live-card ${activeLane.label === label ? "is-active" : ""}`}
+              onClick={() => selectLane({ label, value, detail })}
+            >
               <ClipboardList size={20} />
               <span>{label}</span>
               <strong>{value}</strong>
               <p>{detail}</p>
-            </article>
+            </button>
           ))}
         </div>
 
         <div className="chvp-module-signal-strip">
           <RadioTower size={18} />
           {plan.signals.map((signal) => (
-            <span key={signal}>{signal}</span>
+            <button
+              key={signal}
+              type="button"
+              className={armedSignals.includes(signal) ? "is-active" : ""}
+              onClick={() => toggleSignal(signal)}
+            >
+              {signal}
+            </button>
           ))}
         </div>
 
-        <button className="chvp-module-primary" type="button" onClick={() => navigate("/craft-hub")}>
+        <div className="chvp-module-action-readout" aria-live="polite">
+          <strong>{lastAction}</strong>
+          <span>{activeLane.detail}</span>
+        </div>
+
+        <button className="chvp-module-primary" type="button" onClick={launchModule}>
           <Sparkles size={18} />
-          <span>Choose Another Craft</span>
+          <span>{plan.primaryLabel}</span>
         </button>
       </section>
     </main>

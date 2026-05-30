@@ -575,12 +575,28 @@
 }
 
 .chvp-module-live-card {
+  appearance: none;
+  text-align: left;
+  color: inherit;
   min-height: 184px;
   padding: 16px;
   border: 1px solid rgba(216, 168, 45, 0.2);
   border-radius: 8px;
   background: rgba(12, 9, 5, 0.64);
   box-shadow: inset 0 1px 0 rgba(247, 237, 215, 0.05);
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.chvp-module-live-card:hover,
+.chvp-module-live-card.is-active {
+  border-color: rgba(242, 199, 85, 0.58);
+  background: rgba(216, 168, 45, 0.12);
+  box-shadow: 0 0 28px rgba(242, 199, 85, 0.12), inset 0 1px 0 rgba(247, 237, 215, 0.08);
+}
+
+.chvp-module-live-card:active {
+  transform: translateY(1px) scale(0.985);
 }
 
 .chvp-module-live-card svg {
@@ -589,7 +605,7 @@
 }
 
 .chvp-module-live-card span,
-.chvp-module-signal-strip span {
+.chvp-module-signal-strip button {
   display: block;
   color: rgba(247, 237, 215, 0.52);
   font-size: 11px;
@@ -629,12 +645,48 @@
   color: #f2c755;
 }
 
-.chvp-module-signal-strip span {
+.chvp-module-signal-strip button {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
   padding: 0 10px;
   border-left: 1px solid rgba(216, 168, 45, 0.22);
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  color: rgba(247, 237, 215, 0.58);
+  background: transparent;
+  cursor: pointer;
+}
+
+.chvp-module-signal-strip button.is-active {
+  color: #f2c755;
+  text-shadow: 0 0 18px rgba(242, 199, 85, 0.32);
+}
+
+.chvp-module-action-readout {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(216, 168, 45, 0.18);
+  border-radius: 8px;
+  background: rgba(8, 6, 3, 0.58);
+}
+
+.chvp-module-action-readout strong,
+.chvp-module-action-readout span {
+  display: block;
+}
+
+.chvp-module-action-readout strong {
+  color: #f7edd7;
+  font-size: 14px;
+}
+
+.chvp-module-action-readout span {
+  margin-top: 4px;
+  color: rgba(247, 237, 215, 0.62);
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 .chvp-module-primary {
