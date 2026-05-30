@@ -45,7 +45,7 @@ const ZONES: CraftZone[] = [
     id:      "smoke",
     name:    "SmokeCraft",
     tagline: "Molecular Leaf Intelligence",
-    route:   "/experience/smoke",
+    route:   "/smokecraft",
     image:   "/images/scenes/smokecraft-card.jpg",
     primary: "#D4682E",
     ember:   "#F4A03A",

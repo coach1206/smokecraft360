@@ -496,7 +496,7 @@ export default function VenueManual() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>
             {[
               { label: "Craft Hub",           path: "/" },
-              { label: "Swipe Experience",    path: "/experience/smoke" },
+              { label: "SmokeCraft Ritual",   path: "/smokecraft" },
               { label: "Orders",              path: "/orders" },
               { label: "Inventory",           path: "/inventory" },
               { label: "Analytics",           path: "/analytics/swipe-intelligence" },

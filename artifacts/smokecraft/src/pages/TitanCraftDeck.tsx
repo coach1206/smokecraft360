@@ -28,8 +28,7 @@ export default function TitanCraftDeck() {
 
   const startExperience = (id: string) => {
     console.log(`Starting Experience for: ${id}`);
-    // This tells the Replit Agent to move to the /experience/smoke route
-    window.location.href = `/experience/${id}`;
+    window.location.href = id === "smoke" ? "/smokecraft" : `/experience/${id}`;
   };
 
   const CRAFT_DATA = [

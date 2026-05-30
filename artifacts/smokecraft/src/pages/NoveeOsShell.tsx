@@ -2018,8 +2018,8 @@ function OsShellContent() {
   );
 }
 
-export default function NoveeOsShell() {
-  const [bootDone, setBootDone] = useState(false);
+export default function NoveeOsShell({ skipBoot = false }: { skipBoot?: boolean }) {
+  const [bootDone, setBootDone] = useState(skipBoot);
 
   const CompBoot = NoveeKioskBootSequence as any;
 

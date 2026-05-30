@@ -154,7 +154,7 @@ const CRAFTS = [
     tagline: "Premium Tobacco",
     sub:     "Curated reserve experience",
     color:   "#D48B00",
-    route:   "/experience/smoke",
+    route:   "/smokecraft",
     glyph:   "◈",
   },
   {

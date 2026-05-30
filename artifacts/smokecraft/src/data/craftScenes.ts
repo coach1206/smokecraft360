@@ -172,7 +172,7 @@ export const WINE_SCENES: CraftScene[] = [
 export const CRAFT_MODULES: CraftModule[] = [
   {
     id: "smoke", title: "SmokeCraft 360", tagline: "Signature cigar experiences, curated for you",
-    color: "#e85d26", route: "/experience/smoke", badge: "🚬  CIGAR",
+    color: "#e85d26", route: "/smokecraft", badge: "🚬  CIGAR",
     scenes: SMOKE_SCENES,
   },
   {

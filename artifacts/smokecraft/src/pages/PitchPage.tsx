@@ -259,7 +259,7 @@ export default function PitchPage() {
           }}>
             ← Return to Platform
           </a>
-          <a href="/experience/smoke" style={{
+          <a href="/smokecraft" style={{
             display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
             padding: "14px 28px", borderRadius: 12,
             background: "transparent", border: `1px solid ${C.border}`,
@@ -844,7 +844,7 @@ export default function PitchPage() {
                 padding: "15px 32px", borderRadius: 12, background: C.amber,
                 fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "0.06em",
               }}>← Return to Platform</a>
-              <a href="/experience/smoke" style={{
+              <a href="/smokecraft" style={{
                 display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
                 padding: "15px 32px", borderRadius: 12,
                 background: "transparent", border: `1px solid ${C.border}`,

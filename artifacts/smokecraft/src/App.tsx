@@ -1440,6 +1440,9 @@ export default function App() {
           <Route path="/synchronization/:type">
             <SubPageProviders><SynchronizationChamber /></SubPageProviders>
           </Route>
+          <Route path="/experience/smoke">
+            <SmokeCraftExperienceRoute />
+          </Route>
           <Route path="/experience/:type">
             <SubPageProviders><ExperiencePage /></SubPageProviders>
           </Route>
@@ -1680,16 +1683,14 @@ function RootRedirect() {
 }
 
 function SmokeCraftExperienceRoute() {
-  useEffect(() => {
-    try {
-      sessionStorage.setItem("novee_initial_phase", "s1_demo");
-      sessionStorage.setItem("novee_launch_phase", "s1_demo");
-    } catch {
-      // Kiosk storage can be unavailable; NOVEE shell still boots normally.
-    }
-  }, []);
+  try {
+    sessionStorage.setItem("novee_initial_phase", "s1_demo");
+    sessionStorage.setItem("novee_launch_phase", "s1_demo");
+  } catch {
+    // Kiosk storage can be unavailable; NOVEE shell still boots normally.
+  }
 
-  return <NoveeOsShell />;
+  return <NoveeOsShell skipBoot />;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
