@@ -244,11 +244,187 @@ function Split({ left, right, leftFr = "1fr", rightFr = "1fr" }: { left: React.R
   );
 }
 
-type Step = "demo" | "rules" | "country_select" | "mentor" | "soil_calibration" | "pilon_game" | "quiz" | "posgate" | "leaderboard" | "seed_canvas";
+function SmokeCraftIntro({ onEnter }: { onEnter: () => void }) {
+  return (
+    <motion.button
+      type="button"
+      key="intro"
+      variants={PV}
+      initial="enter"
+      animate="active"
+      exit="exit"
+      transition={PT}
+      onPointerDown={onEnter}
+      style={{
+        position: "absolute",
+        inset: 0,
+        border: 0,
+        margin: 0,
+        padding: 0,
+        cursor: "pointer",
+        overflow: "hidden",
+        background: "#020202",
+        color: "#f3e7c8",
+        fontFamily: "'Inter', sans-serif",
+        textAlign: "center",
+      }}
+    >
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: "radial-gradient(circle at 50% 34%, rgba(212,175,55,0.20), rgba(0,0,0,0) 22%), radial-gradient(circle at 52% 66%, rgba(212,175,55,0.06), rgba(0,0,0,0) 34%)",
+      }} />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        opacity: 0.22,
+        backgroundImage: "linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.10) 1px, transparent 2px), linear-gradient(70deg, transparent 0%, rgba(255,255,255,0.05) 1px, transparent 3px)",
+        backgroundSize: "340px 460px, 520px 620px",
+        filter: "blur(0.3px)",
+      }} />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        opacity: 0.2,
+        background: "radial-gradient(ellipse at 50% 50%, transparent 0%, rgba(0,0,0,0.35) 54%, rgba(0,0,0,0.92) 100%)",
+      }} />
+
+      <div style={{
+        position: "relative",
+        zIndex: 2,
+        minHeight: "100%",
+        display: "grid",
+        gridTemplateRows: "auto 1fr auto",
+        justifyItems: "center",
+        padding: "9vh 24px 5vh",
+      }}>
+        <div>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize: "clamp(34px, 6.2vw, 64px)",
+            letterSpacing: "0.42em",
+            color: "rgba(212,175,55,0.68)",
+            lineHeight: 1.1,
+            textTransform: "uppercase",
+            textIndent: "0.42em",
+          }}>
+            SmokeCraft
+          </div>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize: "clamp(28px, 4.2vw, 48px)",
+            letterSpacing: "0.46em",
+            color: "rgba(212,175,55,0.78)",
+            marginTop: 20,
+            textIndent: "0.46em",
+          }}>
+            360
+          </div>
+          <div style={{ width: 174, height: 1, background: "rgba(212,175,55,0.45)", margin: "28px auto 0" }} />
+        </div>
+
+        <div style={{ alignSelf: "center", width: "min(760px, 88vw)" }}>
+          <div style={{
+            width: 94,
+            height: 94,
+            borderRadius: "50%",
+            display: "grid",
+            placeItems: "center",
+            margin: "0 auto 13vh",
+            background: "radial-gradient(circle, rgba(212,175,55,0.26), rgba(212,175,55,0.05) 52%, transparent 72%)",
+            boxShadow: "0 0 74px rgba(212,175,55,0.35)",
+          }}>
+            <svg width="58" height="58" viewBox="0 0 64 64" aria-hidden="true">
+              <path d="M33.5 6c3 9.5 12.5 12.5 15 22.5C51.6 41 43 53 31 53 18.8 53 10 43.7 11.3 31.5c1-9.5 7.1-17.4 14.5-23.2-.7 8.2 2.2 13.1 7.7 15.4 2.6-4.6 2.5-9.3 0-17.7Z" fill="none" stroke="#f2c84b" strokeWidth="5" strokeLinejoin="round" />
+              <path d="M31.5 35c4.6 4.5 7.1 7.6 7.1 11.1 0 4-3 6.9-7.2 6.9-4.1 0-7.1-2.9-7.1-6.9 0-3.6 2.5-6.7 7.2-11.1Z" fill="#f2c84b" />
+            </svg>
+          </div>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize: "clamp(31px, 4.8vw, 58px)",
+            color: "rgba(245,237,216,0.88)",
+            fontStyle: "italic",
+            lineHeight: 1.15,
+            textShadow: "0 2px 26px rgba(0,0,0,0.85)",
+          }}>
+            "Every leaf has a story."
+          </div>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            marginTop: "8vh",
+            color: "#f4d76e",
+            fontSize: "clamp(36px, 5vw, 64px)",
+            fontWeight: 800,
+            letterSpacing: "0.16em",
+            lineHeight: 1.25,
+            textTransform: "uppercase",
+          }}>
+            Tonight... You<br />Write Yours.
+          </div>
+        </div>
+
+        <div style={{ width: "min(440px, 80vw)" }}>
+          <div style={{
+            width: 84,
+            height: 84,
+            borderRadius: 18,
+            border: "1px solid rgba(212,175,55,0.48)",
+            display: "grid",
+            placeItems: "center",
+            margin: "0 auto 30px",
+            background: "rgba(5,5,5,0.52)",
+            boxShadow: "inset 0 0 18px rgba(212,175,55,0.05)",
+          }}>
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#f2c84b" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </div>
+          <div style={{
+            color: "#f2c84b",
+            fontSize: 18,
+            fontWeight: 800,
+            letterSpacing: "0.42em",
+            textTransform: "uppercase",
+            textIndent: "0.42em",
+          }}>
+            Tap To Enter
+          </div>
+          <div style={{
+            marginTop: "12vh",
+            color: "rgba(255,255,255,0.24)",
+            fontSize: 17,
+            fontWeight: 700,
+            textTransform: "uppercase",
+          }}>
+            Discover.Connect.Elevate.
+          </div>
+          <div style={{
+            marginTop: 22,
+            color: "rgba(255,255,255,0.36)",
+            fontSize: 18,
+            fontWeight: 800,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            textIndent: "0.32em",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 13,
+          }}>
+            <span style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(212,175,55,0.58)", display: "inline-block" }} />
+            NOVEE OS
+          </div>
+        </div>
+      </div>
+    </motion.button>
+  );
+}
+
+type Step = "intro" | "demo" | "rules" | "country_select" | "mentor" | "soil_calibration" | "pilon_game" | "quiz" | "posgate" | "leaderboard" | "seed_canvas";
 
 export function S1_InitGate() {
   const { updateProfile, setPhase, addPoints, applyPenalty, profile } = useNoveeGuest();
-  const [step,        setStep]       = useState<Step>("demo");
+  const [step,        setStep]       = useState<Step>("intro");
   const [firstName,   setFirstName]  = useState("");
   const [lastName,    setLastName]   = useState("");
   const [phone4,      setPhone4]     = useState("");
@@ -365,10 +541,10 @@ export function S1_InitGate() {
 
   return (
     <div style={{ position: "absolute", inset: 0, fontFamily: "'Inter', sans-serif", overflow: "hidden" }}>
-      <NoveeBackButton />
+      {step !== "intro" && <NoveeBackButton />}
 
       {/* Step dots */}
-      <div style={{ position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 7, zIndex: 30 }}>
+      {step !== "intro" && <div style={{ position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 7, zIndex: 30 }}>
         {STEPS.map(s => (
           <div key={s} style={{
             width: 24, height: 4, borderRadius: 2,
@@ -377,9 +553,11 @@ export function S1_InitGate() {
             transition: "all 0.28s",
           }} />
         ))}
-      </div>
+      </div>}
 
       <AnimatePresence mode="wait">
+
+        {step === "intro" && <SmokeCraftIntro onEnter={() => go("demo")} />}
 
         {/* ══════════════ DEMO — YOUR PROFILE ══════════════ */}
         {step === "demo" && (
