@@ -175,15 +175,93 @@ function LeafSVG({ s, scale = 1 }: { s: typeof SEEDS[0]; scale?: number }) {
   );
 }
 
+function StitchAtmosphere({ accent = GOLD, compact = false }: { accent?: string; compact?: boolean }) {
+  return (
+    <>
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: `radial-gradient(circle at 50% 34%, ${accent}25, rgba(0,0,0,0) ${compact ? "42%" : "24%"}), radial-gradient(circle at 52% 66%, ${accent}10, rgba(0,0,0,0) 36%), #020202`,
+      }} />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        opacity: compact ? 0.16 : 0.24,
+        backgroundImage: "linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.10) 1px, transparent 2px), linear-gradient(70deg, transparent 0%, rgba(255,255,255,0.05) 1px, transparent 3px)",
+        backgroundSize: compact ? "180px 220px, 260px 310px" : "340px 460px, 520px 620px",
+      }} />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: "radial-gradient(ellipse at 50% 50%, transparent 0%, rgba(0,0,0,0.35) 54%, rgba(0,0,0,0.92) 100%)",
+      }} />
+      {!compact && (
+        <div style={{
+          position: "absolute",
+          left: "50%",
+          top: "24%",
+          width: 112,
+          height: 112,
+          transform: "translateX(-50%)",
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${accent}32, ${accent}08 54%, transparent 74%)`,
+          boxShadow: `0 0 82px ${accent}55`,
+        }} />
+      )}
+    </>
+  );
+}
+
+function GoldenBoxArtwork() {
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#020202" }}>
+      <StitchAtmosphere compact />
+      <div style={{ position: "absolute", inset: "16% 12%", border: "1px solid rgba(212,175,55,0.30)", boxShadow: `0 0 44px ${GOLD}18, inset 0 0 30px rgba(212,175,55,0.08)` }} />
+      <div style={{ position: "absolute", left: "22%", right: "22%", top: "31%", height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}88, transparent)` }} />
+      <div style={{ position: "absolute", left: "20%", right: "20%", bottom: "29%", height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}66, transparent)` }} />
+      <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center", padding: 22 }}>
+        <div>
+          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", color: GOLD, fontSize: "clamp(26px, 4vw, 52px)", letterSpacing: "0.22em", textTransform: "uppercase", lineHeight: 1.05 }}>The Golden Box</div>
+          <div style={{ marginTop: 12, color: "rgba(240,232,212,0.54)", fontSize: 11, letterSpacing: "0.36em", textTransform: "uppercase" }}>Compete. Learn. Ascend.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LeafStudyArtwork({ label }: { label: string }) {
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#030201" }}>
+      <StitchAtmosphere compact />
+      <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
+        <svg width="260" height="260" viewBox="0 0 220 260" aria-hidden="true">
+          <defs>
+            <linearGradient id={`leafStudy${label.length}`} x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stopColor="#f2d56a" stopOpacity="0.82" />
+              <stop offset="52%" stopColor="#9b6f22" stopOpacity="0.46" />
+              <stop offset="100%" stopColor="#2b1b08" stopOpacity="0.82" />
+            </linearGradient>
+          </defs>
+          <path d="M111 8C52 51 28 107 42 159c10 38 42 69 69 92 27-23 59-54 69-92 14-52-10-108-69-151Z" fill={`url(#leafStudy${label.length})`} stroke="rgba(212,175,55,0.55)" strokeWidth="2" />
+          <path d="M111 22v207" stroke="rgba(245,220,132,0.60)" strokeWidth="2.2" strokeLinecap="round" />
+          {[52, 80, 108, 136, 164, 192].map((y, i) => (
+            <g key={y}>
+              <path d={`M111 ${y} C${82 - i * 2} ${y + 16},${67 - i * 2} ${y + 25},${54 - i * 2} ${y + 36}`} stroke="rgba(245,220,132,0.34)" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d={`M111 ${y} C${140 + i * 2} ${y + 16},${155 + i * 2} ${y + 25},${168 + i * 2} ${y + 36}`} stroke="rgba(245,220,132,0.34)" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+            </g>
+          ))}
+        </svg>
+      </div>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(150deg,rgba(0,0,0,0.10) 0%,rgba(0,0,0,0.34) 38%,rgba(0,0,0,0.94) 100%)" }} />
+    </div>
+  );
+}
+
 /* ─── Left visual panel — cinematic full-bleed ─── */
 function LeftPanel({ eyebrow, headline, sub, accent = GOLD }: { eyebrow: string; headline: string; sub?: string; accent?: string }) {
   return (
     <div style={{ position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-      {/* ── Real cigar photograph — full bleed ── */}
-      <img src={IMG("cigar_hero.png")} alt=""
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%" }}
-        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-      />
+      <StitchAtmosphere accent={accent} />
       {/* Dark cinematic overlay */}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(170deg, rgba(6,4,1,0.80) 0%, rgba(4,2,0,0.60) 35%, rgba(8,5,2,0.92) 100%)" }} />
       {/* Amber top glow */}
@@ -578,10 +656,9 @@ export function S1_InitGate() {
           <motion.div key="demo" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
             style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", overflow: "hidden" }}>
 
-            {/* ── LEFT PANEL: Cigar Photo ── */}
+            {/* ── LEFT PANEL: Stitch-style ritual art ── */}
             <div style={{ width: "38%", flexShrink: 0, position: "relative", overflow: "hidden" }}>
-              <img src={IMG("cigar_hero.png")} alt=""
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+              <StitchAtmosphere />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(5,3,0,0.60) 60%, rgba(0,0,0,0.78) 100%)" }} />
 
               {/* Back button */}
@@ -1034,12 +1111,7 @@ export function S1_InitGate() {
                   <div style={{ fontSize: 20, fontWeight: 800, color: "#F0E8D4", letterSpacing: "0.12em", textTransform: "uppercase" }}>Cigar Box</div>
                 </div>
                 <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-                  <img
-                    src={IMG("golden_box.png")}
-                    alt="The Golden Cigar Box"
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
-                    onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
+                  <GoldenBoxArtwork />
                   {/* Bottom fade */}
                   <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(0deg, rgba(0,0,0,0.80), transparent)" }} />
                   {/* Gold rim */}
@@ -1069,8 +1141,7 @@ export function S1_InitGate() {
             }}>
               {/* Header area with golden box photo */}
               <div style={{ position: "relative", height: 160, flexShrink: 0, overflow: "hidden" }}>
-                <img src={IMG("golden_box.png")} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }}
-                  onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <GoldenBoxArtwork />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.85) 100%)" }} />
                 <div style={{ position: "absolute", bottom: 14, left: 0, right: 0, textAlign: "center" }}>
                   <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 32, fontWeight: 700, color: GOLD, letterSpacing: "0.14em", textTransform: "uppercase", textShadow: `0 0 40px ${GOLD}66` }}>
@@ -1521,12 +1592,12 @@ export function S1_InitGate() {
                 {/* Top: full-bleed leaf photo */}
                 <div style={{ flex: "0 0 58%", position: "relative", overflow: "hidden" }}>
                   <AnimatePresence mode="sync">
-                    <motion.img key={seedId + "_img2"}
-                      src={IMG(SEED_PHOTOS[seedId] || "tobacco_criollo.png")} alt={seed.name}
+                    <motion.div key={seedId + "_img2"}
                       initial={{ opacity: 0, scale: 1.06 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
                       transition={{ duration: 0.50, ease: [0.22, 1, 0.36, 1] }}
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
-                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      style={{ position: "absolute", inset: 0 }}>
+                      <LeafStudyArtwork label={seed.name} />
+                    </motion.div>
                   </AnimatePresence>
                   <div style={{ position: "absolute", inset: 0, background: "linear-gradient(150deg,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.28) 38%,rgba(0,0,0,0.94) 100%)" }} />
 
@@ -1628,7 +1699,7 @@ export function S1_InitGate() {
 
                 {/* Mini cigar photo */}
                 <div style={{ width: "100%", height: 86, borderRadius: 9, overflow: "hidden", marginBottom: 16, flexShrink: 0, position: "relative" }}>
-                  <img src={IMG("cigar_hero.png")} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <StitchAtmosphere compact />
                   <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.48)" }} />
                   <div style={{ position: "absolute", top: 8, right: 10, fontSize: 9, letterSpacing: "0.26em", color: "rgba(212,175,55,0.70)", fontWeight: 800, textTransform: "uppercase", textAlign: "right", lineHeight: 1.5 }}>SMOKECRAFT 360<br />KIOSK EDITION</div>
                 </div>
