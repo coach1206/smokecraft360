@@ -180,11 +180,11 @@ export default function CraftModulePlaceholder({
       </AnimatePresence>
       <section className="chvp-module-panel">
         <div className="chvp-module-actions">
-          <button onClick={() => window.history.back()}>
+          <button onPointerDown={() => window.history.back()}>
             <ArrowLeft size={20} />
             <span>Back</span>
           </button>
-          <button onClick={() => navigate("/craft-hub")}>
+          <button onPointerDown={() => navigate("/craft-hub")}>
             <Home size={20} />
             <span>Return to Craft Hub</span>
           </button>
@@ -208,7 +208,7 @@ export default function CraftModulePlaceholder({
               key={label}
               type="button"
               className={`chvp-module-live-card ${activeLane.label === label ? "is-active" : ""}`}
-              onClick={() => selectLane({ label, value, detail })}
+              onPointerDown={() => selectLane({ label, value, detail })}
             >
               <ClipboardList size={20} />
               <span>{label}</span>
@@ -225,7 +225,7 @@ export default function CraftModulePlaceholder({
               key={signal}
               type="button"
               className={armedSignals.includes(signal) ? "is-active" : ""}
-              onClick={() => toggleSignal(signal)}
+              onPointerDown={() => toggleSignal(signal)}
             >
               {signal}
             </button>
@@ -238,7 +238,7 @@ export default function CraftModulePlaceholder({
           <span>{activeLane.detail}</span>
         </div>
 
-        <button className="chvp-module-primary" type="button" onClick={launchModule}>
+        <button className="chvp-module-primary" type="button" onPointerDown={launchModule}>
           <Sparkles size={18} />
           <span>{plan.primaryLabel}</span>
         </button>

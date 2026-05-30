@@ -17,6 +17,7 @@
 .chvp-module-bg {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background-image:
     linear-gradient(110deg, rgba(3, 3, 2, 0.92) 0%, rgba(10, 7, 4, 0.58) 50%, rgba(3, 3, 2, 0.9) 100%),
     url("/images/scenes/craft-hub.jpg");
@@ -35,6 +36,7 @@
   content: "";
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background:
     radial-gradient(circle at 22% 16%, rgba(216, 168, 45, 0.14), transparent 28%),
     linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.64));
@@ -536,6 +538,8 @@
   max-height: calc(100vh - 48px);
   overflow-y: auto;
   scrollbar-width: thin;
+  pointer-events: auto;
+  z-index: 30;
 }
 
 .chvp-module-actions {
