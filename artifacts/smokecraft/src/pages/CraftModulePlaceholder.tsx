@@ -39,7 +39,7 @@ const modulePlans: Record<string, ModulePlan> = {
     ],
     signals: ["Humidor inventory visible", "VIP preference memory active", "Pairing engine warmed"],
     primaryLabel: "Begin SmokeCraft Ritual",
-    primaryRoute: "/smokecraft",
+    primaryRoute: "/experience/smoke",
   },
   wine: {
     statusLine: "Cellar guidance is mapped to taste profile, bottle service, and guest preference capture.",
@@ -158,7 +158,7 @@ export default function CraftModulePlaceholder({
     } catch {
       // Session hints are optional; routing should still work without storage.
     }
-    navigate(plan.primaryRoute);
+    window.location.assign(plan.primaryRoute);
   };
 
   return (
