@@ -1851,6 +1851,15 @@ function PhaseRouter({ eatFlags, onFlagsChange }: { eatFlags: any; onFlagsChange
   );
 }
 
+function SmokeCraftRitualOnlyScreen() {
+  const Comp1 = S1_InitGate as any;
+  return (
+    <Suspense fallback={<PhaseLoadingFallback />}>
+      <Comp1 />
+    </Suspense>
+  );
+}
+
 function FullBleedBackground() {
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
@@ -1995,7 +2004,7 @@ function OsShellContent({ ritualOnly = false }: { ritualOnly?: boolean }) {
             {!ritualOnly && !isEAT && <SystemBar />}
             {/* Content starts at top:44 so SystemBar never clips or intercepts */}
             <div style={{ position: "absolute", top: ritualOnly || isEAT ? 0 : 44, bottom: 0, left: 0, right: 0, zIndex: 50, overflow: "hidden" }}>
-              <PhaseRouter eatFlags={eatFlags} onFlagsChange={setEatFlags} />
+              {ritualOnly ? <SmokeCraftRitualOnlyScreen /> : <PhaseRouter eatFlags={eatFlags} onFlagsChange={setEatFlags} />}
             </div>
           </div>
         </div>

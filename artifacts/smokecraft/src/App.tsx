@@ -1688,6 +1688,7 @@ function SmokeCraftExperienceRoute() {
     sessionStorage.setItem("novee_initial_phase", "s1_demo");
     sessionStorage.setItem("novee_launch_phase", "s1_demo");
     sessionStorage.removeItem("novee_golden_box_seen");
+    localStorage.removeItem("novee_guest_profile_v6");
   } catch {
     // Kiosk storage can be unavailable; NOVEE shell still boots normally.
   }
