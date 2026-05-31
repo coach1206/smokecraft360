@@ -2043,7 +2043,7 @@ export default function NoveeOsShell({ skipBoot = false, ritualOnly = false }: {
           <CompBoot key="boot" onComplete={handleBootComplete} />
         ) : (
           <motion.div key="shell"
-            initial={{ opacity: 0, filter: "blur(4px)" }}
+            initial={ritualOnly ? false : { opacity: 0, filter: "blur(4px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.28, ease: EASE_CINEMA }}
             style={{ position: "fixed", inset: 0 }}>
