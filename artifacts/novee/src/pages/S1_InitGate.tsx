@@ -259,15 +259,15 @@ function StitchPhotoLayer({
 function GoldenBoxArtwork() {
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#020202" }}>
-      <StitchPhotoLayer src={IMG("golden_box.png")} alt="The Golden Box reward case" opacity={0.78} position="center" />
+      <StitchPhotoLayer src={IMG("scenes/smokecraft-card.jpg")} alt="SmokeCraft ritual scene" opacity={0.62} position="center" />
       <StitchAtmosphere compact />
       <div style={{ position: "absolute", inset: "16% 12%", border: "1px solid rgba(212,175,55,0.30)", boxShadow: `0 0 44px ${GOLD}18, inset 0 0 30px rgba(212,175,55,0.08)` }} />
       <div style={{ position: "absolute", left: "22%", right: "22%", top: "31%", height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}88, transparent)` }} />
       <div style={{ position: "absolute", left: "20%", right: "20%", bottom: "29%", height: 1, background: `linear-gradient(90deg, transparent, ${GOLD}66, transparent)` }} />
       <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center", padding: 22 }}>
         <div>
-          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", color: GOLD, fontSize: "clamp(26px, 4vw, 52px)", letterSpacing: "0.22em", textTransform: "uppercase", lineHeight: 1.05 }}>The Golden Box</div>
-          <div style={{ marginTop: 12, color: "rgba(240,232,212,0.54)", fontSize: 11, letterSpacing: "0.36em", textTransform: "uppercase" }}>Compete. Learn. Ascend.</div>
+          <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", color: GOLD, fontSize: "clamp(26px, 4vw, 52px)", letterSpacing: "0.22em", textTransform: "uppercase", lineHeight: 1.05 }}>SmokeCraft 360</div>
+          <div style={{ marginTop: 12, color: "rgba(240,232,212,0.54)", fontSize: 11, letterSpacing: "0.36em", textTransform: "uppercase" }}>Every leaf has a story.</div>
         </div>
       </div>
     </div>
@@ -607,7 +607,7 @@ export function S1_InitGate() {
     if (!canSubmitProfile) return;
     updateProfile({ firstName: firstName.trim(), lastName: lastName.trim(), phone4: phone4.trim().slice(-4), age: parseInt(age) });
     addPoints(10);
-    go("rules");
+    go("country_select");
   }
 
   function selectCountry(id: string) {
@@ -684,7 +684,7 @@ export function S1_InitGate() {
     setPhase("s2_terroir");
   }
 
-  const STEPS: Step[] = ["demo", "rules", "country_select", "seed_canvas", "quiz", "posgate"];
+  const STEPS: Step[] = ["demo", "country_select", "seed_canvas", "quiz", "posgate"];
 
   return (
     <div style={{ position: "absolute", inset: 0, fontFamily: "'Inter', sans-serif", overflow: "hidden" }}>
@@ -895,7 +895,7 @@ export function S1_InitGate() {
                     { num: "1", img: IMG("scenes/smokecraft-card.jpg"), icon: <><path d="M11 20A7 7 0 0 1 4 13C4 9 9 4 12 2c3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 2c0 6-4 10-4 10"/></>, label: "DISCOVER",    desc: "Explore premium flavor, body, aroma, and structure" },
                     { num: "2", img: IMG("tobacco_criollo.jpg"), icon: <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,            label: "ANALYZE",     desc: "Understand flavor transitions, depth, and blend notes" },
                     { num: "3", img: IMG("craft/smoke-1.png"), icon: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,              label: "CRAFT",       desc: "Build your blend profile through guided selections" },
-                    { num: "4", img: IMG("golden_box.png"), icon: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></>,                          label: "EXPERIENCE",  desc: "Score your blends and refine your last palate" },
+                    { num: "4", img: IMG("scenes/smokecraft-card.jpg"), icon: <><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/></>,                          label: "ELEVATE",  desc: "Carry your palate forward through the ritual" },
                   ].map(s => (
                     <div key={s.label} style={{ position: "relative", minHeight: 150, overflow: "hidden", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(212,175,55,0.10)", borderRadius: 10, padding: "70px 12px 16px", textAlign: "center" }}>
                       <img src={s.img} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: 70, objectFit: "cover", filter: "brightness(0.62) saturate(1.04)" }} />
@@ -915,7 +915,7 @@ export function S1_InitGate() {
         )}
 
         {/* ══════════════ RULES — THE GOLDEN BOX ══════════════ */}
-        {step === "rules" && (
+        {false && step === "rules" && (
           <motion.div key="rules" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
             style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
@@ -1140,7 +1140,7 @@ export function S1_InitGate() {
                   </div>
                   {/* CTA button */}
                   <motion.button type="button"
-                    onPointerDown={() => go("leaderboard")}
+                    onPointerDown={() => go("country_select")}
                     whileTap={{ scale: 0.97 }}
                     style={{
                       padding: "16px 28px",
@@ -1152,7 +1152,7 @@ export function S1_InitGate() {
                       boxShadow: `0 0 28px rgba(212,175,55,0.35), 0 6px 20px rgba(0,0,0,0.60)`,
                       whiteSpace: "nowrap",
                     }}>
-                     View Leaderboard
+                     Continue
                   </motion.button>
                 </div>
               </div>
@@ -1185,7 +1185,7 @@ export function S1_InitGate() {
         )}
 
         {/* ══════════════ LEADERBOARD — THE GOLDEN BOX ══════════════ */}
-        {step === "leaderboard" && (
+        {false && step === "leaderboard" && (
           <motion.div key="leaderboard" variants={PV} initial="enter" animate="active" exit="exit" transition={PT}
             style={{ position: "absolute", inset: "41px 0 0 0", display: "flex", overflow: "hidden" }}>
 

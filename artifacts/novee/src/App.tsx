@@ -1972,9 +1972,6 @@ function OsShell() {
    Root app
 ───────────────────────────────────────────── */
 export default function App() {
-  const [splashDone, setSplashDone] = useState(false);
-  const [bootDone, setBootDone] = useState(false);
-
   // ── Device heartbeat — keeps kiosk registered as ACTIVE in venue registry ──
   useEffect(() => {
     const stop = startHeartbeat({
@@ -1985,34 +1982,19 @@ export default function App() {
     return stop;
   }, []);
 
-  function handleBootComplete() {
-    setBootDone(true);
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <LicenseProvider>
       <ThemeConfigProvider>
       <GuestProfileProvider>
         <AnimatePresence mode="wait">
-          {!splashDone ? (
-            <SplashController key="splash" onFinish={() => setSplashDone(true)} />
-          ) : !bootDone ? (
-            <CraftEntryPoint key="boot" onComplete={handleBootComplete} />
-          ) : (
-            <motion.div key="shell"
-              initial={{ opacity: 0, filter: "blur(4px)" }}
-              animate={{ opacity: 1, filter: "blur(0px)" }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              style={{ position: "fixed", inset: 0 }}>
-              <OsShell />
-              <AmbientEmberField />
-              <AshParticles />
-              <RevenueOptimizationOverlay />
-              <NoveeXPBridge />
-              <DevModeOverlay />
-            </motion.div>
-          )}
+          <motion.div key="smokecraft-stitch-ritual"
+            initial={{ opacity: 0, filter: "blur(4px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            style={{ position: "fixed", inset: 0 }}>
+            <S1_InitGate />
+          </motion.div>
         </AnimatePresence>
       </GuestProfileProvider>
       </ThemeConfigProvider>
