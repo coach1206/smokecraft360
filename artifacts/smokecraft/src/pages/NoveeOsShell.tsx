@@ -13,8 +13,8 @@ import NoveeEATDashboard from "@/pages/NoveeEATDashboard";
 import NoveeKioskBootSequence from "@/pages/NoveeKioskBootSequence";
 import NoveeCraftPortalHome from "@/pages/NoveeCraftPortalHome";
 import NoveeExecutiveCommandCenter from "@/pages/NoveeExecutiveCommandCenter";
+import { S1_InitGate } from "@/pages/S1_InitGate";
 // Deep-flow pages: lazy-loaded (only reached after boot + crafthub navigation)
-const S1_InitGate = lazy(() => import("@/pages/S1_InitGate").then((m: any) => ({ default: m.S1_InitGate || m.default || m })));
 const S2_TerroirMatrix = lazy(() => import("@/pages/S2_TerroirMatrix").then((m: any) => ({ default: m.S2_TerroirMatrix || m.default || m })));
 const S3_FormulationLab = lazy(() => import("@/pages/S3_FormulationLab").then((m: any) => ({ default: m.S3_FormulationLab || m.default || m })));
 const S4_DesignStudio = lazy(() => import("@/pages/S4_DesignStudio").then((m: any) => ({ default: m.S4_DesignStudio || m.default || m })));
