@@ -9,7 +9,7 @@ args = ["pnpm", "store", "prune"]
 env = { "CI" = "true" }
 
 [workflows]
-runButton = "SmokeCraft Remote"
+runButton = "SmokeCraft App"
 
 [[workflows.workflow]]
 name = "Project"
@@ -18,14 +18,14 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "SmokeCraft Remote"
+args = "SmokeCraft App"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "NOVEE OS Kiosk"
 
 [[workflows.workflow]]
-name = "SmokeCraft Remote"
+name = "SmokeCraft App"
 author = "agent"
 
 [[workflows.workflow.tasks]]
