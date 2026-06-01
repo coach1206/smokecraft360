@@ -46,6 +46,7 @@ const craftCards = [
     description: "Build the profile. Match the pour. Guide the moment.",
     icon: Flame,
     images: [STITCH_IMAGES.smoke, "images/scenes/smokecraft-card.jpg", "images/smoke-home-1.jpg"],
+    fallback: "images/scenes/smokecraft-card.jpg",
   },
   {
     id: "pour",
@@ -55,6 +56,7 @@ const craftCards = [
     description: "Guide cocktails, bourbon, whiskey, and premium pours.",
     icon: GlassWater,
     images: [STITCH_IMAGES.pour, "images/scenes/pourcraft-card.jpg", "images/pour/pour_whiskey.png"],
+    fallback: "images/scenes/pourcraft-card.jpg",
   },
   {
     id: "beer",
@@ -64,6 +66,7 @@ const craftCards = [
     description: "Match flavor, mood, and menu with the right beer.",
     icon: Beer,
     images: [STITCH_IMAGES.beer, "images/scenes/brewcraft-card.jpg", "images/beer-verified-1.jpg"],
+    fallback: "images/scenes/brewcraft-card.jpg",
   },
   {
     id: "wine",
@@ -73,6 +76,7 @@ const craftCards = [
     description: "Taste, pair, and recommend with confidence.",
     icon: Wine,
     images: [STITCH_IMAGES.wine, "images/craft/wine-1.png", "images/wine-1.jpg"],
+    fallback: "images/craft/wine-1.png",
   },
 ];
 
@@ -151,6 +155,9 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
   const [wrapper, setWrapper] = useState("Maduro");
   const [vitola, setVitola] = useState("Toro");
   const [strength, setStrength] = useState("Medium Full");
+  const [flavor, setFlavor] = useState("Cocoa");
+  const [cut, setCut] = useState("Straight");
+  const [mood, setMood] = useState("Slow Evening");
   const [pairing, setPairing] = useState("Single Malt Whiskey");
 
   const enter = (next: Stage) => {
@@ -159,8 +166,8 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
   };
 
   const context = useMemo(
-    () => ({ guide, wrapper, vitola, strength, pairing }),
-    [guide, wrapper, vitola, strength, pairing],
+    () => ({ guide, wrapper, vitola, strength, flavor, cut, mood, pairing }),
+    [guide, wrapper, vitola, strength, flavor, cut, mood, pairing],
   );
 
   return (
@@ -197,11 +204,17 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
           setWrapper={setWrapper}
           setVitola={setVitola}
           setStrength={setStrength}
+          setFlavor={setFlavor}
+          setCut={setCut}
+          setMood={setMood}
           onReset={() => {
             touchPulse();
             setWrapper("Maduro");
             setVitola("Toro");
             setStrength("Medium Full");
+            setFlavor("Cocoa");
+            setCut("Straight");
+            setMood("Slow Evening");
           }}
           onBack={() => enter("guide")}
           onPairing={() => enter("pairing")}
@@ -324,12 +337,13 @@ function CraftHub({ onLaunch }: { onLaunch: () => void }) {
               style={{ ["--delay" as string]: `${idx * 2}s` }}
             >
               {card.images.map((src, imageIndex) => (
-                <img
+                <div
                   key={src}
-                  src={img(src)}
-                  alt=""
                   className={`scso-card-image image-${imageIndex + 1}`}
-                  draggable={false}
+                  style={{
+                    backgroundImage: `url("${img(src)}"), url("${img(card.fallback)}")`,
+                    ["--fallback-image" as string]: `url("${img(card.fallback)}")`,
+                  }}
                 />
               ))}
               <div className="scso-card-shade" />
@@ -430,14 +444,20 @@ function ReserveWorkspace({
   setWrapper,
   setVitola,
   setStrength,
+  setFlavor,
+  setCut,
+  setMood,
   onReset,
   onBack,
   onPairing,
 }: {
-  context: { guide: (typeof guides)[number]; wrapper: string; vitola: string; strength: string; pairing: string };
+  context: { guide: (typeof guides)[number]; wrapper: string; vitola: string; strength: string; flavor: string; cut: string; mood: string; pairing: string };
   setWrapper: (v: string) => void;
   setVitola: (v: string) => void;
   setStrength: (v: string) => void;
+  setFlavor: (v: string) => void;
+  setCut: (v: string) => void;
+  setMood: (v: string) => void;
   onReset: () => void;
   onBack: () => void;
   onPairing: () => void;
@@ -458,12 +478,22 @@ function ReserveWorkspace({
       </header>
       <div className="scso-workspace-grid">
         <div className="scso-prep-mat">
-          <img src={img("images/cigar_hero.jpg")} alt="Hand-rolled Maduro cigar" draggable={false} />
+          <img src={img("images/cigar1.png")} alt="Hand-rolled Maduro cigar" draggable={false} />
+          <div className="scso-spec-ledger">
+            <span>{context.wrapper}</span>
+            <span>{context.vitola}</span>
+            <span>{context.strength}</span>
+            <span>{context.flavor}</span>
+            <span>{context.cut} Cut</span>
+          </div>
         </div>
         <div className="scso-controls">
           <ChoiceGroup label="Wrapper" value={context.wrapper} items={["Maduro", "Natural", "Connecticut"]} onChange={setWrapper} />
           <ChoiceGroup label="Vitola" value={context.vitola} items={["Robusto", "Toro", "Churchill"]} onChange={setVitola} />
           <ChoiceGroup label="Strength" value={context.strength} items={["Mild", "Medium Full", "Full"]} onChange={setStrength} />
+          <ChoiceGroup label="Flavor" value={context.flavor} items={["Cocoa", "Cedar", "Spice"]} onChange={setFlavor} />
+          <ChoiceGroup label="Cut" value={context.cut} items={["Straight", "V-Cut", "Punch"]} onChange={setCut} />
+          <ChoiceGroup label="Mood" value={context.mood} items={["Slow Evening", "Celebration", "Quiet Focus"]} onChange={setMood} />
           <button type="button" className="scso-primary" onPointerDown={onPairing}>
             Match the Pour
           </button>
@@ -507,7 +537,7 @@ function PairingIntelligence({
   onBack,
   onGolden,
 }: {
-  context: { guide: (typeof guides)[number]; wrapper: string; vitola: string; strength: string; pairing: string };
+  context: { guide: (typeof guides)[number]; wrapper: string; vitola: string; strength: string; flavor: string; cut: string; mood: string; pairing: string };
   setPairing: (v: string) => void;
   onBack: () => void;
   onGolden: () => void;
@@ -520,7 +550,7 @@ function PairingIntelligence({
         <div>
           <p className="scso-kicker">AI Sommelier</p>
           <h1>Pair With My Profile</h1>
-          <p>{context.wrapper} · {context.vitola} · {context.strength}</p>
+          <p>{context.wrapper} · {context.vitola} · {context.strength} · {context.flavor} · {context.mood}</p>
         </div>
       </header>
       <div className="scso-pairing-grid">
@@ -528,7 +558,7 @@ function PairingIntelligence({
         <div className="scso-sommelier">
           <Leaf size={46} strokeWidth={1.2} />
           <h2>Synergy Calculation</h2>
-          <p>Cocoa, cedar, warm spice, and a clean finish suggest a rich pour with soft caramel and oak structure.</p>
+          <p>{context.flavor}, {context.wrapper.toLowerCase()} wrapper, and a {context.cut.toLowerCase()} cut suggest a rich pour with soft caramel and oak structure.</p>
           <div className="scso-meter"><span style={{ width: "88%" }} /></div>
           <strong>Affinity 88%</strong>
         </div>
@@ -568,7 +598,7 @@ function GoldenBoxFinale({
   onHome,
   onRestart,
 }: {
-  context: { guide: (typeof guides)[number]; wrapper: string; vitola: string; strength: string; pairing: string };
+  context: { guide: (typeof guides)[number]; wrapper: string; vitola: string; strength: string; flavor: string; cut: string; mood: string; pairing: string };
   onHome: () => void;
   onRestart: () => void;
 }) {
@@ -583,6 +613,7 @@ function GoldenBoxFinale({
           <dl>
             <div><dt>Guide</dt><dd>{context.guide.name}</dd></div>
             <div><dt>Build</dt><dd>{context.wrapper} · {context.vitola} · {context.strength}</dd></div>
+            <div><dt>Ritual</dt><dd>{context.flavor} · {context.cut} Cut · {context.mood}</dd></div>
             <div><dt>Pairing</dt><dd>{context.pairing}</dd></div>
             <div><dt>Dispatch</dt><dd>E.A.T. queue ready · 144 Puros remaining</dd></div>
           </dl>
