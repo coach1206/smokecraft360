@@ -8,8 +8,13 @@ import {
   GlassWater,
   Home,
   Leaf,
+  Lock,
+  MessageCircle,
+  PackageCheck,
+  Radio,
   RotateCcw,
-  UserRound,
+  ShieldCheck,
+  TrendingUp,
   Wine,
 } from "lucide-react";
 import "./SmokeCraftStitchOrchestration.css";
@@ -186,6 +191,15 @@ const mastery = [
   "Pairing ready",
 ];
 
+const coachTopics = [
+  "Guide Selection",
+  "Wrapper Profile",
+  "Pairing Logic",
+  "Humidor Count",
+  "POS Dispatch",
+  "Guest Recovery",
+];
+
 function touchPulse() {
   try {
     navigator.vibrate?.(18);
@@ -231,6 +245,9 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
   const [cut, setCut] = useState("Straight");
   const [mood, setMood] = useState("Slow Evening");
   const [pairing, setPairing] = useState("Single Malt Whiskey");
+  const [coachOpen, setCoachOpen] = useState(false);
+  const [pinOpen, setPinOpen] = useState(false);
+  const [floorDeckOpen, setFloorDeckOpen] = useState(false);
 
   const enter = (next: Stage) => {
     touchPulse();
@@ -252,6 +269,19 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
           onSmoke={() => enter("onboarding")}
           onPairing={() => enter("pairing")}
           onGolden={() => enter("golden")}
+        />
+      )}
+      {stage !== "boot" && stage !== "novee" && (
+        <TelemetryDeck
+          onCoach={() => {
+            touchPulse();
+            setCoachOpen(true);
+          }}
+          onEatAction={() => {
+            touchPulse();
+            setPinOpen(true);
+          }}
+          floorDeckOpen={floorDeckOpen}
         />
       )}
 
@@ -301,6 +331,16 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
         />
       )}
       {stage === "golden" && <GoldenBoxFinale context={context} onHome={() => enter("hub")} onRestart={() => enter("onboarding")} />}
+      {coachOpen && <CoachHelpPortal onClose={() => setCoachOpen(false)} />}
+      {pinOpen && (
+        <StaffPinPad
+          onCancel={() => setPinOpen(false)}
+          onSuccess={() => {
+            setPinOpen(false);
+            setFloorDeckOpen(true);
+          }}
+        />
+      )}
     </main>
   );
 }
@@ -377,6 +417,43 @@ function LeftRail({
         );
       })}
     </nav>
+  );
+}
+
+function TelemetryDeck({
+  onCoach,
+  onEatAction,
+  floorDeckOpen,
+}: {
+  onCoach: () => void;
+  onEatAction: () => void;
+  floorDeckOpen: boolean;
+}) {
+  const modules = [
+    { label: "E.A.T Status", value: floorDeckOpen ? "Live Floor Deck" : "Staff Gate Ready", icon: ShieldCheck, action: onEatAction },
+    { label: "Revenue Velocity", value: "2.4x Active", icon: TrendingUp, action: onEatAction },
+    { label: "Humidor Countdown", value: "145 Puros Remaining", icon: PackageCheck, action: onEatAction },
+    { label: "Socket Handshake", value: "POS Connected", icon: Radio, action: onEatAction },
+  ];
+
+  return (
+    <aside className="scso-telemetry" aria-label="Live telemetry">
+      {modules.map((module) => {
+        const Icon = module.icon;
+        return (
+          <button key={module.label} type="button" onPointerDown={module.action}>
+            <Icon size={22} strokeWidth={1.7} />
+            <span>{module.label}</span>
+            <strong>{module.value}</strong>
+          </button>
+        );
+      })}
+      <button type="button" className="scso-coach-button" onPointerDown={onCoach}>
+        <MessageCircle size={22} strokeWidth={1.7} />
+        <span>Coach Help</span>
+        <strong>6 Topics Ready</strong>
+      </button>
+    </aside>
   );
 }
 
@@ -707,6 +784,114 @@ function GoldenBoxFinale({
         </div>
       </div>
     </section>
+  );
+}
+
+function CoachHelpPortal({ onClose }: { onClose: () => void }) {
+  const [activeTopic, setActiveTopic] = useState(coachTopics[0]);
+  const [reply, setReply] = useState("Select a topic for clear service guidance.");
+  const [loading, setLoading] = useState(false);
+
+  async function askCoach(topic: string) {
+    touchPulse();
+    setActiveTopic(topic);
+    setLoading(true);
+    try {
+      const response = await fetch("/api/coach/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `Give concise touchscreen staff guidance for ${topic} inside SmokeCraft 360.`,
+          topicContext: topic,
+        }),
+      });
+      if (!response.ok) throw new Error("Coach unavailable");
+      const data = await response.json() as { reply?: string };
+      setReply(data.reply ?? "Guidance ready.");
+    } catch {
+      setReply(`${topic}: guide the guest clearly, confirm the choice, and keep the session moving without leaving the ritual.`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="scso-modal-backdrop" role="dialog" aria-modal="true">
+      <section className="scso-coach-modal">
+        <header>
+          <div>
+            <p className="scso-kicker">Coach Help</p>
+            <h2>Service Guidance</h2>
+          </div>
+          <button type="button" className="scso-link-button" onPointerDown={onClose}>Close</button>
+        </header>
+        <div className="scso-coach-grid">
+          {coachTopics.map((topic) => (
+            <button key={topic} type="button" className={activeTopic === topic ? "active" : ""} onPointerDown={() => void askCoach(topic)}>
+              {topic}
+            </button>
+          ))}
+        </div>
+        <div className="scso-coach-response">
+          <strong>{loading ? "Loading guidance" : activeTopic}</strong>
+          <p>{reply}</p>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function StaffPinPad({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: () => void }) {
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState("");
+  const [unlocked, setUnlocked] = useState(false);
+  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "Enter"];
+
+  function pressKey(key: string) {
+    touchPulse();
+    if (key === "Clear") {
+      setPin("");
+      setError("");
+      return;
+    }
+    if (key === "Enter") {
+      if (["1234", "2580", "7890", "3600"].includes(pin)) {
+        setUnlocked(true);
+        window.setTimeout(onSuccess, 620);
+      } else {
+        setError("Invalid staff PIN");
+        setPin("");
+      }
+      return;
+    }
+    if (pin.length < 4) setPin((current) => `${current}${key}`);
+  }
+
+  return (
+    <div className="scso-modal-backdrop" role="dialog" aria-modal="true">
+      <section className={`scso-pin-modal ${unlocked ? "unlocked" : ""}`}>
+        <div className="scso-pin-ripple" />
+        <header>
+          <Lock size={28} strokeWidth={1.6} />
+          <div>
+            <p className="scso-kicker">Staff PIN</p>
+            <h2>E.A.T Action Gate</h2>
+          </div>
+        </header>
+        <div className="scso-pin-dots" aria-label="PIN entry">
+          {[0, 1, 2, 3].map((index) => <span key={index} className={index < pin.length ? "filled" : ""} />)}
+        </div>
+        {error && <p className="scso-pin-error">{error}</p>}
+        <div className="scso-pin-grid">
+          {keys.map((key) => (
+            <button key={key} type="button" onPointerDown={() => pressKey(key)}>
+              {key}
+            </button>
+          ))}
+        </div>
+        <button type="button" className="scso-link-button" onPointerDown={onCancel}>Cancel</button>
+      </section>
+    </div>
   );
 }
 

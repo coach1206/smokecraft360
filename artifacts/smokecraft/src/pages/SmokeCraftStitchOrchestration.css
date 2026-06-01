@@ -819,6 +819,249 @@
   width: 100%;
 }
 
+.scso-telemetry {
+  position: fixed;
+  z-index: 18;
+  top: 138px;
+  right: 28px;
+  width: min(250px, calc(100vw - 96px));
+  display: grid;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.scso-telemetry button,
+.scso-coach-button {
+  min-height: 70px;
+  border: 1px solid rgba(255, 253, 208, 0.24);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 4px 10px;
+  align-items: center;
+  color: #fdfbf7;
+  background:
+    radial-gradient(circle at top right, rgba(255, 253, 208, 0.16), transparent 48%),
+    linear-gradient(135deg, rgba(32, 22, 11, 0.88), rgba(1, 1, 1, 0.72));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.46), inset 0 0 28px rgba(212, 175, 55, 0.08);
+  backdrop-filter: blur(18px);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.scso-telemetry button:active,
+.scso-telemetry button:focus-visible {
+  border-color: rgba(255, 217, 92, 0.78);
+  transform: translateY(1px) scale(0.985);
+  outline: none;
+}
+
+.scso-telemetry svg {
+  grid-row: 1 / span 2;
+  color: #d4af37;
+}
+
+.scso-telemetry span {
+  color: rgba(255, 253, 208, 0.72);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.scso-telemetry strong {
+  color: #fdfbf7;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.scso-coach-button {
+  border-color: rgba(212, 175, 55, 0.48) !important;
+}
+
+.scso-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background:
+    radial-gradient(circle at center, rgba(212, 175, 55, 0.15), rgba(1, 1, 1, 0.78) 58%),
+    rgba(1, 1, 1, 0.7);
+  backdrop-filter: blur(18px);
+}
+
+.scso-coach-modal,
+.scso-pin-modal {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.56);
+  border-radius: 26px;
+  color: #fdfbf7;
+  background:
+    radial-gradient(circle at top left, rgba(255, 253, 208, 0.12), transparent 42%),
+    linear-gradient(135deg, rgba(28, 20, 12, 0.94), rgba(1, 1, 1, 0.9));
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.62), inset 0 0 40px rgba(212, 175, 55, 0.09);
+}
+
+.scso-coach-modal {
+  width: min(920px, 92vw);
+  min-height: 520px;
+  padding: 30px;
+}
+
+.scso-coach-modal header,
+.scso-pin-modal header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.scso-coach-modal h2,
+.scso-pin-modal h2 {
+  margin: 0;
+  color: #fdfbf7;
+  font-size: clamp(30px, 4vw, 52px);
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.scso-coach-modal .scso-link-button {
+  width: auto;
+  min-width: 132px;
+  margin: 0;
+}
+
+.scso-coach-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.scso-coach-grid button,
+.scso-pin-grid button {
+  min-height: 64px;
+  border: 1px solid rgba(255, 253, 208, 0.22);
+  border-radius: 14px;
+  color: #fdfbf7;
+  background: rgba(255, 253, 208, 0.045);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.scso-coach-grid button.active,
+.scso-coach-grid button:active,
+.scso-pin-grid button:active {
+  color: #010101;
+  border-color: rgba(255, 253, 208, 0.9);
+  background: linear-gradient(180deg, #fff4a8, #d4af37);
+}
+
+.scso-coach-response {
+  min-height: 155px;
+  border: 1px solid rgba(212, 175, 55, 0.36);
+  border-radius: 18px;
+  padding: 22px;
+  background:
+    radial-gradient(circle at top, rgba(255, 253, 208, 0.12), transparent 58%),
+    rgba(0, 0, 0, 0.34);
+}
+
+.scso-coach-response strong {
+  color: #d4af37;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.scso-coach-response p {
+  margin: 14px 0 0;
+  color: rgba(253, 251, 247, 0.82);
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.scso-pin-modal {
+  width: min(440px, 92vw);
+  padding: 28px;
+}
+
+.scso-pin-modal header {
+  justify-content: flex-start;
+}
+
+.scso-pin-modal header svg {
+  color: #d4af37;
+}
+
+.scso-pin-ripple {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 253, 208, 0.92);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: none;
+}
+
+.scso-pin-modal.unlocked .scso-pin-ripple {
+  animation: scso-pin-unlock 0.62s ease-out forwards;
+}
+
+.scso-pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 12px 0 18px;
+}
+
+.scso-pin-dots span {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(255, 253, 208, 0.36);
+  border-radius: 999px;
+  background: rgba(255, 253, 208, 0.05);
+}
+
+.scso-pin-dots span.filled {
+  border-color: #fff4a8;
+  background: #d4af37;
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.62);
+}
+
+.scso-pin-error {
+  min-height: 24px;
+  margin: 0 0 12px;
+  color: #ffb3a6;
+  text-align: center;
+  font-weight: 800;
+}
+
+.scso-pin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.scso-pin-modal .scso-link-button {
+  min-height: 62px;
+}
+
 .scso-guide .scso-header,
 .scso-reserve .scso-header,
 .scso-pairing .scso-header {
@@ -851,6 +1094,11 @@
 @keyframes scso-burst {
   from { opacity: 0.7; transform: scale(0.8); }
   to { opacity: 0; transform: scale(1.16); }
+}
+
+@keyframes scso-pin-unlock {
+  0% { opacity: 0.95; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(34); }
 }
 
 @media (max-width: 980px) {
@@ -892,5 +1140,23 @@
     position: static;
     width: auto;
     margin-top: 16px;
+  }
+
+  .scso-telemetry {
+    position: fixed;
+    top: auto;
+    right: 16px;
+    bottom: 18px;
+    left: 94px;
+    width: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scso-telemetry button {
+    min-height: 64px;
+  }
+
+  .scso-coach-grid {
+    grid-template-columns: 1fr;
   }
 }
