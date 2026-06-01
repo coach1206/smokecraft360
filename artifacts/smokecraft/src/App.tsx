@@ -66,8 +66,8 @@ const OnboardWizard         = lazy(() => import('@/pages/OnboardWizard'));
 const AnalyticsModule       = lazy(() => import('@/pages/AnalyticsModule'));
 const SwipeIntelligence     = lazy(() => import('@/pages/SwipeIntelligence'));
 const CraftHub              = lazy(() => import('@/pages/CraftHubPortal'));
-const CraftHubVisualPortal  = lazy(() => import('@/pages/CraftHubVisualPortal'));
 const CraftModulePlaceholder = lazy(() => import('@/pages/CraftModulePlaceholder'));
+const SmokeCraftStitchOrchestration = lazy(() => import('@/pages/SmokeCraftStitchOrchestration'));
 const DemoWalkthrough       = lazy(() => import('@/pages/DemoWalkthrough'));
 const MasterOperations      = lazy(() => import('@/pages/MasterOperations'));
 const CommandCenter         = lazy(() => import('@/pages/CommandCenter'));
@@ -1294,7 +1294,7 @@ export default function App() {
           </Route>
           <Route path="/craft-hub">
             <Suspense fallback={null}>
-              <CraftHubVisualPortal />
+              <SmokeCraftStitchOrchestration initialStage="hub" />
             </Suspense>
           </Route>
           <Route path="/smokecraft">
@@ -1684,16 +1684,7 @@ function RootRedirect() {
 }
 
 function SmokeCraftExperienceRoute() {
-  try {
-    sessionStorage.setItem("novee_initial_phase", "s1_demo");
-    sessionStorage.setItem("novee_launch_phase", "s1_demo");
-    sessionStorage.removeItem("novee_golden_box_seen");
-    localStorage.removeItem("novee_guest_profile_v6");
-  } catch {
-    // Kiosk storage can be unavailable; NOVEE shell still boots normally.
-  }
-
-  return <NoveeOsShell skipBoot ritualOnly />;
+  return <SmokeCraftStitchOrchestration initialStage="boot" />;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
