@@ -829,6 +829,12 @@ const GUEST_PREFIXES = [
   '/master-blender',
 ];
 
+const STITCH_ORCHESTRATION_ROUTES = new Set(['/', '/craft-hub', '/smokecraft', '/experience/smoke']);
+
+function isStitchOrchestrationRoute(loc: string) {
+  return STITCH_ORCHESTRATION_ROUTES.has(loc) || loc.startsWith('/experience/smoke/');
+}
+
 function isSmokeCraftGuestRoute(loc: string) {
   return GUEST_PREFIXES.some((prefix) => {
     if (prefix === '/') return loc === '/';
@@ -839,7 +845,6 @@ function isSmokeCraftGuestRoute(loc: string) {
 function NoveePoweredSmokeCraftShell() {
   const [loc] = useLocation();
   const active = isSmokeCraftGuestRoute(loc);
-  const ritualOnly = loc === '/experience/smoke' || loc.startsWith('/experience/smoke/');
 
   useEffect(() => {
     if (!active) return;
@@ -849,7 +854,7 @@ function NoveePoweredSmokeCraftShell() {
     } catch { /* localStorage unavailable */ }
   }, [active]);
 
-  if (!active || ritualOnly) return null;
+  if (!active || isStitchOrchestrationRoute(loc)) return null;
 
   return (
     <div
@@ -1070,7 +1075,7 @@ function GuestAmbientLayer() {
     };
   }, [active]);
 
-  if (!active) return null;
+  if (!active || isStitchOrchestrationRoute(loc)) return null;
 
   return (
     <div style={{
