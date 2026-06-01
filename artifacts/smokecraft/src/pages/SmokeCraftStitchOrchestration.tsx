@@ -10,11 +10,7 @@ import {
   Leaf,
   Lock,
   MessageCircle,
-  PackageCheck,
-  Radio,
   RotateCcw,
-  ShieldCheck,
-  TrendingUp,
   Wine,
 } from "lucide-react";
 import "./SmokeCraftStitchOrchestration.css";
@@ -37,6 +33,7 @@ type VisualAssetId =
   | "flagDominican"
   | "guideAlejandro"
   | "flagNicaragua"
+  | "flagHonduras"
   | "broadleafCultivation"
   | "volumetricSmoke"
   | "emberParticles"
@@ -92,6 +89,7 @@ const VISUAL_ASSETS: Record<VisualAssetId, { src: string; fallback?: string; lab
   flagDominican: { src: "css:flag-dominican", label: "Dominican Republic Emblematic Flag Graphic" },
   guideAlejandro: { src: "images/mentor_dominican.jpg", fallback: "images/mentor_dominican.png", label: "Alejandro Master Portrait" },
   flagNicaragua: { src: "css:flag-nicaragua", label: "Nicaraguan Emblematic Flag Graphic" },
+  flagHonduras: { src: "css:flag-honduras", label: "Honduran Emblematic Flag Graphic" },
   broadleafCultivation: { src: "images/tobacco_connecticut.jpg", fallback: "images/tobacco_connecticut.png", label: "Broadleaf Tobacco Cultivation" },
   volumetricSmoke: { src: "css:volumetric-smoke", label: "Volumetric Smoke Texture Substrate" },
   emberParticles: { src: "css:ember-particles", label: "Micro-Ember Spark Particles" },
@@ -162,6 +160,7 @@ const guides = [
     region: "Dominican Republic · Cibao",
     photo: "guideRosa" as VisualAssetId,
     flag: "flagDominican" as VisualAssetId,
+    countryClass: "dominican",
     notes: "Volcanic spice, deep wrapper oil, confident structure.",
   },
   {
@@ -171,6 +170,7 @@ const guides = [
     region: "Nicaragua · Esteli",
     photo: "guideAlejandro" as VisualAssetId,
     flag: "flagNicaragua" as VisualAssetId,
+    countryClass: "nicaragua",
     notes: "Cedar, earth, warm transitions, patient balance.",
   },
   {
@@ -179,7 +179,8 @@ const guides = [
     title: "Draw Precision Guide",
     region: "Honduras · Jamastran",
     photo: "broadleafCultivation" as VisualAssetId,
-    flag: "flagNicaragua" as VisualAssetId,
+    flag: "flagHonduras" as VisualAssetId,
+    countryClass: "honduras",
     notes: "Creamy texture, smooth draw, refined construction.",
   },
 ];
@@ -272,7 +273,7 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
         />
       )}
       {stage !== "boot" && stage !== "novee" && (
-        <TelemetryDeck
+        <StaffHandoffDock
           onCoach={() => {
             touchPulse();
             setCoachOpen(true);
@@ -281,7 +282,6 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
             touchPulse();
             setPinOpen(true);
           }}
-          floorDeckOpen={floorDeckOpen}
         />
       )}
 
@@ -341,6 +341,7 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
           }}
         />
       )}
+      {floorDeckOpen && <EatPosDeck onClose={() => setFloorDeckOpen(false)} />}
     </main>
   );
 }
@@ -420,34 +421,20 @@ function LeftRail({
   );
 }
 
-function TelemetryDeck({
+function StaffHandoffDock({
   onCoach,
   onEatAction,
-  floorDeckOpen,
 }: {
   onCoach: () => void;
   onEatAction: () => void;
-  floorDeckOpen: boolean;
 }) {
-  const modules = [
-    { label: "E.A.T Status", value: floorDeckOpen ? "Live Floor Deck" : "Staff Gate Ready", icon: ShieldCheck, action: onEatAction },
-    { label: "Revenue Velocity", value: "2.4x Active", icon: TrendingUp, action: onEatAction },
-    { label: "Humidor Countdown", value: "145 Puros Remaining", icon: PackageCheck, action: onEatAction },
-    { label: "Socket Handshake", value: "POS Connected", icon: Radio, action: onEatAction },
-  ];
-
   return (
-    <aside className="scso-telemetry" aria-label="Live telemetry">
-      {modules.map((module) => {
-        const Icon = module.icon;
-        return (
-          <button key={module.label} type="button" onPointerDown={module.action}>
-            <Icon size={22} strokeWidth={1.7} />
-            <span>{module.label}</span>
-            <strong>{module.value}</strong>
-          </button>
-        );
-      })}
+    <aside className="scso-handoff-dock" aria-label="Staff actions">
+      <button type="button" className="scso-handoff-button" onPointerDown={onEatAction}>
+        <Lock size={22} strokeWidth={1.7} />
+        <span>Staff Handoff</span>
+        <strong>Open E.A.T. POS</strong>
+      </button>
       <button type="button" className="scso-coach-button" onPointerDown={onCoach}>
         <MessageCircle size={22} strokeWidth={1.7} />
         <span>Coach Help</span>
@@ -558,8 +545,8 @@ function GuidePortfolio({
       </header>
       <div className="scso-guide-grid">
         {guides.map((g) => (
-          <button key={g.id} type="button" className={selected === g.id ? "selected" : ""} onPointerDown={() => onSelect(g.id)}>
-            <span className={`scso-flag scso-${g.flag}`} aria-hidden="true" title={VISUAL_ASSETS[g.flag].label} />
+          <button key={g.id} type="button" className={`${selected === g.id ? "selected" : ""} flag-${g.countryClass}`} onPointerDown={() => onSelect(g.id)}>
+            <span className={`scso-flag-field scso-${g.flag}`} aria-hidden="true" title={VISUAL_ASSETS[g.flag].label} />
             <img src={asset(g.photo)} alt={g.name} draggable={false} onError={(event) => { event.currentTarget.src = assetFallback(g.photo); }} />
             <div>
               <span>{g.region}</span>
@@ -890,6 +877,55 @@ function StaffPinPad({ onCancel, onSuccess }: { onCancel: () => void; onSuccess:
           ))}
         </div>
         <button type="button" className="scso-link-button" onPointerDown={onCancel}>Cancel</button>
+      </section>
+    </div>
+  );
+}
+
+function EatPosDeck({ onClose }: { onClose: () => void }) {
+  const modules = [
+    ["E.A.T Status", "Live Floor Deck"],
+    ["Revenue Velocity", "2.4x Active"],
+    ["Humidor Countdown", "145 Puros Remaining"],
+    ["Socket Handshake", "POS Connected"],
+  ];
+  const queue = [
+    ["Ritual Ticket", "Maduro Toro · Medium Full"],
+    ["Pairing", "Single Malt Whiskey"],
+    ["Dispatch", "Bar and humidor ready"],
+  ];
+
+  return (
+    <div className="scso-pos-backdrop" role="dialog" aria-modal="true">
+      <section className="scso-pos-deck">
+        <div className="scso-pos-ripple" />
+        <header>
+          <div className="scso-eat-logo">
+            <img src={asset("brassSwitch")} alt="" draggable={false} onError={(event) => { event.currentTarget.style.display = "none"; }} />
+            <div>
+              <p className="scso-kicker">E.A.T. System</p>
+              <h2>Live POS Handoff</h2>
+            </div>
+          </div>
+          <button type="button" className="scso-link-button" onPointerDown={onClose}>Return to Guest</button>
+        </header>
+        <div className="scso-pos-modules">
+          {modules.map(([label, value]) => (
+            <div key={label}>
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </div>
+          ))}
+        </div>
+        <div className="scso-pos-queue">
+          {queue.map(([label, value]) => (
+            <article key={label}>
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </article>
+          ))}
+        </div>
+        <button type="button" className="scso-primary">Send To Staff Queue</button>
       </section>
     </div>
   );

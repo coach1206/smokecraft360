@@ -468,42 +468,94 @@
   background: rgba(8, 5, 2, 0.72);
 }
 
+.scso-guide-grid button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.28;
+  mix-blend-mode: screen;
+}
+
+.scso-guide-grid button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(1, 1, 1, 0.06), rgba(1, 1, 1, 0.28) 44%, rgba(1, 1, 1, 0.9)),
+    radial-gradient(circle at top left, rgba(255, 253, 208, 0.18), transparent 45%);
+  pointer-events: none;
+}
+
+.scso-guide-grid button.flag-dominican::before {
+  background:
+    linear-gradient(90deg, transparent 0 43%, rgba(255, 255, 255, 0.95) 43% 57%, transparent 57% 100%),
+    linear-gradient(180deg, transparent 0 43%, rgba(255, 255, 255, 0.95) 43% 57%, transparent 57% 100%),
+    linear-gradient(90deg, #0038a8 0 50%, #ce1126 50% 100%);
+}
+
+.scso-guide-grid button.flag-nicaragua::before {
+  background: linear-gradient(180deg, #0067c6 0 33%, #fff 33% 66%, #0067c6 66% 100%);
+}
+
+.scso-guide-grid button.flag-honduras::before {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
+    radial-gradient(circle at 43% 44%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
+    radial-gradient(circle at 57% 44%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
+    radial-gradient(circle at 43% 56%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
+    radial-gradient(circle at 57% 56%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
+    linear-gradient(180deg, #0073cf 0 33%, #fff 33% 66%, #0073cf 66% 100%);
+}
+
 .scso-guide-grid button.selected {
   border-color: rgba(212, 175, 55, 0.85);
   box-shadow: 0 0 34px rgba(212, 175, 55, 0.22);
 }
 
-.scso-flag {
+.scso-flag-field {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 2;
-  width: 72px;
-  height: 46px;
-  border: 1px solid rgba(253, 251, 247, 0.48);
-  border-radius: 8px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
+  inset: 0;
+  z-index: 0;
+  opacity: 0.18;
 }
 
-.scso-flag.scso-flagDominican {
+.scso-flag-field.scso-flagDominican {
   background:
     linear-gradient(90deg, transparent 0 42%, #fff 42% 58%, transparent 58% 100%),
     linear-gradient(180deg, transparent 0 42%, #fff 42% 58%, transparent 58% 100%),
     linear-gradient(90deg, #0038a8 0 50%, #ce1126 50% 100%);
 }
 
-.scso-flag.scso-flagNicaragua {
+.scso-flag-field.scso-flagNicaragua {
   background:
     linear-gradient(180deg, #0067c6 0 33%, #fff 33% 66%, #0067c6 66% 100%);
 }
 
+.scso-flag-field.scso-flagHonduras {
+  background:
+    radial-gradient(circle at 50% 50%, #0073cf 0 3px, transparent 4px),
+    radial-gradient(circle at 43% 44%, #0073cf 0 3px, transparent 4px),
+    radial-gradient(circle at 57% 44%, #0073cf 0 3px, transparent 4px),
+    radial-gradient(circle at 43% 56%, #0073cf 0 3px, transparent 4px),
+    radial-gradient(circle at 57% 56%, #0073cf 0 3px, transparent 4px),
+    linear-gradient(180deg, #0073cf 0 33%, #fff 33% 66%, #0073cf 66% 100%);
+}
+
 .scso-guide-grid img {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 52%;
   object-fit: cover;
+  opacity: 0.86;
+  filter: saturate(0.86) contrast(1.05);
 }
 
 .scso-guide-grid button div {
+  position: relative;
+  z-index: 2;
   padding: 20px;
 }
 
@@ -819,18 +871,18 @@
   width: 100%;
 }
 
-.scso-telemetry {
+.scso-handoff-dock {
   position: fixed;
   z-index: 18;
-  top: 138px;
+  top: 142px;
   right: 28px;
-  width: min(250px, calc(100vw - 96px));
+  width: min(260px, calc(100vw - 96px));
   display: grid;
   gap: 12px;
   pointer-events: auto;
 }
 
-.scso-telemetry button,
+.scso-handoff-dock button,
 .scso-coach-button {
   min-height: 70px;
   border: 1px solid rgba(255, 253, 208, 0.24);
@@ -850,19 +902,19 @@
   touch-action: manipulation;
 }
 
-.scso-telemetry button:active,
-.scso-telemetry button:focus-visible {
+.scso-handoff-dock button:active,
+.scso-handoff-dock button:focus-visible {
   border-color: rgba(255, 217, 92, 0.78);
   transform: translateY(1px) scale(0.985);
   outline: none;
 }
 
-.scso-telemetry svg {
+.scso-handoff-dock svg {
   grid-row: 1 / span 2;
   color: #d4af37;
 }
 
-.scso-telemetry span {
+.scso-handoff-dock span {
   color: rgba(255, 253, 208, 0.72);
   font-size: 10px;
   font-weight: 900;
@@ -870,10 +922,14 @@
   text-transform: uppercase;
 }
 
-.scso-telemetry strong {
+.scso-handoff-dock strong {
   color: #fdfbf7;
   font-size: 14px;
   line-height: 1.2;
+}
+
+.scso-handoff-button {
+  border-color: rgba(255, 253, 208, 0.46) !important;
 }
 
 .scso-coach-button {
@@ -1062,6 +1118,121 @@
   min-height: 62px;
 }
 
+.scso-pos-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 42;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background:
+    radial-gradient(circle at center, rgba(255, 253, 208, 0.16), transparent 42%),
+    rgba(1, 1, 1, 0.82);
+  backdrop-filter: blur(20px);
+}
+
+.scso-pos-deck {
+  position: relative;
+  overflow: hidden;
+  width: min(1040px, 92vw);
+  border: 1px solid rgba(212, 175, 55, 0.64);
+  border-radius: 28px;
+  padding: 28px;
+  color: #fdfbf7;
+  background:
+    radial-gradient(circle at top left, rgba(255, 253, 208, 0.14), transparent 42%),
+    linear-gradient(135deg, rgba(33, 23, 12, 0.96), rgba(1, 1, 1, 0.92));
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.72), inset 0 0 44px rgba(212, 175, 55, 0.12);
+  animation: scso-pos-arrive 0.46s ease-out both;
+}
+
+.scso-pos-ripple {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 253, 208, 0.9);
+  animation: scso-pos-ripple 0.9s ease-out both;
+  pointer-events: none;
+}
+
+.scso-pos-deck header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.scso-eat-logo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.scso-eat-logo img {
+  width: 78px;
+  height: 78px;
+  object-fit: contain;
+  border: 1px solid rgba(255, 253, 208, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 253, 208, 0.05);
+}
+
+.scso-eat-logo h2 {
+  margin: 0;
+  color: #fff9e6;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(38px, 5vw, 72px);
+}
+
+.scso-pos-modules {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.scso-pos-modules div,
+.scso-pos-queue article {
+  min-height: 86px;
+  border: 1px solid rgba(255, 253, 208, 0.22);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255, 253, 208, 0.05);
+}
+
+.scso-pos-modules span,
+.scso-pos-queue span {
+  display: block;
+  color: #d4af37;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.scso-pos-modules strong,
+.scso-pos-queue strong {
+  color: #fdfbf7;
+  font-size: 20px;
+}
+
+.scso-pos-queue {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
 .scso-guide .scso-header,
 .scso-reserve .scso-header,
 .scso-pairing .scso-header {
@@ -1099,6 +1270,16 @@
 @keyframes scso-pin-unlock {
   0% { opacity: 0.95; transform: translate(-50%, -50%) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(34); }
+}
+
+@keyframes scso-pos-arrive {
+  from { opacity: 0; transform: scale(0.96); filter: blur(8px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes scso-pos-ripple {
+  from { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(62); }
 }
 
 @media (max-width: 980px) {
@@ -1142,7 +1323,7 @@
     margin-top: 16px;
   }
 
-  .scso-telemetry {
+  .scso-handoff-dock {
     position: fixed;
     top: auto;
     right: 16px;
@@ -1152,11 +1333,16 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .scso-telemetry button {
+  .scso-handoff-dock button {
     min-height: 64px;
   }
 
   .scso-coach-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .scso-pos-modules,
+  .scso-pos-queue {
     grid-template-columns: 1fr;
   }
 }
