@@ -5,7 +5,6 @@ import {
   Box,
   Check,
   Flame,
-  Gem,
   GlassWater,
   Home,
   Leaf,
@@ -21,7 +20,22 @@ interface SmokeCraftStitchOrchestrationProps {
   initialStage?: Stage;
 }
 
-const img = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
+const STITCH_IMAGES = {
+  profound:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuC0KkWhv5sVI33T9hAr0mYHmDkf7lUyXgodz4Cc9DI23kdiM6jvX4JpHjYHdoPm_idEtcqpnS1gaGnmBcoRqbdS_wRBruDvWL2Zpq4iJaCTTq8v4Yh5zxjICGrLhjXen7BzJhTOLDZ9nUEatXzR3kwPtIRIMJFEYcMXHEZkfcy7WN3-53UdpWvXtF-kysPt8s2Z9RVDOgSAPkATt5W_QwGwNuAhtOF1ZuekEJTO5f9pia3psrggXRPrfLt8-skY2VG_UAQMzi-wLjo",
+  novee:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCHpxBFJj-P04TV9_MbOuusZ497ngWOmvuVYwQQO-55WJQpypaSl2y13lgpPUPb0Ed3VCiyT_RXNaqe3YdeqzvnqQiS8NwwH3ss0yQXy6aYwVxHrEKCr5rBf7EzEWz17On-bNXZOLNzpL4HEYv2thxBsPBWRdjhlnTHfvFiunZvD_K1dBoocwBLReGVheNp4bloJ7OO50QHDnZb9hpIy-D5aSAVJ9pikAT3LuzLzAnnYuJyO7-zM8SQORQi-vKfvYCOgcgsmP47I6A",
+  smoke:
+    "https://lh3.googleusercontent.com/aida/ADBb0uhtU8rz_LUuM2Rs6VF6IbOHs2GcKncyUqQ8Thqk46-kFmxWCnYM38gCe4HTEiQwd5OoLqx3XfFipqA6HLoOiYZ6hLTp8wQ6BXqxptudmmSy-tk-yrSSxOA1GBXJGwVm-I9a3cWNEAAZtLI9iflIxR7hLiT-P_p3psEHLu-7MOfUCtHN7odA_qLbPWBsS2KqOI8ICaLQE5I0sU3z14GXzi9OKzPYOGtKfzS_jMseIgXP3XegckKVxV7zaew",
+  wine:
+    "https://lh3.googleusercontent.com/aida/ADBb0ugjIJZfwJ3IGEYKUJhER-QdccGeY-WcbTfiArJb-s9N3ERQdMNmb_K6bulXWMdtmsaQlf7QWvrCPdfCtK0I_7qxHcoEqmj_2jzkRsRttL3KMZCp0MLWoENgAQsDFT7xPEThYAoPHhFraE69m5CTsD7LHWKxMq3GoYYJnpZRiw1uNl1GECOLzvAy6dk9_5MZ6a0E1ZIhsLmNMLh8RlMDpb4s8zYGvuprrEmF_rX3lzyDVpApwvqnz7Vc78E",
+  pour:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCskNm-Gipq4Xh2PEmPK9RMRTgGDUBuyMZiRYoAtME-Zh5z6j_ab5GU3AHR-ZrDs2sqFDRLu23c8NuimOJ1qSvRoL3IOkxJb90dCZQkV7rv0WZupovlupp3Q5Tfwvsebm7bP5ynjwSaAKpMMlFJtlpf5Dc-IxE6nztt22D5VZ-nIfF85DE7uazu54z3XZKTev7einMVBybyeFS5E1s-qHFA_fEufSTGP8ZBPj7y9PSzgDxJBhwIsDXc2jZC8BGPNADgf8HsLjbz3m4",
+  beer:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDUADSYfZyDmWta433lljSL8PiO2ygnU_RD5LHM6qVdl_wyQBS-74Qg8otmBdDmp_FG_S8m9mKO_O-cNUWo4HzyxJYxCUYEq42Wb2Z8NQVALqdquemqVvGRF3P5vIEb8mt2BKxPOMHkTcUyWpVysZPBmmJrsQuOtBQrtoiYjBJEtADqDP8ky4NfdEw70-R-2WkFWClBxJKuC7YOb5AWkXvr4t5rRvgbv7oN3_hgEcDtPthlyF5f19ncQ5GFemANiRTQxtPHqDkJf7s",
+};
+
+const img = (path: string) => path.startsWith("http") ? path : `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
 const craftCards = [
   {
@@ -31,7 +45,7 @@ const craftCards = [
     status: "Active",
     description: "Build the profile. Match the pour. Guide the moment.",
     icon: Flame,
-    images: ["images/scenes/smokecraft-card.jpg", "images/smoke-home-1.jpg", "images/lounge_bg.jpg"],
+    images: [STITCH_IMAGES.smoke, "images/scenes/smokecraft-card.jpg", "images/smoke-home-1.jpg"],
   },
   {
     id: "pour",
@@ -40,7 +54,7 @@ const craftCards = [
     status: "Coming Soon",
     description: "Guide cocktails, bourbon, whiskey, and premium pours.",
     icon: GlassWater,
-    images: ["images/scenes/pourcraft-card.jpg", "images/pour/pour_whiskey.png", "images/pour/pour_cocktail.png"],
+    images: [STITCH_IMAGES.pour, "images/scenes/pourcraft-card.jpg", "images/pour/pour_whiskey.png"],
   },
   {
     id: "beer",
@@ -49,7 +63,7 @@ const craftCards = [
     status: "Coming Soon",
     description: "Match flavor, mood, and menu with the right beer.",
     icon: Beer,
-    images: ["images/scenes/brewcraft-card.jpg", "images/beer-verified-1.jpg", "images/beer-verified-2.jpg"],
+    images: [STITCH_IMAGES.beer, "images/scenes/brewcraft-card.jpg", "images/beer-verified-1.jpg"],
   },
   {
     id: "wine",
@@ -58,7 +72,7 @@ const craftCards = [
     status: "Coming Soon",
     description: "Taste, pair, and recommend with confidence.",
     icon: Wine,
-    images: ["images/craft/wine-1.png", "images/wine-1.jpg", "images/scenes/craft-hub.jpg"],
+    images: [STITCH_IMAGES.wine, "images/craft/wine-1.png", "images/wine-1.jpg"],
   },
 ];
 
@@ -220,8 +234,8 @@ function Atmosphere() {
 function BootScreen({ phase }: { phase: number }) {
   return (
     <section className="scso-stage scso-boot">
-      <div className="scso-emblem" aria-hidden="true">
-        <Gem size={78} strokeWidth={1.3} />
+      <div className="scso-emblem scso-stitch-logo" aria-hidden="true">
+        <img src={STITCH_IMAGES.profound} alt="" draggable={false} />
       </div>
       <p className="scso-kicker">System Cold Init</p>
       <h1 className={phase > 0 ? "scso-foil scso-emerge" : "scso-foil"}>PROFOUND INNOVATIONS LLC</h1>
@@ -236,7 +250,7 @@ function NoveeAuthScreen() {
       <div className="scso-status-node">System Active</div>
       <div className="scso-ring" />
       <p className="scso-kicker">Powered</p>
-      <h1>NOVEE OS</h1>
+      <img className="scso-novee-logo" src={STITCH_IMAGES.novee} alt="NOVEE OS" draggable={false} />
       <p className="scso-sub">Experience runtime authorized</p>
     </section>
   );
@@ -337,7 +351,10 @@ function CraftHub({ onLaunch }: { onLaunch: () => void }) {
 
 function Onboarding({ onBack, onEnter }: { onBack: () => void; onEnter: () => void }) {
   return (
-    <section className="scso-content scso-onboarding">
+    <section
+      className="scso-content scso-onboarding"
+      style={{ ["--stitch-onboarding-image" as string]: `url("${STITCH_IMAGES.smoke}")` }}
+    >
       <BackButton onClick={onBack} />
       <div className="scso-editorial">
         <p className="scso-kicker">Session 1 Initialization</p>
