@@ -20,6 +20,44 @@ interface SmokeCraftStitchOrchestrationProps {
   initialStage?: Stage;
 }
 
+type VisualAssetId =
+  | "obsidianSubstrate"
+  | "corporateEmblem"
+  | "goldFoilText"
+  | "craftHubSmoke"
+  | "craftHubPour"
+  | "craftHubBeer"
+  | "craftHubWine"
+  | "guideRosa"
+  | "flagDominican"
+  | "guideAlejandro"
+  | "flagNicaragua"
+  | "broadleafCultivation"
+  | "volumetricSmoke"
+  | "emberParticles"
+  | "maduroCigar"
+  | "maduroLeafMacro"
+  | "singleMalt"
+  | "craftCocktail"
+  | "smallPlate"
+  | "humidorWalkIn"
+  | "loungeFloor"
+  | "brassSwitch"
+  | "cloverNode"
+  | "toastNode"
+  | "squareNode";
+
+interface CraftCard {
+  id: "smoke" | "pour" | "beer" | "wine";
+  name: string;
+  label: string;
+  status: string;
+  description: string;
+  icon: typeof Flame;
+  images: VisualAssetId[];
+  fallback: VisualAssetId;
+}
+
 const STITCH_IMAGES = {
   profound:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuC0KkWhv5sVI33T9hAr0mYHmDkf7lUyXgodz4Cc9DI23kdiM6jvX4JpHjYHdoPm_idEtcqpnS1gaGnmBcoRqbdS_wRBruDvWL2Zpq4iJaCTTq8v4Yh5zxjICGrLhjXen7BzJhTOLDZ9nUEatXzR3kwPtIRIMJFEYcMXHEZkfcy7WN3-53UdpWvXtF-kysPt8s2Z9RVDOgSAPkATt5W_QwGwNuAhtOF1ZuekEJTO5f9pia3psrggXRPrfLt8-skY2VG_UAQMzi-wLjo",
@@ -37,7 +75,38 @@ const STITCH_IMAGES = {
 
 const img = (path: string) => path.startsWith("http") ? path : `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
-const craftCards = [
+const VISUAL_ASSETS: Record<VisualAssetId, { src: string; fallback?: string; label: string }> = {
+  obsidianSubstrate: { src: "css:obsidian", label: "Matte True Obsidian Substrate" },
+  corporateEmblem: { src: STITCH_IMAGES.profound, fallback: "images/logo_profound.png", label: "Polished Smoked Chrome Vector Emblem" },
+  goldFoilText: { src: "css:gold-foil", label: "Liquid Gold Foil Text Overlay" },
+  craftHubSmoke: { src: STITCH_IMAGES.smoke, fallback: "images/scenes/smokecraft-card.jpg", label: "Human-Centered Elite Lounge Atmosphere" },
+  craftHubPour: { src: STITCH_IMAGES.pour, fallback: "images/scenes/pourcraft-card.jpg", label: "Crystal Bar Spirit Crafting" },
+  craftHubBeer: { src: STITCH_IMAGES.beer, fallback: "images/scenes/brewcraft-card.jpg", label: "Twilight Rooftop Social Deck" },
+  craftHubWine: { src: STITCH_IMAGES.wine, fallback: "images/craft/wine-1.png", label: "Private Stone-Walled Wine Cellar" },
+  guideRosa: { src: "images/mentor_nicaraguan.jpg", fallback: "images/mentor_nicaraguan.png", label: "Doña Rosa Master Portrait" },
+  flagDominican: { src: "css:flag-dominican", label: "Dominican Republic Emblematic Flag Graphic" },
+  guideAlejandro: { src: "images/mentor_dominican.jpg", fallback: "images/mentor_dominican.png", label: "Alejandro Master Portrait" },
+  flagNicaragua: { src: "css:flag-nicaragua", label: "Nicaraguan Emblematic Flag Graphic" },
+  broadleafCultivation: { src: "images/tobacco_connecticut.jpg", fallback: "images/tobacco_connecticut.png", label: "Broadleaf Tobacco Cultivation" },
+  volumetricSmoke: { src: "css:volumetric-smoke", label: "Volumetric Smoke Texture Substrate" },
+  emberParticles: { src: "css:ember-particles", label: "Micro-Ember Spark Particles" },
+  maduroCigar: { src: "images/cigar1.png", fallback: "images/cigar.png", label: "Hand-Rolled Nicaraguan Maduro Cigar" },
+  maduroLeafMacro: { src: "images/tobacco_criollo.jpg", fallback: "images/tobacco_criollo.png", label: "Oily Maduro Leaf Macro Texture" },
+  singleMalt: { src: "images/whiskey.png", fallback: "images/pour/pour_whiskey.png", label: "Crystal Tumbler Single-Malt Whiskey" },
+  craftCocktail: { src: "images/pour/pour_cocktail.png", label: "Clear Artisan Craft Cocktail" },
+  smallPlate: { src: "images/pour/pour_tasting.png", label: "Elite Member Culinary Small Plate" },
+  humidorWalkIn: { src: "images/cedar_box.png", label: "Private Humidor Walk-In Architecture" },
+  loungeFloor: { src: "images/lounge_bg.jpg", fallback: "images/lounge-bg.jpg", label: "High-Velocity Lounge Floor Seating Grid" },
+  brassSwitch: { src: "images/logo_eat.png", label: "Polished Brass Command Center Switch" },
+  cloverNode: { src: "css:pos-clover", label: "Clover Sync System Interface Node" },
+  toastNode: { src: "css:pos-toast", label: "Toast Order Sync Interface Node" },
+  squareNode: { src: "css:pos-square", label: "Square POS Sync Interface Node" },
+};
+
+const asset = (id: VisualAssetId) => img(VISUAL_ASSETS[id].src);
+const assetFallback = (id: VisualAssetId) => img(VISUAL_ASSETS[id].fallback ?? VISUAL_ASSETS[id].src);
+
+const craftCards: CraftCard[] = [
   {
     id: "smoke",
     name: "SmokeCraft 360",
@@ -45,8 +114,8 @@ const craftCards = [
     status: "Active",
     description: "Build the profile. Match the pour. Guide the moment.",
     icon: Flame,
-    images: [STITCH_IMAGES.smoke, "images/scenes/smokecraft-card.jpg", "images/smoke-home-1.jpg"],
-    fallback: "images/scenes/smokecraft-card.jpg",
+    images: ["craftHubSmoke", "loungeFloor", "humidorWalkIn"],
+    fallback: "craftHubSmoke",
   },
   {
     id: "pour",
@@ -55,8 +124,8 @@ const craftCards = [
     status: "Coming Soon",
     description: "Guide cocktails, bourbon, whiskey, and premium pours.",
     icon: GlassWater,
-    images: [STITCH_IMAGES.pour, "images/scenes/pourcraft-card.jpg", "images/pour/pour_whiskey.png"],
-    fallback: "images/scenes/pourcraft-card.jpg",
+    images: ["craftHubPour", "singleMalt", "craftCocktail"],
+    fallback: "craftHubPour",
   },
   {
     id: "beer",
@@ -65,8 +134,8 @@ const craftCards = [
     status: "Coming Soon",
     description: "Match flavor, mood, and menu with the right beer.",
     icon: Beer,
-    images: [STITCH_IMAGES.beer, "images/scenes/brewcraft-card.jpg", "images/beer-verified-1.jpg"],
-    fallback: "images/scenes/brewcraft-card.jpg",
+    images: ["craftHubBeer", "loungeFloor", "smallPlate"],
+    fallback: "craftHubBeer",
   },
   {
     id: "wine",
@@ -75,26 +144,28 @@ const craftCards = [
     status: "Coming Soon",
     description: "Taste, pair, and recommend with confidence.",
     icon: Wine,
-    images: [STITCH_IMAGES.wine, "images/craft/wine-1.png", "images/wine-1.jpg"],
-    fallback: "images/craft/wine-1.png",
+    images: ["craftHubWine", "craftHubPour", "smallPlate"],
+    fallback: "craftHubWine",
   },
 ];
 
 const guides = [
   {
-    id: "nicaraguan",
+    id: "rosa",
     name: "Doña Rosa",
     title: "Wrapper Artistry Mentor",
-    region: "Nicaragua · Esteli",
-    photo: "images/mentor_nicaraguan.jpg",
+    region: "Dominican Republic · Cibao",
+    photo: "guideRosa" as VisualAssetId,
+    flag: "flagDominican" as VisualAssetId,
     notes: "Volcanic spice, deep wrapper oil, confident structure.",
   },
   {
-    id: "dominican",
+    id: "alejandro",
     name: "Señor Alejandro",
-    title: "Aged Leaf Guide",
-    region: "Dominican Republic · Cibao",
-    photo: "images/mentor_dominican.jpg",
+    title: "Fermentation Master",
+    region: "Nicaragua · Esteli",
+    photo: "guideAlejandro" as VisualAssetId,
+    flag: "flagNicaragua" as VisualAssetId,
     notes: "Cedar, earth, warm transitions, patient balance.",
   },
   {
@@ -102,7 +173,8 @@ const guides = [
     name: "Maestro Cortés",
     title: "Draw Precision Guide",
     region: "Honduras · Jamastran",
-    photo: "images/mentor_honduran.jpg",
+    photo: "broadleafCultivation" as VisualAssetId,
+    flag: "flagNicaragua" as VisualAssetId,
     notes: "Creamy texture, smooth draw, refined construction.",
   },
 ];
@@ -247,8 +319,8 @@ function Atmosphere() {
 function BootScreen({ phase }: { phase: number }) {
   return (
     <section className="scso-stage scso-boot">
-      <div className="scso-emblem scso-stitch-logo" aria-hidden="true">
-        <img src={STITCH_IMAGES.profound} alt="" draggable={false} />
+      <div className="scso-emblem scso-stitch-logo" aria-hidden="true" title={VISUAL_ASSETS.corporateEmblem.label}>
+        <img src={asset("corporateEmblem")} alt="" draggable={false} onError={(event) => { event.currentTarget.src = assetFallback("corporateEmblem"); }} />
       </div>
       <p className="scso-kicker">System Cold Init</p>
       <h1 className={phase > 0 ? "scso-foil scso-emerge" : "scso-foil"}>PROFOUND INNOVATIONS LLC</h1>
@@ -264,7 +336,7 @@ function NoveeAuthScreen() {
       <div className="scso-ring" />
       <p className="scso-kicker">Powered</p>
       <img className="scso-novee-logo" src={STITCH_IMAGES.novee} alt="NOVEE OS" draggable={false} />
-      <p className="scso-sub">Experience runtime authorized</p>
+      <p className="scso-sub">Craft Hub authorized</p>
     </section>
   );
 }
@@ -336,13 +408,14 @@ function CraftHub({ onLaunch }: { onLaunch: () => void }) {
               onPointerDown={active ? onLaunch : touchPulse}
               style={{ ["--delay" as string]: `${idx * 2}s` }}
             >
-              {card.images.map((src, imageIndex) => (
+              {card.images.map((assetId, imageIndex) => (
                 <div
-                  key={src}
+                  key={assetId}
                   className={`scso-card-image image-${imageIndex + 1}`}
+                  title={VISUAL_ASSETS[assetId].label}
                   style={{
-                    backgroundImage: `url("${img(src)}"), url("${img(card.fallback)}")`,
-                    ["--fallback-image" as string]: `url("${img(card.fallback)}")`,
+                    backgroundImage: `url("${asset(assetId)}"), url("${assetFallback(card.fallback)}")`,
+                    ["--fallback-image" as string]: `url("${assetFallback(card.fallback)}")`,
                   }}
                 />
               ))}
@@ -367,7 +440,10 @@ function Onboarding({ onBack, onEnter }: { onBack: () => void; onEnter: () => vo
   return (
     <section
       className="scso-content scso-onboarding"
-      style={{ ["--stitch-onboarding-image" as string]: `url("${STITCH_IMAGES.smoke}")` }}
+      style={{
+        ["--stitch-onboarding-image" as string]: `url("${asset("craftHubSmoke")}")`,
+        ["--stitch-onboarding-fallback" as string]: `url("${assetFallback("craftHubSmoke")}")`,
+      }}
     >
       <BackButton onClick={onBack} />
       <div className="scso-editorial">
@@ -406,7 +482,8 @@ function GuidePortfolio({
       <div className="scso-guide-grid">
         {guides.map((g) => (
           <button key={g.id} type="button" className={selected === g.id ? "selected" : ""} onPointerDown={() => onSelect(g.id)}>
-            <img src={img(g.photo)} alt={g.name} draggable={false} />
+            <span className={`scso-flag scso-${g.flag}`} aria-hidden="true" title={VISUAL_ASSETS[g.flag].label} />
+            <img src={asset(g.photo)} alt={g.name} draggable={false} onError={(event) => { event.currentTarget.src = assetFallback(g.photo); }} />
             <div>
               <span>{g.region}</span>
               <h2>{g.name}</h2>
@@ -478,7 +555,7 @@ function ReserveWorkspace({
       </header>
       <div className="scso-workspace-grid">
         <div className="scso-prep-mat">
-          <img src={img("images/cigar1.png")} alt="Hand-rolled Maduro cigar" draggable={false} />
+          <img src={asset("maduroCigar")} alt={VISUAL_ASSETS.maduroCigar.label} draggable={false} onError={(event) => { event.currentTarget.src = assetFallback("maduroCigar"); }} />
           <div className="scso-spec-ledger">
             <span>{context.wrapper}</span>
             <span>{context.vitola}</span>
@@ -542,7 +619,7 @@ function PairingIntelligence({
   onBack: () => void;
   onGolden: () => void;
 }) {
-  const pairings = ["Single Malt Whiskey", "Aged Rum", "Espresso Martini"];
+  const pairings = ["Single Malt Whiskey", "Craft Cocktail", "Culinary Small Plate"];
   return (
     <section className="scso-content scso-pairing">
       <BackButton onClick={onBack} />
@@ -554,7 +631,7 @@ function PairingIntelligence({
         </div>
       </header>
       <div className="scso-pairing-grid">
-        <PanelImage src="images/tobacco_criollo.jpg" title="Macro Tobacco Path" body="Oily wrapper leaf, dark tooth, balanced burn." />
+        <PanelImage assetId="maduroLeafMacro" title="Macro Tobacco Path" body="Oily wrapper leaf, dark tooth, balanced burn." />
         <div className="scso-sommelier">
           <Leaf size={46} strokeWidth={1.2} />
           <h2>Synergy Calculation</h2>
@@ -568,7 +645,11 @@ function PairingIntelligence({
               touchPulse();
               setPairing(p);
             }}>
-              <img src={img(p === "Single Malt Whiskey" ? "images/whiskey.png" : p === "Aged Rum" ? "images/pour/pour_aged.png" : "images/pour/pour_cocktail.png")} alt="" />
+              <img
+                src={asset(p === "Single Malt Whiskey" ? "singleMalt" : p === "Craft Cocktail" ? "craftCocktail" : "smallPlate")}
+                alt=""
+                onError={(event) => { event.currentTarget.src = assetFallback("singleMalt"); }}
+              />
               <span>{p}</span>
             </button>
           ))}
@@ -581,10 +662,10 @@ function PairingIntelligence({
   );
 }
 
-function PanelImage({ src, title, body }: { src: string; title: string; body: string }) {
+function PanelImage({ assetId, title, body }: { assetId: VisualAssetId; title: string; body: string }) {
   return (
     <div className="scso-panel-image">
-      <img src={img(src)} alt="" draggable={false} />
+      <img src={asset(assetId)} alt="" draggable={false} onError={(event) => { event.currentTarget.src = assetFallback(assetId); }} />
       <div>
         <h2>{title}</h2>
         <p>{body}</p>

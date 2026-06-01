@@ -393,7 +393,10 @@
   display: grid;
   place-items: center;
   text-align: center;
-  background: linear-gradient(90deg, rgba(1, 1, 1, 0.92), rgba(1, 1, 1, 0.42)), var(--stitch-onboarding-image) center / cover;
+  background:
+    linear-gradient(90deg, rgba(1, 1, 1, 0.92), rgba(1, 1, 1, 0.42)),
+    var(--stitch-onboarding-image) center / cover,
+    var(--stitch-onboarding-fallback) center / cover;
 }
 
 .scso-editorial {
@@ -456,6 +459,7 @@
 }
 
 .scso-guide-grid button {
+  position: relative;
   min-height: 520px;
   border-radius: 10px;
   overflow: hidden;
@@ -467,6 +471,30 @@
 .scso-guide-grid button.selected {
   border-color: rgba(212, 175, 55, 0.85);
   box-shadow: 0 0 34px rgba(212, 175, 55, 0.22);
+}
+
+.scso-flag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  width: 72px;
+  height: 46px;
+  border: 1px solid rgba(253, 251, 247, 0.48);
+  border-radius: 8px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
+}
+
+.scso-flag.scso-flagDominican {
+  background:
+    linear-gradient(90deg, transparent 0 42%, #fff 42% 58%, transparent 58% 100%),
+    linear-gradient(180deg, transparent 0 42%, #fff 42% 58%, transparent 58% 100%),
+    linear-gradient(90deg, #0038a8 0 50%, #ce1126 50% 100%);
+}
+
+.scso-flag.scso-flagNicaragua {
+  background:
+    linear-gradient(180deg, #0067c6 0 33%, #fff 33% 66%, #0067c6 66% 100%);
 }
 
 .scso-guide-grid img {
