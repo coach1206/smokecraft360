@@ -17,6 +17,7 @@ import {
   VolumeX,
   Wine,
 } from "lucide-react";
+import { useLocation } from "wouter";
 import "./SmokeCraftStitchOrchestration.css";
 
 type Stage = "boot" | "novee" | "hub" | "onboarding" | "guide" | "reserve" | "pairing" | "golden";
@@ -232,6 +233,7 @@ function useBoot(initialStage: Stage) {
 }
 
 export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }: SmokeCraftStitchOrchestrationProps) {
+  const [, navigate] = useLocation();
   const { stage, setStage, bootPhase } = useBoot(initialStage);
   const [guide, setGuide] = useState(guides[0]);
   const [wrapper, setWrapper] = useState("Maduro");
@@ -297,7 +299,7 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
 
       {stage === "boot" && <BootScreen phase={bootPhase} />}
       {stage === "novee" && <NoveeAuthScreen />}
-      {stage === "hub" && <CraftHub onLaunch={() => enter("onboarding")} />}
+      {stage === "hub" && <CraftHub onLaunch={() => enter("onboarding")} onVisualRoute={() => navigate("/smokecraft-visual")} />}
       {stage === "onboarding" && <Onboarding onBack={() => enter("hub")} onEnter={() => enter("guide")} />}
       {stage === "guide" && (
         <GuidePortfolio
@@ -484,7 +486,7 @@ function SessionProgress({ active }: { active: Stage }) {
   );
 }
 
-function CraftHub({ onLaunch }: { onLaunch: () => void }) {
+function CraftHub({ onLaunch, onVisualRoute }: { onLaunch: () => void; onVisualRoute: () => void }) {
   return (
     <section className="scso-content scso-hub">
       <header className="scso-header">
@@ -497,6 +499,9 @@ function CraftHub({ onLaunch }: { onLaunch: () => void }) {
           <span>Venue Status</span>
           <strong>Online</strong>
           <small>Humidity 72% · Lounge Active · POS Connected</small>
+          <button type="button" className="scso-visual-link" onPointerDown={onVisualRoute}>
+            Open Visual Route
+          </button>
         </div>
       </header>
 

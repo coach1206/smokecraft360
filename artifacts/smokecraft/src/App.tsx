@@ -824,12 +824,12 @@ function SovereignBootFlow() {
 /* ── Guest-route ambient layer — persistent canvas smoke/ember/vignette ─────── */
 
 const GUEST_PREFIXES = [
-  '/', '/craft-hub', '/experience/', '/experience-overview/', '/synchronization/',
+  '/', '/craft-hub', '/smokecraft-visual', '/experience/', '/experience-overview/', '/synchronization/',
   '/legacy-handoff/', '/experience-center', '/enrollment', '/reveal/',
   '/master-blender',
 ];
 
-const STITCH_ORCHESTRATION_ROUTES = new Set(['/', '/craft-hub', '/smokecraft', '/experience/smoke']);
+const STITCH_ORCHESTRATION_ROUTES = new Set(['/', '/craft-hub', '/smokecraft-visual', '/smokecraft', '/experience/smoke']);
 
 function isStitchOrchestrationRoute(loc: string) {
   return STITCH_ORCHESTRATION_ROUTES.has(loc) || loc.startsWith('/experience/smoke/');
@@ -1298,6 +1298,11 @@ export default function App() {
             <SubPageProviders><IntelligenceManifest /></SubPageProviders>
           </Route>
           <Route path="/craft-hub">
+            <Suspense fallback={null}>
+              <SmokeCraftStitchOrchestration initialStage="hub" />
+            </Suspense>
+          </Route>
+          <Route path="/smokecraft-visual">
             <Suspense fallback={null}>
               <SmokeCraftStitchOrchestration initialStage="hub" />
             </Suspense>

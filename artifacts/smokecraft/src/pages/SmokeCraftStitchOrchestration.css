@@ -314,6 +314,34 @@
   font-size: 24px;
 }
 
+.scso-visual-link {
+  width: 100%;
+  margin-top: 16px;
+  min-height: 42px;
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  border-radius: 8px;
+  background: rgba(212, 175, 55, 0.12);
+  color: #f4d76e;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.scso-visual-link:hover,
+.scso-visual-link:focus-visible {
+  border-color: rgba(244, 215, 110, 0.72);
+  background: rgba(212, 175, 55, 0.2);
+  outline: none;
+}
+
+.scso-visual-link:active {
+  transform: scale(0.98);
+}
+
 .scso-card-grid {
   height: calc(100% - 180px);
   display: grid;
