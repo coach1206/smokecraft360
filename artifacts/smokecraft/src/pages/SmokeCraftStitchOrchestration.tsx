@@ -37,7 +37,6 @@ type VisualAssetId =
   | "flagDominican"
   | "guideAlejandro"
   | "flagNicaragua"
-  | "flagHonduras"
   | "broadleafCultivation"
   | "volumetricSmoke"
   | "emberParticles"
@@ -61,69 +60,54 @@ interface CraftCard {
   description: string;
   icon: typeof Flame;
   images: VisualAssetId[];
-  fallback: VisualAssetId;
 }
 
 const STITCH_IMAGES = {
-  profound:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDhj2-yD55eFY8sXAgqCsiytEcK4WN-8otOuyAHjDyJhWosE11ghCXfeK1oiw1dFFLMR6I9XXwkVymlWmfTF-lvK2htym5lhQPXLUur6WDJm5r2BAHPtS4xn8ZDbyx-wp4CwJqyANhCbkSe-cb-kBD2Rxi3ZvG5oR0_CEuR2leSxRL8h4MWls2966cMqO-9btJcp74seO_jE2UPj5-K0NJrcErT17RXTr_IQEB7pOoJPZ7w1RVTHP0lDD5eyay2IYbrCw4w6x1sWLQ",
-  novee:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAlhdqiSKn66_HoaP-kZnvcqK7Wq2d1THWHaXKm0jZnKtbT6C_xz9glrgLvVGZCivCZjhfVasoD5NBQWh6ePKVFkHxBfCIYM-in03Kyn8b_BlXCEWwxAc1FI9rX6sL71KZer-JTtBOeom2C8iZpQtVcFUWulE7r6k5psBvm94OPHeLaPqpQ-A6SJdRoRv2f9blDBx5YndqL-lNu-20HfXbbQAD24j3BjqVOcOQgfaGhbkKG6WCnzyJE3aGsFWis0q_l1MskKPLWXVE",
-  smoke:
-    "https://lh3.googleusercontent.com/aida/ADBb0uhIEUTRtDSLfVvoeCK1FiwxwstruheRLZVL7s1qe8E7W376n44tmuuiOCKG6Zg76Yfe6XlYfFm7VWZ6KW5jmm9jolNDewIoS_54ppOYtORqdgVKmQ48Tya6vmQB1MjGUSfX_Ux5VqlLQO1dDDkeIlSJPL18Mp8F1OtjriqrI-sEDJFYrAW9U-K-DekHury7InxnKrRg3RrLW4BiObYiDXK9lNf3vYgNoie_XkiAGM_N4V8IVZZX9Sl1OUY",
-  wine:
-    "https://lh3.googleusercontent.com/aida/ADBb0ugjIJZfwJ3IGEYKUJhER-QdccGeY-WcbTfiArJb-s9N3ERQdMNmb_K6bulXWMdtmsaQlf7QWvrCPdfCtK0I_7qxHcoEqmj_2jzkRsRttL3KMZCp0MLWoENgAQsDFT7xPEThYAoPHhFraE69m5CTsD7LHWKxMq3GoYYJnpZRiw1uNl1GECOLzvAy6dk9_5MZ6a0E1ZIhsLmNMLh8RlMDpb4s8zYGvuprrEmF_rX3lzyDVpApwvqnz7Vc78E",
-  pour:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuCskNm-Gipq4Xh2PEmPK9RMRTgGDUBuyMZiRYoAtME-Zh5z6j_ab5GU3AHR-ZrDs2sqFDRLu23c8NuimOJ1qSvRoL3IOkxJb90dCZQkV7rv0WZupovlupp3Q5Tfwvsebm7bP5ynjwSaAKpMMlFJtlpf5Dc-IxE6nztt22D5VZ-nIfF85DE7uazu54z3XZKTev7einMVBybyeFS5E1s-qHFA_fEufSTGP8ZBPj7y9PSzgDxJBhwIsDXc2jZC8BGPNADgf8HsLjbz3m4",
-  beer:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDUADSYfZyDmWta433lljSL8PiO2ygnU_RD5LHM6qVdl_wyQBS-74Qg8otmBdDmp_FG_S8m9mKO_O-cNUWo4HzyxJYxCUYEq42Wb2Z8NQVALqdquemqVvGRF3P5vIEb8mt2BKxPOMHkTcUyWpVysZPBmmJrsQuOtBQrtoiYjBJEtADqDP8ky4NfdEw70-R-2WkFWClBxJKuC7YOb5AWkXvr4t5rRvgbv7oN3_hgEcDtPthlyF5f19ncQ5GFemANiRTQxtPHqDkJf7s",
-  community:
-    "https://lh3.googleusercontent.com/aida/ADBb0ugYc4r6XpOoxBC_0wB3pD3GSaOTeJippscVrxjV1OdTamhEalt10kK1w91das6GsXcMFkTFqZpWWWNiYJyxePU8VaUTKsJxLDh4zNM6DAtY4PCmeoL7UrpY0srY0oWTow7emrNVoQpHanRmD5CEvJluqZcG31BvL2-l13KDFw3j1xl-p7UeTX67IsxqFDwRH7GWQkG4cH4OiWKZxp9EtVQSEkpYXz4XxPs0zSS-XzglQZht2PgMSfvg9A",
-  guideOne:
-    "https://lh3.googleusercontent.com/aida/ADBb0ujvF0LDTfTtfi8FjKatJ-P4KXaG2BmntCvuzETLPaNMDfR2FDU4r88Mi3ZH3fa5FkinbJ2MM_MJihjHHXBIa8Hvzs19KVFE3Mwdzjy2Frtv-ft3q8eiOBDO_dE8VlecGtx3EqkYud-lJxq_bW-LX4w4va-XWmmZV2KVOg7RTsXxZSLdXiXqNroyfbHmFtoxvR_Gs-c4aCwNg_xyIaMaVaUlrDzOFjGZhKO8txtT3JKQkjwphdPfpkUX-Fs",
-  guideTwo:
-    "https://lh3.googleusercontent.com/aida/ADBb0ujAleMiYHqc5FeHUdrsR8hi-mmOt0uY80dYY60m2vjhAjA1-J5FV9wduNrygz3UAfUxaye3B-f8O3NlNe60kjh_IjPAOBhG-Vf3aUhnxd865SvrMxputnALIbQbQ5Fo2ho1qxqfvy2phMv824xgrvGdAEZ7E0JdLsonKIMtb_96B-jW-SF7II_bNMv5QVI4T87LZbyYR1SF82WAPulp9nqq3e3Ua_RMlDh0f1Nea3zrC_Jl6-GP_4UktKA",
-  lab:
-    "https://lh3.googleusercontent.com/aida/ADBb0uiX2XE4vk1tpK_YO1N6oLY0bZnftyAtfBu1H31tCovXscbczeW2hri9dlnWfNppkcvd7J8i0rFi2TmWYMEVuT_RTL-D0_6gxS9ehT3ySt9z-enYqGDQgUBA5JZinCC-mw9Vcvh3v5uF-prU7AD9hS58xtUTz7cMh6D23YZhy15eoPOFWmSi0NJUHcs5a4Ss5DqyehpCBPDECGFGRXR1sZGjqEmxhwHXEgcp7DpPJHQKzHMhZ53DgV7D2A",
-  golden:
-    "https://lh3.googleusercontent.com/aida/ADBb0uiKiZsMg3k_CQRIY9i4XNWFZXXzRd-CyGDxLyAQmMYYiUxGC3eu9br5f8upe9BBWWKjFuexFGvFf3otx7ojtpsunqbr03b5cyGZSuvcmbNHvU4eSPXhxt902bOY1msSfklxPH-k8y8x85VDoX3C0WEPxdD-XAbLjnluWdsqSsEqcE61Of-d0OIDv37JCvCkoBbcYZue6MKz3y5pnAKyqYO3An74lxScC7IlmaSc9TTZWBrqX-Fv8lpGGQ",
-  eat:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuABVV3uUTEs6YLU3y8S_ojYGC21GciSiQAGBggHZZZDnzmuWitt3bXfPU2KkrDIckkPZgAOH8C_3Ed03HYK0SNzhHhXH_Z5OkzN_4zBkeU0on4zRR2i-LhremT-Kr1PLPk990Fo7PhOhiyPv5aodbu52OwfcF3V97VS61iD4b29iJVUZnNyOPVOQJpZDHQYaph4ZVnT1Pv6_gWT4-1Fmpik_BsCByjWzUJLnSfnJ6hATo9dvPT_91JMPsHz4O8s5aPQ22cFuVLxY9w",
+  profound: "stitch-assets/stitch-01-profound.png",
+  novee: "stitch-assets/stitch-02-novee.png",
+  smoke: "stitch-assets/03-smokecraft.png",
+  wine: "stitch-assets/04-wine.png",
+  pour: "stitch-assets/stitch-05-pourcraft.png",
+  beer: "stitch-assets/stitch-06-beercraft.png",
+  community: "stitch-assets/07-community.png",
+  guideOne: "stitch-assets/08-guide-one.png",
+  guideTwo: "stitch-assets/09-guide-two.jpeg",
+  lab: "stitch-assets/10-lab.jpeg",
+  golden: "stitch-assets/11-golden.png",
+  eat: "stitch-assets/12-eat.jpg",
 };
 
 const img = (path: string) => path.startsWith("http") ? path : `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
-const VISUAL_ASSETS: Record<VisualAssetId, { src: string; fallback?: string; label: string }> = {
+const VISUAL_ASSETS: Record<VisualAssetId, { src: string; label: string }> = {
   obsidianSubstrate: { src: "css:obsidian", label: "Matte True Obsidian Substrate" },
-  corporateEmblem: { src: STITCH_IMAGES.profound, fallback: STITCH_IMAGES.profound, label: "Polished Smoked Chrome Vector Emblem" },
+  corporateEmblem: { src: STITCH_IMAGES.profound, label: "Polished Smoked Chrome Vector Emblem" },
   goldFoilText: { src: "css:gold-foil", label: "Liquid Gold Foil Text Overlay" },
-  craftHubSmoke: { src: STITCH_IMAGES.smoke, fallback: STITCH_IMAGES.smoke, label: "Human-Centered Elite Lounge Atmosphere" },
-  craftHubPour: { src: STITCH_IMAGES.pour, fallback: STITCH_IMAGES.pour, label: "Crystal Bar Spirit Crafting" },
-  craftHubBeer: { src: STITCH_IMAGES.beer, fallback: STITCH_IMAGES.beer, label: "Twilight Rooftop Social Deck" },
-  craftHubWine: { src: STITCH_IMAGES.wine, fallback: STITCH_IMAGES.wine, label: "Private Stone-Walled Wine Cellar" },
-  guideRosa: { src: STITCH_IMAGES.guideOne, fallback: STITCH_IMAGES.guideOne, label: "Doña Rosa Master Portrait" },
+  craftHubSmoke: { src: STITCH_IMAGES.smoke, label: "Human-Centered Elite Lounge Atmosphere" },
+  craftHubPour: { src: STITCH_IMAGES.pour, label: "Crystal Bar Spirit Crafting" },
+  craftHubBeer: { src: STITCH_IMAGES.beer, label: "Twilight Rooftop Social Deck" },
+  craftHubWine: { src: STITCH_IMAGES.wine, label: "Private Stone-Walled Wine Cellar" },
+  guideRosa: { src: STITCH_IMAGES.guideOne, label: "Doña Rosa Master Portrait" },
   flagDominican: { src: "css:flag-dominican", label: "Dominican Republic Emblematic Flag Graphic" },
-  guideAlejandro: { src: STITCH_IMAGES.guideTwo, fallback: STITCH_IMAGES.guideTwo, label: "Alejandro Master Portrait" },
+  guideAlejandro: { src: STITCH_IMAGES.guideTwo, label: "Alejandro Master Portrait" },
   flagNicaragua: { src: "css:flag-nicaragua", label: "Nicaraguan Emblematic Flag Graphic" },
-  flagHonduras: { src: "css:flag-honduras", label: "Honduran Emblematic Flag Graphic" },
-  broadleafCultivation: { src: STITCH_IMAGES.community, fallback: STITCH_IMAGES.community, label: "Broadleaf Tobacco Cultivation" },
+  broadleafCultivation: { src: STITCH_IMAGES.community, label: "Broadleaf Tobacco Cultivation" },
   volumetricSmoke: { src: "css:volumetric-smoke", label: "Volumetric Smoke Texture Substrate" },
   emberParticles: { src: "css:ember-particles", label: "Micro-Ember Spark Particles" },
-  maduroCigar: { src: STITCH_IMAGES.lab, fallback: STITCH_IMAGES.lab, label: "Hand-Rolled Nicaraguan Maduro Cigar" },
-  maduroLeafMacro: { src: STITCH_IMAGES.lab, fallback: STITCH_IMAGES.lab, label: "Oily Maduro Leaf Macro Texture" },
-  singleMalt: { src: STITCH_IMAGES.pour, fallback: STITCH_IMAGES.pour, label: "Crystal Tumbler Single-Malt Whiskey" },
-  craftCocktail: { src: STITCH_IMAGES.pour, fallback: STITCH_IMAGES.pour, label: "Clear Artisan Craft Cocktail" },
-  smallPlate: { src: STITCH_IMAGES.community, fallback: STITCH_IMAGES.community, label: "Elite Member Culinary Small Plate" },
-  humidorWalkIn: { src: STITCH_IMAGES.golden, fallback: STITCH_IMAGES.golden, label: "Private Humidor Walk-In Architecture" },
-  loungeFloor: { src: STITCH_IMAGES.community, fallback: STITCH_IMAGES.community, label: "High-Velocity Lounge Floor Seating Grid" },
-  brassSwitch: { src: STITCH_IMAGES.eat, fallback: STITCH_IMAGES.eat, label: "Polished Brass Command Center Switch" },
+  maduroCigar: { src: STITCH_IMAGES.lab, label: "Hand-Rolled Nicaraguan Maduro Cigar" },
+  maduroLeafMacro: { src: STITCH_IMAGES.lab, label: "Oily Maduro Leaf Macro Texture" },
+  singleMalt: { src: STITCH_IMAGES.pour, label: "Crystal Tumbler Single-Malt Whiskey" },
+  craftCocktail: { src: STITCH_IMAGES.pour, label: "Clear Artisan Craft Cocktail" },
+  smallPlate: { src: STITCH_IMAGES.community, label: "Elite Member Culinary Small Plate" },
+  humidorWalkIn: { src: STITCH_IMAGES.golden, label: "Private Humidor Walk-In Architecture" },
+  loungeFloor: { src: STITCH_IMAGES.community, label: "High-Velocity Lounge Floor Seating Grid" },
+  brassSwitch: { src: STITCH_IMAGES.eat, label: "Polished Brass Command Center Switch" },
   cloverNode: { src: "css:pos-clover", label: "Clover Sync System Interface Node" },
   toastNode: { src: "css:pos-toast", label: "Toast Order Sync Interface Node" },
   squareNode: { src: "css:pos-square", label: "Square POS Sync Interface Node" },
 };
 
 const asset = (id: VisualAssetId) => img(VISUAL_ASSETS[id].src);
-const assetFallback = (id: VisualAssetId) => img(VISUAL_ASSETS[id].fallback ?? VISUAL_ASSETS[id].src);
 
 const craftCards: CraftCard[] = [
   {
@@ -134,7 +118,6 @@ const craftCards: CraftCard[] = [
     description: "Build the profile. Match the pour. Guide the moment.",
     icon: Flame,
     images: ["craftHubSmoke"],
-    fallback: "craftHubSmoke",
   },
   {
     id: "pour",
@@ -144,7 +127,6 @@ const craftCards: CraftCard[] = [
     description: "Guide cocktails, bourbon, whiskey, and premium pours.",
     icon: GlassWater,
     images: ["craftHubPour"],
-    fallback: "craftHubPour",
   },
   {
     id: "beer",
@@ -154,7 +136,6 @@ const craftCards: CraftCard[] = [
     description: "Match flavor, mood, and menu with the right beer.",
     icon: Beer,
     images: ["craftHubBeer"],
-    fallback: "craftHubBeer",
   },
   {
     id: "wine",
@@ -164,7 +145,6 @@ const craftCards: CraftCard[] = [
     description: "Taste, pair, and recommend with confidence.",
     icon: Wine,
     images: ["craftHubWine"],
-    fallback: "craftHubWine",
   },
 ];
 
@@ -188,16 +168,6 @@ const guides = [
     flag: "flagNicaragua" as VisualAssetId,
     countryClass: "nicaragua",
     notes: "Cedar, earth, warm transitions, patient balance.",
-  },
-  {
-    id: "honduran",
-    name: "Maestro Cortés",
-    title: "Draw Precision Guide",
-    region: "Honduras · Jamastran",
-    photo: "broadleafCultivation" as VisualAssetId,
-    flag: "flagHonduras" as VisualAssetId,
-    countryClass: "honduras",
-    notes: "Creamy texture, smooth draw, refined construction.",
   },
 ];
 
@@ -402,7 +372,7 @@ function BootScreen({ phase }: { phase: number }) {
   return (
     <section className="scso-stage scso-boot">
       <div className="scso-emblem scso-stitch-logo" aria-hidden="true" title={VISUAL_ASSETS.corporateEmblem.label}>
-        <img src={asset("corporateEmblem")} alt="" draggable={false} onError={(event) => { event.currentTarget.src = assetFallback("corporateEmblem"); }} />
+        <img src={asset("corporateEmblem")} alt="" draggable={false} />
       </div>
       <p className="scso-kicker">System Cold Init</p>
       <h1 className={phase > 0 ? "scso-foil scso-emerge" : "scso-foil"}>PROFOUND INNOVATIONS LLC</h1>
@@ -417,7 +387,7 @@ function NoveeAuthScreen() {
       <div className="scso-status-node">System Active</div>
       <div className="scso-ring" />
       <p className="scso-kicker">Powered</p>
-      <img className="scso-novee-logo" src={STITCH_IMAGES.novee} alt="NOVEE OS" draggable={false} />
+      <img className="scso-novee-logo" src={img(STITCH_IMAGES.novee)} alt="NOVEE OS" draggable={false} />
       <p className="scso-sub">Craft Hub authorized</p>
     </section>
   );
@@ -548,8 +518,7 @@ function CraftHub({ onLaunch }: { onLaunch: () => void }) {
                   className={`scso-card-image image-${imageIndex + 1}`}
                   title={VISUAL_ASSETS[assetId].label}
                   style={{
-                    backgroundImage: `url("${asset(assetId)}"), url("${assetFallback(card.fallback)}")`,
-                    ["--fallback-image" as string]: `url("${assetFallback(card.fallback)}")`,
+                    backgroundImage: `url("${asset(assetId)}")`,
                   }}
                 />
               ))}
@@ -576,7 +545,6 @@ function Onboarding({ onBack, onEnter }: { onBack: () => void; onEnter: () => vo
       className="scso-content scso-onboarding"
       style={{
         ["--stitch-onboarding-image" as string]: `url("${asset("craftHubSmoke")}")`,
-        ["--stitch-onboarding-fallback" as string]: `url("${assetFallback("craftHubSmoke")}")`,
       }}
     >
       <BackButton onClick={onBack} />
@@ -617,7 +585,7 @@ function GuidePortfolio({
         {guides.map((g) => (
           <button key={g.id} type="button" className={`${selected === g.id ? "selected" : ""} flag-${g.countryClass}`} onPointerDown={() => onSelect(g.id)}>
             <span className={`scso-flag-field scso-${g.flag}`} aria-hidden="true" title={VISUAL_ASSETS[g.flag].label} />
-            <img src={asset(g.photo)} alt={g.name} draggable={false} onError={(event) => { event.currentTarget.src = assetFallback(g.photo); }} />
+            <img src={asset(g.photo)} alt={g.name} draggable={false} />
             <div>
               <span>{g.region}</span>
               <h2>{g.name}</h2>
@@ -689,7 +657,7 @@ function ReserveWorkspace({
       </header>
       <div className="scso-workspace-grid">
         <div className="scso-prep-mat">
-          <img src={asset("maduroCigar")} alt={VISUAL_ASSETS.maduroCigar.label} draggable={false} onError={(event) => { event.currentTarget.src = assetFallback("maduroCigar"); }} />
+          <img src={asset("maduroCigar")} alt={VISUAL_ASSETS.maduroCigar.label} draggable={false} />
           <div className="scso-spec-ledger">
             <span>{context.wrapper}</span>
             <span>{context.vitola}</span>
@@ -735,7 +703,6 @@ function MasteryMatrix({
       className="scso-mastery-matrix"
       style={{
         ["--matrix-image" as string]: `url("${asset("broadleafCultivation")}")`,
-        ["--matrix-fallback" as string]: `url("${assetFallback("broadleafCultivation")}")`,
       }}
     >
       <p className="scso-kicker">Your Mastery Path</p>
@@ -817,7 +784,6 @@ function PairingIntelligence({
               <img
                 src={asset(p === "Single Malt Whiskey" ? "singleMalt" : p === "Craft Cocktail" ? "craftCocktail" : "smallPlate")}
                 alt=""
-                onError={(event) => { event.currentTarget.src = assetFallback("singleMalt"); }}
               />
               <span>{p}</span>
             </button>
@@ -834,7 +800,7 @@ function PairingIntelligence({
 function PanelImage({ assetId, title, body }: { assetId: VisualAssetId; title: string; body: string }) {
   return (
     <div className="scso-panel-image">
-      <img src={asset(assetId)} alt="" draggable={false} onError={(event) => { event.currentTarget.src = assetFallback(assetId); }} />
+      <img src={asset(assetId)} alt="" draggable={false} />
       <div>
         <h2>{title}</h2>
         <p>{body}</p>
@@ -856,7 +822,7 @@ function GoldenBoxFinale({
     <section className="scso-content scso-golden">
       <div className="scso-burst" />
       <div className="scso-golden-box">
-        <img src={STITCH_IMAGES.golden} alt="The Golden Box Stitch visual" draggable={false} onError={(event) => { event.currentTarget.src = assetFallback("humidorWalkIn"); }} />
+        <img src={img(STITCH_IMAGES.golden)} alt="The Golden Box Stitch visual" draggable={false} />
         <div>
           <p className="scso-kicker">The Golden Box Finale</p>
           <h1>The Golden Box</h1>
@@ -926,7 +892,6 @@ function CoachHelpPortal({ onClose }: { onClose: () => void }) {
               onPointerDown={() => void askCoach(card.topic)}
               style={{
                 ["--coach-image" as string]: `url("${asset(card.assetId)}")`,
-                ["--coach-fallback" as string]: `url("${assetFallback(card.assetId)}")`,
               }}
             >
               <span>{card.topic}</span>

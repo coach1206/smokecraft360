@@ -433,8 +433,7 @@
   text-align: center;
   background:
     linear-gradient(90deg, rgba(1, 1, 1, 0.92), rgba(1, 1, 1, 0.42)),
-    var(--stitch-onboarding-image) center / cover,
-    var(--stitch-onboarding-fallback) center / cover;
+    var(--stitch-onboarding-image) center / cover;
 }
 
 .scso-editorial {
@@ -491,7 +490,7 @@
 
 .scso-guide-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   padding-right: 330px;
 }
@@ -538,16 +537,6 @@
   background: linear-gradient(180deg, #0067c6 0 33%, #fff 33% 66%, #0067c6 66% 100%);
 }
 
-.scso-guide-grid button.flag-honduras::before {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
-    radial-gradient(circle at 43% 44%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
-    radial-gradient(circle at 57% 44%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
-    radial-gradient(circle at 43% 56%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
-    radial-gradient(circle at 57% 56%, rgba(0, 103, 198, 0.95) 0 3px, transparent 4px),
-    linear-gradient(180deg, #0073cf 0 33%, #fff 33% 66%, #0073cf 66% 100%);
-}
-
 .scso-guide-grid button.selected {
   border-color: rgba(212, 175, 55, 0.85);
   box-shadow: 0 0 34px rgba(212, 175, 55, 0.22);
@@ -571,16 +560,6 @@
 .scso-flag-field.scso-flagNicaragua {
   background:
     linear-gradient(180deg, #0067c6 0 33%, #fff 33% 66%, #0067c6 66% 100%);
-}
-
-.scso-flag-field.scso-flagHonduras {
-  background:
-    radial-gradient(circle at 50% 50%, #0073cf 0 3px, transparent 4px),
-    radial-gradient(circle at 43% 44%, #0073cf 0 3px, transparent 4px),
-    radial-gradient(circle at 57% 44%, #0073cf 0 3px, transparent 4px),
-    radial-gradient(circle at 43% 56%, #0073cf 0 3px, transparent 4px),
-    radial-gradient(circle at 57% 56%, #0073cf 0 3px, transparent 4px),
-    linear-gradient(180deg, #0073cf 0 33%, #fff 33% 66%, #0073cf 66% 100%);
 }
 
 .scso-guide-grid img {
@@ -727,8 +706,7 @@
   padding: 20px;
   background:
     linear-gradient(135deg, rgba(1, 1, 1, 0.82), rgba(1, 1, 1, 0.56)),
-    var(--matrix-image) center / cover,
-    var(--matrix-fallback) center / cover;
+    var(--matrix-image) center / cover;
   box-shadow: inset 0 0 40px rgba(255, 253, 208, 0.05);
 }
 
@@ -1129,8 +1107,7 @@
   text-align: left;
   background:
     linear-gradient(180deg, rgba(1, 1, 1, 0.12), rgba(1, 1, 1, 0.88)),
-    var(--coach-image) center / cover,
-    var(--coach-fallback) center / cover;
+    var(--coach-image) center / cover;
 }
 
 .scso-coach-grid button span,
