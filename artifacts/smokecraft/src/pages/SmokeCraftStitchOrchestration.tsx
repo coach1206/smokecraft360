@@ -66,45 +66,57 @@ interface CraftCard {
 
 const STITCH_IMAGES = {
   profound:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuC0KkWhv5sVI33T9hAr0mYHmDkf7lUyXgodz4Cc9DI23kdiM6jvX4JpHjYHdoPm_idEtcqpnS1gaGnmBcoRqbdS_wRBruDvWL2Zpq4iJaCTTq8v4Yh5zxjICGrLhjXen7BzJhTOLDZ9nUEatXzR3kwPtIRIMJFEYcMXHEZkfcy7WN3-53UdpWvXtF-kysPt8s2Z9RVDOgSAPkATt5W_QwGwNuAhtOF1ZuekEJTO5f9pia3psrggXRPrfLt8-skY2VG_UAQMzi-wLjo",
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDhj2-yD55eFY8sXAgqCsiytEcK4WN-8otOuyAHjDyJhWosE11ghCXfeK1oiw1dFFLMR6I9XXwkVymlWmfTF-lvK2htym5lhQPXLUur6WDJm5r2BAHPtS4xn8ZDbyx-wp4CwJqyANhCbkSe-cb-kBD2Rxi3ZvG5oR0_CEuR2leSxRL8h4MWls2966cMqO-9btJcp74seO_jE2UPj5-K0NJrcErT17RXTr_IQEB7pOoJPZ7w1RVTHP0lDD5eyay2IYbrCw4w6x1sWLQ",
   novee:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuCHpxBFJj-P04TV9_MbOuusZ497ngWOmvuVYwQQO-55WJQpypaSl2y13lgpPUPb0Ed3VCiyT_RXNaqe3YdeqzvnqQiS8NwwH3ss0yQXy6aYwVxHrEKCr5rBf7EzEWz17On-bNXZOLNzpL4HEYv2thxBsPBWRdjhlnTHfvFiunZvD_K1dBoocwBLReGVheNp4bloJ7OO50QHDnZb9hpIy-D5aSAVJ9pikAT3LuzLzAnnYuJyO7-zM8SQORQi-vKfvYCOgcgsmP47I6A",
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAlhdqiSKn66_HoaP-kZnvcqK7Wq2d1THWHaXKm0jZnKtbT6C_xz9glrgLvVGZCivCZjhfVasoD5NBQWh6ePKVFkHxBfCIYM-in03Kyn8b_BlXCEWwxAc1FI9rX6sL71KZer-JTtBOeom2C8iZpQtVcFUWulE7r6k5psBvm94OPHeLaPqpQ-A6SJdRoRv2f9blDBx5YndqL-lNu-20HfXbbQAD24j3BjqVOcOQgfaGhbkKG6WCnzyJE3aGsFWis0q_l1MskKPLWXVE",
   smoke:
-    "https://lh3.googleusercontent.com/aida/ADBb0uhtU8rz_LUuM2Rs6VF6IbOHs2GcKncyUqQ8Thqk46-kFmxWCnYM38gCe4HTEiQwd5OoLqx3XfFipqA6HLoOiYZ6hLTp8wQ6BXqxptudmmSy-tk-yrSSxOA1GBXJGwVm-I9a3cWNEAAZtLI9iflIxR7hLiT-P_p3psEHLu-7MOfUCtHN7odA_qLbPWBsS2KqOI8ICaLQE5I0sU3z14GXzi9OKzPYOGtKfzS_jMseIgXP3XegckKVxV7zaew",
+    "https://lh3.googleusercontent.com/aida/ADBb0uhIEUTRtDSLfVvoeCK1FiwxwstruheRLZVL7s1qe8E7W376n44tmuuiOCKG6Zg76Yfe6XlYfFm7VWZ6KW5jmm9jolNDewIoS_54ppOYtORqdgVKmQ48Tya6vmQB1MjGUSfX_Ux5VqlLQO1dDDkeIlSJPL18Mp8F1OtjriqrI-sEDJFYrAW9U-K-DekHury7InxnKrRg3RrLW4BiObYiDXK9lNf3vYgNoie_XkiAGM_N4V8IVZZX9Sl1OUY",
   wine:
     "https://lh3.googleusercontent.com/aida/ADBb0ugjIJZfwJ3IGEYKUJhER-QdccGeY-WcbTfiArJb-s9N3ERQdMNmb_K6bulXWMdtmsaQlf7QWvrCPdfCtK0I_7qxHcoEqmj_2jzkRsRttL3KMZCp0MLWoENgAQsDFT7xPEThYAoPHhFraE69m5CTsD7LHWKxMq3GoYYJnpZRiw1uNl1GECOLzvAy6dk9_5MZ6a0E1ZIhsLmNMLh8RlMDpb4s8zYGvuprrEmF_rX3lzyDVpApwvqnz7Vc78E",
   pour:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuCskNm-Gipq4Xh2PEmPK9RMRTgGDUBuyMZiRYoAtME-Zh5z6j_ab5GU3AHR-ZrDs2sqFDRLu23c8NuimOJ1qSvRoL3IOkxJb90dCZQkV7rv0WZupovlupp3Q5Tfwvsebm7bP5ynjwSaAKpMMlFJtlpf5Dc-IxE6nztt22D5VZ-nIfF85DE7uazu54z3XZKTev7einMVBybyeFS5E1s-qHFA_fEufSTGP8ZBPj7y9PSzgDxJBhwIsDXc2jZC8BGPNADgf8HsLjbz3m4",
   beer:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuDUADSYfZyDmWta433lljSL8PiO2ygnU_RD5LHM6qVdl_wyQBS-74Qg8otmBdDmp_FG_S8m9mKO_O-cNUWo4HzyxJYxCUYEq42Wb2Z8NQVALqdquemqVvGRF3P5vIEb8mt2BKxPOMHkTcUyWpVysZPBmmJrsQuOtBQrtoiYjBJEtADqDP8ky4NfdEw70-R-2WkFWClBxJKuC7YOb5AWkXvr4t5rRvgbv7oN3_hgEcDtPthlyF5f19ncQ5GFemANiRTQxtPHqDkJf7s",
+  community:
+    "https://lh3.googleusercontent.com/aida/ADBb0ugYc4r6XpOoxBC_0wB3pD3GSaOTeJippscVrxjV1OdTamhEalt10kK1w91das6GsXcMFkTFqZpWWWNiYJyxePU8VaUTKsJxLDh4zNM6DAtY4PCmeoL7UrpY0srY0oWTow7emrNVoQpHanRmD5CEvJluqZcG31BvL2-l13KDFw3j1xl-p7UeTX67IsxqFDwRH7GWQkG4cH4OiWKZxp9EtVQSEkpYXz4XxPs0zSS-XzglQZht2PgMSfvg9A",
+  guideOne:
+    "https://lh3.googleusercontent.com/aida/ADBb0ujvF0LDTfTtfi8FjKatJ-P4KXaG2BmntCvuzETLPaNMDfR2FDU4r88Mi3ZH3fa5FkinbJ2MM_MJihjHHXBIa8Hvzs19KVFE3Mwdzjy2Frtv-ft3q8eiOBDO_dE8VlecGtx3EqkYud-lJxq_bW-LX4w4va-XWmmZV2KVOg7RTsXxZSLdXiXqNroyfbHmFtoxvR_Gs-c4aCwNg_xyIaMaVaUlrDzOFjGZhKO8txtT3JKQkjwphdPfpkUX-Fs",
+  guideTwo:
+    "https://lh3.googleusercontent.com/aida/ADBb0ujAleMiYHqc5FeHUdrsR8hi-mmOt0uY80dYY60m2vjhAjA1-J5FV9wduNrygz3UAfUxaye3B-f8O3NlNe60kjh_IjPAOBhG-Vf3aUhnxd865SvrMxputnALIbQbQ5Fo2ho1qxqfvy2phMv824xgrvGdAEZ7E0JdLsonKIMtb_96B-jW-SF7II_bNMv5QVI4T87LZbyYR1SF82WAPulp9nqq3e3Ua_RMlDh0f1Nea3zrC_Jl6-GP_4UktKA",
+  lab:
+    "https://lh3.googleusercontent.com/aida/ADBb0uiX2XE4vk1tpK_YO1N6oLY0bZnftyAtfBu1H31tCovXscbczeW2hri9dlnWfNppkcvd7J8i0rFi2TmWYMEVuT_RTL-D0_6gxS9ehT3ySt9z-enYqGDQgUBA5JZinCC-mw9Vcvh3v5uF-prU7AD9hS58xtUTz7cMh6D23YZhy15eoPOFWmSi0NJUHcs5a4Ss5DqyehpCBPDECGFGRXR1sZGjqEmxhwHXEgcp7DpPJHQKzHMhZ53DgV7D2A",
+  golden:
+    "https://lh3.googleusercontent.com/aida/ADBb0uiKiZsMg3k_CQRIY9i4XNWFZXXzRd-CyGDxLyAQmMYYiUxGC3eu9br5f8upe9BBWWKjFuexFGvFf3otx7ojtpsunqbr03b5cyGZSuvcmbNHvU4eSPXhxt902bOY1msSfklxPH-k8y8x85VDoX3C0WEPxdD-XAbLjnluWdsqSsEqcE61Of-d0OIDv37JCvCkoBbcYZue6MKz3y5pnAKyqYO3An74lxScC7IlmaSc9TTZWBrqX-Fv8lpGGQ",
+  eat:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuABVV3uUTEs6YLU3y8S_ojYGC21GciSiQAGBggHZZZDnzmuWitt3bXfPU2KkrDIckkPZgAOH8C_3Ed03HYK0SNzhHhXH_Z5OkzN_4zBkeU0on4zRR2i-LhremT-Kr1PLPk990Fo7PhOhiyPv5aodbu52OwfcF3V97VS61iD4b29iJVUZnNyOPVOQJpZDHQYaph4ZVnT1Pv6_gWT4-1Fmpik_BsCByjWzUJLnSfnJ6hATo9dvPT_91JMPsHz4O8s5aPQ22cFuVLxY9w",
 };
 
 const img = (path: string) => path.startsWith("http") ? path : `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
 const VISUAL_ASSETS: Record<VisualAssetId, { src: string; fallback?: string; label: string }> = {
   obsidianSubstrate: { src: "css:obsidian", label: "Matte True Obsidian Substrate" },
-  corporateEmblem: { src: STITCH_IMAGES.profound, fallback: "images/logo_profound.png", label: "Polished Smoked Chrome Vector Emblem" },
+  corporateEmblem: { src: STITCH_IMAGES.profound, fallback: STITCH_IMAGES.profound, label: "Polished Smoked Chrome Vector Emblem" },
   goldFoilText: { src: "css:gold-foil", label: "Liquid Gold Foil Text Overlay" },
-  craftHubSmoke: { src: STITCH_IMAGES.smoke, fallback: "images/scenes/smokecraft-card.jpg", label: "Human-Centered Elite Lounge Atmosphere" },
-  craftHubPour: { src: STITCH_IMAGES.pour, fallback: "images/scenes/pourcraft-card.jpg", label: "Crystal Bar Spirit Crafting" },
-  craftHubBeer: { src: STITCH_IMAGES.beer, fallback: "images/scenes/brewcraft-card.jpg", label: "Twilight Rooftop Social Deck" },
-  craftHubWine: { src: STITCH_IMAGES.wine, fallback: "images/craft/wine-1.png", label: "Private Stone-Walled Wine Cellar" },
-  guideRosa: { src: STITCH_IMAGES.smoke, fallback: "images/mentor_nicaraguan.jpg", label: "Doña Rosa Master Portrait" },
+  craftHubSmoke: { src: STITCH_IMAGES.smoke, fallback: STITCH_IMAGES.smoke, label: "Human-Centered Elite Lounge Atmosphere" },
+  craftHubPour: { src: STITCH_IMAGES.pour, fallback: STITCH_IMAGES.pour, label: "Crystal Bar Spirit Crafting" },
+  craftHubBeer: { src: STITCH_IMAGES.beer, fallback: STITCH_IMAGES.beer, label: "Twilight Rooftop Social Deck" },
+  craftHubWine: { src: STITCH_IMAGES.wine, fallback: STITCH_IMAGES.wine, label: "Private Stone-Walled Wine Cellar" },
+  guideRosa: { src: STITCH_IMAGES.guideOne, fallback: STITCH_IMAGES.guideOne, label: "Doña Rosa Master Portrait" },
   flagDominican: { src: "css:flag-dominican", label: "Dominican Republic Emblematic Flag Graphic" },
-  guideAlejandro: { src: STITCH_IMAGES.wine, fallback: "images/mentor_dominican.jpg", label: "Alejandro Master Portrait" },
+  guideAlejandro: { src: STITCH_IMAGES.guideTwo, fallback: STITCH_IMAGES.guideTwo, label: "Alejandro Master Portrait" },
   flagNicaragua: { src: "css:flag-nicaragua", label: "Nicaraguan Emblematic Flag Graphic" },
   flagHonduras: { src: "css:flag-honduras", label: "Honduran Emblematic Flag Graphic" },
-  broadleafCultivation: { src: STITCH_IMAGES.beer, fallback: "images/tobacco_connecticut.jpg", label: "Broadleaf Tobacco Cultivation" },
+  broadleafCultivation: { src: STITCH_IMAGES.community, fallback: STITCH_IMAGES.community, label: "Broadleaf Tobacco Cultivation" },
   volumetricSmoke: { src: "css:volumetric-smoke", label: "Volumetric Smoke Texture Substrate" },
   emberParticles: { src: "css:ember-particles", label: "Micro-Ember Spark Particles" },
-  maduroCigar: { src: STITCH_IMAGES.smoke, fallback: "images/cigar1.png", label: "Hand-Rolled Nicaraguan Maduro Cigar" },
-  maduroLeafMacro: { src: STITCH_IMAGES.smoke, fallback: "images/tobacco_criollo.jpg", label: "Oily Maduro Leaf Macro Texture" },
-  singleMalt: { src: STITCH_IMAGES.pour, fallback: "images/whiskey.png", label: "Crystal Tumbler Single-Malt Whiskey" },
-  craftCocktail: { src: STITCH_IMAGES.pour, fallback: "images/pour/pour_cocktail.png", label: "Clear Artisan Craft Cocktail" },
-  smallPlate: { src: STITCH_IMAGES.beer, fallback: "images/pour/pour_tasting.png", label: "Elite Member Culinary Small Plate" },
-  humidorWalkIn: { src: STITCH_IMAGES.wine, fallback: "images/cedar_box.png", label: "Private Humidor Walk-In Architecture" },
-  loungeFloor: { src: STITCH_IMAGES.smoke, fallback: "images/lounge_bg.jpg", label: "High-Velocity Lounge Floor Seating Grid" },
-  brassSwitch: { src: STITCH_IMAGES.profound, fallback: "images/logo_eat.png", label: "Polished Brass Command Center Switch" },
+  maduroCigar: { src: STITCH_IMAGES.lab, fallback: STITCH_IMAGES.lab, label: "Hand-Rolled Nicaraguan Maduro Cigar" },
+  maduroLeafMacro: { src: STITCH_IMAGES.lab, fallback: STITCH_IMAGES.lab, label: "Oily Maduro Leaf Macro Texture" },
+  singleMalt: { src: STITCH_IMAGES.pour, fallback: STITCH_IMAGES.pour, label: "Crystal Tumbler Single-Malt Whiskey" },
+  craftCocktail: { src: STITCH_IMAGES.pour, fallback: STITCH_IMAGES.pour, label: "Clear Artisan Craft Cocktail" },
+  smallPlate: { src: STITCH_IMAGES.community, fallback: STITCH_IMAGES.community, label: "Elite Member Culinary Small Plate" },
+  humidorWalkIn: { src: STITCH_IMAGES.golden, fallback: STITCH_IMAGES.golden, label: "Private Humidor Walk-In Architecture" },
+  loungeFloor: { src: STITCH_IMAGES.community, fallback: STITCH_IMAGES.community, label: "High-Velocity Lounge Floor Seating Grid" },
+  brassSwitch: { src: STITCH_IMAGES.eat, fallback: STITCH_IMAGES.eat, label: "Polished Brass Command Center Switch" },
   cloverNode: { src: "css:pos-clover", label: "Clover Sync System Interface Node" },
   toastNode: { src: "css:pos-toast", label: "Toast Order Sync Interface Node" },
   squareNode: { src: "css:pos-square", label: "Square POS Sync Interface Node" },
@@ -844,7 +856,7 @@ function GoldenBoxFinale({
     <section className="scso-content scso-golden">
       <div className="scso-burst" />
       <div className="scso-golden-box">
-        <img src={asset("craftHubSmoke")} alt={VISUAL_ASSETS.craftHubSmoke.label} draggable={false} onError={(event) => { event.currentTarget.src = assetFallback("craftHubSmoke"); }} />
+        <img src={STITCH_IMAGES.golden} alt="The Golden Box Stitch visual" draggable={false} onError={(event) => { event.currentTarget.src = assetFallback("humidorWalkIn"); }} />
         <div>
           <p className="scso-kicker">The Golden Box Finale</p>
           <h1>The Golden Box</h1>
