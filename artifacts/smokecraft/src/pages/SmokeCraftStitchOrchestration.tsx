@@ -10,7 +10,11 @@ import {
   Leaf,
   Lock,
   MessageCircle,
+  RefreshCw,
   RotateCcw,
+  SlidersHorizontal,
+  Volume2,
+  VolumeX,
   Wine,
 } from "lucide-react";
 import "./SmokeCraftStitchOrchestration.css";
@@ -193,12 +197,21 @@ const mastery = [
 ];
 
 const coachTopics = [
-  "Guide Selection",
-  "Wrapper Profile",
-  "Pairing Logic",
-  "Humidor Count",
-  "POS Dispatch",
-  "Guest Recovery",
+  { topic: "Guide Selection", assetId: "humidorWalkIn" as VisualAssetId, body: "Help staff explain the mentor and wrapper path." },
+  { topic: "Wrapper Profile", assetId: "maduroLeafMacro" as VisualAssetId, body: "Clarify leaf, body, strength, and aroma." },
+  { topic: "Pairing Logic", assetId: "singleMalt" as VisualAssetId, body: "Guide the pour without slowing the ritual." },
+  { topic: "Room Flow", assetId: "loungeFloor" as VisualAssetId, body: "Read the lounge and keep service calm." },
+  { topic: "Command Hub", assetId: "brassSwitch" as VisualAssetId, body: "Adjust venue controls and staff alerts." },
+  { topic: "Guest Recovery", assetId: "smallPlate" as VisualAssetId, body: "Recover the moment with clean service steps." },
+];
+
+const progressStages: { id: Stage; label: string }[] = [
+  { id: "hub", label: "Hub" },
+  { id: "onboarding", label: "Start" },
+  { id: "guide", label: "Guide" },
+  { id: "reserve", label: "Build" },
+  { id: "pairing", label: "Pair" },
+  { id: "golden", label: "Box" },
 ];
 
 function touchPulse() {
@@ -249,6 +262,8 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
   const [coachOpen, setCoachOpen] = useState(false);
   const [pinOpen, setPinOpen] = useState(false);
   const [floorDeckOpen, setFloorDeckOpen] = useState(false);
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [muted, setMuted] = useState(false);
 
   const enter = (next: Stage) => {
     touchPulse();
@@ -273,6 +288,9 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
         />
       )}
       {stage !== "boot" && stage !== "novee" && (
+        <SessionProgress active={stage} />
+      )}
+      {stage !== "boot" && stage !== "novee" && (
         <StaffHandoffDock
           onCoach={() => {
             touchPulse();
@@ -281,6 +299,15 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
           onEatAction={() => {
             touchPulse();
             setPinOpen(true);
+          }}
+          onCommand={() => {
+            touchPulse();
+            setCommandOpen(true);
+          }}
+          muted={muted}
+          onMute={() => {
+            touchPulse();
+            setMuted((value) => !value);
           }}
         />
       )}
@@ -332,6 +359,7 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
       )}
       {stage === "golden" && <GoldenBoxFinale context={context} onHome={() => enter("hub")} onRestart={() => enter("onboarding")} />}
       {coachOpen && <CoachHelpPortal onClose={() => setCoachOpen(false)} />}
+      {commandOpen && <CommandHubPanel onClose={() => setCommandOpen(false)} />}
       {pinOpen && (
         <StaffPinPad
           onCancel={() => setPinOpen(false)}
@@ -424,23 +452,52 @@ function LeftRail({
 function StaffHandoffDock({
   onCoach,
   onEatAction,
+  onCommand,
+  muted,
+  onMute,
 }: {
   onCoach: () => void;
   onEatAction: () => void;
+  onCommand: () => void;
+  muted: boolean;
+  onMute: () => void;
 }) {
   return (
     <aside className="scso-handoff-dock" aria-label="Staff actions">
       <button type="button" className="scso-handoff-button" onPointerDown={onEatAction}>
         <Lock size={22} strokeWidth={1.7} />
         <span>Staff Handoff</span>
-        <strong>Open E.A.T. POS</strong>
+        <strong>Open E.A.T.</strong>
       </button>
       <button type="button" className="scso-coach-button" onPointerDown={onCoach}>
         <MessageCircle size={22} strokeWidth={1.7} />
         <span>Coach Help</span>
         <strong>6 Topics Ready</strong>
       </button>
+      <button type="button" onPointerDown={onCommand}>
+        <SlidersHorizontal size={22} strokeWidth={1.7} />
+        <span>Command Hub</span>
+        <strong>Room Controls</strong>
+      </button>
+      <button type="button" onPointerDown={onMute}>
+        {muted ? <VolumeX size={22} strokeWidth={1.7} /> : <Volume2 size={22} strokeWidth={1.7} />}
+        <span>Audio</span>
+        <strong>{muted ? "Muted" : "Active"}</strong>
+      </button>
     </aside>
+  );
+}
+
+function SessionProgress({ active }: { active: Stage }) {
+  const activeIndex = progressStages.findIndex((step) => step.id === active);
+  return (
+    <div className="scso-session-progress" aria-label="Session progress">
+      {progressStages.map((step, index) => (
+        <span key={step.id} className={index <= activeIndex ? "active" : ""}>
+          {step.label}
+        </span>
+      ))}
+    </div>
   );
 }
 
@@ -629,6 +686,7 @@ function ReserveWorkspace({
           </div>
         </div>
         <div className="scso-controls">
+          <MasteryMatrix context={context} />
           <ChoiceGroup label="Wrapper" value={context.wrapper} items={["Maduro", "Natural", "Connecticut"]} onChange={setWrapper} />
           <ChoiceGroup label="Vitola" value={context.vitola} items={["Robusto", "Toro", "Churchill"]} onChange={setVitola} />
           <ChoiceGroup label="Strength" value={context.strength} items={["Mild", "Medium Full", "Full"]} onChange={setStrength} />
@@ -640,6 +698,40 @@ function ReserveWorkspace({
           </button>
         </div>
       </div>
+    </section>
+  );
+}
+
+function MasteryMatrix({
+  context,
+}: {
+  context: { guide: (typeof guides)[number]; wrapper: string; vitola: string; strength: string; flavor: string; cut: string; mood: string; pairing: string };
+}) {
+  const rows = [
+    ["Wrapper Selection", context.wrapper],
+    ["Strength Profile", context.strength],
+    ["Flavor Family", context.flavor],
+    ["Body Level", context.vitola],
+    ["Aroma Notes", `${context.cut} cut · ${context.mood}`],
+    ["Mentor Recommendation", context.guide.name],
+    ["Suggested Pairing Path", context.pairing],
+  ];
+
+  return (
+    <section
+      className="scso-mastery-matrix"
+      style={{
+        ["--matrix-image" as string]: `url("${asset("broadleafCultivation")}")`,
+        ["--matrix-fallback" as string]: `url("${assetFallback("broadleafCultivation")}")`,
+      }}
+    >
+      <p className="scso-kicker">Your Mastery Path</p>
+      {rows.map(([label, value]) => (
+        <div key={label}>
+          <span>{label}</span>
+          <strong>{value}</strong>
+        </div>
+      ))}
     </section>
   );
 }
@@ -775,7 +867,7 @@ function GoldenBoxFinale({
 }
 
 function CoachHelpPortal({ onClose }: { onClose: () => void }) {
-  const [activeTopic, setActiveTopic] = useState(coachTopics[0]);
+  const [activeTopic, setActiveTopic] = useState(coachTopics[0].topic);
   const [reply, setReply] = useState("Select a topic for clear service guidance.");
   const [loading, setLoading] = useState(false);
 
@@ -813,15 +905,63 @@ function CoachHelpPortal({ onClose }: { onClose: () => void }) {
           <button type="button" className="scso-link-button" onPointerDown={onClose}>Close</button>
         </header>
         <div className="scso-coach-grid">
-          {coachTopics.map((topic) => (
-            <button key={topic} type="button" className={activeTopic === topic ? "active" : ""} onPointerDown={() => void askCoach(topic)}>
-              {topic}
+          {coachTopics.map((card) => (
+            <button
+              key={card.topic}
+              type="button"
+              className={activeTopic === card.topic ? "active" : ""}
+              onPointerDown={() => void askCoach(card.topic)}
+              style={{
+                ["--coach-image" as string]: `url("${asset(card.assetId)}")`,
+                ["--coach-fallback" as string]: `url("${assetFallback(card.assetId)}")`,
+              }}
+            >
+              <span>{card.topic}</span>
+              <small>{card.body}</small>
             </button>
           ))}
         </div>
         <div className="scso-coach-response">
           <strong>{loading ? "Loading guidance" : activeTopic}</strong>
           <p>{reply}</p>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function CommandHubPanel({ onClose }: { onClose: () => void }) {
+  const controls = [
+    ["Ambient Intensity", "Warm Low"],
+    ["Experience Mode", "Guided Ritual"],
+    ["Session Flow", "Continuous"],
+    ["Table Activity", "Live"],
+    ["Staff Alerts", "Ready"],
+    ["Pairing Recommendations", "Visible"],
+    ["POS Sync Visibility", "Staff Only"],
+    ["Admin View Access", "PIN Gated"],
+  ];
+
+  return (
+    <div className="scso-modal-backdrop" role="dialog" aria-modal="true">
+      <section className="scso-command-modal">
+        <header>
+          <div>
+            <p className="scso-kicker">Executive Command Hub</p>
+            <h2>Visual Control Dashboard</h2>
+          </div>
+          <button type="button" className="scso-link-button" onPointerDown={onClose}>Close</button>
+        </header>
+        <div className="scso-command-layout">
+          <PanelImage assetId="brassSwitch" title="Room Controls" body="Staff can tune the lounge without interrupting the guest ritual." />
+          <div className="scso-command-grid">
+            {controls.map(([label, value]) => (
+              <button key={label} type="button" onPointerDown={touchPulse}>
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
     </div>
@@ -894,6 +1034,15 @@ function EatPosDeck({ onClose }: { onClose: () => void }) {
     ["Pairing", "Single Malt Whiskey"],
     ["Dispatch", "Bar and humidor ready"],
   ];
+  const nodes = [
+    ["Clover", "Connected", "Just now", "Feed live", "Healthy", "node-clover"],
+    ["Toast", "Ready", "2 min ago", "Orders synced", "Healthy", "node-toast"],
+    ["Square", "Ready", "4 min ago", "Payments synced", "Healthy", "node-square"],
+    ["Shopify", "Standby", "Manual", "Retail queue", "Ready", "node-custom"],
+    ["Lightspeed", "Standby", "Manual", "Venue queue", "Ready", "node-custom"],
+    ["Manual Import", "Ready", "Manual", "Staff upload", "Ready", "node-custom"],
+    ["Custom POS", "Ready", "Manual", "Gateway slot", "Ready", "node-custom"],
+  ];
 
   return (
     <div className="scso-pos-backdrop" role="dialog" aria-modal="true">
@@ -922,6 +1071,20 @@ function EatPosDeck({ onClose }: { onClose: () => void }) {
             <article key={label}>
               <span>{label}</span>
               <strong>{value}</strong>
+            </article>
+          ))}
+        </div>
+        <div className="scso-pos-strip" aria-label="POS sync strip">
+          {nodes.map(([name, status, sync, feed, health, nodeClass]) => (
+            <article key={name} className={nodeClass}>
+              <div className="scso-pos-node-mark" />
+              <span>{name}</span>
+              <strong>{status}</strong>
+              <small>{sync} · {feed} · {health}</small>
+              <button type="button" onPointerDown={touchPulse}>
+                <RefreshCw size={16} strokeWidth={1.8} />
+                Refresh
+              </button>
             </article>
           ))}
         </div>
