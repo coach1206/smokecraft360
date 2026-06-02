@@ -346,6 +346,11 @@
 .scso-card-image.image-2 { animation-delay: calc(var(--delay) + 6s); }
 .scso-card-image.image-3 { animation-delay: calc(var(--delay) + 12s); }
 
+.scso-craft-card.single-image .scso-card-image {
+  opacity: 1;
+  animation: scso-card-breathe 16s ease-in-out infinite alternate;
+}
+
 .scso-card-shade {
   position: absolute;
   inset: 0;
@@ -506,7 +511,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.28;
+  opacity: 0.44;
   mix-blend-mode: screen;
 }
 
@@ -551,7 +556,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.18;
+  opacity: 0.28;
 }
 
 .scso-flag-field.scso-flagDominican {

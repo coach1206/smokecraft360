@@ -89,22 +89,22 @@ const VISUAL_ASSETS: Record<VisualAssetId, { src: string; fallback?: string; lab
   craftHubPour: { src: STITCH_IMAGES.pour, fallback: "images/scenes/pourcraft-card.jpg", label: "Crystal Bar Spirit Crafting" },
   craftHubBeer: { src: STITCH_IMAGES.beer, fallback: "images/scenes/brewcraft-card.jpg", label: "Twilight Rooftop Social Deck" },
   craftHubWine: { src: STITCH_IMAGES.wine, fallback: "images/craft/wine-1.png", label: "Private Stone-Walled Wine Cellar" },
-  guideRosa: { src: "images/mentor_nicaraguan.jpg", fallback: "images/mentor_nicaraguan.png", label: "Doña Rosa Master Portrait" },
+  guideRosa: { src: STITCH_IMAGES.smoke, fallback: "images/mentor_nicaraguan.jpg", label: "Doña Rosa Master Portrait" },
   flagDominican: { src: "css:flag-dominican", label: "Dominican Republic Emblematic Flag Graphic" },
-  guideAlejandro: { src: "images/mentor_dominican.jpg", fallback: "images/mentor_dominican.png", label: "Alejandro Master Portrait" },
+  guideAlejandro: { src: STITCH_IMAGES.wine, fallback: "images/mentor_dominican.jpg", label: "Alejandro Master Portrait" },
   flagNicaragua: { src: "css:flag-nicaragua", label: "Nicaraguan Emblematic Flag Graphic" },
   flagHonduras: { src: "css:flag-honduras", label: "Honduran Emblematic Flag Graphic" },
-  broadleafCultivation: { src: "images/tobacco_connecticut.jpg", fallback: "images/tobacco_connecticut.png", label: "Broadleaf Tobacco Cultivation" },
+  broadleafCultivation: { src: STITCH_IMAGES.beer, fallback: "images/tobacco_connecticut.jpg", label: "Broadleaf Tobacco Cultivation" },
   volumetricSmoke: { src: "css:volumetric-smoke", label: "Volumetric Smoke Texture Substrate" },
   emberParticles: { src: "css:ember-particles", label: "Micro-Ember Spark Particles" },
-  maduroCigar: { src: "images/cigar1.png", fallback: "images/cigar.png", label: "Hand-Rolled Nicaraguan Maduro Cigar" },
-  maduroLeafMacro: { src: "images/tobacco_criollo.jpg", fallback: "images/tobacco_criollo.png", label: "Oily Maduro Leaf Macro Texture" },
-  singleMalt: { src: "images/whiskey.png", fallback: "images/pour/pour_whiskey.png", label: "Crystal Tumbler Single-Malt Whiskey" },
-  craftCocktail: { src: "images/pour/pour_cocktail.png", label: "Clear Artisan Craft Cocktail" },
-  smallPlate: { src: "images/pour/pour_tasting.png", label: "Elite Member Culinary Small Plate" },
-  humidorWalkIn: { src: "images/cedar_box.png", label: "Private Humidor Walk-In Architecture" },
-  loungeFloor: { src: "images/lounge_bg.jpg", fallback: "images/lounge-bg.jpg", label: "High-Velocity Lounge Floor Seating Grid" },
-  brassSwitch: { src: "images/logo_eat.png", label: "Polished Brass Command Center Switch" },
+  maduroCigar: { src: STITCH_IMAGES.smoke, fallback: "images/cigar1.png", label: "Hand-Rolled Nicaraguan Maduro Cigar" },
+  maduroLeafMacro: { src: STITCH_IMAGES.smoke, fallback: "images/tobacco_criollo.jpg", label: "Oily Maduro Leaf Macro Texture" },
+  singleMalt: { src: STITCH_IMAGES.pour, fallback: "images/whiskey.png", label: "Crystal Tumbler Single-Malt Whiskey" },
+  craftCocktail: { src: STITCH_IMAGES.pour, fallback: "images/pour/pour_cocktail.png", label: "Clear Artisan Craft Cocktail" },
+  smallPlate: { src: STITCH_IMAGES.beer, fallback: "images/pour/pour_tasting.png", label: "Elite Member Culinary Small Plate" },
+  humidorWalkIn: { src: STITCH_IMAGES.wine, fallback: "images/cedar_box.png", label: "Private Humidor Walk-In Architecture" },
+  loungeFloor: { src: STITCH_IMAGES.smoke, fallback: "images/lounge_bg.jpg", label: "High-Velocity Lounge Floor Seating Grid" },
+  brassSwitch: { src: STITCH_IMAGES.profound, fallback: "images/logo_eat.png", label: "Polished Brass Command Center Switch" },
   cloverNode: { src: "css:pos-clover", label: "Clover Sync System Interface Node" },
   toastNode: { src: "css:pos-toast", label: "Toast Order Sync Interface Node" },
   squareNode: { src: "css:pos-square", label: "Square POS Sync Interface Node" },
@@ -121,7 +121,7 @@ const craftCards: CraftCard[] = [
     status: "Active",
     description: "Build the profile. Match the pour. Guide the moment.",
     icon: Flame,
-    images: ["craftHubSmoke", "loungeFloor", "humidorWalkIn"],
+    images: ["craftHubSmoke"],
     fallback: "craftHubSmoke",
   },
   {
@@ -131,7 +131,7 @@ const craftCards: CraftCard[] = [
     status: "Coming Soon",
     description: "Guide cocktails, bourbon, whiskey, and premium pours.",
     icon: GlassWater,
-    images: ["craftHubPour", "singleMalt", "craftCocktail"],
+    images: ["craftHubPour"],
     fallback: "craftHubPour",
   },
   {
@@ -141,7 +141,7 @@ const craftCards: CraftCard[] = [
     status: "Coming Soon",
     description: "Match flavor, mood, and menu with the right beer.",
     icon: Beer,
-    images: ["craftHubBeer", "loungeFloor", "smallPlate"],
+    images: ["craftHubBeer"],
     fallback: "craftHubBeer",
   },
   {
@@ -151,7 +151,7 @@ const craftCards: CraftCard[] = [
     status: "Coming Soon",
     description: "Taste, pair, and recommend with confidence.",
     icon: Wine,
-    images: ["craftHubWine", "craftHubPour", "smallPlate"],
+    images: ["craftHubWine"],
     fallback: "craftHubWine",
   },
 ];
@@ -274,6 +274,7 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
     () => ({ guide, wrapper, vitola, strength, flavor, cut, mood, pairing }),
     [guide, wrapper, vitola, strength, flavor, cut, mood, pairing],
   );
+  const showStaffHandoff = stage === "hub" || stage === "golden";
 
   return (
     <main className="scso-shell">
@@ -290,7 +291,7 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
       {stage !== "boot" && stage !== "novee" && (
         <SessionProgress active={stage} />
       )}
-      {stage !== "boot" && stage !== "novee" && (
+      {showStaffHandoff && (
         <StaffHandoffDock
           onCoach={() => {
             touchPulse();
@@ -525,7 +526,7 @@ function CraftHub({ onLaunch }: { onLaunch: () => void }) {
             <button
               key={card.id}
               type="button"
-              className={`scso-craft-card ${active ? "is-active" : ""}`}
+              className={`scso-craft-card ${active ? "is-active" : ""} ${card.images.length === 1 ? "single-image" : ""}`}
               onPointerDown={active ? onLaunch : touchPulse}
               style={{ ["--delay" as string]: `${idx * 2}s` }}
             >
@@ -843,7 +844,7 @@ function GoldenBoxFinale({
     <section className="scso-content scso-golden">
       <div className="scso-burst" />
       <div className="scso-golden-box">
-        <img src={img("images/golden_box.png")} alt="" draggable={false} />
+        <img src={asset("craftHubSmoke")} alt={VISUAL_ASSETS.craftHubSmoke.label} draggable={false} onError={(event) => { event.currentTarget.src = assetFallback("craftHubSmoke"); }} />
         <div>
           <p className="scso-kicker">The Golden Box Finale</p>
           <h1>The Golden Box</h1>
