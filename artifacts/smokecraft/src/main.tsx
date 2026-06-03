@@ -52,8 +52,9 @@ window.addEventListener("unhandledrejection", (e) => {
 // ── PWA: register service worker ──────────────────────────────────────────────
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
+    const base = import.meta.env.BASE_URL ?? "/";
     navigator.serviceWorker
-      .register("/sw.js")
+      .register(`${base}sw.js`)
       .catch(() => {
         // SW registration failures are non-fatal — the app still works
       });
