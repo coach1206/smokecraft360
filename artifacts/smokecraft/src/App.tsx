@@ -1304,7 +1304,7 @@ export default function App() {
           </Route>
           <Route path="/smokecraft-visual">
             <Suspense fallback={null}>
-              <SmokeCraftStitchOrchestration initialStage="hub" />
+              <SmokeCraftStitchOrchestration initialStage="onboarding" />
             </Suspense>
           </Route>
           <Route path="/smokecraft">
