@@ -16,9 +16,9 @@
  * kiosk boots instantly with zero network dependency after the first load.
  */
 
-const SHELL_CACHE  = "smokecraft-shell-v3";
-const ASSETS_CACHE = "smokecraft-assets-v3";
-const API_CACHE    = "smokecraft-api-v3";
+const SHELL_CACHE  = "smokecraft-shell-v4";
+const ASSETS_CACHE = "smokecraft-assets-v4";
+const API_CACHE    = "smokecraft-api-v4";
 const ALL_CACHES   = [SHELL_CACHE, ASSETS_CACHE, API_CACHE];
 
 // ── Install-time precache ──────────────────────────────────────────────────────
