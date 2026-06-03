@@ -54,7 +54,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     const base = import.meta.env.BASE_URL ?? "/";
     navigator.serviceWorker
-      .register(`${base}sw.js?v=smokecraft-visual-v2`, { updateViaCache: "none" })
+      .register(`${base}sw.js?v=smokecraft-root-visual-v1`, { updateViaCache: "none" })
       .catch(() => {
         // SW registration failures are non-fatal — the app still works
       });

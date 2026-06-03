@@ -1197,7 +1197,7 @@ function PrefetchChunks() {
 
 /* ══════════════════════════════════════════════════════════════
    ROOT APP — wouter router
-   All sub-pages lazy-loaded; / → CraftHub
+   All sub-pages lazy-loaded; / → SmokeCraft visual workspace
 ══════════════════════════════════════════════════════════════ */
 export default function App() {
   const venueId  = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_venue_id')  ?? '00000000-0000-0000-0000-000000000000') : '00000000-0000-0000-0000-000000000000';
@@ -1694,7 +1694,7 @@ function RootRedirect() {
 }
 
 function SmokeCraftExperienceRoute() {
-  return <SmokeCraftStitchOrchestration initialStage="boot" />;
+  return <SmokeCraftStitchOrchestration initialStage="reserve" />;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
