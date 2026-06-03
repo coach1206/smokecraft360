@@ -33,25 +33,6 @@ jobs:
         with:
           version: 11.5.1
 
-      - name: Select Actions as Pages source
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          api="https://api.github.com/repos/${REPOSITORY}/pages"
-          update_status="$(curl -sS -o /tmp/pages-update.json -w "%{http_code}" \
-            -X PUT \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "${api}" \
-            -d '{"build_type":"workflow"}')"
-
-          if [ "${update_status}" -lt 200 ] || [ "${update_status}" -gt 299 ]; then
-            cat /tmp/pages-update.json
-            exit 1
-          fi
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
