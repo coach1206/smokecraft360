@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
-import { SplashController } from '@/components/SplashController';
 import { Router, Route, Switch, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
 import TitanCraftDeck from '@/pages/TitanCraftDeck';
@@ -65,7 +64,6 @@ const AdminMaster           = lazy(() => import('@/pages/AdminMaster'));
 const OnboardWizard         = lazy(() => import('@/pages/OnboardWizard'));
 const AnalyticsModule       = lazy(() => import('@/pages/AnalyticsModule'));
 const SwipeIntelligence     = lazy(() => import('@/pages/SwipeIntelligence'));
-const CraftHub              = lazy(() => import('@/pages/CraftHubPortal'));
 const CraftModulePlaceholder = lazy(() => import('@/pages/CraftModulePlaceholder'));
 const SmokeCraftStitchOrchestration = lazy(() => import('@/pages/SmokeCraftStitchOrchestration'));
 const DemoWalkthrough       = lazy(() => import('@/pages/DemoWalkthrough'));
@@ -113,7 +111,6 @@ const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
 const DesignerPage          = lazy(() => import('@/pages/DesignerPage'));
 const UpgradePage           = lazy(() => import('@/pages/UpgradePage'));
 const UpgradeRequired       = lazy(() => import('@/pages/UpgradeRequired'));
-const CraftEntryPoint       = lazy(() => import('@/pages/CraftEntryPoint'));
 const ControlChamber        = lazy(() => import('@/pages/ControlChamber'));
 const DeveloperGate         = lazy(() => import('@/pages/DeveloperGate'));
 
@@ -1186,8 +1183,8 @@ function DeviceHeartbeatMount() {
 function PrefetchChunks() {
   useEffect(() => {
     const t = setTimeout(() => {
+      import('@/pages/SmokeCraftStitchOrchestration').catch(() => {});
       import('@/pages/NoveeOsShell').catch(() => {});
-      import('@/pages/CraftHubVisualPortal').catch(() => {});
       import('@/pages/Dashboard').catch(() => {});
     }, 1800);
     return () => clearTimeout(t);
@@ -1650,7 +1647,7 @@ export default function App() {
             <SubPageProviders><LivingPortal /></SubPageProviders>
           </Route>
 
-          {/* ── Root: SmokeCraft landing page ── */}
+          {/* ── Preserved operational routes ── */}
           <Route path="/eat-pos">
             <SubPageProviders><EatPosModule onBack={() => window.history.back()} /></SubPageProviders>
           </Route>
@@ -1676,21 +1673,6 @@ export default function App() {
       <Suspense fallback={null}><PhantomHUD /></Suspense>
     </Router>
   );
-}
-
-/* ── HELPERS ── */
-function RootRedirect() {
-  const [, navigate] = useLocation();
-  const [splashDone, setSplashDone] = useState(false);
-
-  useEffect(() => {
-    if (splashDone) navigate('/experience/smoke');
-  }, [splashDone, navigate]);
-
-  if (!splashDone) {
-    return <SplashController onFinish={() => setSplashDone(true)} />;
-  }
-  return null;
 }
 
 function SmokeCraftExperienceRoute() {
