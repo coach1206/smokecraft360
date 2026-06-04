@@ -197,6 +197,17 @@ const progressStages: { id: Stage; label: string }[] = [
   { id: "golden", label: "Box" },
 ];
 
+const kioskNavCards = [
+  { title: "Orchestration", meta: "Live session conductor", body: "Coordinate guest state, room pacing, and mentor logic from one large control surface." },
+  { title: "Connectivity Map", meta: "Venue mesh online", body: "See connected tablets, service points, floor nodes, and handoff readiness at a glance." },
+  { title: "Guest Journeys", meta: "Continuity active", body: "Resume, guide, or hand off individual experiences without breaking the ritual flow." },
+  { title: "Craft Modules", meta: "Smoke, pour, beer, wine", body: "Open the premium craft lanes while keeping SmokeCraft as the active module." },
+  { title: "Passport Networking", meta: "Member graph ready", body: "Link guest identity, rewards, visits, and cross-venue recognition in one pass." },
+  { title: "POS 3", meta: "Payments connected", body: "Stage tab actions, staff tickets, and venue commerce without exposing admin clutter." },
+  { title: "E.A.T. Intelligence", meta: "Floor intelligence", body: "Review environment, asset, and transaction signals for staff-assisted service." },
+  { title: "Logistics", meta: "Dispatch prepared", body: "Track humidor, bar, staff queue, and fulfillment handoff from the kiosk station." },
+];
+
 function touchPulse() {
   try {
     navigator.vibrate?.(18);
@@ -261,7 +272,7 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
   const showStaffHandoff = stage === "hub" || stage === "golden";
 
   return (
-    <main className="scso-shell">
+    <main className={`scso-shell scso-stage-${stage}`}>
       <Atmosphere />
       {stage !== "boot" && stage !== "novee" && (
         <LeftRail
@@ -274,6 +285,17 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
       )}
       {stage !== "boot" && stage !== "novee" && (
         <SessionProgress active={stage} />
+      )}
+      {stage === "hub" && (
+        <HubBottomActions
+          onLaunch={() => enter("onboarding")}
+          onVisualRoute={() => navigate("/smokecraft-visual")}
+          onContinue={() => enter("reserve")}
+          onStaffAssist={() => {
+            touchPulse();
+            setCoachOpen(true);
+          }}
+        />
       )}
       {showStaffHandoff && (
         <StaffHandoffDock
@@ -299,7 +321,12 @@ export default function SmokeCraftStitchOrchestration({ initialStage = "boot" }:
 
       {stage === "boot" && <BootScreen phase={bootPhase} />}
       {stage === "novee" && <NoveeAuthScreen />}
-      {stage === "hub" && <CraftHub onLaunch={() => enter("onboarding")} onVisualRoute={() => navigate("/smokecraft-visual")} />}
+      {stage === "hub" && (
+        <CraftHub
+          onLaunch={() => enter("onboarding")}
+          onVisualRoute={() => navigate("/smokecraft-visual")}
+        />
+      )}
       {stage === "onboarding" && <Onboarding onBack={() => enter("hub")} onEnter={() => enter("guide")} />}
       {stage === "guide" && (
         <GuidePortfolio
@@ -409,10 +436,10 @@ function LeftRail({
   onGolden: () => void;
 }) {
   const items = [
-    { id: "hub", label: "Hub", onClick: onHub, icon: Home },
-    { id: "smoke", label: "SC", onClick: onSmoke, icon: Flame },
-    { id: "pairing", label: "PR", onClick: onPairing, icon: GlassWater },
-    { id: "golden", label: "GB", onClick: onGolden, icon: Box },
+    { id: "hub", label: "Hub", detail: "Control", onClick: onHub, icon: Home },
+    { id: "smoke", label: "Smoke", detail: "Experience", onClick: onSmoke, icon: Flame },
+    { id: "pairing", label: "Pair", detail: "Service", onClick: onPairing, icon: GlassWater },
+    { id: "golden", label: "Box", detail: "Finale", onClick: onGolden, icon: Box },
   ];
   return (
     <nav className="scso-rail" aria-label="SmokeCraft navigation">
@@ -424,9 +451,10 @@ function LeftRail({
           (item.id === "pairing" && active === "pairing") ||
           (item.id === "golden" && active === "golden");
         return (
-          <button key={item.id} type="button" className={selected ? "active" : ""} onPointerDown={item.onClick} aria-label={item.label}>
-            <Icon size={25} strokeWidth={1.8} />
+          <button key={item.id} type="button" className={selected ? "active" : ""} onPointerDown={item.onClick} aria-label={`${item.label} ${item.detail}`}>
+            <Icon size={30} strokeWidth={1.7} />
             <span>{item.label}</span>
+            <small>{item.detail}</small>
           </button>
         );
       })}
@@ -486,14 +514,20 @@ function SessionProgress({ active }: { active: Stage }) {
   );
 }
 
-function CraftHub({ onLaunch, onVisualRoute }: { onLaunch: () => void; onVisualRoute: () => void }) {
+function CraftHub({
+  onLaunch,
+  onVisualRoute,
+}: {
+  onLaunch: () => void;
+  onVisualRoute: () => void;
+}) {
   return (
     <section className="scso-content scso-hub">
       <header className="scso-header">
         <div>
           <p className="scso-kicker">NOVEE OS · Craft Hub</p>
-          <h1>CRAFT HUB</h1>
-          <p>Choose your experience.</p>
+          <h1>CRAFT HUB 360</h1>
+          <p>Touchscreen command for guest experiences, craft flow, staff handoff, and venue intelligence.</p>
         </div>
         <div className="scso-venue">
           <span>Venue Status</span>
@@ -505,8 +539,19 @@ function CraftHub({ onLaunch, onVisualRoute }: { onLaunch: () => void; onVisualR
         </div>
       </header>
 
-      <div className="scso-card-grid">
-        {craftCards.map((card, idx) => {
+      <div className="scso-kiosk-layout">
+        <section className="scso-kiosk-nav" aria-label="CraftHub control panel">
+          {kioskNavCards.map((card, index) => (
+            <button key={card.title} type="button" className={index === 0 ? "is-live" : ""} onPointerDown={touchPulse}>
+              <span>{card.meta}</span>
+              <strong>{card.title}</strong>
+              <p>{card.body}</p>
+            </button>
+          ))}
+        </section>
+
+        <section className="scso-card-grid" aria-label="Craft modules">
+          {craftCards.map((card, idx) => {
           const Icon = card.icon;
           const active = card.id === "smoke";
           return (
@@ -538,9 +583,32 @@ function CraftHub({ onLaunch, onVisualRoute }: { onLaunch: () => void; onVisualR
               </div>
             </button>
           );
-        })}
+          })}
+        </section>
       </div>
+
     </section>
+  );
+}
+
+function HubBottomActions({
+  onLaunch,
+  onVisualRoute,
+  onContinue,
+  onStaffAssist,
+}: {
+  onLaunch: () => void;
+  onVisualRoute: () => void;
+  onContinue: () => void;
+  onStaffAssist: () => void;
+}) {
+  return (
+    <div className="scso-bottom-actions" role="navigation" aria-label="Primary kiosk actions">
+      <button type="button" className="primary" onPointerDown={onLaunch}>Start Experience</button>
+      <button type="button" onPointerDown={onVisualRoute}>Open CraftHub</button>
+      <button type="button" onPointerDown={onContinue}>Continue Session</button>
+      <button type="button" onPointerDown={onStaffAssist}>Staff Assist</button>
+    </div>
   );
 }
 
