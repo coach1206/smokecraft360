@@ -66,6 +66,7 @@ const AnalyticsModule       = lazy(() => import('@/pages/AnalyticsModule'));
 const SwipeIntelligence     = lazy(() => import('@/pages/SwipeIntelligence'));
 const CraftModulePlaceholder = lazy(() => import('@/pages/CraftModulePlaceholder'));
 const SmokeCraftStitchOrchestration = lazy(() => import('@/pages/SmokeCraftStitchOrchestration'));
+const PremiumStitchCraftHub = lazy(() => import('@/pages/PremiumStitchCraftHub'));
 const DemoWalkthrough       = lazy(() => import('@/pages/DemoWalkthrough'));
 const MasterOperations      = lazy(() => import('@/pages/MasterOperations'));
 const CommandCenter         = lazy(() => import('@/pages/CommandCenter'));
@@ -1184,6 +1185,7 @@ function PrefetchChunks() {
   useEffect(() => {
     const t = setTimeout(() => {
       import('@/pages/SmokeCraftStitchOrchestration').catch(() => {});
+      import('@/pages/PremiumStitchCraftHub').catch(() => {});
       import('@/pages/NoveeOsShell').catch(() => {});
       import('@/pages/Dashboard').catch(() => {});
     }, 1800);
@@ -1217,7 +1219,10 @@ export default function App() {
 
           {/* ── All sub-pages — wrapped in full provider stack ── */}
           <Route path="/dashboard">
-            <SubPageProviders><Dashboard /></SubPageProviders>
+            <PremiumStitchRoute />
+          </Route>
+          <Route path="/modules">
+            <PremiumStitchRoute />
           </Route>
           <Route path="/settings">
             <SubPageProviders><SettingsModule /></SubPageProviders>
@@ -1295,9 +1300,7 @@ export default function App() {
             <SubPageProviders><IntelligenceManifest /></SubPageProviders>
           </Route>
           <Route path="/craft-hub">
-            <Suspense fallback={null}>
-              <SmokeCraftStitchOrchestration initialStage="hub" />
-            </Suspense>
+            <PremiumStitchRoute />
           </Route>
           <Route path="/smokecraft-visual">
             <Suspense fallback={null}>
@@ -1660,7 +1663,7 @@ export default function App() {
           </Route>
           {/* ── Root: SmokeCraft Stitch ritual entry ── */}
           <Route path="/">
-            <SmokeCraftExperienceRoute />
+            <PremiumStitchRoute />
           </Route>
 
           {/* ── Default: Sovereign Gate — all entry flows begin here ── */}
@@ -1677,6 +1680,10 @@ export default function App() {
 
 function SmokeCraftExperienceRoute() {
   return <SmokeCraftStitchOrchestration initialStage="reserve" />;
+}
+
+function PremiumStitchRoute() {
+  return <PremiumStitchCraftHub />;
 }
 
 const GOLD_GRAD = 'linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%)';
