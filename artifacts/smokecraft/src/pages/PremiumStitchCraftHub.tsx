@@ -3,38 +3,59 @@ import { useLocation } from "wouter";
 import "./PremiumStitchCraftHub.css";
 
 type Ritual = "portal" | "smoke" | "wine";
+type CraftDestination = "smoke" | "pour" | "guest" | "passport" | "pos" | "eat";
 
 const stitch = (name: string) => `/stitch-assets/${name}`;
+const image = (name: string) => `/images/${name}`;
 
 const craftTiles = [
   {
     id: "smoke" as const,
-    className: "wide",
-    title: "SmokeCraft 360",
-    eyebrow: "Master Level: Chris Clark",
-    body: "The alchemy of tobacco. Learn the ritual of the cut, the light, and the slow draw.",
+    className: "featured",
+    title: "SmokeCraft",
+    eyebrow: "Signature ritual",
+    body: "A cinematic humidor journey through cut, light, draw, and rare reserve pairings.",
     image: stitch("03-smokecraft.png"),
   },
   {
-    id: "wine" as const,
-    className: "tall",
-    title: "WineCraft",
-    body: "Unveil the cellar's deepest secrets with JC Collins.",
-    image: stitch("04-wine.png"),
-  },
-  {
     id: "pour" as const,
-    className: "half",
+    className: "portrait",
     title: "PourCraft",
-    body: "Master the spirit. From the Highland peat to the Kentucky oak.",
+    eyebrow: "Spirit pairing",
+    body: "Whiskey, cocktail, and cellar intelligence staged for premium tableside discovery.",
     image: stitch("stitch-05-pourcraft.png"),
   },
   {
-    id: "beer" as const,
-    className: "half",
-    title: "BeerCraft",
-    body: "The grain's true expression. Explore the elite taproom selection.",
-    image: stitch("stitch-06-beercraft.png"),
+    id: "guest" as const,
+    className: "standard",
+    title: "Guest Journey",
+    eyebrow: "Experience path",
+    body: "Personalized hospitality moments from arrival to tasting, reward, and return visit.",
+    image: image("scenes/craft-hub.jpg"),
+  },
+  {
+    id: "passport" as const,
+    className: "standard",
+    title: "Passport Networking",
+    eyebrow: "Member graph",
+    body: "Connect guests, tastemakers, ambassadors, and venue experiences across CraftHub.",
+    image: stitch("07-community.png"),
+  },
+  {
+    id: "pos" as const,
+    className: "standard",
+    title: "POS 3",
+    eyebrow: "Tableside commerce",
+    body: "Premium purchase flow, staff handoff, and order intelligence in one touch layer.",
+    image: stitch("10-lab.jpeg"),
+  },
+  {
+    id: "eat" as const,
+    className: "standard",
+    title: "E.A.T. Intelligence",
+    eyebrow: "Food pairing AI",
+    body: "Menu, pairing, service, and kitchen signals tuned to the guest's current ritual.",
+    image: stitch("12-eat.jpg"),
   },
 ];
 
@@ -134,17 +155,19 @@ export default function PremiumStitchCraftHub() {
     };
   }, []);
 
-  const enterRitual = (type: "smoke" | "wine" | "pour" | "beer") => {
+  const openDestination = (type: CraftDestination) => {
     triggerHaptic([80, 30, 80]);
-    if (type === "smoke" || type === "wine") {
-      setRitual(type);
+    if (type === "smoke") {
+      setRitual("smoke");
       setRewardOpen(false);
-      if (type === "smoke") {
-        window.setTimeout(() => setRewardOpen(true), 2400);
-      }
+      window.setTimeout(() => setRewardOpen(true), 2400);
       return;
     }
-    navigate(type === "pour" ? "/pourcraft" : "/beercraft");
+    if (type === "pour") navigate("/pourcraft");
+    if (type === "guest") navigate("/experience-center");
+    if (type === "passport") navigate("/presence");
+    if (type === "pos") navigate("/pos");
+    if (type === "eat") navigate("/titan-eat");
   };
 
   const summonStaff = () => {
@@ -173,8 +196,8 @@ export default function PremiumStitchCraftHub() {
       <section className="psch-content">
         {ritual === "portal" ? (
           <PortalView
-            onEnter={enterRitual}
-            onStart={() => enterRitual("smoke")}
+            onEnter={openDestination}
+            onStart={() => openDestination("smoke")}
             onContinue={() => setRitual("wine")}
             onOpenHub={() => {
               triggerHaptic();
@@ -224,7 +247,7 @@ function PortalView({
   onOpenHub,
   onStaffAssist,
 }: {
-  onEnter: (type: "smoke" | "wine" | "pour" | "beer") => void;
+  onEnter: (type: CraftDestination) => void;
   onStart: () => void;
   onContinue: () => void;
   onOpenHub: () => void;
@@ -235,21 +258,21 @@ function PortalView({
       <div className="psch-hero-copy">
         <span>CraftHub 360</span>
         <h1>Enter the inner sanctum.</h1>
-        <p>Fire, oak, grain, and service intelligence staged for a premium touchscreen experience.</p>
+        <p>Fire, oak, spirit, cuisine, and service intelligence staged as a private hospitality theater.</p>
       </div>
 
       <div className="psch-primary-actions" aria-label="Primary kiosk actions">
         <button type="button" className="is-primary" onClick={onStart}>
           <strong>Start Experience</strong>
-          <span>Begin SmokeCraft 360</span>
+          <span>Begin the signature ritual</span>
         </button>
         <button type="button" onClick={onOpenHub}>
           <strong>Open CraftHub</strong>
-          <span>View premium craft portals</span>
+          <span>Reveal every premium portal</span>
         </button>
         <button type="button" onClick={onContinue}>
           <strong>Continue Session</strong>
-          <span>Resume the current ritual</span>
+          <span>Resume the tasting journey</span>
         </button>
         <button type="button" onClick={onStaffAssist}>
           <strong>Staff Assist</strong>
@@ -257,7 +280,7 @@ function PortalView({
         </button>
       </div>
 
-      <div className="psch-bento" aria-label="CraftHub premium ritual tiles">
+      <div className="psch-bento" aria-label="CraftHub premium destination cards">
         {craftTiles.map((tile) => (
           <button
             key={tile.id}
