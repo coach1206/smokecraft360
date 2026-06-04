@@ -3,17 +3,8 @@ import { useLocation } from "wouter";
 import "./PremiumStitchCraftHub.css";
 
 type Ritual = "portal" | "smoke" | "wine";
-type Context = "cellar" | "humidor" | "lounge" | "concierge" | "history";
 
 const stitch = (name: string) => `/stitch-assets/${name}`;
-
-const navItems: { id: Context; icon: string; label: string }[] = [
-  { id: "cellar", icon: "wine_bar", label: "Cellar" },
-  { id: "humidor", icon: "smoking_rooms", label: "Humidor" },
-  { id: "lounge", icon: "chair", label: "Lounge" },
-  { id: "concierge", icon: "concierge", label: "Concierge" },
-  { id: "history", icon: "history", label: "History" },
-];
 
 const craftTiles = [
   {
@@ -58,7 +49,6 @@ function triggerHaptic(pattern: number | number[] = 18) {
 export default function PremiumStitchCraftHub() {
   const [, navigate] = useLocation();
   const [booting, setBooting] = useState(true);
-  const [context, setContext] = useState<Context>("cellar");
   const [ritual, setRitual] = useState<Ritual>("portal");
   const [rewardOpen, setRewardOpen] = useState(false);
   const [summonOpen, setSummonOpen] = useState(false);
@@ -157,13 +147,6 @@ export default function PremiumStitchCraftHub() {
     navigate(type === "pour" ? "/pourcraft" : "/beercraft");
   };
 
-  const switchContext = (next: Context) => {
-    triggerHaptic();
-    setContext(next);
-    setRitual("portal");
-    setRewardOpen(false);
-  };
-
   const summonStaff = () => {
     triggerHaptic([100, 50, 100]);
     setSummonOpen(true);
@@ -182,62 +165,24 @@ export default function PremiumStitchCraftHub() {
         <div className="psch-startup-copy">INITIALIZING NEURAL COMMAND...</div>
       </section>
 
-      <aside className="psch-sidebar" aria-label="CraftHub premium navigation">
-        <div className="psch-curator">
-          <div className="psch-curator-title">The Curator</div>
-          <div className="psch-curator-row">
-            <img src={stitch("08-guide-one.png")} alt="Chris Clark" />
-            <div>
-              <strong>Chris Clark</strong>
-              <span>Master Sommelier</span>
-            </div>
-          </div>
-        </div>
-
-        <nav className="psch-nav">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={context === item.id ? "is-active" : ""}
-              onClick={() => switchContext(item.id)}
-            >
-              <span className="material-symbols-outlined">{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="psch-sidebar-footer">
-          <button type="button" className="psch-summon" onClick={summonStaff}>
-            Summon Staff
-          </button>
-          <button type="button" className="psch-settings" onClick={() => navigate("/settings")}>
-            <span className="material-symbols-outlined">tune</span>
-            <span>Settings</span>
-          </button>
-        </div>
-      </aside>
-
       <header className="psch-topbar">
         <div className="psch-brand">SMOKECRAFT 360</div>
-        <div className="psch-top-actions">
-          <label className="psch-search">
-            <span className="material-symbols-outlined">search</span>
-            <input placeholder="Explore Vault..." aria-label="Explore Vault" />
-          </label>
-          <button type="button" aria-label="Notifications">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
-          <button type="button" aria-label="Settings" onClick={() => navigate("/settings")}>
-            <span className="material-symbols-outlined">settings</span>
-          </button>
-        </div>
+        <button type="button" className="psch-top-assist" onClick={summonStaff}>Staff Assist</button>
       </header>
 
       <section className="psch-content">
         {ritual === "portal" ? (
-          <PortalView onEnter={enterRitual} />
+          <PortalView
+            onEnter={enterRitual}
+            onStart={() => enterRitual("smoke")}
+            onContinue={() => setRitual("wine")}
+            onOpenHub={() => {
+              triggerHaptic();
+              setRitual("portal");
+              setRewardOpen(false);
+            }}
+            onStaffAssist={summonStaff}
+          />
         ) : (
           <RitualView
             ritual={ritual}
@@ -249,15 +194,6 @@ export default function PremiumStitchCraftHub() {
           />
         )}
       </section>
-
-      <footer className="psch-footer">
-        <span>© 2024 SMOKECRAFT 360 | NOVEE OS</span>
-        <nav aria-label="Legal links">
-          <a href="/legal">Privacy</a>
-          <a href="/legal">Terms</a>
-          <button type="button" onClick={summonStaff}>Concierge Support</button>
-        </nav>
-      </footer>
 
       {summonOpen && (
         <section className="psch-summon-overlay" role="dialog" aria-modal="true" aria-label="Neural command">
@@ -281,12 +217,44 @@ export default function PremiumStitchCraftHub() {
   );
 }
 
-function PortalView({ onEnter }: { onEnter: (type: "smoke" | "wine" | "pour" | "beer") => void }) {
+function PortalView({
+  onEnter,
+  onStart,
+  onContinue,
+  onOpenHub,
+  onStaffAssist,
+}: {
+  onEnter: (type: "smoke" | "wine" | "pour" | "beer") => void;
+  onStart: () => void;
+  onContinue: () => void;
+  onOpenHub: () => void;
+  onStaffAssist: () => void;
+}) {
   return (
     <section className="psch-portal">
       <div className="psch-hero-copy">
-        <h1>CraftHub Portal</h1>
-        <p>Welcome to the inner sanctum. Orchestrate your journey through fire, oak, and grain.</p>
+        <span>CraftHub 360</span>
+        <h1>Enter the inner sanctum.</h1>
+        <p>Fire, oak, grain, and service intelligence staged for a premium touchscreen experience.</p>
+      </div>
+
+      <div className="psch-primary-actions" aria-label="Primary kiosk actions">
+        <button type="button" className="is-primary" onClick={onStart}>
+          <strong>Start Experience</strong>
+          <span>Begin SmokeCraft 360</span>
+        </button>
+        <button type="button" onClick={onOpenHub}>
+          <strong>Open CraftHub</strong>
+          <span>View premium craft portals</span>
+        </button>
+        <button type="button" onClick={onContinue}>
+          <strong>Continue Session</strong>
+          <span>Resume the current ritual</span>
+        </button>
+        <button type="button" onClick={onStaffAssist}>
+          <strong>Staff Assist</strong>
+          <span>Call concierge support</span>
+        </button>
       </div>
 
       <div className="psch-bento" aria-label="CraftHub premium ritual tiles">
